@@ -1,0 +1,71 @@
+raw_variant,canonical_experience_driver,theme,canonical_category,canonical_subcategory,needs_review,first_seen,last_seen,frozen,frequency
+Product Availability → Online vs In-Store Discrepancy,Product Availability → Online vs In-Store Discrepancy,Inventory Consistency,Product Availability,Online vs In-Store Discrepancy,False,2025-08-08,2025-08-08,False,2
+Product Availability → Online vs. In-Store Consistency,Product Availability → Online vs In-Store Discrepancy,Inventory Consistency,Product Availability,Online vs In-Store Discrepancy,False,2025-08-08,2025-08-08,False,2
+Product Availability → Real-Time Stock Visibility,Product Availability → Real-Time Stock Visibility,Inventory Integrity,Product Availability,Real-Time Stock Visibility,False,2025-08-08,2025-08-08,False,12
+Order Accuracy → Substitution Quality,Order Accuracy → Substitution Quality,Order Fulfillment,Order Accuracy,Substitution Quality,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Item Fulfillment,Order Accuracy → Item Fulfillment,Delivery & Fulfillment,Order Accuracy,Item Fulfillment,False,2025-08-08,2025-08-08,False,3
+Order Accuracy → Fulfillment Notification,Order Accuracy → Item Fulfillment,Delivery & Fulfillment,Order Accuracy,Item Fulfillment,False,2025-08-08,2025-08-08,False,3
+Order Accuracy → Delivery Fulfillment,Order Accuracy → Item Fulfillment,Delivery & Fulfillment,Order Accuracy,Item Fulfillment,False,2025-08-08,2025-08-08,False,3
+Delivery Experience → Timing,Delivery Experience → Timing,Delivery & Fulfillment,Delivery Experience,Timing,False,2025-08-08,2025-08-08,False,13
+Delivery Experience → Timing Precision,Delivery Experience → Timing,Delivery & Fulfillment,Delivery Experience,Timing,False,2025-08-08,2025-08-08,False,13
+Order Accuracy → Missing Item Notification,Order Accuracy → Missing Item Notification,Order Fulfillment,Order Accuracy,Missing Item Notification,False,2025-08-08,2025-08-08,False,2
+Order Accuracy → Error Resolution,Order Accuracy → Error Resolution,Order Fulfillment,Order Accuracy,Error Resolution,False,2025-08-08,2025-08-08,False,3
+Order & Payment → Refund Processing,Order & Payment → Refund Processing,Payment Resolution,Order & Payment,Refund Processing,False,2025-08-08,2025-08-08,False,1
+Product Availability → Out-of-Stock Management,Product Availability → Out-of-Stock Management,Inventory Management,Product Availability,Out-of-Stock Management,False,2025-08-08,2025-08-08,False,5
+Product Quality → Product Condition,Product Quality → Product Condition,Product & Selection,Product Quality,Product Condition,False,2025-08-08,2025-08-08,False,2
+Mobile App → Performance Stability,Mobile App → Performance Stability,Technical Reliability,Mobile App,Performance Stability,False,2025-08-08,2025-08-08,False,1
+Promotions & Discounts → Voucher Availability,Promotions & Discounts → Voucher Availability,Customer Incentives,Promotions & Discounts,Voucher Availability,False,2025-08-08,2025-08-08,False,1
+Promotions & Discounts → Voucher Value,Promotions & Discounts → Voucher Value,Order & Payment,Promotions & Discounts,Voucher Value,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Substitution & Pricing,Order Accuracy → Substitution & Pricing,Order Fulfillment,Order Accuracy,Substitution & Pricing,False,2025-08-08,2025-08-08,False,1
+Customization Options → Product Customization,Customization Options → Product Customization,Product Personalization,Customization Options,Product Customization,False,2025-08-08,2025-08-08,False,1
+Customer Support → Proactive Communication,Customer Support → Proactive Communication,Customer Engagement,Customer Support,Proactive Communication,False,2025-08-08,2025-08-08,False,1
+Order & Payment → Payment Discrepancy,Order & Payment → Payment Discrepancy,Payment Integrity,Order & Payment,Payment Discrepancy,False,2025-08-08,2025-08-08,False,1
+Delivery & Fulfillment → Timeliness,Delivery & Fulfillment → Timeliness,Delivery Reliability,Delivery & Fulfillment,Timeliness,False,2025-08-08,2025-08-08,False,1
+Payment Experience → Payment Processing,Payment Experience → Payment Processing,Order & Payment,Payment Experience,Payment Processing,False,2025-08-08,2025-08-08,False,1
+Delivery Experience → Timeliness,Delivery Experience → Timeliness,Delivery & Fulfillment,Delivery Experience,Timeliness,False,2025-08-08,2025-08-08,False,7
+Product Variety → International Products,Product Variety → International Products,Product & Selection,Product Variety,International Products,False,2025-08-08,2025-08-08,False,1
+Order & Payment → Order Quantity Limits,Order & Payment → Order Quantity Limits,Order Management,Order & Payment,Order Quantity Limits,False,2025-08-08,2025-08-08,False,1
+Product Information → Product Details,Product Information → Product Details,Digital Shopping Experience,Product Information,Product Details,False,2025-08-08,2025-08-08,False,2
+Loyalty Programs → Membership Integration,Loyalty Programs → Membership Integration,Loyalty & Engagement,Loyalty Programs,Membership Integration,False,2025-08-08,2025-08-08,False,1
+Payment Experience → Cash Handling,Payment Experience → Cash Handling,Payment Integrity,Payment Experience,Cash Handling,False,2025-08-08,2025-08-08,False,1
+Delivery Experience → Order Completion,Delivery Experience → Order Completion,Delivery Integrity,Delivery Experience,Order Completion,False,2025-08-08,2025-08-08,False,1
+Delivery & Fulfillment → Tracking,Delivery & Fulfillment → Tracking,Delivery Experience,Delivery & Fulfillment,Tracking,False,2025-08-08,2025-08-08,False,1
+Product Quality → Product Safety,Product Quality → Product Safety,Product Quality,Product Quality,Product Safety,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Customer Communication,Order Accuracy → Customer Communication,Order Fulfillment,Order Accuracy,Customer Communication,False,2025-08-08,2025-08-08,False,1
+Order Fulfillment → Availability & Scheduling,Order Fulfillment → Availability & Scheduling,Order Management,Order Fulfillment,Availability & Scheduling,False,2025-08-08,2025-08-08,False,1
+Order Fulfillment → Stock Allocation,Order Fulfillment → Stock Allocation,Inventory Management,Order Fulfillment,Stock Allocation,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Wrong Item Delivered,Order Accuracy → Wrong Item Delivered,Delivery & Fulfillment,Order Accuracy,Wrong Item Delivered,False,2025-08-08,2025-08-08,False,1
+Food Safety → Product Quality,Food Safety → Product Quality,Product & Selection,Food Safety,Product Quality,False,2025-08-08,2025-08-08,False,1
+Customer Service → Staff Training,Customer Service → Staff Training,Customer Support,Customer Service,Staff Training,False,2025-08-08,2025-08-08,False,1
+Customer Service → Staff Interaction,Customer Service → Staff Interaction,Customer Support,Customer Service,Staff Interaction,False,2025-08-08,2025-08-08,False,2
+Delivery Experience → Delivery Speed,Delivery Experience → Delivery Speed,Timeliness & Efficiency,Delivery Experience,Delivery Speed,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Weight Discrepancy,Order Accuracy → Weight Discrepancy,Order Fulfillment,Order Accuracy,Weight Discrepancy,False,2025-08-08,2025-08-08,False,1
+Delivery Experience → Product Quality,Delivery Experience → Product Quality,Service Excellence,Delivery Experience,Product Quality,False,2025-08-08,2025-08-08,False,1
+Product Information → Expiration Dates,Product Information → Expiration Dates,Product Transparency,Product Information,Expiration Dates,False,2025-08-08,2025-08-08,False,1
+Order Management → Stock Availability Communication,Order Management → Stock Availability Communication,Inventory Integrity,Order Management,Stock Availability Communication,False,2025-08-08,2025-08-08,False,1
+Product Availability → Order Acceptance,Product Availability → Order Acceptance,Inventory Management,Product Availability,Order Acceptance,False,2025-08-08,2025-08-08,False,1
+Delivery Experience → Address Accuracy,Delivery Experience → Address Accuracy,Delivery Logistics,Delivery Experience,Address Accuracy,False,2025-08-08,2025-08-08,False,1
+Payment Options → Cashless Payment Availability,Payment Options → Cashless Payment Availability,Payment Experience,Payment Options,Cashless Payment Availability,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Post-Order Availability Management,Order Accuracy → Post-Order Availability Management,Order Management,Order Accuracy,Post-Order Availability Management,False,2025-08-08,2025-08-08,False,1
+Return & Refund Policy → Branch-Specific Return Restriction,Return & Refund Policy → Branch-Specific Return Restriction,Policy Consistency,Return & Refund Policy,Branch-Specific Return Restriction,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Out-of-Stock Notification,Order Accuracy → Out-of-Stock Notification,Inventory Management,Order Accuracy,Out-of-Stock Notification,False,2025-08-08,2025-08-08,False,2
+Order Accuracy → Incomplete Order Fulfillment,Order Accuracy → Incomplete Order Fulfillment,Order Fulfillment,Order Accuracy,Incomplete Order Fulfillment,False,2025-08-08,2025-08-08,False,1
+Promotions & Discounts → Voucher Redemption,Promotions & Discounts → Voucher Redemption,Promotional Integrity,Promotions & Discounts,Voucher Redemption,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Missing Items,Order Accuracy → Missing Items,Delivery & Fulfillment,Order Accuracy,Missing Items,False,2025-08-08,2025-08-08,False,2
+Mobile App → Cart Functionality,Mobile App → Cart Functionality,Digital Shopping Experience,Mobile App,Cart Functionality,False,2025-08-08,2025-08-08,False,1
+Order Accuracy → Price Adjustment,Order Accuracy → Price Adjustment,Pricing Integrity,Order Accuracy,Price Adjustment,False,2025-08-08,2025-08-08,False,1
+Delivery Experience → Order Non-Delivery,Delivery Experience → Order Non-Delivery,Delivery Integrity,Delivery Experience,Order Non-Delivery,False,2025-08-08,2025-08-08,False,1
+Customer Support → Complaint Handling,Customer Support → Complaint Handling,Support Transparency,Customer Support,Complaint Handling,False,2025-08-08,2025-08-08,False,1
+Payment Options → Voucher Redemption,Payment Options → Voucher Redemption,Payment Security,Payment Options,Voucher Redemption,False,2025-08-08,2025-08-08,False,1
+Delivery Experience → Packaging Quality,Delivery Experience → Packaging Quality,Delivery & Fulfillment,Delivery Experience,Packaging Quality,False,2025-08-08,2025-08-08,False,2
+Product Quality → Freshness,Product Quality → Freshness,Product Excellence,Product Quality,Freshness,False,2025-08-08,2025-08-08,False,1
+Order & Payment → Price Discrepancy,Order & Payment → Price Discrepancy,Pricing Integrity,Order & Payment,Price Discrepancy,False,2025-08-08,2025-08-08,False,1
+Payment Options → On-Delivery Card Payment,Payment Options → On-Delivery Card Payment,Payment Experience,Payment Options,On-Delivery Card Payment,False,2025-08-08,2025-08-08,False,1
+Promotions & Discounts → Free Bag Offer,Promotions & Discounts → Free Bag Offer,Order & Payment,Promotions & Discounts,Free Bag Offer,False,2025-08-08,2025-08-08,False,1
+Order Fulfillment → Electronic Orders,Order Fulfillment → Electronic Orders,Order Reliability,Order Fulfillment,Electronic Orders,False,2025-08-08,2025-08-08,False,1
+Delivery Experience → Staff Conduct,Delivery Experience → Staff Conduct,Service Quality,Delivery Experience,Staff Conduct,False,2025-08-08,2025-08-08,False,1
+Product Quality → Consistency,Product Quality → Consistency,Product & Selection,Product Quality,Consistency,False,2025-08-08,2025-08-08,False,1
+Product Quality → Product Freshness,Product Quality → Product Freshness,Product & Selection,Product Quality,Product Freshness,False,2025-08-08,2025-08-08,False,1
+Billing Accuracy → Invoice Discrepancy,Billing Accuracy → Invoice Discrepancy,Transaction Integrity,Billing Accuracy,Invoice Discrepancy,False,2025-08-08,2025-08-08,False,1
+Product Customization → Order Customization,Product Customization → Order Customization,Product & Selection,Product Customization,Order Customization,False,2025-08-08,2025-08-08,False,1
+Product Availability → Order Fulfillment Consistency,Product Availability → Order Fulfillment Consistency,Inventory Management,Product Availability,Order Fulfillment Consistency,False,2025-08-08,2025-08-08,False,1

@@ -1,0 +1,840 @@
+experience_driver,field_name,weight_contribution,percentage_of_signature
+Product Availability → Online vs In-Store Discrepancy,matters,8,19.51219512195122
+Product Availability → Online vs In-Store Discrepancy,behavioral_impact,6,14.634146341463413
+Product Availability → Online vs In-Store Discrepancy,context,6,14.634146341463413
+Product Availability → Online vs In-Store Discrepancy,stream_justification,4,9.75609756097561
+Product Availability → Online vs In-Store Discrepancy,interaction_moment,4,9.75609756097561
+Product Availability → Online vs In-Store Discrepancy,emotion,3,7.317073170731707
+Product Availability → Online vs In-Store Discrepancy,opportunity_stream,3,7.317073170731707
+Product Availability → Online vs In-Store Discrepancy,customer_journey,2,4.878048780487805
+Product Availability → Online vs In-Store Discrepancy,theme,2,4.878048780487805
+Product Availability → Online vs In-Store Discrepancy,customer_journey_stage,1,2.4390243902439024
+Product Availability → Online vs In-Store Discrepancy,feedback_type,1,2.4390243902439024
+Product Availability → Online vs In-Store Discrepancy,customer_effort_score,1,2.4390243902439024
+Product Availability → Real-Time Stock Visibility,matters,8,19.51219512195122
+Product Availability → Real-Time Stock Visibility,behavioral_impact,6,14.634146341463413
+Product Availability → Real-Time Stock Visibility,context,6,14.634146341463413
+Product Availability → Real-Time Stock Visibility,stream_justification,4,9.75609756097561
+Product Availability → Real-Time Stock Visibility,interaction_moment,4,9.75609756097561
+Product Availability → Real-Time Stock Visibility,emotion,3,7.317073170731707
+Product Availability → Real-Time Stock Visibility,opportunity_stream,3,7.317073170731707
+Product Availability → Real-Time Stock Visibility,customer_journey,2,4.878048780487805
+Product Availability → Real-Time Stock Visibility,theme,2,4.878048780487805
+Product Availability → Real-Time Stock Visibility,customer_journey_stage,1,2.4390243902439024
+Product Availability → Real-Time Stock Visibility,feedback_type,1,2.4390243902439024
+Product Availability → Real-Time Stock Visibility,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Substitution Quality,matters,8,19.51219512195122
+Order Accuracy → Substitution Quality,behavioral_impact,6,14.634146341463413
+Order Accuracy → Substitution Quality,context,6,14.634146341463413
+Order Accuracy → Substitution Quality,stream_justification,4,9.75609756097561
+Order Accuracy → Substitution Quality,interaction_moment,4,9.75609756097561
+Order Accuracy → Substitution Quality,emotion,3,7.317073170731707
+Order Accuracy → Substitution Quality,opportunity_stream,3,7.317073170731707
+Order Accuracy → Substitution Quality,customer_journey,2,4.878048780487805
+Order Accuracy → Substitution Quality,theme,2,4.878048780487805
+Order Accuracy → Substitution Quality,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Substitution Quality,feedback_type,1,2.4390243902439024
+Order Accuracy → Substitution Quality,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Item Fulfillment,matters,8,19.51219512195122
+Order Accuracy → Item Fulfillment,behavioral_impact,6,14.634146341463413
+Order Accuracy → Item Fulfillment,context,6,14.634146341463413
+Order Accuracy → Item Fulfillment,stream_justification,4,9.75609756097561
+Order Accuracy → Item Fulfillment,interaction_moment,4,9.75609756097561
+Order Accuracy → Item Fulfillment,emotion,3,7.317073170731707
+Order Accuracy → Item Fulfillment,opportunity_stream,3,7.317073170731707
+Order Accuracy → Item Fulfillment,customer_journey,2,4.878048780487805
+Order Accuracy → Item Fulfillment,theme,2,4.878048780487805
+Order Accuracy → Item Fulfillment,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Item Fulfillment,feedback_type,1,2.4390243902439024
+Order Accuracy → Item Fulfillment,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Fulfillment Notification,matters,8,19.51219512195122
+Order Accuracy → Fulfillment Notification,behavioral_impact,6,14.634146341463413
+Order Accuracy → Fulfillment Notification,context,6,14.634146341463413
+Order Accuracy → Fulfillment Notification,stream_justification,4,9.75609756097561
+Order Accuracy → Fulfillment Notification,interaction_moment,4,9.75609756097561
+Order Accuracy → Fulfillment Notification,emotion,3,7.317073170731707
+Order Accuracy → Fulfillment Notification,opportunity_stream,3,7.317073170731707
+Order Accuracy → Fulfillment Notification,customer_journey,2,4.878048780487805
+Order Accuracy → Fulfillment Notification,theme,2,4.878048780487805
+Order Accuracy → Fulfillment Notification,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Fulfillment Notification,feedback_type,1,2.4390243902439024
+Order Accuracy → Fulfillment Notification,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Timing,matters,8,19.51219512195122
+Delivery Experience → Timing,behavioral_impact,6,14.634146341463413
+Delivery Experience → Timing,context,6,14.634146341463413
+Delivery Experience → Timing,stream_justification,4,9.75609756097561
+Delivery Experience → Timing,interaction_moment,4,9.75609756097561
+Delivery Experience → Timing,emotion,3,7.317073170731707
+Delivery Experience → Timing,opportunity_stream,3,7.317073170731707
+Delivery Experience → Timing,customer_journey,2,4.878048780487805
+Delivery Experience → Timing,theme,2,4.878048780487805
+Delivery Experience → Timing,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Timing,feedback_type,1,2.4390243902439024
+Delivery Experience → Timing,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Missing Item Notification,matters,8,19.51219512195122
+Order Accuracy → Missing Item Notification,behavioral_impact,6,14.634146341463413
+Order Accuracy → Missing Item Notification,context,6,14.634146341463413
+Order Accuracy → Missing Item Notification,stream_justification,4,9.75609756097561
+Order Accuracy → Missing Item Notification,interaction_moment,4,9.75609756097561
+Order Accuracy → Missing Item Notification,emotion,3,7.317073170731707
+Order Accuracy → Missing Item Notification,opportunity_stream,3,7.317073170731707
+Order Accuracy → Missing Item Notification,customer_journey,2,4.878048780487805
+Order Accuracy → Missing Item Notification,theme,2,4.878048780487805
+Order Accuracy → Missing Item Notification,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Missing Item Notification,feedback_type,1,2.4390243902439024
+Order Accuracy → Missing Item Notification,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Error Resolution,matters,8,19.51219512195122
+Order Accuracy → Error Resolution,behavioral_impact,6,14.634146341463413
+Order Accuracy → Error Resolution,context,6,14.634146341463413
+Order Accuracy → Error Resolution,stream_justification,4,9.75609756097561
+Order Accuracy → Error Resolution,interaction_moment,4,9.75609756097561
+Order Accuracy → Error Resolution,emotion,3,7.317073170731707
+Order Accuracy → Error Resolution,opportunity_stream,3,7.317073170731707
+Order Accuracy → Error Resolution,customer_journey,2,4.878048780487805
+Order Accuracy → Error Resolution,theme,2,4.878048780487805
+Order Accuracy → Error Resolution,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Error Resolution,feedback_type,1,2.4390243902439024
+Order Accuracy → Error Resolution,customer_effort_score,1,2.4390243902439024
+Product Availability → Online vs. In-Store Consistency,matters,8,19.51219512195122
+Product Availability → Online vs. In-Store Consistency,behavioral_impact,6,14.634146341463413
+Product Availability → Online vs. In-Store Consistency,context,6,14.634146341463413
+Product Availability → Online vs. In-Store Consistency,stream_justification,4,9.75609756097561
+Product Availability → Online vs. In-Store Consistency,interaction_moment,4,9.75609756097561
+Product Availability → Online vs. In-Store Consistency,emotion,3,7.317073170731707
+Product Availability → Online vs. In-Store Consistency,opportunity_stream,3,7.317073170731707
+Product Availability → Online vs. In-Store Consistency,customer_journey,2,4.878048780487805
+Product Availability → Online vs. In-Store Consistency,theme,2,4.878048780487805
+Product Availability → Online vs. In-Store Consistency,customer_journey_stage,1,2.4390243902439024
+Product Availability → Online vs. In-Store Consistency,feedback_type,1,2.4390243902439024
+Product Availability → Online vs. In-Store Consistency,customer_effort_score,1,2.4390243902439024
+Order & Payment → Refund Processing,matters,8,19.51219512195122
+Order & Payment → Refund Processing,behavioral_impact,6,14.634146341463413
+Order & Payment → Refund Processing,context,6,14.634146341463413
+Order & Payment → Refund Processing,stream_justification,4,9.75609756097561
+Order & Payment → Refund Processing,interaction_moment,4,9.75609756097561
+Order & Payment → Refund Processing,emotion,3,7.317073170731707
+Order & Payment → Refund Processing,opportunity_stream,3,7.317073170731707
+Order & Payment → Refund Processing,customer_journey,2,4.878048780487805
+Order & Payment → Refund Processing,theme,2,4.878048780487805
+Order & Payment → Refund Processing,customer_journey_stage,1,2.4390243902439024
+Order & Payment → Refund Processing,feedback_type,1,2.4390243902439024
+Order & Payment → Refund Processing,customer_effort_score,1,2.4390243902439024
+Product Availability → Out-of-Stock Management,matters,8,19.51219512195122
+Product Availability → Out-of-Stock Management,behavioral_impact,6,14.634146341463413
+Product Availability → Out-of-Stock Management,context,6,14.634146341463413
+Product Availability → Out-of-Stock Management,stream_justification,4,9.75609756097561
+Product Availability → Out-of-Stock Management,interaction_moment,4,9.75609756097561
+Product Availability → Out-of-Stock Management,emotion,3,7.317073170731707
+Product Availability → Out-of-Stock Management,opportunity_stream,3,7.317073170731707
+Product Availability → Out-of-Stock Management,customer_journey,2,4.878048780487805
+Product Availability → Out-of-Stock Management,theme,2,4.878048780487805
+Product Availability → Out-of-Stock Management,customer_journey_stage,1,2.4390243902439024
+Product Availability → Out-of-Stock Management,feedback_type,1,2.4390243902439024
+Product Availability → Out-of-Stock Management,customer_effort_score,1,2.4390243902439024
+Product Quality → Product Condition,matters,8,19.51219512195122
+Product Quality → Product Condition,behavioral_impact,6,14.634146341463413
+Product Quality → Product Condition,context,6,14.634146341463413
+Product Quality → Product Condition,stream_justification,4,9.75609756097561
+Product Quality → Product Condition,interaction_moment,4,9.75609756097561
+Product Quality → Product Condition,emotion,3,7.317073170731707
+Product Quality → Product Condition,opportunity_stream,3,7.317073170731707
+Product Quality → Product Condition,customer_journey,2,4.878048780487805
+Product Quality → Product Condition,theme,2,4.878048780487805
+Product Quality → Product Condition,customer_journey_stage,1,2.4390243902439024
+Product Quality → Product Condition,feedback_type,1,2.4390243902439024
+Product Quality → Product Condition,customer_effort_score,1,2.4390243902439024
+Mobile App → Performance Stability,matters,8,19.51219512195122
+Mobile App → Performance Stability,behavioral_impact,6,14.634146341463413
+Mobile App → Performance Stability,context,6,14.634146341463413
+Mobile App → Performance Stability,stream_justification,4,9.75609756097561
+Mobile App → Performance Stability,interaction_moment,4,9.75609756097561
+Mobile App → Performance Stability,emotion,3,7.317073170731707
+Mobile App → Performance Stability,opportunity_stream,3,7.317073170731707
+Mobile App → Performance Stability,customer_journey,2,4.878048780487805
+Mobile App → Performance Stability,theme,2,4.878048780487805
+Mobile App → Performance Stability,customer_journey_stage,1,2.4390243902439024
+Mobile App → Performance Stability,feedback_type,1,2.4390243902439024
+Mobile App → Performance Stability,customer_effort_score,1,2.4390243902439024
+Promotions & Discounts → Voucher Availability,matters,8,19.51219512195122
+Promotions & Discounts → Voucher Availability,behavioral_impact,6,14.634146341463413
+Promotions & Discounts → Voucher Availability,context,6,14.634146341463413
+Promotions & Discounts → Voucher Availability,stream_justification,4,9.75609756097561
+Promotions & Discounts → Voucher Availability,interaction_moment,4,9.75609756097561
+Promotions & Discounts → Voucher Availability,emotion,3,7.317073170731707
+Promotions & Discounts → Voucher Availability,opportunity_stream,3,7.317073170731707
+Promotions & Discounts → Voucher Availability,customer_journey,2,4.878048780487805
+Promotions & Discounts → Voucher Availability,theme,2,4.878048780487805
+Promotions & Discounts → Voucher Availability,customer_journey_stage,1,2.4390243902439024
+Promotions & Discounts → Voucher Availability,feedback_type,1,2.4390243902439024
+Promotions & Discounts → Voucher Availability,customer_effort_score,1,2.4390243902439024
+Promotions & Discounts → Voucher Value,matters,8,19.51219512195122
+Promotions & Discounts → Voucher Value,behavioral_impact,6,14.634146341463413
+Promotions & Discounts → Voucher Value,context,6,14.634146341463413
+Promotions & Discounts → Voucher Value,stream_justification,4,9.75609756097561
+Promotions & Discounts → Voucher Value,interaction_moment,4,9.75609756097561
+Promotions & Discounts → Voucher Value,emotion,3,7.317073170731707
+Promotions & Discounts → Voucher Value,opportunity_stream,3,7.317073170731707
+Promotions & Discounts → Voucher Value,customer_journey,2,4.878048780487805
+Promotions & Discounts → Voucher Value,theme,2,4.878048780487805
+Promotions & Discounts → Voucher Value,customer_journey_stage,1,2.4390243902439024
+Promotions & Discounts → Voucher Value,feedback_type,1,2.4390243902439024
+Promotions & Discounts → Voucher Value,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Substitution & Pricing,matters,8,19.51219512195122
+Order Accuracy → Substitution & Pricing,behavioral_impact,6,14.634146341463413
+Order Accuracy → Substitution & Pricing,context,6,14.634146341463413
+Order Accuracy → Substitution & Pricing,stream_justification,4,9.75609756097561
+Order Accuracy → Substitution & Pricing,interaction_moment,4,9.75609756097561
+Order Accuracy → Substitution & Pricing,emotion,3,7.317073170731707
+Order Accuracy → Substitution & Pricing,opportunity_stream,3,7.317073170731707
+Order Accuracy → Substitution & Pricing,customer_journey,2,4.878048780487805
+Order Accuracy → Substitution & Pricing,theme,2,4.878048780487805
+Order Accuracy → Substitution & Pricing,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Substitution & Pricing,feedback_type,1,2.4390243902439024
+Order Accuracy → Substitution & Pricing,customer_effort_score,1,2.4390243902439024
+Customization Options → Product Customization,matters,8,19.51219512195122
+Customization Options → Product Customization,behavioral_impact,6,14.634146341463413
+Customization Options → Product Customization,context,6,14.634146341463413
+Customization Options → Product Customization,stream_justification,4,9.75609756097561
+Customization Options → Product Customization,interaction_moment,4,9.75609756097561
+Customization Options → Product Customization,emotion,3,7.317073170731707
+Customization Options → Product Customization,opportunity_stream,3,7.317073170731707
+Customization Options → Product Customization,customer_journey,2,4.878048780487805
+Customization Options → Product Customization,theme,2,4.878048780487805
+Customization Options → Product Customization,customer_journey_stage,1,2.4390243902439024
+Customization Options → Product Customization,feedback_type,1,2.4390243902439024
+Customization Options → Product Customization,customer_effort_score,1,2.4390243902439024
+Customer Support → Proactive Communication,matters,8,19.51219512195122
+Customer Support → Proactive Communication,behavioral_impact,6,14.634146341463413
+Customer Support → Proactive Communication,context,6,14.634146341463413
+Customer Support → Proactive Communication,stream_justification,4,9.75609756097561
+Customer Support → Proactive Communication,interaction_moment,4,9.75609756097561
+Customer Support → Proactive Communication,emotion,3,7.317073170731707
+Customer Support → Proactive Communication,opportunity_stream,3,7.317073170731707
+Customer Support → Proactive Communication,customer_journey,2,4.878048780487805
+Customer Support → Proactive Communication,theme,2,4.878048780487805
+Customer Support → Proactive Communication,customer_journey_stage,1,2.4390243902439024
+Customer Support → Proactive Communication,feedback_type,1,2.4390243902439024
+Customer Support → Proactive Communication,customer_effort_score,1,2.4390243902439024
+Order & Payment → Payment Discrepancy,matters,8,19.51219512195122
+Order & Payment → Payment Discrepancy,behavioral_impact,6,14.634146341463413
+Order & Payment → Payment Discrepancy,context,6,14.634146341463413
+Order & Payment → Payment Discrepancy,stream_justification,4,9.75609756097561
+Order & Payment → Payment Discrepancy,interaction_moment,4,9.75609756097561
+Order & Payment → Payment Discrepancy,emotion,3,7.317073170731707
+Order & Payment → Payment Discrepancy,opportunity_stream,3,7.317073170731707
+Order & Payment → Payment Discrepancy,customer_journey,2,4.878048780487805
+Order & Payment → Payment Discrepancy,theme,2,4.878048780487805
+Order & Payment → Payment Discrepancy,customer_journey_stage,1,2.4390243902439024
+Order & Payment → Payment Discrepancy,feedback_type,1,2.4390243902439024
+Order & Payment → Payment Discrepancy,customer_effort_score,1,2.4390243902439024
+Delivery & Fulfillment → Timeliness,matters,8,19.51219512195122
+Delivery & Fulfillment → Timeliness,behavioral_impact,6,14.634146341463413
+Delivery & Fulfillment → Timeliness,context,6,14.634146341463413
+Delivery & Fulfillment → Timeliness,stream_justification,4,9.75609756097561
+Delivery & Fulfillment → Timeliness,interaction_moment,4,9.75609756097561
+Delivery & Fulfillment → Timeliness,emotion,3,7.317073170731707
+Delivery & Fulfillment → Timeliness,opportunity_stream,3,7.317073170731707
+Delivery & Fulfillment → Timeliness,customer_journey,2,4.878048780487805
+Delivery & Fulfillment → Timeliness,theme,2,4.878048780487805
+Delivery & Fulfillment → Timeliness,customer_journey_stage,1,2.4390243902439024
+Delivery & Fulfillment → Timeliness,feedback_type,1,2.4390243902439024
+Delivery & Fulfillment → Timeliness,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Delivery Fulfillment,matters,8,19.51219512195122
+Order Accuracy → Delivery Fulfillment,behavioral_impact,6,14.634146341463413
+Order Accuracy → Delivery Fulfillment,context,6,14.634146341463413
+Order Accuracy → Delivery Fulfillment,stream_justification,4,9.75609756097561
+Order Accuracy → Delivery Fulfillment,interaction_moment,4,9.75609756097561
+Order Accuracy → Delivery Fulfillment,emotion,3,7.317073170731707
+Order Accuracy → Delivery Fulfillment,opportunity_stream,3,7.317073170731707
+Order Accuracy → Delivery Fulfillment,customer_journey,2,4.878048780487805
+Order Accuracy → Delivery Fulfillment,theme,2,4.878048780487805
+Order Accuracy → Delivery Fulfillment,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Delivery Fulfillment,feedback_type,1,2.4390243902439024
+Order Accuracy → Delivery Fulfillment,customer_effort_score,1,2.4390243902439024
+Payment Experience → Payment Processing,matters,8,19.51219512195122
+Payment Experience → Payment Processing,behavioral_impact,6,14.634146341463413
+Payment Experience → Payment Processing,context,6,14.634146341463413
+Payment Experience → Payment Processing,stream_justification,4,9.75609756097561
+Payment Experience → Payment Processing,interaction_moment,4,9.75609756097561
+Payment Experience → Payment Processing,emotion,3,7.317073170731707
+Payment Experience → Payment Processing,opportunity_stream,3,7.317073170731707
+Payment Experience → Payment Processing,customer_journey,2,4.878048780487805
+Payment Experience → Payment Processing,theme,2,4.878048780487805
+Payment Experience → Payment Processing,customer_journey_stage,1,2.4390243902439024
+Payment Experience → Payment Processing,feedback_type,1,2.4390243902439024
+Payment Experience → Payment Processing,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Timeliness,matters,8,19.51219512195122
+Delivery Experience → Timeliness,behavioral_impact,6,14.634146341463413
+Delivery Experience → Timeliness,context,6,14.634146341463413
+Delivery Experience → Timeliness,stream_justification,4,9.75609756097561
+Delivery Experience → Timeliness,interaction_moment,4,9.75609756097561
+Delivery Experience → Timeliness,emotion,3,7.317073170731707
+Delivery Experience → Timeliness,opportunity_stream,3,7.317073170731707
+Delivery Experience → Timeliness,customer_journey,2,4.878048780487805
+Delivery Experience → Timeliness,theme,2,4.878048780487805
+Delivery Experience → Timeliness,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Timeliness,feedback_type,1,2.4390243902439024
+Delivery Experience → Timeliness,customer_effort_score,1,2.4390243902439024
+Product Variety → International Products,matters,8,19.51219512195122
+Product Variety → International Products,behavioral_impact,6,14.634146341463413
+Product Variety → International Products,context,6,14.634146341463413
+Product Variety → International Products,stream_justification,4,9.75609756097561
+Product Variety → International Products,interaction_moment,4,9.75609756097561
+Product Variety → International Products,emotion,3,7.317073170731707
+Product Variety → International Products,opportunity_stream,3,7.317073170731707
+Product Variety → International Products,customer_journey,2,4.878048780487805
+Product Variety → International Products,theme,2,4.878048780487805
+Product Variety → International Products,customer_journey_stage,1,2.4390243902439024
+Product Variety → International Products,feedback_type,1,2.4390243902439024
+Product Variety → International Products,customer_effort_score,1,2.4390243902439024
+Order & Payment → Order Quantity Limits,matters,8,19.51219512195122
+Order & Payment → Order Quantity Limits,behavioral_impact,6,14.634146341463413
+Order & Payment → Order Quantity Limits,context,6,14.634146341463413
+Order & Payment → Order Quantity Limits,stream_justification,4,9.75609756097561
+Order & Payment → Order Quantity Limits,interaction_moment,4,9.75609756097561
+Order & Payment → Order Quantity Limits,emotion,3,7.317073170731707
+Order & Payment → Order Quantity Limits,opportunity_stream,3,7.317073170731707
+Order & Payment → Order Quantity Limits,customer_journey,2,4.878048780487805
+Order & Payment → Order Quantity Limits,theme,2,4.878048780487805
+Order & Payment → Order Quantity Limits,customer_journey_stage,1,2.4390243902439024
+Order & Payment → Order Quantity Limits,feedback_type,1,2.4390243902439024
+Order & Payment → Order Quantity Limits,customer_effort_score,1,2.4390243902439024
+Product Information → Product Details,matters,8,19.51219512195122
+Product Information → Product Details,behavioral_impact,6,14.634146341463413
+Product Information → Product Details,context,6,14.634146341463413
+Product Information → Product Details,stream_justification,4,9.75609756097561
+Product Information → Product Details,interaction_moment,4,9.75609756097561
+Product Information → Product Details,emotion,3,7.317073170731707
+Product Information → Product Details,opportunity_stream,3,7.317073170731707
+Product Information → Product Details,customer_journey,2,4.878048780487805
+Product Information → Product Details,theme,2,4.878048780487805
+Product Information → Product Details,customer_journey_stage,1,2.4390243902439024
+Product Information → Product Details,feedback_type,1,2.4390243902439024
+Product Information → Product Details,customer_effort_score,1,2.4390243902439024
+Loyalty Programs → Membership Integration,matters,8,19.51219512195122
+Loyalty Programs → Membership Integration,behavioral_impact,6,14.634146341463413
+Loyalty Programs → Membership Integration,context,6,14.634146341463413
+Loyalty Programs → Membership Integration,stream_justification,4,9.75609756097561
+Loyalty Programs → Membership Integration,interaction_moment,4,9.75609756097561
+Loyalty Programs → Membership Integration,emotion,3,7.317073170731707
+Loyalty Programs → Membership Integration,opportunity_stream,3,7.317073170731707
+Loyalty Programs → Membership Integration,customer_journey,2,4.878048780487805
+Loyalty Programs → Membership Integration,theme,2,4.878048780487805
+Loyalty Programs → Membership Integration,customer_journey_stage,1,2.4390243902439024
+Loyalty Programs → Membership Integration,feedback_type,1,2.4390243902439024
+Loyalty Programs → Membership Integration,customer_effort_score,1,2.4390243902439024
+Payment Experience → Cash Handling,matters,8,19.51219512195122
+Payment Experience → Cash Handling,behavioral_impact,6,14.634146341463413
+Payment Experience → Cash Handling,context,6,14.634146341463413
+Payment Experience → Cash Handling,stream_justification,4,9.75609756097561
+Payment Experience → Cash Handling,interaction_moment,4,9.75609756097561
+Payment Experience → Cash Handling,emotion,3,7.317073170731707
+Payment Experience → Cash Handling,opportunity_stream,3,7.317073170731707
+Payment Experience → Cash Handling,customer_journey,2,4.878048780487805
+Payment Experience → Cash Handling,theme,2,4.878048780487805
+Payment Experience → Cash Handling,customer_journey_stage,1,2.4390243902439024
+Payment Experience → Cash Handling,feedback_type,1,2.4390243902439024
+Payment Experience → Cash Handling,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Order Completion,matters,8,19.51219512195122
+Delivery Experience → Order Completion,behavioral_impact,6,14.634146341463413
+Delivery Experience → Order Completion,context,6,14.634146341463413
+Delivery Experience → Order Completion,stream_justification,4,9.75609756097561
+Delivery Experience → Order Completion,interaction_moment,4,9.75609756097561
+Delivery Experience → Order Completion,emotion,3,7.317073170731707
+Delivery Experience → Order Completion,opportunity_stream,3,7.317073170731707
+Delivery Experience → Order Completion,customer_journey,2,4.878048780487805
+Delivery Experience → Order Completion,theme,2,4.878048780487805
+Delivery Experience → Order Completion,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Order Completion,feedback_type,1,2.4390243902439024
+Delivery Experience → Order Completion,customer_effort_score,1,2.4390243902439024
+Delivery & Fulfillment → Tracking,matters,8,19.51219512195122
+Delivery & Fulfillment → Tracking,behavioral_impact,6,14.634146341463413
+Delivery & Fulfillment → Tracking,context,6,14.634146341463413
+Delivery & Fulfillment → Tracking,stream_justification,4,9.75609756097561
+Delivery & Fulfillment → Tracking,interaction_moment,4,9.75609756097561
+Delivery & Fulfillment → Tracking,emotion,3,7.317073170731707
+Delivery & Fulfillment → Tracking,opportunity_stream,3,7.317073170731707
+Delivery & Fulfillment → Tracking,customer_journey,2,4.878048780487805
+Delivery & Fulfillment → Tracking,theme,2,4.878048780487805
+Delivery & Fulfillment → Tracking,customer_journey_stage,1,2.4390243902439024
+Delivery & Fulfillment → Tracking,feedback_type,1,2.4390243902439024
+Delivery & Fulfillment → Tracking,customer_effort_score,1,2.4390243902439024
+Product Quality → Product Safety,matters,8,19.51219512195122
+Product Quality → Product Safety,behavioral_impact,6,14.634146341463413
+Product Quality → Product Safety,context,6,14.634146341463413
+Product Quality → Product Safety,stream_justification,4,9.75609756097561
+Product Quality → Product Safety,interaction_moment,4,9.75609756097561
+Product Quality → Product Safety,emotion,3,7.317073170731707
+Product Quality → Product Safety,opportunity_stream,3,7.317073170731707
+Product Quality → Product Safety,customer_journey,2,4.878048780487805
+Product Quality → Product Safety,theme,2,4.878048780487805
+Product Quality → Product Safety,customer_journey_stage,1,2.4390243902439024
+Product Quality → Product Safety,feedback_type,1,2.4390243902439024
+Product Quality → Product Safety,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Customer Communication,matters,8,19.51219512195122
+Order Accuracy → Customer Communication,behavioral_impact,6,14.634146341463413
+Order Accuracy → Customer Communication,context,6,14.634146341463413
+Order Accuracy → Customer Communication,stream_justification,4,9.75609756097561
+Order Accuracy → Customer Communication,interaction_moment,4,9.75609756097561
+Order Accuracy → Customer Communication,emotion,3,7.317073170731707
+Order Accuracy → Customer Communication,opportunity_stream,3,7.317073170731707
+Order Accuracy → Customer Communication,customer_journey,2,4.878048780487805
+Order Accuracy → Customer Communication,theme,2,4.878048780487805
+Order Accuracy → Customer Communication,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Customer Communication,feedback_type,1,2.4390243902439024
+Order Accuracy → Customer Communication,customer_effort_score,1,2.4390243902439024
+Order Fulfillment → Availability & Scheduling,matters,8,19.51219512195122
+Order Fulfillment → Availability & Scheduling,behavioral_impact,6,14.634146341463413
+Order Fulfillment → Availability & Scheduling,context,6,14.634146341463413
+Order Fulfillment → Availability & Scheduling,stream_justification,4,9.75609756097561
+Order Fulfillment → Availability & Scheduling,interaction_moment,4,9.75609756097561
+Order Fulfillment → Availability & Scheduling,emotion,3,7.317073170731707
+Order Fulfillment → Availability & Scheduling,opportunity_stream,3,7.317073170731707
+Order Fulfillment → Availability & Scheduling,customer_journey,2,4.878048780487805
+Order Fulfillment → Availability & Scheduling,theme,2,4.878048780487805
+Order Fulfillment → Availability & Scheduling,customer_journey_stage,1,2.4390243902439024
+Order Fulfillment → Availability & Scheduling,feedback_type,1,2.4390243902439024
+Order Fulfillment → Availability & Scheduling,customer_effort_score,1,2.4390243902439024
+Order Fulfillment → Stock Allocation,matters,8,19.51219512195122
+Order Fulfillment → Stock Allocation,behavioral_impact,6,14.634146341463413
+Order Fulfillment → Stock Allocation,context,6,14.634146341463413
+Order Fulfillment → Stock Allocation,stream_justification,4,9.75609756097561
+Order Fulfillment → Stock Allocation,interaction_moment,4,9.75609756097561
+Order Fulfillment → Stock Allocation,emotion,3,7.317073170731707
+Order Fulfillment → Stock Allocation,opportunity_stream,3,7.317073170731707
+Order Fulfillment → Stock Allocation,customer_journey,2,4.878048780487805
+Order Fulfillment → Stock Allocation,theme,2,4.878048780487805
+Order Fulfillment → Stock Allocation,customer_journey_stage,1,2.4390243902439024
+Order Fulfillment → Stock Allocation,feedback_type,1,2.4390243902439024
+Order Fulfillment → Stock Allocation,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Wrong Item Delivered,matters,8,19.51219512195122
+Order Accuracy → Wrong Item Delivered,behavioral_impact,6,14.634146341463413
+Order Accuracy → Wrong Item Delivered,context,6,14.634146341463413
+Order Accuracy → Wrong Item Delivered,stream_justification,4,9.75609756097561
+Order Accuracy → Wrong Item Delivered,interaction_moment,4,9.75609756097561
+Order Accuracy → Wrong Item Delivered,emotion,3,7.317073170731707
+Order Accuracy → Wrong Item Delivered,opportunity_stream,3,7.317073170731707
+Order Accuracy → Wrong Item Delivered,customer_journey,2,4.878048780487805
+Order Accuracy → Wrong Item Delivered,theme,2,4.878048780487805
+Order Accuracy → Wrong Item Delivered,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Wrong Item Delivered,feedback_type,1,2.4390243902439024
+Order Accuracy → Wrong Item Delivered,customer_effort_score,1,2.4390243902439024
+Food Safety → Product Quality,matters,8,19.51219512195122
+Food Safety → Product Quality,behavioral_impact,6,14.634146341463413
+Food Safety → Product Quality,context,6,14.634146341463413
+Food Safety → Product Quality,stream_justification,4,9.75609756097561
+Food Safety → Product Quality,interaction_moment,4,9.75609756097561
+Food Safety → Product Quality,emotion,3,7.317073170731707
+Food Safety → Product Quality,opportunity_stream,3,7.317073170731707
+Food Safety → Product Quality,customer_journey,2,4.878048780487805
+Food Safety → Product Quality,theme,2,4.878048780487805
+Food Safety → Product Quality,customer_journey_stage,1,2.4390243902439024
+Food Safety → Product Quality,feedback_type,1,2.4390243902439024
+Food Safety → Product Quality,customer_effort_score,1,2.4390243902439024
+Customer Service → Staff Training,matters,8,19.51219512195122
+Customer Service → Staff Training,behavioral_impact,6,14.634146341463413
+Customer Service → Staff Training,context,6,14.634146341463413
+Customer Service → Staff Training,stream_justification,4,9.75609756097561
+Customer Service → Staff Training,interaction_moment,4,9.75609756097561
+Customer Service → Staff Training,emotion,3,7.317073170731707
+Customer Service → Staff Training,opportunity_stream,3,7.317073170731707
+Customer Service → Staff Training,customer_journey,2,4.878048780487805
+Customer Service → Staff Training,theme,2,4.878048780487805
+Customer Service → Staff Training,customer_journey_stage,1,2.4390243902439024
+Customer Service → Staff Training,feedback_type,1,2.4390243902439024
+Customer Service → Staff Training,customer_effort_score,1,2.4390243902439024
+Customer Service → Staff Interaction,matters,8,19.51219512195122
+Customer Service → Staff Interaction,behavioral_impact,6,14.634146341463413
+Customer Service → Staff Interaction,context,6,14.634146341463413
+Customer Service → Staff Interaction,stream_justification,4,9.75609756097561
+Customer Service → Staff Interaction,interaction_moment,4,9.75609756097561
+Customer Service → Staff Interaction,emotion,3,7.317073170731707
+Customer Service → Staff Interaction,opportunity_stream,3,7.317073170731707
+Customer Service → Staff Interaction,customer_journey,2,4.878048780487805
+Customer Service → Staff Interaction,theme,2,4.878048780487805
+Customer Service → Staff Interaction,customer_journey_stage,1,2.4390243902439024
+Customer Service → Staff Interaction,feedback_type,1,2.4390243902439024
+Customer Service → Staff Interaction,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Delivery Speed,matters,8,19.51219512195122
+Delivery Experience → Delivery Speed,behavioral_impact,6,14.634146341463413
+Delivery Experience → Delivery Speed,context,6,14.634146341463413
+Delivery Experience → Delivery Speed,stream_justification,4,9.75609756097561
+Delivery Experience → Delivery Speed,interaction_moment,4,9.75609756097561
+Delivery Experience → Delivery Speed,emotion,3,7.317073170731707
+Delivery Experience → Delivery Speed,opportunity_stream,3,7.317073170731707
+Delivery Experience → Delivery Speed,customer_journey,2,4.878048780487805
+Delivery Experience → Delivery Speed,theme,2,4.878048780487805
+Delivery Experience → Delivery Speed,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Delivery Speed,feedback_type,1,2.4390243902439024
+Delivery Experience → Delivery Speed,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Weight Discrepancy,matters,8,19.51219512195122
+Order Accuracy → Weight Discrepancy,behavioral_impact,6,14.634146341463413
+Order Accuracy → Weight Discrepancy,context,6,14.634146341463413
+Order Accuracy → Weight Discrepancy,stream_justification,4,9.75609756097561
+Order Accuracy → Weight Discrepancy,interaction_moment,4,9.75609756097561
+Order Accuracy → Weight Discrepancy,emotion,3,7.317073170731707
+Order Accuracy → Weight Discrepancy,opportunity_stream,3,7.317073170731707
+Order Accuracy → Weight Discrepancy,customer_journey,2,4.878048780487805
+Order Accuracy → Weight Discrepancy,theme,2,4.878048780487805
+Order Accuracy → Weight Discrepancy,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Weight Discrepancy,feedback_type,1,2.4390243902439024
+Order Accuracy → Weight Discrepancy,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Product Quality,matters,8,19.51219512195122
+Delivery Experience → Product Quality,behavioral_impact,6,14.634146341463413
+Delivery Experience → Product Quality,context,6,14.634146341463413
+Delivery Experience → Product Quality,stream_justification,4,9.75609756097561
+Delivery Experience → Product Quality,interaction_moment,4,9.75609756097561
+Delivery Experience → Product Quality,emotion,3,7.317073170731707
+Delivery Experience → Product Quality,opportunity_stream,3,7.317073170731707
+Delivery Experience → Product Quality,customer_journey,2,4.878048780487805
+Delivery Experience → Product Quality,theme,2,4.878048780487805
+Delivery Experience → Product Quality,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Product Quality,feedback_type,1,2.4390243902439024
+Delivery Experience → Product Quality,customer_effort_score,1,2.4390243902439024
+Product Information → Expiration Dates,matters,8,19.51219512195122
+Product Information → Expiration Dates,behavioral_impact,6,14.634146341463413
+Product Information → Expiration Dates,context,6,14.634146341463413
+Product Information → Expiration Dates,stream_justification,4,9.75609756097561
+Product Information → Expiration Dates,interaction_moment,4,9.75609756097561
+Product Information → Expiration Dates,emotion,3,7.317073170731707
+Product Information → Expiration Dates,opportunity_stream,3,7.317073170731707
+Product Information → Expiration Dates,customer_journey,2,4.878048780487805
+Product Information → Expiration Dates,theme,2,4.878048780487805
+Product Information → Expiration Dates,customer_journey_stage,1,2.4390243902439024
+Product Information → Expiration Dates,feedback_type,1,2.4390243902439024
+Product Information → Expiration Dates,customer_effort_score,1,2.4390243902439024
+Order Management → Stock Availability Communication,matters,8,19.51219512195122
+Order Management → Stock Availability Communication,behavioral_impact,6,14.634146341463413
+Order Management → Stock Availability Communication,context,6,14.634146341463413
+Order Management → Stock Availability Communication,stream_justification,4,9.75609756097561
+Order Management → Stock Availability Communication,interaction_moment,4,9.75609756097561
+Order Management → Stock Availability Communication,emotion,3,7.317073170731707
+Order Management → Stock Availability Communication,opportunity_stream,3,7.317073170731707
+Order Management → Stock Availability Communication,customer_journey,2,4.878048780487805
+Order Management → Stock Availability Communication,theme,2,4.878048780487805
+Order Management → Stock Availability Communication,customer_journey_stage,1,2.4390243902439024
+Order Management → Stock Availability Communication,feedback_type,1,2.4390243902439024
+Order Management → Stock Availability Communication,customer_effort_score,1,2.4390243902439024
+Product Availability → Order Acceptance,matters,8,19.51219512195122
+Product Availability → Order Acceptance,behavioral_impact,6,14.634146341463413
+Product Availability → Order Acceptance,context,6,14.634146341463413
+Product Availability → Order Acceptance,stream_justification,4,9.75609756097561
+Product Availability → Order Acceptance,interaction_moment,4,9.75609756097561
+Product Availability → Order Acceptance,emotion,3,7.317073170731707
+Product Availability → Order Acceptance,opportunity_stream,3,7.317073170731707
+Product Availability → Order Acceptance,customer_journey,2,4.878048780487805
+Product Availability → Order Acceptance,theme,2,4.878048780487805
+Product Availability → Order Acceptance,customer_journey_stage,1,2.4390243902439024
+Product Availability → Order Acceptance,feedback_type,1,2.4390243902439024
+Product Availability → Order Acceptance,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Address Accuracy,matters,8,19.51219512195122
+Delivery Experience → Address Accuracy,behavioral_impact,6,14.634146341463413
+Delivery Experience → Address Accuracy,context,6,14.634146341463413
+Delivery Experience → Address Accuracy,stream_justification,4,9.75609756097561
+Delivery Experience → Address Accuracy,interaction_moment,4,9.75609756097561
+Delivery Experience → Address Accuracy,emotion,3,7.317073170731707
+Delivery Experience → Address Accuracy,opportunity_stream,3,7.317073170731707
+Delivery Experience → Address Accuracy,customer_journey,2,4.878048780487805
+Delivery Experience → Address Accuracy,theme,2,4.878048780487805
+Delivery Experience → Address Accuracy,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Address Accuracy,feedback_type,1,2.4390243902439024
+Delivery Experience → Address Accuracy,customer_effort_score,1,2.4390243902439024
+Payment Options → Cashless Payment Availability,matters,8,19.51219512195122
+Payment Options → Cashless Payment Availability,behavioral_impact,6,14.634146341463413
+Payment Options → Cashless Payment Availability,context,6,14.634146341463413
+Payment Options → Cashless Payment Availability,stream_justification,4,9.75609756097561
+Payment Options → Cashless Payment Availability,interaction_moment,4,9.75609756097561
+Payment Options → Cashless Payment Availability,emotion,3,7.317073170731707
+Payment Options → Cashless Payment Availability,opportunity_stream,3,7.317073170731707
+Payment Options → Cashless Payment Availability,customer_journey,2,4.878048780487805
+Payment Options → Cashless Payment Availability,theme,2,4.878048780487805
+Payment Options → Cashless Payment Availability,customer_journey_stage,1,2.4390243902439024
+Payment Options → Cashless Payment Availability,feedback_type,1,2.4390243902439024
+Payment Options → Cashless Payment Availability,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Post-Order Availability Management,matters,8,19.51219512195122
+Order Accuracy → Post-Order Availability Management,behavioral_impact,6,14.634146341463413
+Order Accuracy → Post-Order Availability Management,context,6,14.634146341463413
+Order Accuracy → Post-Order Availability Management,stream_justification,4,9.75609756097561
+Order Accuracy → Post-Order Availability Management,interaction_moment,4,9.75609756097561
+Order Accuracy → Post-Order Availability Management,emotion,3,7.317073170731707
+Order Accuracy → Post-Order Availability Management,opportunity_stream,3,7.317073170731707
+Order Accuracy → Post-Order Availability Management,customer_journey,2,4.878048780487805
+Order Accuracy → Post-Order Availability Management,theme,2,4.878048780487805
+Order Accuracy → Post-Order Availability Management,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Post-Order Availability Management,feedback_type,1,2.4390243902439024
+Order Accuracy → Post-Order Availability Management,customer_effort_score,1,2.4390243902439024
+Return & Refund Policy → Branch-Specific Return Restriction,matters,8,19.51219512195122
+Return & Refund Policy → Branch-Specific Return Restriction,behavioral_impact,6,14.634146341463413
+Return & Refund Policy → Branch-Specific Return Restriction,context,6,14.634146341463413
+Return & Refund Policy → Branch-Specific Return Restriction,stream_justification,4,9.75609756097561
+Return & Refund Policy → Branch-Specific Return Restriction,interaction_moment,4,9.75609756097561
+Return & Refund Policy → Branch-Specific Return Restriction,emotion,3,7.317073170731707
+Return & Refund Policy → Branch-Specific Return Restriction,opportunity_stream,3,7.317073170731707
+Return & Refund Policy → Branch-Specific Return Restriction,customer_journey,2,4.878048780487805
+Return & Refund Policy → Branch-Specific Return Restriction,theme,2,4.878048780487805
+Return & Refund Policy → Branch-Specific Return Restriction,customer_journey_stage,1,2.4390243902439024
+Return & Refund Policy → Branch-Specific Return Restriction,feedback_type,1,2.4390243902439024
+Return & Refund Policy → Branch-Specific Return Restriction,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Out-of-Stock Notification,matters,8,19.51219512195122
+Order Accuracy → Out-of-Stock Notification,behavioral_impact,6,14.634146341463413
+Order Accuracy → Out-of-Stock Notification,context,6,14.634146341463413
+Order Accuracy → Out-of-Stock Notification,stream_justification,4,9.75609756097561
+Order Accuracy → Out-of-Stock Notification,interaction_moment,4,9.75609756097561
+Order Accuracy → Out-of-Stock Notification,emotion,3,7.317073170731707
+Order Accuracy → Out-of-Stock Notification,opportunity_stream,3,7.317073170731707
+Order Accuracy → Out-of-Stock Notification,customer_journey,2,4.878048780487805
+Order Accuracy → Out-of-Stock Notification,theme,2,4.878048780487805
+Order Accuracy → Out-of-Stock Notification,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Out-of-Stock Notification,feedback_type,1,2.4390243902439024
+Order Accuracy → Out-of-Stock Notification,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Incomplete Order Fulfillment,matters,8,19.51219512195122
+Order Accuracy → Incomplete Order Fulfillment,behavioral_impact,6,14.634146341463413
+Order Accuracy → Incomplete Order Fulfillment,context,6,14.634146341463413
+Order Accuracy → Incomplete Order Fulfillment,stream_justification,4,9.75609756097561
+Order Accuracy → Incomplete Order Fulfillment,interaction_moment,4,9.75609756097561
+Order Accuracy → Incomplete Order Fulfillment,emotion,3,7.317073170731707
+Order Accuracy → Incomplete Order Fulfillment,opportunity_stream,3,7.317073170731707
+Order Accuracy → Incomplete Order Fulfillment,customer_journey,2,4.878048780487805
+Order Accuracy → Incomplete Order Fulfillment,theme,2,4.878048780487805
+Order Accuracy → Incomplete Order Fulfillment,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Incomplete Order Fulfillment,feedback_type,1,2.4390243902439024
+Order Accuracy → Incomplete Order Fulfillment,customer_effort_score,1,2.4390243902439024
+Promotions & Discounts → Voucher Redemption,matters,8,19.51219512195122
+Promotions & Discounts → Voucher Redemption,behavioral_impact,6,14.634146341463413
+Promotions & Discounts → Voucher Redemption,context,6,14.634146341463413
+Promotions & Discounts → Voucher Redemption,stream_justification,4,9.75609756097561
+Promotions & Discounts → Voucher Redemption,interaction_moment,4,9.75609756097561
+Promotions & Discounts → Voucher Redemption,emotion,3,7.317073170731707
+Promotions & Discounts → Voucher Redemption,opportunity_stream,3,7.317073170731707
+Promotions & Discounts → Voucher Redemption,customer_journey,2,4.878048780487805
+Promotions & Discounts → Voucher Redemption,theme,2,4.878048780487805
+Promotions & Discounts → Voucher Redemption,customer_journey_stage,1,2.4390243902439024
+Promotions & Discounts → Voucher Redemption,feedback_type,1,2.4390243902439024
+Promotions & Discounts → Voucher Redemption,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Missing Items,matters,8,19.51219512195122
+Order Accuracy → Missing Items,behavioral_impact,6,14.634146341463413
+Order Accuracy → Missing Items,context,6,14.634146341463413
+Order Accuracy → Missing Items,stream_justification,4,9.75609756097561
+Order Accuracy → Missing Items,interaction_moment,4,9.75609756097561
+Order Accuracy → Missing Items,emotion,3,7.317073170731707
+Order Accuracy → Missing Items,opportunity_stream,3,7.317073170731707
+Order Accuracy → Missing Items,customer_journey,2,4.878048780487805
+Order Accuracy → Missing Items,theme,2,4.878048780487805
+Order Accuracy → Missing Items,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Missing Items,feedback_type,1,2.4390243902439024
+Order Accuracy → Missing Items,customer_effort_score,1,2.4390243902439024
+Mobile App → Cart Functionality,matters,8,19.51219512195122
+Mobile App → Cart Functionality,behavioral_impact,6,14.634146341463413
+Mobile App → Cart Functionality,context,6,14.634146341463413
+Mobile App → Cart Functionality,stream_justification,4,9.75609756097561
+Mobile App → Cart Functionality,interaction_moment,4,9.75609756097561
+Mobile App → Cart Functionality,emotion,3,7.317073170731707
+Mobile App → Cart Functionality,opportunity_stream,3,7.317073170731707
+Mobile App → Cart Functionality,customer_journey,2,4.878048780487805
+Mobile App → Cart Functionality,theme,2,4.878048780487805
+Mobile App → Cart Functionality,customer_journey_stage,1,2.4390243902439024
+Mobile App → Cart Functionality,feedback_type,1,2.4390243902439024
+Mobile App → Cart Functionality,customer_effort_score,1,2.4390243902439024
+Order Accuracy → Price Adjustment,matters,8,19.51219512195122
+Order Accuracy → Price Adjustment,behavioral_impact,6,14.634146341463413
+Order Accuracy → Price Adjustment,context,6,14.634146341463413
+Order Accuracy → Price Adjustment,stream_justification,4,9.75609756097561
+Order Accuracy → Price Adjustment,interaction_moment,4,9.75609756097561
+Order Accuracy → Price Adjustment,emotion,3,7.317073170731707
+Order Accuracy → Price Adjustment,opportunity_stream,3,7.317073170731707
+Order Accuracy → Price Adjustment,customer_journey,2,4.878048780487805
+Order Accuracy → Price Adjustment,theme,2,4.878048780487805
+Order Accuracy → Price Adjustment,customer_journey_stage,1,2.4390243902439024
+Order Accuracy → Price Adjustment,feedback_type,1,2.4390243902439024
+Order Accuracy → Price Adjustment,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Order Non-Delivery,matters,8,19.51219512195122
+Delivery Experience → Order Non-Delivery,behavioral_impact,6,14.634146341463413
+Delivery Experience → Order Non-Delivery,context,6,14.634146341463413
+Delivery Experience → Order Non-Delivery,stream_justification,4,9.75609756097561
+Delivery Experience → Order Non-Delivery,interaction_moment,4,9.75609756097561
+Delivery Experience → Order Non-Delivery,emotion,3,7.317073170731707
+Delivery Experience → Order Non-Delivery,opportunity_stream,3,7.317073170731707
+Delivery Experience → Order Non-Delivery,customer_journey,2,4.878048780487805
+Delivery Experience → Order Non-Delivery,theme,2,4.878048780487805
+Delivery Experience → Order Non-Delivery,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Order Non-Delivery,feedback_type,1,2.4390243902439024
+Delivery Experience → Order Non-Delivery,customer_effort_score,1,2.4390243902439024
+Customer Support → Complaint Handling,matters,8,19.51219512195122
+Customer Support → Complaint Handling,behavioral_impact,6,14.634146341463413
+Customer Support → Complaint Handling,context,6,14.634146341463413
+Customer Support → Complaint Handling,stream_justification,4,9.75609756097561
+Customer Support → Complaint Handling,interaction_moment,4,9.75609756097561
+Customer Support → Complaint Handling,emotion,3,7.317073170731707
+Customer Support → Complaint Handling,opportunity_stream,3,7.317073170731707
+Customer Support → Complaint Handling,customer_journey,2,4.878048780487805
+Customer Support → Complaint Handling,theme,2,4.878048780487805
+Customer Support → Complaint Handling,customer_journey_stage,1,2.4390243902439024
+Customer Support → Complaint Handling,feedback_type,1,2.4390243902439024
+Customer Support → Complaint Handling,customer_effort_score,1,2.4390243902439024
+Payment Options → Voucher Redemption,matters,8,19.51219512195122
+Payment Options → Voucher Redemption,behavioral_impact,6,14.634146341463413
+Payment Options → Voucher Redemption,context,6,14.634146341463413
+Payment Options → Voucher Redemption,stream_justification,4,9.75609756097561
+Payment Options → Voucher Redemption,interaction_moment,4,9.75609756097561
+Payment Options → Voucher Redemption,emotion,3,7.317073170731707
+Payment Options → Voucher Redemption,opportunity_stream,3,7.317073170731707
+Payment Options → Voucher Redemption,customer_journey,2,4.878048780487805
+Payment Options → Voucher Redemption,theme,2,4.878048780487805
+Payment Options → Voucher Redemption,customer_journey_stage,1,2.4390243902439024
+Payment Options → Voucher Redemption,feedback_type,1,2.4390243902439024
+Payment Options → Voucher Redemption,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Packaging Quality,matters,8,19.51219512195122
+Delivery Experience → Packaging Quality,behavioral_impact,6,14.634146341463413
+Delivery Experience → Packaging Quality,context,6,14.634146341463413
+Delivery Experience → Packaging Quality,stream_justification,4,9.75609756097561
+Delivery Experience → Packaging Quality,interaction_moment,4,9.75609756097561
+Delivery Experience → Packaging Quality,emotion,3,7.317073170731707
+Delivery Experience → Packaging Quality,opportunity_stream,3,7.317073170731707
+Delivery Experience → Packaging Quality,customer_journey,2,4.878048780487805
+Delivery Experience → Packaging Quality,theme,2,4.878048780487805
+Delivery Experience → Packaging Quality,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Packaging Quality,feedback_type,1,2.4390243902439024
+Delivery Experience → Packaging Quality,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Timing Precision,matters,8,19.51219512195122
+Delivery Experience → Timing Precision,behavioral_impact,6,14.634146341463413
+Delivery Experience → Timing Precision,context,6,14.634146341463413
+Delivery Experience → Timing Precision,stream_justification,4,9.75609756097561
+Delivery Experience → Timing Precision,interaction_moment,4,9.75609756097561
+Delivery Experience → Timing Precision,emotion,3,7.317073170731707
+Delivery Experience → Timing Precision,opportunity_stream,3,7.317073170731707
+Delivery Experience → Timing Precision,customer_journey,2,4.878048780487805
+Delivery Experience → Timing Precision,theme,2,4.878048780487805
+Delivery Experience → Timing Precision,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Timing Precision,feedback_type,1,2.4390243902439024
+Delivery Experience → Timing Precision,customer_effort_score,1,2.4390243902439024
+Product Quality → Freshness,matters,8,19.51219512195122
+Product Quality → Freshness,behavioral_impact,6,14.634146341463413
+Product Quality → Freshness,context,6,14.634146341463413
+Product Quality → Freshness,stream_justification,4,9.75609756097561
+Product Quality → Freshness,interaction_moment,4,9.75609756097561
+Product Quality → Freshness,emotion,3,7.317073170731707
+Product Quality → Freshness,opportunity_stream,3,7.317073170731707
+Product Quality → Freshness,customer_journey,2,4.878048780487805
+Product Quality → Freshness,theme,2,4.878048780487805
+Product Quality → Freshness,customer_journey_stage,1,2.4390243902439024
+Product Quality → Freshness,feedback_type,1,2.4390243902439024
+Product Quality → Freshness,customer_effort_score,1,2.4390243902439024
+Order & Payment → Price Discrepancy,matters,8,19.51219512195122
+Order & Payment → Price Discrepancy,behavioral_impact,6,14.634146341463413
+Order & Payment → Price Discrepancy,context,6,14.634146341463413
+Order & Payment → Price Discrepancy,stream_justification,4,9.75609756097561
+Order & Payment → Price Discrepancy,interaction_moment,4,9.75609756097561
+Order & Payment → Price Discrepancy,emotion,3,7.317073170731707
+Order & Payment → Price Discrepancy,opportunity_stream,3,7.317073170731707
+Order & Payment → Price Discrepancy,customer_journey,2,4.878048780487805
+Order & Payment → Price Discrepancy,theme,2,4.878048780487805
+Order & Payment → Price Discrepancy,customer_journey_stage,1,2.4390243902439024
+Order & Payment → Price Discrepancy,feedback_type,1,2.4390243902439024
+Order & Payment → Price Discrepancy,customer_effort_score,1,2.4390243902439024
+Payment Options → On-Delivery Card Payment,matters,8,19.51219512195122
+Payment Options → On-Delivery Card Payment,behavioral_impact,6,14.634146341463413
+Payment Options → On-Delivery Card Payment,context,6,14.634146341463413
+Payment Options → On-Delivery Card Payment,stream_justification,4,9.75609756097561
+Payment Options → On-Delivery Card Payment,interaction_moment,4,9.75609756097561
+Payment Options → On-Delivery Card Payment,emotion,3,7.317073170731707
+Payment Options → On-Delivery Card Payment,opportunity_stream,3,7.317073170731707
+Payment Options → On-Delivery Card Payment,customer_journey,2,4.878048780487805
+Payment Options → On-Delivery Card Payment,theme,2,4.878048780487805
+Payment Options → On-Delivery Card Payment,customer_journey_stage,1,2.4390243902439024
+Payment Options → On-Delivery Card Payment,feedback_type,1,2.4390243902439024
+Payment Options → On-Delivery Card Payment,customer_effort_score,1,2.4390243902439024
+Promotions & Discounts → Free Bag Offer,matters,8,19.51219512195122
+Promotions & Discounts → Free Bag Offer,behavioral_impact,6,14.634146341463413
+Promotions & Discounts → Free Bag Offer,context,6,14.634146341463413
+Promotions & Discounts → Free Bag Offer,stream_justification,4,9.75609756097561
+Promotions & Discounts → Free Bag Offer,interaction_moment,4,9.75609756097561
+Promotions & Discounts → Free Bag Offer,emotion,3,7.317073170731707
+Promotions & Discounts → Free Bag Offer,opportunity_stream,3,7.317073170731707
+Promotions & Discounts → Free Bag Offer,customer_journey,2,4.878048780487805
+Promotions & Discounts → Free Bag Offer,theme,2,4.878048780487805
+Promotions & Discounts → Free Bag Offer,customer_journey_stage,1,2.4390243902439024
+Promotions & Discounts → Free Bag Offer,feedback_type,1,2.4390243902439024
+Promotions & Discounts → Free Bag Offer,customer_effort_score,1,2.4390243902439024
+Order Fulfillment → Electronic Orders,matters,8,19.51219512195122
+Order Fulfillment → Electronic Orders,behavioral_impact,6,14.634146341463413
+Order Fulfillment → Electronic Orders,context,6,14.634146341463413
+Order Fulfillment → Electronic Orders,stream_justification,4,9.75609756097561
+Order Fulfillment → Electronic Orders,interaction_moment,4,9.75609756097561
+Order Fulfillment → Electronic Orders,emotion,3,7.317073170731707
+Order Fulfillment → Electronic Orders,opportunity_stream,3,7.317073170731707
+Order Fulfillment → Electronic Orders,customer_journey,2,4.878048780487805
+Order Fulfillment → Electronic Orders,theme,2,4.878048780487805
+Order Fulfillment → Electronic Orders,customer_journey_stage,1,2.4390243902439024
+Order Fulfillment → Electronic Orders,feedback_type,1,2.4390243902439024
+Order Fulfillment → Electronic Orders,customer_effort_score,1,2.4390243902439024
+Delivery Experience → Staff Conduct,matters,8,19.51219512195122
+Delivery Experience → Staff Conduct,behavioral_impact,6,14.634146341463413
+Delivery Experience → Staff Conduct,context,6,14.634146341463413
+Delivery Experience → Staff Conduct,stream_justification,4,9.75609756097561
+Delivery Experience → Staff Conduct,interaction_moment,4,9.75609756097561
+Delivery Experience → Staff Conduct,emotion,3,7.317073170731707
+Delivery Experience → Staff Conduct,opportunity_stream,3,7.317073170731707
+Delivery Experience → Staff Conduct,customer_journey,2,4.878048780487805
+Delivery Experience → Staff Conduct,theme,2,4.878048780487805
+Delivery Experience → Staff Conduct,customer_journey_stage,1,2.4390243902439024
+Delivery Experience → Staff Conduct,feedback_type,1,2.4390243902439024
+Delivery Experience → Staff Conduct,customer_effort_score,1,2.4390243902439024
+Product Quality → Consistency,matters,8,19.51219512195122
+Product Quality → Consistency,behavioral_impact,6,14.634146341463413
+Product Quality → Consistency,context,6,14.634146341463413
+Product Quality → Consistency,stream_justification,4,9.75609756097561
+Product Quality → Consistency,interaction_moment,4,9.75609756097561
+Product Quality → Consistency,emotion,3,7.317073170731707
+Product Quality → Consistency,opportunity_stream,3,7.317073170731707
+Product Quality → Consistency,customer_journey,2,4.878048780487805
+Product Quality → Consistency,theme,2,4.878048780487805
+Product Quality → Consistency,customer_journey_stage,1,2.4390243902439024
+Product Quality → Consistency,feedback_type,1,2.4390243902439024
+Product Quality → Consistency,customer_effort_score,1,2.4390243902439024
+Product Quality → Product Freshness,matters,8,19.51219512195122
+Product Quality → Product Freshness,behavioral_impact,6,14.634146341463413
+Product Quality → Product Freshness,context,6,14.634146341463413
+Product Quality → Product Freshness,stream_justification,4,9.75609756097561
+Product Quality → Product Freshness,interaction_moment,4,9.75609756097561
+Product Quality → Product Freshness,emotion,3,7.317073170731707
+Product Quality → Product Freshness,opportunity_stream,3,7.317073170731707
+Product Quality → Product Freshness,customer_journey,2,4.878048780487805
+Product Quality → Product Freshness,theme,2,4.878048780487805
+Product Quality → Product Freshness,customer_journey_stage,1,2.4390243902439024
+Product Quality → Product Freshness,feedback_type,1,2.4390243902439024
+Product Quality → Product Freshness,customer_effort_score,1,2.4390243902439024
+Billing Accuracy → Invoice Discrepancy,behavioral_impact,6,18.181818181818183
+Billing Accuracy → Invoice Discrepancy,context,6,18.181818181818183
+Billing Accuracy → Invoice Discrepancy,stream_justification,4,12.121212121212121
+Billing Accuracy → Invoice Discrepancy,interaction_moment,4,12.121212121212121
+Billing Accuracy → Invoice Discrepancy,emotion,3,9.090909090909092
+Billing Accuracy → Invoice Discrepancy,opportunity_stream,3,9.090909090909092
+Billing Accuracy → Invoice Discrepancy,customer_journey,2,6.0606060606060606
+Billing Accuracy → Invoice Discrepancy,theme,2,6.0606060606060606
+Billing Accuracy → Invoice Discrepancy,customer_journey_stage,1,3.0303030303030303
+Billing Accuracy → Invoice Discrepancy,feedback_type,1,3.0303030303030303
+Billing Accuracy → Invoice Discrepancy,customer_effort_score,1,3.0303030303030303
+Product Customization → Order Customization,matters,8,19.51219512195122
+Product Customization → Order Customization,behavioral_impact,6,14.634146341463413
+Product Customization → Order Customization,context,6,14.634146341463413
+Product Customization → Order Customization,stream_justification,4,9.75609756097561
+Product Customization → Order Customization,interaction_moment,4,9.75609756097561
+Product Customization → Order Customization,emotion,3,7.317073170731707
+Product Customization → Order Customization,opportunity_stream,3,7.317073170731707
+Product Customization → Order Customization,customer_journey,2,4.878048780487805
+Product Customization → Order Customization,theme,2,4.878048780487805
+Product Customization → Order Customization,customer_journey_stage,1,2.4390243902439024
+Product Customization → Order Customization,feedback_type,1,2.4390243902439024
+Product Customization → Order Customization,customer_effort_score,1,2.4390243902439024
+Product Availability → Order Fulfillment Consistency,matters,8,19.51219512195122
+Product Availability → Order Fulfillment Consistency,behavioral_impact,6,14.634146341463413
+Product Availability → Order Fulfillment Consistency,context,6,14.634146341463413
+Product Availability → Order Fulfillment Consistency,stream_justification,4,9.75609756097561
+Product Availability → Order Fulfillment Consistency,interaction_moment,4,9.75609756097561
+Product Availability → Order Fulfillment Consistency,emotion,3,7.317073170731707
+Product Availability → Order Fulfillment Consistency,opportunity_stream,3,7.317073170731707
+Product Availability → Order Fulfillment Consistency,customer_journey,2,4.878048780487805
+Product Availability → Order Fulfillment Consistency,theme,2,4.878048780487805
+Product Availability → Order Fulfillment Consistency,customer_journey_stage,1,2.4390243902439024
+Product Availability → Order Fulfillment Consistency,feedback_type,1,2.4390243902439024
+Product Availability → Order Fulfillment Consistency,customer_effort_score,1,2.4390243902439024

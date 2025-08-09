@@ -1,0 +1,121 @@
+problem_statement_prompt = """
+
+# 🎯 DECIPHER PDCA – PROBLEM STATEMENT GENERATION PROMPT 
+
+## 🔬 **Purpose**
+Generate a **diagnostic-quality, emotionally faithful problem statement** to kick off the Plan phase 
+of the PDCA lifecycle.
+This is a **semantic paragraph**, not a stitched block. It must combine emotional truth, 
+contextual grounding, strategic framing, and executional urgency.
+
+---
+
+## 🔐 **You Are Given**
+
+A fully structured Orchestration Unit (OU) with the following canonical inputs:
+
+* `semantic_action_statement` → A two-part narrative with Section 1 (Customer Reality) and Section 2 (Strategic Response)
+* `customer_journey` → e.g., “Document Management”
+* `journey_stage` → e.g., “Verification Rejection”
+* `stream_justification` → Reason why Fix / Optimize / Amplify / Innovate was chosen
+* `behavioral_impact` → Consequence of ignoring or missing this moment
+
+---
+
+## 🧬 **Construction Framework**
+
+| Component            | Pull From |
+|----------------------|-----------|
+| **WHAT** → What happened? Combine emotional narrative and behavioral friction | `semantic_action_statement` + `behavioral_impact` |
+| **WHEN / WHERE** → Journey context | `customer_journey`, `journey_stage` |
+| **WHY** → Why this stream is needed (structural or strategic reasoning) | `stream_justification` |
+| **SO WHAT** → What risk is at stake if unresolved | `behavioral_impact` |
+
+---
+
+🧩 Tactic: Let semantic_action_statement guide the emotion and trigger, but use behavioral_impact to 
+enhance the problem definition beyond the user's experience — into platform-level or strategic harm.
+
+---
+
+## ✅ **Output Format**
+
+problem_statement: >
+  [One fluent paragraph (2–5 sentences) combining all elements above]
+
+
+---
+
+## ❌ What NOT to Do
+* Don’t stitch raw fields
+* Don’t regurgitate semantic\_action\_1 and 2 separately
+* Don’t ignore emotional tone
+* Don’t fabricate stream logic — it's already provided
+* Don’t write generic consequences — use the provided behavioral impact
+
+---
+
+✅ Examples
+
+### Example: 1
+
+🎛️ Inputs:
+semantic_action_statement: >
+  SECTION 1: THE CUSTOMER REALITY
+  The customer submitted a Complaint about receiving duplicate debit notifications for a single credit card payment. Although one charge was reversed, they experienced intense confusion and fear that their account had been compromised.
+
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Fix → Transaction Processing → Duplicate Charge Management to eliminate volatile transaction errors that destabilize user trust and expose them to unnecessary emotional and financial stress.
+
+customer_journey: "Transaction Experience"
+journey_stage: "Payment Processing"
+stream_justification: "Financial systems operate on a fragile trust curve. Even momentary anomalies like duplicate charges evoke panic, push users into defensive behaviors (freezing cards, calling support), and break digital confidence. Fixing this is mission-critical."
+behavioral_impact: "Improve real-time payment event accuracy, introduce anomaly flags for duplicate detection, and embed immediate user-facing trust cues to reassure in-flight."
+
+🧠 problem_statement:
+problem_statement: >
+  The customer submitted a Complaint about receiving duplicate debit notifications for a single credit card 
+  payment, and although one charge was reversed, they experienced intense confusion and fear that their account 
+  had been compromised. This occurred during Payment Processing within the Transaction Experience journey. 
+  The orchestration stream is Fix — mission-critical resolution needed to restore financial system trust. It 
+  was routed here because financial systems operate on a fragile trust curve where even momentary anomalies 
+  like duplicate charges evoke panic, push users into defensive behaviors, and break digital confidence. If 
+  unresolved, it risks continued payment accuracy issues, defensive user behaviors like freezing cards, and fundamental erosion of digital financial trust.
+
+---
+
+### Example: 2
+
+🎛️ Inputs:
+semantic_action_statement: >
+  SECTION 1: THE CUSTOMER REALITY
+  The customer made a Suggestion about wanting to dispute transactions directly in the app instead of being forced to call support.
+
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Innovate → Dispute Management → In-App Resolution Options to enable frictionless, self-guided dispute initiation that aligns with modern expectations.
+
+customer_journey: "Issue Resolution & Recovery"
+journey_stage: "Transaction Dispute Path"
+stream_justification: "This is a forward-looking request tied to UX modernity and emotional ease. The operational process exists but isn't accessible in the way customers want."
+behavioral_impact: "Reduce support tickets, increase user control, and shift perception of the app as a self-reliant command center."
+
+🧠 problem_statement:
+problem_statement: >
+  The customer made a Suggestion about wanting to dispute transactions directly in the app instead of being 
+  forced to call support when trying to initiate a dispute via the Transaction Dispute Path within Issue 
+  Resolution & Recovery. The orchestration stream is Innovate — designed to unlock new capabilities that enhance 
+  user autonomy and align with modern expectations. It was routed here because this is a forward-looking request 
+  tied to UX modernity and emotional ease, where the operational process exists but isn't accessible in the 
+  way customers want. If not pursued, the business misses opportunities to reduce support tickets, increase 
+  user control, and shift perception of the app as a self-reliant command center.
+
+---
+
+## 🔁 Final Note
+
+> This is the **first sentence of the PDCA loop**.
+> It must be emotionally clean, behaviorally precise, and strategically actionable.
+
+---
+
+"""

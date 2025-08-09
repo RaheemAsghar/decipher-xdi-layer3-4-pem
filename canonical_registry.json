@@ -1,0 +1,1249 @@
+{
+  "themes": {
+    "Inventory Consistency": {
+      "raw_variants": [
+        "Inventory Consistency"
+      ],
+      "experience_drivers": [
+        "Product Availability → Online vs In-Store Discrepancy"
+      ],
+      "frozen": false
+    },
+    "Inventory Integrity": {
+      "raw_variants": [
+        "Inventory Integrity"
+      ],
+      "experience_drivers": [
+        "Product Availability → Real-Time Stock Visibility",
+        "Order Management → Stock Availability Communication"
+      ],
+      "frozen": false
+    },
+    "Order Fulfillment": {
+      "raw_variants": [
+        "Order Fulfillment"
+      ],
+      "experience_drivers": [
+        "Order Accuracy → Substitution Quality",
+        "Order Accuracy → Missing Item Notification",
+        "Order Accuracy → Error Resolution",
+        "Order Accuracy → Substitution & Pricing",
+        "Order Accuracy → Customer Communication",
+        "Order Accuracy → Weight Discrepancy",
+        "Order Accuracy → Incomplete Order Fulfillment"
+      ],
+      "frozen": false
+    },
+    "Delivery & Fulfillment": {
+      "raw_variants": [
+        "Delivery & Fulfillment"
+      ],
+      "experience_drivers": [
+        "Order Accuracy → Item Fulfillment",
+        "Delivery Experience → Timing",
+        "Delivery Experience → Timeliness",
+        "Order Accuracy → Wrong Item Delivered",
+        "Order Accuracy → Missing Items",
+        "Delivery Experience → Packaging Quality"
+      ],
+      "frozen": false
+    },
+    "Payment Resolution": {
+      "raw_variants": [
+        "Payment Resolution"
+      ],
+      "experience_drivers": [
+        "Order & Payment → Refund Processing"
+      ],
+      "frozen": false
+    },
+    "Inventory Management": {
+      "raw_variants": [
+        "Inventory Management"
+      ],
+      "experience_drivers": [
+        "Product Availability → Out-of-Stock Management",
+        "Order Fulfillment → Stock Allocation",
+        "Product Availability → Order Acceptance",
+        "Order Accuracy → Out-of-Stock Notification",
+        "Product Availability → Order Fulfillment Consistency"
+      ],
+      "frozen": false
+    },
+    "Product & Selection": {
+      "raw_variants": [
+        "Product & Selection"
+      ],
+      "experience_drivers": [
+        "Product Quality → Product Condition",
+        "Product Variety → International Products",
+        "Food Safety → Product Quality",
+        "Product Quality → Consistency",
+        "Product Quality → Product Freshness",
+        "Product Customization → Order Customization"
+      ],
+      "frozen": false
+    },
+    "Technical Reliability": {
+      "raw_variants": [
+        "Technical Reliability"
+      ],
+      "experience_drivers": [
+        "Mobile App → Performance Stability"
+      ],
+      "frozen": false
+    },
+    "Customer Incentives": {
+      "raw_variants": [
+        "Customer Incentives"
+      ],
+      "experience_drivers": [
+        "Promotions & Discounts → Voucher Availability"
+      ],
+      "frozen": false
+    },
+    "Order & Payment": {
+      "raw_variants": [
+        "Order & Payment"
+      ],
+      "experience_drivers": [
+        "Promotions & Discounts → Voucher Value",
+        "Payment Experience → Payment Processing",
+        "Promotions & Discounts → Free Bag Offer"
+      ],
+      "frozen": false
+    },
+    "Product Personalization": {
+      "raw_variants": [
+        "Product Personalization"
+      ],
+      "experience_drivers": [
+        "Customization Options → Product Customization"
+      ],
+      "frozen": false
+    },
+    "Customer Engagement": {
+      "raw_variants": [
+        "Customer Engagement"
+      ],
+      "experience_drivers": [
+        "Customer Support → Proactive Communication"
+      ],
+      "frozen": false
+    },
+    "Payment Integrity": {
+      "raw_variants": [
+        "Payment Integrity"
+      ],
+      "experience_drivers": [
+        "Order & Payment → Payment Discrepancy",
+        "Payment Experience → Cash Handling"
+      ],
+      "frozen": false
+    },
+    "Delivery Reliability": {
+      "raw_variants": [
+        "Delivery Reliability"
+      ],
+      "experience_drivers": [
+        "Delivery & Fulfillment → Timeliness"
+      ],
+      "frozen": false
+    },
+    "Order Management": {
+      "raw_variants": [
+        "Order Management"
+      ],
+      "experience_drivers": [
+        "Order & Payment → Order Quantity Limits",
+        "Order Fulfillment → Availability & Scheduling",
+        "Order Accuracy → Post-Order Availability Management"
+      ],
+      "frozen": false
+    },
+    "Digital Shopping Experience": {
+      "raw_variants": [
+        "Digital Shopping Experience"
+      ],
+      "experience_drivers": [
+        "Product Information → Product Details",
+        "Mobile App → Cart Functionality"
+      ],
+      "frozen": false
+    },
+    "Loyalty & Engagement": {
+      "raw_variants": [
+        "Loyalty & Engagement"
+      ],
+      "experience_drivers": [
+        "Loyalty Programs → Membership Integration"
+      ],
+      "frozen": false
+    },
+    "Stock Reliability": {
+      "raw_variants": [
+        "Stock Reliability"
+      ],
+      "experience_drivers": [],
+      "frozen": false
+    },
+    "Delivery Integrity": {
+      "raw_variants": [
+        "Delivery Integrity"
+      ],
+      "experience_drivers": [
+        "Delivery Experience → Order Completion",
+        "Delivery Experience → Order Non-Delivery"
+      ],
+      "frozen": false
+    },
+    "Delivery Experience": {
+      "raw_variants": [
+        "Delivery Experience"
+      ],
+      "experience_drivers": [
+        "Delivery & Fulfillment → Tracking"
+      ],
+      "frozen": false
+    },
+    "Product Quality": {
+      "raw_variants": [
+        "Product Quality"
+      ],
+      "experience_drivers": [
+        "Product Quality → Product Safety"
+      ],
+      "frozen": false
+    },
+    "Customer Support": {
+      "raw_variants": [
+        "Customer Support"
+      ],
+      "experience_drivers": [
+        "Customer Service → Staff Training",
+        "Customer Service → Staff Interaction"
+      ],
+      "frozen": false
+    },
+    "Timeliness & Efficiency": {
+      "raw_variants": [
+        "Timeliness & Efficiency"
+      ],
+      "experience_drivers": [
+        "Delivery Experience → Delivery Speed"
+      ],
+      "frozen": false
+    },
+    "Service Excellence": {
+      "raw_variants": [
+        "Service Excellence"
+      ],
+      "experience_drivers": [
+        "Delivery Experience → Product Quality"
+      ],
+      "frozen": false
+    },
+    "Product Transparency": {
+      "raw_variants": [
+        "Product Transparency"
+      ],
+      "experience_drivers": [
+        "Product Information → Expiration Dates"
+      ],
+      "frozen": false
+    },
+    "Delivery Logistics": {
+      "raw_variants": [
+        "Delivery Logistics"
+      ],
+      "experience_drivers": [
+        "Delivery Experience → Address Accuracy"
+      ],
+      "frozen": false
+    },
+    "Payment Experience": {
+      "raw_variants": [
+        "Payment Experience"
+      ],
+      "experience_drivers": [
+        "Payment Options → Cashless Payment Availability",
+        "Payment Options → On-Delivery Card Payment"
+      ],
+      "frozen": false
+    },
+    "Policy Consistency": {
+      "raw_variants": [
+        "Policy Consistency"
+      ],
+      "experience_drivers": [
+        "Return & Refund Policy → Branch-Specific Return Restriction"
+      ],
+      "frozen": false
+    },
+    "Promotional Integrity": {
+      "raw_variants": [
+        "Promotional Integrity"
+      ],
+      "experience_drivers": [
+        "Promotions & Discounts → Voucher Redemption"
+      ],
+      "frozen": false
+    },
+    "Delivery Accuracy": {
+      "raw_variants": [
+        "Delivery Accuracy"
+      ],
+      "experience_drivers": [],
+      "frozen": false
+    },
+    "Time Management": {
+      "raw_variants": [
+        "Time Management"
+      ],
+      "experience_drivers": [],
+      "frozen": false
+    },
+    "Pricing Integrity": {
+      "raw_variants": [
+        "Pricing Integrity"
+      ],
+      "experience_drivers": [
+        "Order Accuracy → Price Adjustment",
+        "Order & Payment → Price Discrepancy"
+      ],
+      "frozen": false
+    },
+    "Support Transparency": {
+      "raw_variants": [
+        "Support Transparency"
+      ],
+      "experience_drivers": [
+        "Customer Support → Complaint Handling"
+      ],
+      "frozen": false
+    },
+    "Payment Security": {
+      "raw_variants": [
+        "Payment Security"
+      ],
+      "experience_drivers": [
+        "Payment Options → Voucher Redemption"
+      ],
+      "frozen": false
+    },
+    "Product Excellence": {
+      "raw_variants": [
+        "Product Excellence"
+      ],
+      "experience_drivers": [
+        "Product Quality → Freshness"
+      ],
+      "frozen": false
+    },
+    "Order Reliability": {
+      "raw_variants": [
+        "Order Reliability"
+      ],
+      "experience_drivers": [
+        "Order Fulfillment → Electronic Orders"
+      ],
+      "frozen": false
+    },
+    "Delivery Satisfaction": {
+      "raw_variants": [
+        "Delivery Satisfaction"
+      ],
+      "experience_drivers": [],
+      "frozen": false
+    },
+    "Inventory Communication": {
+      "raw_variants": [
+        "Inventory Communication"
+      ],
+      "experience_drivers": [],
+      "frozen": false
+    },
+    "Service Quality": {
+      "raw_variants": [
+        "Service Quality"
+      ],
+      "experience_drivers": [
+        "Delivery Experience → Staff Conduct"
+      ],
+      "frozen": false
+    },
+    "Transaction Integrity": {
+      "raw_variants": [
+        "Transaction Integrity"
+      ],
+      "experience_drivers": [
+        "Billing Accuracy → Invoice Discrepancy"
+      ],
+      "frozen": false
+    }
+  },
+  "experience_drivers": {
+    "Product Availability → Online vs In-Store Discrepancy": {
+      "canonical_experience_driver": "Product Availability → Online vs In-Store Discrepancy",
+      "canonical_category": "Product Availability",
+      "canonical_subcategory": "Online vs In-Store Discrepancy",
+      "theme": "Inventory Consistency",
+      "raw_variants": [
+        "Product Availability → Online vs In-Store Discrepancy",
+        "Product Availability → Online vs. In-Store Consistency"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Product Availability → Real-Time Stock Visibility": {
+      "canonical_experience_driver": "Product Availability → Real-Time Stock Visibility",
+      "canonical_category": "Product Availability",
+      "canonical_subcategory": "Real-Time Stock Visibility",
+      "theme": "Inventory Integrity",
+      "raw_variants": [
+        "Product Availability → Real-Time Stock Visibility"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 12
+    },
+    "Order Accuracy → Substitution Quality": {
+      "canonical_experience_driver": "Order Accuracy → Substitution Quality",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Substitution Quality",
+      "theme": "Order Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Substitution Quality"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Item Fulfillment": {
+      "canonical_experience_driver": "Order Accuracy → Item Fulfillment",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Item Fulfillment",
+      "theme": "Delivery & Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Item Fulfillment",
+        "Order Accuracy → Fulfillment Notification",
+        "Order Accuracy → Delivery Fulfillment"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 3
+    },
+    "Delivery Experience → Timing": {
+      "canonical_experience_driver": "Delivery Experience → Timing",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Timing",
+      "theme": "Delivery & Fulfillment",
+      "raw_variants": [
+        "Delivery Experience → Timing",
+        "Delivery Experience → Timing Precision"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 13
+    },
+    "Order Accuracy → Missing Item Notification": {
+      "canonical_experience_driver": "Order Accuracy → Missing Item Notification",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Missing Item Notification",
+      "theme": "Order Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Missing Item Notification"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Order Accuracy → Error Resolution": {
+      "canonical_experience_driver": "Order Accuracy → Error Resolution",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Error Resolution",
+      "theme": "Order Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Error Resolution"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 3
+    },
+    "Order & Payment → Refund Processing": {
+      "canonical_experience_driver": "Order & Payment → Refund Processing",
+      "canonical_category": "Order & Payment",
+      "canonical_subcategory": "Refund Processing",
+      "theme": "Payment Resolution",
+      "raw_variants": [
+        "Order & Payment → Refund Processing"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Availability → Out-of-Stock Management": {
+      "canonical_experience_driver": "Product Availability → Out-of-Stock Management",
+      "canonical_category": "Product Availability",
+      "canonical_subcategory": "Out-of-Stock Management",
+      "theme": "Inventory Management",
+      "raw_variants": [
+        "Product Availability → Out-of-Stock Management"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 5
+    },
+    "Product Quality → Product Condition": {
+      "canonical_experience_driver": "Product Quality → Product Condition",
+      "canonical_category": "Product Quality",
+      "canonical_subcategory": "Product Condition",
+      "theme": "Product & Selection",
+      "raw_variants": [
+        "Product Quality → Product Condition"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Mobile App → Performance Stability": {
+      "canonical_experience_driver": "Mobile App → Performance Stability",
+      "canonical_category": "Mobile App",
+      "canonical_subcategory": "Performance Stability",
+      "theme": "Technical Reliability",
+      "raw_variants": [
+        "Mobile App → Performance Stability"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Promotions & Discounts → Voucher Availability": {
+      "canonical_experience_driver": "Promotions & Discounts → Voucher Availability",
+      "canonical_category": "Promotions & Discounts",
+      "canonical_subcategory": "Voucher Availability",
+      "theme": "Customer Incentives",
+      "raw_variants": [
+        "Promotions & Discounts → Voucher Availability"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Promotions & Discounts → Voucher Value": {
+      "canonical_experience_driver": "Promotions & Discounts → Voucher Value",
+      "canonical_category": "Promotions & Discounts",
+      "canonical_subcategory": "Voucher Value",
+      "theme": "Order & Payment",
+      "raw_variants": [
+        "Promotions & Discounts → Voucher Value"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Substitution & Pricing": {
+      "canonical_experience_driver": "Order Accuracy → Substitution & Pricing",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Substitution & Pricing",
+      "theme": "Order Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Substitution & Pricing"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Customization Options → Product Customization": {
+      "canonical_experience_driver": "Customization Options → Product Customization",
+      "canonical_category": "Customization Options",
+      "canonical_subcategory": "Product Customization",
+      "theme": "Product Personalization",
+      "raw_variants": [
+        "Customization Options → Product Customization"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Customer Support → Proactive Communication": {
+      "canonical_experience_driver": "Customer Support → Proactive Communication",
+      "canonical_category": "Customer Support",
+      "canonical_subcategory": "Proactive Communication",
+      "theme": "Customer Engagement",
+      "raw_variants": [
+        "Customer Support → Proactive Communication"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order & Payment → Payment Discrepancy": {
+      "canonical_experience_driver": "Order & Payment → Payment Discrepancy",
+      "canonical_category": "Order & Payment",
+      "canonical_subcategory": "Payment Discrepancy",
+      "theme": "Payment Integrity",
+      "raw_variants": [
+        "Order & Payment → Payment Discrepancy"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery & Fulfillment → Timeliness": {
+      "canonical_experience_driver": "Delivery & Fulfillment → Timeliness",
+      "canonical_category": "Delivery & Fulfillment",
+      "canonical_subcategory": "Timeliness",
+      "theme": "Delivery Reliability",
+      "raw_variants": [
+        "Delivery & Fulfillment → Timeliness"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Payment Experience → Payment Processing": {
+      "canonical_experience_driver": "Payment Experience → Payment Processing",
+      "canonical_category": "Payment Experience",
+      "canonical_subcategory": "Payment Processing",
+      "theme": "Order & Payment",
+      "raw_variants": [
+        "Payment Experience → Payment Processing"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery Experience → Timeliness": {
+      "canonical_experience_driver": "Delivery Experience → Timeliness",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Timeliness",
+      "theme": "Delivery & Fulfillment",
+      "raw_variants": [
+        "Delivery Experience → Timeliness"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 7
+    },
+    "Product Variety → International Products": {
+      "canonical_experience_driver": "Product Variety → International Products",
+      "canonical_category": "Product Variety",
+      "canonical_subcategory": "International Products",
+      "theme": "Product & Selection",
+      "raw_variants": [
+        "Product Variety → International Products"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order & Payment → Order Quantity Limits": {
+      "canonical_experience_driver": "Order & Payment → Order Quantity Limits",
+      "canonical_category": "Order & Payment",
+      "canonical_subcategory": "Order Quantity Limits",
+      "theme": "Order Management",
+      "raw_variants": [
+        "Order & Payment → Order Quantity Limits"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Information → Product Details": {
+      "canonical_experience_driver": "Product Information → Product Details",
+      "canonical_category": "Product Information",
+      "canonical_subcategory": "Product Details",
+      "theme": "Digital Shopping Experience",
+      "raw_variants": [
+        "Product Information → Product Details"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Loyalty Programs → Membership Integration": {
+      "canonical_experience_driver": "Loyalty Programs → Membership Integration",
+      "canonical_category": "Loyalty Programs",
+      "canonical_subcategory": "Membership Integration",
+      "theme": "Loyalty & Engagement",
+      "raw_variants": [
+        "Loyalty Programs → Membership Integration"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Payment Experience → Cash Handling": {
+      "canonical_experience_driver": "Payment Experience → Cash Handling",
+      "canonical_category": "Payment Experience",
+      "canonical_subcategory": "Cash Handling",
+      "theme": "Payment Integrity",
+      "raw_variants": [
+        "Payment Experience → Cash Handling"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery Experience → Order Completion": {
+      "canonical_experience_driver": "Delivery Experience → Order Completion",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Order Completion",
+      "theme": "Delivery Integrity",
+      "raw_variants": [
+        "Delivery Experience → Order Completion"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery & Fulfillment → Tracking": {
+      "canonical_experience_driver": "Delivery & Fulfillment → Tracking",
+      "canonical_category": "Delivery & Fulfillment",
+      "canonical_subcategory": "Tracking",
+      "theme": "Delivery Experience",
+      "raw_variants": [
+        "Delivery & Fulfillment → Tracking"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Quality → Product Safety": {
+      "canonical_experience_driver": "Product Quality → Product Safety",
+      "canonical_category": "Product Quality",
+      "canonical_subcategory": "Product Safety",
+      "theme": "Product Quality",
+      "raw_variants": [
+        "Product Quality → Product Safety"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Customer Communication": {
+      "canonical_experience_driver": "Order Accuracy → Customer Communication",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Customer Communication",
+      "theme": "Order Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Customer Communication"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Fulfillment → Availability & Scheduling": {
+      "canonical_experience_driver": "Order Fulfillment → Availability & Scheduling",
+      "canonical_category": "Order Fulfillment",
+      "canonical_subcategory": "Availability & Scheduling",
+      "theme": "Order Management",
+      "raw_variants": [
+        "Order Fulfillment → Availability & Scheduling"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Fulfillment → Stock Allocation": {
+      "canonical_experience_driver": "Order Fulfillment → Stock Allocation",
+      "canonical_category": "Order Fulfillment",
+      "canonical_subcategory": "Stock Allocation",
+      "theme": "Inventory Management",
+      "raw_variants": [
+        "Order Fulfillment → Stock Allocation"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Wrong Item Delivered": {
+      "canonical_experience_driver": "Order Accuracy → Wrong Item Delivered",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Wrong Item Delivered",
+      "theme": "Delivery & Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Wrong Item Delivered"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Food Safety → Product Quality": {
+      "canonical_experience_driver": "Food Safety → Product Quality",
+      "canonical_category": "Food Safety",
+      "canonical_subcategory": "Product Quality",
+      "theme": "Product & Selection",
+      "raw_variants": [
+        "Food Safety → Product Quality"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Customer Service → Staff Training": {
+      "canonical_experience_driver": "Customer Service → Staff Training",
+      "canonical_category": "Customer Service",
+      "canonical_subcategory": "Staff Training",
+      "theme": "Customer Support",
+      "raw_variants": [
+        "Customer Service → Staff Training"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Customer Service → Staff Interaction": {
+      "canonical_experience_driver": "Customer Service → Staff Interaction",
+      "canonical_category": "Customer Service",
+      "canonical_subcategory": "Staff Interaction",
+      "theme": "Customer Support",
+      "raw_variants": [
+        "Customer Service → Staff Interaction"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Delivery Experience → Delivery Speed": {
+      "canonical_experience_driver": "Delivery Experience → Delivery Speed",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Delivery Speed",
+      "theme": "Timeliness & Efficiency",
+      "raw_variants": [
+        "Delivery Experience → Delivery Speed"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Weight Discrepancy": {
+      "canonical_experience_driver": "Order Accuracy → Weight Discrepancy",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Weight Discrepancy",
+      "theme": "Order Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Weight Discrepancy"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery Experience → Product Quality": {
+      "canonical_experience_driver": "Delivery Experience → Product Quality",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Product Quality",
+      "theme": "Service Excellence",
+      "raw_variants": [
+        "Delivery Experience → Product Quality"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Information → Expiration Dates": {
+      "canonical_experience_driver": "Product Information → Expiration Dates",
+      "canonical_category": "Product Information",
+      "canonical_subcategory": "Expiration Dates",
+      "theme": "Product Transparency",
+      "raw_variants": [
+        "Product Information → Expiration Dates"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Management → Stock Availability Communication": {
+      "canonical_experience_driver": "Order Management → Stock Availability Communication",
+      "canonical_category": "Order Management",
+      "canonical_subcategory": "Stock Availability Communication",
+      "theme": "Inventory Integrity",
+      "raw_variants": [
+        "Order Management → Stock Availability Communication"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Availability → Order Acceptance": {
+      "canonical_experience_driver": "Product Availability → Order Acceptance",
+      "canonical_category": "Product Availability",
+      "canonical_subcategory": "Order Acceptance",
+      "theme": "Inventory Management",
+      "raw_variants": [
+        "Product Availability → Order Acceptance"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery Experience → Address Accuracy": {
+      "canonical_experience_driver": "Delivery Experience → Address Accuracy",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Address Accuracy",
+      "theme": "Delivery Logistics",
+      "raw_variants": [
+        "Delivery Experience → Address Accuracy"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Payment Options → Cashless Payment Availability": {
+      "canonical_experience_driver": "Payment Options → Cashless Payment Availability",
+      "canonical_category": "Payment Options",
+      "canonical_subcategory": "Cashless Payment Availability",
+      "theme": "Payment Experience",
+      "raw_variants": [
+        "Payment Options → Cashless Payment Availability"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Post-Order Availability Management": {
+      "canonical_experience_driver": "Order Accuracy → Post-Order Availability Management",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Post-Order Availability Management",
+      "theme": "Order Management",
+      "raw_variants": [
+        "Order Accuracy → Post-Order Availability Management"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Return & Refund Policy → Branch-Specific Return Restriction": {
+      "canonical_experience_driver": "Return & Refund Policy → Branch-Specific Return Restriction",
+      "canonical_category": "Return & Refund Policy",
+      "canonical_subcategory": "Branch-Specific Return Restriction",
+      "theme": "Policy Consistency",
+      "raw_variants": [
+        "Return & Refund Policy → Branch-Specific Return Restriction"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Out-of-Stock Notification": {
+      "canonical_experience_driver": "Order Accuracy → Out-of-Stock Notification",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Out-of-Stock Notification",
+      "theme": "Inventory Management",
+      "raw_variants": [
+        "Order Accuracy → Out-of-Stock Notification"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Order Accuracy → Incomplete Order Fulfillment": {
+      "canonical_experience_driver": "Order Accuracy → Incomplete Order Fulfillment",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Incomplete Order Fulfillment",
+      "theme": "Order Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Incomplete Order Fulfillment"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Promotions & Discounts → Voucher Redemption": {
+      "canonical_experience_driver": "Promotions & Discounts → Voucher Redemption",
+      "canonical_category": "Promotions & Discounts",
+      "canonical_subcategory": "Voucher Redemption",
+      "theme": "Promotional Integrity",
+      "raw_variants": [
+        "Promotions & Discounts → Voucher Redemption"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Missing Items": {
+      "canonical_experience_driver": "Order Accuracy → Missing Items",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Missing Items",
+      "theme": "Delivery & Fulfillment",
+      "raw_variants": [
+        "Order Accuracy → Missing Items"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Mobile App → Cart Functionality": {
+      "canonical_experience_driver": "Mobile App → Cart Functionality",
+      "canonical_category": "Mobile App",
+      "canonical_subcategory": "Cart Functionality",
+      "theme": "Digital Shopping Experience",
+      "raw_variants": [
+        "Mobile App → Cart Functionality"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Accuracy → Price Adjustment": {
+      "canonical_experience_driver": "Order Accuracy → Price Adjustment",
+      "canonical_category": "Order Accuracy",
+      "canonical_subcategory": "Price Adjustment",
+      "theme": "Pricing Integrity",
+      "raw_variants": [
+        "Order Accuracy → Price Adjustment"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery Experience → Order Non-Delivery": {
+      "canonical_experience_driver": "Delivery Experience → Order Non-Delivery",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Order Non-Delivery",
+      "theme": "Delivery Integrity",
+      "raw_variants": [
+        "Delivery Experience → Order Non-Delivery"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Customer Support → Complaint Handling": {
+      "canonical_experience_driver": "Customer Support → Complaint Handling",
+      "canonical_category": "Customer Support",
+      "canonical_subcategory": "Complaint Handling",
+      "theme": "Support Transparency",
+      "raw_variants": [
+        "Customer Support → Complaint Handling"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Payment Options → Voucher Redemption": {
+      "canonical_experience_driver": "Payment Options → Voucher Redemption",
+      "canonical_category": "Payment Options",
+      "canonical_subcategory": "Voucher Redemption",
+      "theme": "Payment Security",
+      "raw_variants": [
+        "Payment Options → Voucher Redemption"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery Experience → Packaging Quality": {
+      "canonical_experience_driver": "Delivery Experience → Packaging Quality",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Packaging Quality",
+      "theme": "Delivery & Fulfillment",
+      "raw_variants": [
+        "Delivery Experience → Packaging Quality"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 2
+    },
+    "Product Quality → Freshness": {
+      "canonical_experience_driver": "Product Quality → Freshness",
+      "canonical_category": "Product Quality",
+      "canonical_subcategory": "Freshness",
+      "theme": "Product Excellence",
+      "raw_variants": [
+        "Product Quality → Freshness"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order & Payment → Price Discrepancy": {
+      "canonical_experience_driver": "Order & Payment → Price Discrepancy",
+      "canonical_category": "Order & Payment",
+      "canonical_subcategory": "Price Discrepancy",
+      "theme": "Pricing Integrity",
+      "raw_variants": [
+        "Order & Payment → Price Discrepancy"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Payment Options → On-Delivery Card Payment": {
+      "canonical_experience_driver": "Payment Options → On-Delivery Card Payment",
+      "canonical_category": "Payment Options",
+      "canonical_subcategory": "On-Delivery Card Payment",
+      "theme": "Payment Experience",
+      "raw_variants": [
+        "Payment Options → On-Delivery Card Payment"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Promotions & Discounts → Free Bag Offer": {
+      "canonical_experience_driver": "Promotions & Discounts → Free Bag Offer",
+      "canonical_category": "Promotions & Discounts",
+      "canonical_subcategory": "Free Bag Offer",
+      "theme": "Order & Payment",
+      "raw_variants": [
+        "Promotions & Discounts → Free Bag Offer"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Order Fulfillment → Electronic Orders": {
+      "canonical_experience_driver": "Order Fulfillment → Electronic Orders",
+      "canonical_category": "Order Fulfillment",
+      "canonical_subcategory": "Electronic Orders",
+      "theme": "Order Reliability",
+      "raw_variants": [
+        "Order Fulfillment → Electronic Orders"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Delivery Experience → Staff Conduct": {
+      "canonical_experience_driver": "Delivery Experience → Staff Conduct",
+      "canonical_category": "Delivery Experience",
+      "canonical_subcategory": "Staff Conduct",
+      "theme": "Service Quality",
+      "raw_variants": [
+        "Delivery Experience → Staff Conduct"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Quality → Consistency": {
+      "canonical_experience_driver": "Product Quality → Consistency",
+      "canonical_category": "Product Quality",
+      "canonical_subcategory": "Consistency",
+      "theme": "Product & Selection",
+      "raw_variants": [
+        "Product Quality → Consistency"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Quality → Product Freshness": {
+      "canonical_experience_driver": "Product Quality → Product Freshness",
+      "canonical_category": "Product Quality",
+      "canonical_subcategory": "Product Freshness",
+      "theme": "Product & Selection",
+      "raw_variants": [
+        "Product Quality → Product Freshness"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Billing Accuracy → Invoice Discrepancy": {
+      "canonical_experience_driver": "Billing Accuracy → Invoice Discrepancy",
+      "canonical_category": "Billing Accuracy",
+      "canonical_subcategory": "Invoice Discrepancy",
+      "theme": "Transaction Integrity",
+      "raw_variants": [
+        "Billing Accuracy → Invoice Discrepancy"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Customization → Order Customization": {
+      "canonical_experience_driver": "Product Customization → Order Customization",
+      "canonical_category": "Product Customization",
+      "canonical_subcategory": "Order Customization",
+      "theme": "Product & Selection",
+      "raw_variants": [
+        "Product Customization → Order Customization"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    },
+    "Product Availability → Order Fulfillment Consistency": {
+      "canonical_experience_driver": "Product Availability → Order Fulfillment Consistency",
+      "canonical_category": "Product Availability",
+      "canonical_subcategory": "Order Fulfillment Consistency",
+      "theme": "Inventory Management",
+      "raw_variants": [
+        "Product Availability → Order Fulfillment Consistency"
+      ],
+      "frozen": false,
+      "first_seen": "2025-08-08",
+      "last_seen": "2025-08-08",
+      "frequency": 1
+    }
+  }
+}

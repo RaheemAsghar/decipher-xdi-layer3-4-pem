@@ -1,0 +1,9 @@
+EXPERIENCE DRIVER CANONICALIZATION STATS
+==================================================
+
+Original unique experience drivers: 70
+Canonical unique experience drivers: 66
+Compression ratio: 1.06x
+Total records processed: 111
+Mappings requiring review: 0
+Domain Thresholds Used: {'theme': 95, 'category': 85, 'subcategory': 80}

@@ -1,0 +1,129 @@
+import json
+from datetime import datetime, timedelta
+from collections import defaultdict
+
+# -------------------------------
+# CONFIGURATION
+# -------------------------------
+SCAN_WINDOW_DAYS = 90
+TODAY = datetime(2025, 8, 1)  # simulated current scan date
+
+# -------------------------------
+# MOCKED INSTITUTIONAL MEMORY STORE
+# (Replace this with real records from your Decipher execution DB)
+# -------------------------------
+memory_store = [
+    {
+        'ou_id': 'OU-001',
+        'experience_driver': 'Refund Status & Delays',
+        'activation_date': datetime(2025, 1, 10),
+        'signal_capsule': {...},
+        'ou_activation_payload': {
+            'emotion': 'Agitation',
+            'eri_score': -75,
+            'stream': 'Fix',
+            'ou_name': 'Refund Recovery – Agitation – Fix',
+            'root_cause_snippet': 'Delayed refunds not proactively flagged.'
+        },
+        'problem_statement': {...},
+        'pdca_lifecycle': {...},
+        'outcome_evaluation': {...}
+    },
+    {
+        'ou_id': 'OU-002',
+        'experience_driver': 'Refund Status & Delays',
+        'activation_date': datetime(2025, 4, 12),
+        'signal_capsule': {...},
+        'ou_activation_payload': {
+            'emotion': 'Disappointment',
+            'eri_score': -30,
+            'stream': 'Innovate',
+            'ou_name': 'Proactive Refund Experience – Disappointment – Innovate',
+            'root_cause_snippet': 'Customers expected proactive notifications.'
+        },
+        'problem_statement': {...},
+        'pdca_lifecycle': {...},
+        'outcome_evaluation': {...}
+    },
+    {
+        'ou_id': 'OU-003',
+        'experience_driver': 'Login Issues',
+        'activation_date': datetime(2025, 5, 1),
+        'signal_capsule': {...},
+        'ou_activation_payload': {
+            'emotion': 'Frustration',
+            'eri_score': -40,
+            'stream': 'Fix',
+            'ou_name': 'Login Fix Mission – Frustration – Fix',
+            'root_cause_snippet': 'Two-factor errors blocking access.'
+        },
+        'problem_statement': {...},
+        'pdca_lifecycle': {...},
+        'outcome_evaluation': {...}
+    }
+]
+
+# -------------------------------
+# ORGANIZE MEMORY BY EXPERIENCE DRIVER
+# -------------------------------
+ed_to_ous = defaultdict(list)
+for ou in memory_store:
+    ed_to_ous[ou['experience_driver']].append(ou)
+
+# -------------------------------
+# TRIGGER SCE SCAN
+# -------------------------------
+sce_outputs = []
+
+for ed, ou_list in ed_to_ous.items():
+    # Step 1: Sort OUs and get latest one
+    ou_list = sorted(ou_list, key=lambda x: x['activation_date'])
+    latest_ou = ou_list[-1]
+    silence_trigger_date = latest_ou['activation_date'] + timedelta(days=SCAN_WINDOW_DAYS)
+
+    # Step 2: Check for silence
+    if TODAY <= silence_trigger_date:
+        continue  # Still within window — no silence
+
+    silence_duration_days = (TODAY - latest_ou['activation_date']).days
+
+    # Step 3: Compile full OU activation history for this ED
+    ou_activation_history = []
+    for ou in ou_list:
+        diagnostics = {
+            'dominant_emotion': ou['ou_activation_payload']['emotion'],
+            'eri_score': ou['ou_activation_payload']['eri_score'],
+            'stream': ou['ou_activation_payload']['stream'],
+        }
+        summary = {
+            'ou_name': ou['ou_activation_payload']['ou_name'],
+            'experience_driver': ou['experience_driver'],
+            'emotion': ou['ou_activation_payload']['emotion'],
+            'opportunity_stream': ou['ou_activation_payload']['stream'],
+            'root_cause_snippet': ou['ou_activation_payload']['root_cause_snippet']
+        }
+        ou_activation_history.append({
+            'emotion_diagnostics': diagnostics,
+            'ou_summary': summary
+        })
+
+    # Step 4: Create full SCE object
+    sce_object = {
+        'detection_summary': {
+            'experience_driver': ed,
+            'silence_detected': True,
+            'silence_duration_days': silence_duration_days,
+            'silence_trigger_date': silence_trigger_date.date(),
+            'silence_scan_window': f"{SCAN_WINDOW_DAYS}-day post-activation",
+            'last_known_ou_id': latest_ou['ou_id']
+        },
+        'ou_activation_history': ou_activation_history,
+        'detailed_memory_for_ou_id': latest_ou['ou_id']
+    }
+
+    sce_outputs.append(sce_object)
+
+# -------------------------------
+# OUTPUT FOR NEXT ACTION
+# -------------------------------
+print(json.dumps(sce_outputs, indent=2, default=str))

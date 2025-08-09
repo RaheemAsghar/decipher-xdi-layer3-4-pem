@@ -1,0 +1,35 @@
+# Python ignores
+cat > .gitignore <<'EOF'
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+venv/
+.idea/
+.vscode/
+.ipynb_checkpoints/
+.DS_Store
+EOF
+
+# license (if open source)
+echo "MIT License" > LICENSE
+
+# dependencies (pick one)
+# if you have versions, add them; else keep it minimal for now
+cat > requirements.txt <<'EOF'
+pandas
+statsmodels
+EOF
+
+# readme
+cat > README.md <<'EOF'
+# Decipher XDI — Layer 3 & 4 + PEM
+
+Emotion-Driven Analytics engine: Trend, Momentum, Volatility, Pattern Recognition (Layer 3), QSSI (Layer 4), and Predictive Emotional Modeling (PEM).
+
+## Quickstart
+```bash
+pip install -r requirements.txt
+python your_entrypoint.py

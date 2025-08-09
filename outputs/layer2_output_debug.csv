@@ -1,0 +1,67 @@
+experience_driver,ERI,Loyalty_State,Associated_Entity_Names,R,Most_Recent_Date,F,No_of_Mentions,RF,RF_Urgency_Category,ERI_RF_Quadrant,Quadrant_Purpose,Priority_Status,Impact_Score,RFI
+Billing Accuracy → Invoice Discrepancy,-33.33,Negative,['Billing System'],53.44,2025-05-30,26.26,1,42.57,Watch,Negative x Watch,Tactical Corrections,P3,0.55,23.41
+Customer Service → Staff Interaction,33.33,Positive,"['Metro Store Employees', 'Supervisor Ali']",48.03,2025-05-22,41.63,2,45.47,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,25.01
+Customer Service → Staff Training,33.33,Positive,['Mr. Akhtar'],39.32,2025-05-07,26.26,1,34.1,Weak,Positive x Weak,Gradual Improvements,P5,0.2,6.82
+Customer Support → Complaint Handling,-33.33,Negative,['Independent Complaint Cell'],54.88,2025-06-01,26.26,1,43.43,Watch,Negative x Watch,Tactical Corrections,P3,0.55,23.89
+Customer Support → Proactive Communication,33.33,Positive,['Expiry Date Notification'],62.71,2025-06-11,26.26,1,48.13,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,26.47
+Customization Options → Product Customization,33.33,Positive,['Meat Mince'],71.65,2025-06-21,26.26,1,53.5,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,29.42
+Delivery & Fulfillment → Timeliness,-33.33,Negative,['Delayed Delivery'],57.89,2025-06-05,26.26,1,45.24,Watch,Negative x Watch,Tactical Corrections,P3,0.55,24.88
+Delivery & Fulfillment → Tracking,33.33,Positive,['Delivery Tracker'],70.7,2025-06-20,26.26,1,52.93,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,29.11
+Delivery Experience → Address Accuracy,-33.33,Negative,['Delivery Address Guidance'],42.04,2025-05-12,26.26,1,35.73,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,14.29
+Delivery Experience → Delivery Speed,33.33,Positive,['Same-Day Delivery Option'],98.68,2025-07-15,26.26,1,69.71,Escalate,Positive x Escalate,Loyalty Accelerant,P2,0.7,48.8
+Delivery Experience → Order Completion,-100.0,Very Negative,['Order Delivery Confirmation'],40.39,2025-05-09,26.26,1,34.74,Weak,Very Negative x Weak,Flag for Vulnerability,P5,0.2,6.95
+Delivery Experience → Order Non-Delivery,-100.0,Very Negative,['Order with Discount Voucher'],54.88,2025-06-01,26.26,1,43.43,Watch,Very Negative x Watch,Erosion Risk Early Watch,P2,0.7,30.4
+Delivery Experience → Packaging Quality,-33.33,Negative,"['Oil and Ghee Packets', 'Order Packaging']",79.72,2025-06-29,41.63,2,64.48,Escalate,Negative x Escalate,Contain Friction Emergence,P2,0.7,45.14
+Delivery Experience → Product Quality,33.33,Positive,['Metro Delivery Service'],44.93,2025-05-17,26.26,1,37.47,Weak,Positive x Weak,Gradual Improvements,P5,0.2,7.49
+Delivery Experience → Staff Conduct,-33.33,Negative,['Delivery Personnel'],56.36,2025-06-03,26.26,1,44.32,Watch,Negative x Watch,Tactical Corrections,P3,0.55,24.38
+Delivery Experience → Timeliness,4.76,Neutral,"['Express Delivery Service', 'Grocery Delivery', 'Metro Online Delivery', 'Order Delivery', 'Order Delivery Timing', 'Same Day Delivery', 'Scheduled Delivery']",100.0,2025-07-16,78.79,7,91.52,Emergency,Neutral x Emergency,Early Warning Activation,P2,0.7,64.06
+Delivery Experience → Timing,-43.59,Negative,"['3-Hour Delivery', 'Delivery Time Slot', 'Delivery Time Window', 'Express Delivery Service', 'Express Orders', 'Order Delivery', 'Order Number 960110008185003-1', 'Scheduled Delivery', 'Scheduled Delivery Date', 'Scheduled Delivery Slot']",92.31,2025-07-10,100.0,13,95.39,Emergency,Negative x Emergency,Urgent Loyalty Recovery,P1,0.85,81.08
+Food Safety → Product Quality,-100.0,Very Negative,['Raue and Mushka'],39.32,2025-05-07,26.26,1,34.1,Weak,Very Negative x Weak,Flag for Vulnerability,P5,0.2,6.82
+Loyalty Programs → Membership Integration,33.33,Positive,['Metro Membership Card'],38.29,2025-05-05,26.26,1,33.48,Weak,Positive x Weak,Gradual Improvements,P5,0.2,6.7
+Mobile App → Cart Functionality,-33.33,Negative,['Metro App Cart'],64.4,2025-06-13,26.26,1,49.15,Watch,Negative x Watch,Tactical Corrections,P3,0.55,27.03
+Mobile App → Performance Stability,-33.33,Negative,['Grocery App'],48.68,2025-05-23,26.26,1,39.71,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,15.88
+Order & Payment → Order Quantity Limits,-100.0,Very Negative,['Chicken Quantity Restriction'],67.93,2025-06-17,26.26,1,51.27,Watch,Very Negative x Watch,Erosion Risk Early Watch,P2,0.7,35.89
+Order & Payment → Payment Discrepancy,-100.0,Very Negative,['Cash Payment Shortage'],57.89,2025-06-05,26.26,1,45.24,Watch,Very Negative x Watch,Erosion Risk Early Watch,P2,0.7,31.67
+Order & Payment → Price Discrepancy,-33.33,Negative,['Cutting Board'],49.33,2025-05-24,26.26,1,40.1,Watch,Negative x Watch,Tactical Corrections,P3,0.55,22.06
+Order & Payment → Refund Processing,-33.33,Negative,['Wallet Refund'],48.68,2025-05-23,26.26,1,39.71,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,15.88
+Order Accuracy → Customer Communication,-33.33,Negative,['Alternate Item Selection'],40.93,2025-05-10,26.26,1,35.06,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,14.03
+Order Accuracy → Error Resolution,-33.33,Negative,"['Incorrect Item Delivery', 'Metro', 'Mortein All Insect Killer, Indomie Vegetable']",49.99,2025-05-25,52.53,3,51.01,Watch,Negative x Watch,Tactical Corrections,P3,0.55,28.05
+Order Accuracy → Incomplete Order Fulfillment,-33.33,Negative,['First Order'],39.32,2025-05-07,26.26,1,34.1,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,13.64
+Order Accuracy → Item Fulfillment,-77.78,Very Negative,"['Fish Order', 'Order Fulfillment Communication', 'Ordered Item']",71.65,2025-06-21,52.53,3,64.0,Escalate,Very Negative x Escalate,Prevent Active Loyalty Churn,P1,0.85,54.4
+Order Accuracy → Missing Item Notification,0.0,Neutral,"['Order Notification System', 'Pre-Delivery Notification System']",82.97,2025-07-02,41.63,2,66.43,Escalate,Neutral x Escalate,Investigate Attrition Risks,P2,0.7,46.5
+Order Accuracy → Missing Items,-33.33,Negative,"['Happy Cow Cheese', 'Innovative Digestive Biscuit']",57.89,2025-06-05,41.63,2,51.38,Watch,Negative x Watch,Tactical Corrections,P3,0.55,28.26
+Order Accuracy → Out-of-Stock Notification,-33.33,Negative,"['Delivery Notification', 'Out-of-Stock Items']",72.61,2025-06-22,41.63,2,60.22,Escalate,Negative x Escalate,Contain Friction Emergence,P2,0.7,42.15
+Order Accuracy → Post-Order Availability Management,33.33,Positive,['Refund & Notification Process'],43.75,2025-05-15,26.26,1,36.76,Weak,Positive x Weak,Gradual Improvements,P5,0.2,7.35
+Order Accuracy → Price Adjustment,-33.33,Negative,['Chicken Price Adjustment'],49.99,2025-05-25,26.26,1,40.5,Watch,Negative x Watch,Tactical Corrections,P3,0.55,22.28
+Order Accuracy → Substitution & Pricing,-33.33,Negative,['Cheese Substitution'],45.54,2025-05-18,26.26,1,37.83,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,15.13
+Order Accuracy → Substitution Quality,-33.33,Negative,['Butter Crunch Biscuit'],61.06,2025-06-09,26.26,1,47.14,Watch,Negative x Watch,Tactical Corrections,P3,0.55,25.93
+Order Accuracy → Weight Discrepancy,-33.33,Negative,['3kg Sugar Order'],40.93,2025-05-10,26.26,1,35.06,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,14.03
+Order Accuracy → Wrong Item Delivered,-33.33,Negative,['Sprite 500 ml PET Bottle'],36.79,2025-05-02,26.26,1,32.58,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,13.03
+Order Fulfillment → Availability & Scheduling,-33.33,Negative,['Online Order Notification'],38.29,2025-05-05,26.26,1,33.48,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,13.39
+Order Fulfillment → Electronic Orders,-100.0,Very Negative,['Electronic Order Non-Delivery'],38.29,2025-05-05,26.26,1,33.48,Weak,Very Negative x Weak,Flag for Vulnerability,P5,0.2,6.7
+Order Fulfillment → Stock Allocation,-33.33,Negative,['Metro Stock Management'],84.09,2025-07-03,26.26,1,60.96,Escalate,Negative x Escalate,Contain Friction Emergence,P2,0.7,42.67
+Order Management → Stock Availability Communication,-33.33,Negative,['Metro Online App'],70.7,2025-06-20,26.26,1,52.93,Watch,Negative x Watch,Tactical Corrections,P3,0.55,29.11
+Payment Experience → Cash Handling,-33.33,Negative,['Rider Cash Transactions'],57.12,2025-06-04,26.26,1,44.78,Watch,Negative x Watch,Tactical Corrections,P3,0.55,24.63
+Payment Experience → Payment Processing,-33.33,Negative,['Card Payment System'],37.78,2025-05-04,26.26,1,33.18,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,13.27
+Payment Options → Cashless Payment Availability,-33.33,Negative,['POS Machine Availability'],42.04,2025-05-12,26.26,1,35.73,Weak,Negative x Weak,Investigate Minor Recurrence,P4,0.4,14.29
+Payment Options → On-Delivery Card Payment,33.33,Positive,['Card Machine on Delivery'],66.14,2025-06-15,26.26,1,50.19,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,27.61
+Payment Options → Voucher Redemption,33.33,Positive,['Voucher to Wallet Conversion'],54.88,2025-06-01,26.26,1,43.43,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,23.89
+Product Availability → Online vs In-Store Discrepancy,-33.33,Negative,"['Frozen Items', 'Online and Physical Store Inventory']",59.45,2025-06-07,41.63,2,52.32,Watch,Negative x Watch,Tactical Corrections,P3,0.55,28.78
+Product Availability → Order Acceptance,-33.33,Negative,['Out-of-Stock Order Processing'],69.77,2025-06-19,26.26,1,52.37,Watch,Negative x Watch,Tactical Corrections,P3,0.55,28.8
+Product Availability → Order Fulfillment Consistency,-33.33,Negative,['Order Availability System'],86.36,2025-07-05,26.26,1,62.32,Escalate,Negative x Escalate,Contain Friction Emergence,P2,0.7,43.62
+Product Availability → Out-of-Stock Management,-6.67,Neutral,"['General Inventory', 'Inventory System', 'Metro Chef Line Chicken Bites and Chicken Fillet', 'Veal Meat', 'Vegetables']",85.21,2025-07-04,67.89,5,78.29,Escalate,Neutral x Escalate,Investigate Attrition Risks,P2,0.7,54.8
+Product Availability → Real-Time Stock Visibility,-33.33,Negative,"['App Product Display', 'App Stock Display', 'Black Pomfret', 'Brite, Chicken Spread', 'Metro App', 'Mobile App Stock Display', 'Nestle Sweet Yogurt', 'Olives', 'Online Inventory System', 'Online Product Display', 'Out-of-Stock Notification', 'Website Stock Status']",97.37,2025-07-14,97.19,12,97.3,Emergency,Negative x Emergency,Urgent Loyalty Recovery,P1,0.85,82.7
+Product Customization → Order Customization,-33.33,Negative,['Chicken Order Customization'],81.87,2025-07-01,26.26,1,59.63,Watch,Negative x Watch,Tactical Corrections,P3,0.55,32.8
+Product Information → Expiration Dates,-33.33,Negative,['Short Expiry Products'],61.06,2025-06-09,26.26,1,47.14,Watch,Negative x Watch,Tactical Corrections,P3,0.55,25.93
+Product Information → Product Details,-50.0,Negative,['Online Product Listings'],52.03,2025-05-28,41.63,2,47.87,Watch,Negative x Watch,Tactical Corrections,P3,0.55,26.33
+Product Quality → Consistency,-33.33,Negative,['Quail Pack'],49.99,2025-05-25,26.26,1,40.5,Watch,Negative x Watch,Tactical Corrections,P3,0.55,22.28
+Product Quality → Freshness,33.33,Positive,['Mutton and Vegetables'],48.03,2025-05-22,26.26,1,39.32,Weak,Positive x Weak,Gradual Improvements,P5,0.2,7.86
+Product Quality → Product Condition,-33.33,Negative,"['Kandhari Pomegranate', 'Meat']",91.09,2025-07-09,41.63,2,71.3,Escalate,Negative x Escalate,Contain Friction Emergence,P2,0.7,49.91
+Product Quality → Product Freshness,-33.33,Negative,['Tuna Fish and Potatoes'],71.65,2025-06-21,26.26,1,53.5,Watch,Negative x Watch,Tactical Corrections,P3,0.55,29.42
+Product Quality → Product Safety,-100.0,Very Negative,['Meat'],42.04,2025-05-12,26.26,1,35.73,Weak,Very Negative x Weak,Flag for Vulnerability,P5,0.2,7.15
+Product Variety → International Products,33.33,Positive,['Pakistani Brands'],92.31,2025-07-10,26.26,1,65.89,Escalate,Positive x Escalate,Loyalty Accelerant,P2,0.7,46.13
+Promotions & Discounts → Free Bag Offer,33.33,Positive,['Free Bag on 4000+ Shopping'],79.72,2025-06-29,26.26,1,58.34,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,32.09
+Promotions & Discounts → Voucher Availability,33.33,Positive,['Discount Vouchers'],48.68,2025-05-23,26.26,1,39.71,Weak,Positive x Weak,Gradual Improvements,P5,0.2,7.94
+Promotions & Discounts → Voucher Redemption,-100.0,Very Negative,['Rs 150 Voucher'],86.36,2025-07-05,26.26,1,62.32,Escalate,Very Negative x Escalate,Prevent Active Loyalty Churn,P1,0.85,52.97
+Promotions & Discounts → Voucher Value,33.33,Positive,['10k Purchase Voucher'],66.14,2025-06-15,26.26,1,50.19,Watch,Positive x Watch,Deepen Retention Programs,P3,0.55,27.61
+Return & Refund Policy → Branch-Specific Return Restriction,-33.33,Negative,['Heater Exchange Policy'],61.06,2025-06-09,26.26,1,47.14,Watch,Negative x Watch,Tactical Corrections,P3,0.55,25.93

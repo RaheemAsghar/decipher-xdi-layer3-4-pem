@@ -1,0 +1,863 @@
+pdca_problem_statement_prompt = """
+
+## 🧩 **Experience Driver – Cluster Mode: Final OU Completion**
+
+### 🎯 **Purpose**
+You are now entering the final stage of Orchestration Unit (OU) creation. Your role is to synthesize a 
+structured feedback cluster into a **fully formed enterprise action unit** by generating the final five 
+strategic fields needed for activation.
+
+Each cluster represents 2–50 behaviorally and emotionally aligned feedback rows. All records are **pre-classified** 
+with the same:
+
+* Experience Driver
+* Feedback Type
+* Emotion
+* Opportunity Stream
+* Customer Journey, Stage & Interaction Moment
+* Entity Metadata, Context, and Keywords
+
+This upstream processing ensures the **core structure of the OU is already in place**.
+
+---
+
+### ✅ **Your Task**
+
+Generate the **five remaining fields** that require strategic language, behavioral precision, and emotional fidelity. These are:
+
+1. **`matters`** – Why this experience driver cluster matters from the customer’s perspective
+2. **`semantic_action_statement`** – A two-part orchestration statement: customer reality and enterprise response
+3. **`stream_justification`** – Why this aligns with the specified opportunity stream (Fix, Optimize, Innovate, Amplify)
+4. **`behavioral_impact`** – What behavioral improvements are expected if addressed
+5. **`problem_statement`** – A PDCA-ready narrative stating what happened, where, why it matters, and what’s at risk
+
+---
+
+### 🧠 Strategic Focus
+Your outputs will be stitched into the final Orchestration Unit and routed for enterprise action. 
+Be precise, grounded in signal, and true to the behavioral essence of the feedback cluster.
+
+Do not invent. Do not dilute. Complete the OU with clarity and consequence.
+
+---
+
+### 📦 **Cluster Input Structure**
+
+Each row in the cluster is already **pre-classified** and includes the following fields:
+* `experience_driver` (fixed) 
+* `entity_name` *(pre-synthesized)* 
+* `theme` (fixed) 
+* `feedback_type` (fixed) 
+* `emotion` (fixed) 
+* `context` *(pre-synthesized)*
+* `keywords` *(pre-synthesized)*
+* `customer_journey` *(pre-selected)*
+* `journey_stage` *(pre-selected)*
+* `interaction_moment` *(pre-selected)*
+* `opportunity_stream` *(fixed)*
+* `customer_effort_score` *(aggregated)*
+
+You will be provided with this cluster as structured input. Your task is **not** to reclassify these fields, 
+but to build upon them.
+
+---
+
+### ✅ **Your Output Must Include Only the Following Final 5 Fields:**
+
+These are the only fields you are responsible for completing:
+
+1. **`matters`**
+   → A behavioral statement summarizing why this driver matters to the customer
+
+2. **`semantic_action_statement`**
+   → A 2-part statement (customer reality + enterprise response) following DecipherOS orchestration format
+
+3. **`stream_justification`**
+   → A narrative explaining why this belongs to the assigned opportunity stream
+
+4. **`behavioral_impact`**
+   → A concise explanation of the desired behavioral shift or improvement
+
+5. **`problem_statement`**
+   → A PDCA-ready narrative capturing what happened, when, why it matters, and what’s at stake
+
+These five fields complete the Orchestration Unit and prepare it for PDCA execution.
+
+---
+
+#### **2. PDCA Problem Statement (Text Block)**
+You must generate a single, unified `problem_statement` that follows this exact structure:
+
+```
+problem_statement: >
+The customer [feedback summary]. The orchestration stream is [stream] — [stream definition].
+This occurred during the [journey stage] phase at the [interaction moment] interaction moment.
+It was routed here because [stream justification].
+If not addressed, [behavioral consequence].
+```
+
+---
+
+### ⚠️ DO NOT:
+
+* Paraphrase weakly or collapse nuance across the cluster
+* Fabricate new insights or extrapolate beyond the data
+* Misrepresent the emotional tone or the stream classification
+* Omit journey and interaction context
+
+---
+
+Your job is to **consolidate and finalize** the missing orchestration fields for this cluster.
+This is the **final construction step** before the Orchestration Unit is passed to execution teams.
+
+Treat this like the enterprise **activation key**: precise, emotionally faithful, and execution-ready.
+
+The next guided sections will walk you through generating each of the five fields.
+
+--- 
+
+## 🔍 **Matters – Behavioral Trigger Extraction (Cluster Mode)**
+
+### 🎯 **Purpose**
+**Matters** is the behavioral core of the OU — a precise, cluster-synthesized statement of 
+what *actually happened* from the customers’ perspective.
+
+It is:
+
+* Not analysis
+* Not abstraction
+* Not extrapolation
+
+It is a **customer-described behavioral reality** — friction, delight, confusion, or desire — drawn from 
+repeated and converging expressions within the cluster.
+
+In the OU structure, **Matters appears in Section 2**:
+
+> "We need to [Stream] → [Experience Driver] to address [Matters]..."
+
+---
+
+### 🧪 **Matters Extraction Hierarchy (Cluster Priority Order)**
+
+Extract behavioral triggers using this strict order of precedence, applied across all rows in the cluster:
+1. **Raw Customer Voice** (quoted or paraphrased from multiple inputs)
+2. **Context** (dominant behavioral phrasing across rows)
+3. **Keywords** (repeating object/action signals)
+4. **Entity Name** (if tightly linked to the behavior described)
+5. **Journey Stage** (only if behaviorally explicit)
+6. **Feedback Type** (for pattern selection only — never used for content)
+
+✅ Do not synthesize.
+✅ Do not interpret.
+✅ Do not paraphrase.
+
+Only reassemble **dominant, observable behavioral expressions** as directly evidenced in the cluster.
+
+---
+
+## ✅ **MATTERS Quality Criteria (Cluster Edition)**
+
+| ✔ Attribute         | ✅ What It Means                                                   |
+| ------------------- | ----------------------------------------------------------------- |
+| **Behavioral**      | Rooted in what multiple customers **actually did or experienced** |
+| **Specific**        | Anchored in 1–2 clear, repeated behavior phrases                  |
+| **Customer-Led**    | Uses expressions that reflect **customer-originated framing**     |
+| **Execution-Ready** | Can be acted on directly by Ops, UX, Product, etc.                |
+
+---
+
+## ❌ **Avoid These MATTERS Errors**
+
+| 🚫 Bad Example    | ⚠ Why It Fails                                       | ✅ Fix Example                                        |
+| ----------------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| `bad UX`          | ❌ Vague and jargon — not rooted in specific behavior | `confusing layout that delayed order completion`     |
+| `technical error` | ❌ Empty phrasing — doesn’t explain user experience   | `app crash during payment that forced order restart` |
+| `good service`    | ❌ Overly general — not tied to a specific moment     | `agent follow-up that built customer reassurance`    |
+| `usability issue` | ❌ Abstract and unanchored                            | `invisible CTA that delayed first-time sign-up`      |
+
+---
+
+## ✅ OU Quality Locks & MATTERS Validation (Cluster Edition)
+Every **Orchestration Unit (OU)** synthesized from a behavioral cluster must pass **all five semantic locks** 
+to qualify for:
+
+* 📤 **Execution Routing**
+* 🧠 **Institutional Archiving (IOA)**
+* 🔁 **Memory-Based Nudging (SG)**
+
+> ❌ If any lock fails, the OU is disqualified from orchestration. No exceptions.
+
+---
+
+### ✅ **1. Singular & Distinct**
+Does the OU target **one specific Experience Driver**, with a **unique triad of:**
+> `Feedback Type × Opportunity Stream × Matters`
+
+…that **emerges as a coherent signal** from the cluster and justifies **independent orchestration**?
+
+---
+
+### ✅ **2. Behaviorally Anchored**
+Is the `Matters` phrase grounded in **direct, observable behaviors**, consistently reflected across multiple feedback rows — and free from themes, assumptions, or interpretations?
+
+---
+
+### ✅ **3. Execution-Ready**
+Can the OU be routed directly to **Ops, UX, Product, or Communications**, without needing reinterpretation, 
+human explanation, or manual decoding of intent?
+
+---
+
+### ✅ **4. Feedback-Aligned**
+Does the **Feedback Type** match the dominant **tone and intent** of the cluster, and does it correspond 
+faithfully with:
+
+* **Interaction Moment** (shared trigger or touchpoint), and
+* **Context** (shared customer experience narrative)?
+
+Does the phrasing preserve **customer intent fidelity**?
+
+---
+
+### ✅ **5. Semantically Complete**
+Do the two sections of the OU form a **causally coherent loop**, where the **triggered experience** 
+leads clearly to the **strategic response**?
+
+```
+SECTION 1: [Feedback Type] → [Interaction Moment] → [Context]  
+SECTION 2: [Opportunity Stream] → [Experience Driver] → [Matters]
+```
+
+---
+
+## 🧩 **ORCHESTRATION UNIT FORMAT (Cluster Mode)**
+
+Construct one unified OU per cluster using this format:
+- **OU Name**: `[Entity Name] – [Feedback Type] – [Opportunity Stream]`
+
+- **Semantic Action Statement**:
+
+  ```text
+  SECTION 1: THE CUSTOMER REALITY  
+  The customer [submitted/made/gave] a [Feedback Type] that during [Interaction Moment], [Context]
+
+  SECTION 2: THE STRATEGIC RESPONSE  
+  We need to [Opportunity Stream] → [Experience Driver] to address [Matters]
+  ```
+- **Matters**: `Dominant behavioral trigger observed across the cluster, described in plain, precise language`
+- **Stream Justification**: `Why this stream is correct, based on cluster-wide behavior, urgency, and emotional signal`
+- **Behavioral Impact**: `What this OU aims to shift — e.g., trust, ease, friction, adoption, retention, loyalty`
+
+---
+
+## 🧠 **ADVANCED SEMANTIC PATTERNS (Cluster Mode)**
+
+### 🧷 **Behavior-First Driver Selection**
+
+When multiple entities are referenced in the cluster, center the OU around the **Experience Driver most 
+repeatedly tied to the dominant behavior and stream intent** — **not** just the most frequently mentioned one.
+
+> Example:
+> If several rows mention both checkout and delivery, but the consistent friction or suggestion relates to 
+delivery time slots,
+> the correct OU is: `Delivery Experience → Timing`, not `Checkout Flow → Summary`.
+
+✅ Always resolve to the driver with the clearest behavioral–stream–emotion convergence.
+
+---
+
+### 🌊 **Causal Precision for Context + Matters**
+
+Do not describe surface symptoms — capture the **source behavior**.
+Always distinguish **what happened** from **why it matters**.
+
+| ❌ Surface Symptom    | ✅ Root Behavior for Context & Matters                           |
+| -------------------- | --------------------------------------------------------------- |
+| `cart was abandoned` | `confusing payment flow that triggered hesitation at checkout`  |
+| `delivery was late`  | `missed time slot commitments that disrupted planned meal prep` |
+
+✅ Use the cluster to **walk backwards** from pain or praise to the behavioral trigger.
+
+---
+
+### 🚀 **Stream Alignment – Innovate & Amplify**
+
+For **Innovate** and **Amplify** OUs:
+
+* **Matters** must reflect forward-looking, value-driving behaviors (not complaints)
+* **Interaction Moment** must tie to usage patterns or emerging desires
+* **Context** must reflect evolving expectations, not breakdowns
+* **Stream Justification** must highlight future impact or competitive relevance
+* **Behavioral Impact** must signal an **expansion**, not a fix
+
+✅ Reject vague fluff like:
+
+* ❌ “add more features”
+* ❌ “improve experience”
+
+✅ Replace with:
+
+* ✅ “introduce reorder shortcuts that reduce weekly friction”
+* ✅ “spotlight agent follow-ups that deepen trust”
+
+---
+
+## 🧬 **NON-NEGOTIABLE SEMANTIC LAWS (Cluster Mode)**
+
+| Principle                        | Enforcement Rule                                                            |
+| -------------------------------- | --------------------------------------------------------------------------- |
+| 🎯 **Driver Accuracy**           | OU must focus on **one clear Experience Driver** tied to dominant behavior  |
+| 🗣️ **MATTERS Authenticity**     | Must reflect **real behavioral triggers**, never abstractions or themes     |
+| 🔍 **Context Coherence**         | Grounded in what customers **actually experienced**, not inferred summaries |
+| 🕓 **Moment Precision**          | Use **time-anchored, shared triggers** across the cluster                   |
+| 📈 **Impact Fidelity**           | Behavioral Impact must represent what the OU seeks to shift or protect      |
+| 🔒 **Single-Stream Enforcement** | All fields must be aligned to **one fixed Opportunity Stream**              |
+| 🧼 **Semantic Hygiene**          | Replace vague labels like “bad UX” with actionable phrasing                 |
+
+---
+
+### ⚠️ **REMEMBER: This Is Not…**
+
+This is not:
+* ❌ A summary
+* ❌ A category
+* ❌ A blend
+* ❌ An analysis
+
+This is:
+> 🎯 **A Semantic Orchestration Payload**
+> Built from `Interaction Moment + Context + Matters + Stream Justification + Behavioral Impact` —
+> and crafted to **drive enterprise action from real behavior.**
+
+---
+
+### 🧩 **Orchestration Unit – SEMANTIC COMPONENTS (Cluster Mode)**
+
+### 🎯 **Purpose**
+
+An **Orchestration Unit (OU)** is a **micro-mission**, constructed from a unique semantic signature derived from a cluster of aligned feedback rows:
+
+> **Experience Driver × Feedback Type × Opportunity Stream** *(already pre-classified)*
+
+This signature is synthesized into a **two-part instruction payload**, used across:
+
+* 📤 **Execution Routing**
+* 🧠 **Institutional Archiving (IOA)**
+* 🔁 **Strategic Recall & Nudging (SG)**
+
+Each OU reflects **shared customer experience patterns** that emerge as **action-grade behavior** within a specific emotional and strategic context.
+
+The following fields are **pre-locked** and not to be generated:
+
+* `Experience Driver`
+* `Feedback Type`
+* `Opportunity Stream`
+
+Your job is to synthesize **only the five core behavioral fields** required to activate orchestration.
+
+---
+
+## 🔐 **Canonical Two-Part Format**
+
+```
+SECTION 1: THE CUSTOMER REALITY  
+The customer submitted a [Feedback Type] during [Interaction Moment], [Context]
+
+SECTION 2: THE STRATEGIC RESPONSE  
+We need to [Opportunity Stream] → [Experience Driver] to address [MATTERS]
+```
+
+This ensures:
+
+* 🎯 Behavioral traceability
+* ⏱ Temporal and interactional precision
+* 🚀 Enterprise-grade actionability
+
+---
+
+## ⚙️ **Section 1 – Feedback Intent × Trigger Moment × Observed Context**
+
+This section answers:
+
+* **Why** did customers speak?
+* **When** was the experience triggered?
+* **What** exactly occurred across the cluster?
+
+| Component              | Description                                                                 |
+| ---------------------- | --------------------------------------------------------------------------- |
+| **Feedback Type**      | Already pre-locked (e.g., Complaint, Suggestion)                            |
+| **Interaction Moment** | Most frequently or clearly described triggering event or digital touchpoint |
+| **Context**            | Unified experience drawn from consistent narratives across feedback         |
+
+✅ Keep phrasing literal, precise, and anchored in the customer’s world — not in platform abstraction.
+
+---
+
+## 🎯 **Section 2 – Action Stream × Experience Driver × Behavioral Justification**
+
+This section converts the cluster’s shared behavioral signal into a **precise orchestration directive**.
+
+Only the following fields must be actively synthesized:
+* **Interaction Moment**
+* **Context**
+* **Matters**
+* **Semantic Action Statement (both sections)**
+* **OU Name**
+
+All other inputs — including `Feedback Type`, `Opportunity Stream`, and `Experience Driver` — are **pre-classified** 
+and must not be altered.
+
+---
+
+### 🔁 **[Opportunity Stream] – Directive Purpose**
+
+Each cluster is pre-assigned a **single opportunity stream** that defines the strategic intent:
+
+| Stream       | Purpose                                                     |
+| ------------ | ----------------------------------------------------------- |
+| **Fix**      | Resolve broken, failing, or misleading experiences          |
+| **Optimize** | Improve inefficient or effort-heavy workflows               |
+| **Innovate** | Build new features or flows based on emerging needs         |
+| **Amplify**  | Reinforce praise, delight, or emotionally rich interactions |
+
+✅ Always use the fixed phrasing:
+
+> `We need to [Stream] → [Experience Driver] to address...`
+
+---
+
+### 📍 **[Experience Driver] – Tactical Execution Anchor**
+
+Use the **canonical Experience Driver** format provided:
+> `"Category → Subcategory"`
+
+| ✅ Correct                               | ❌ Incorrect         |
+| --------------------------------------- | ------------------- |
+| `"Delivery Experience → Timing"`        | `"Late deliveries"` |
+| `"Digital Checkout → Promo Redemption"` | `"Promo issues"`    |
+
+✅ No edits.
+✅ No paraphrasing.
+✅ No substitutions.
+
+This is your **fixed execution surface**.
+
+---
+
+### 🔧 **[Matters] – Behavioral Justification (Cluster-Synthesized)**
+
+**Matters** is the **primary behavioral payload** — a single, converged expression of 
+**what customers actually did, encountered, or needed**.
+
+✅ Must be:
+
+* Behaviorally **observable**, not thematic
+* **Rooted in repetition** across multiple rows
+* **Customer-led**, not analytical
+* Immediately **actionable** by product or ops teams
+
+| ✅ Acceptable                        | ❌ Reject                   |
+| ----------------------------------- | -------------------------- |
+| `missing refund confirmation email` | `post-purchase UX problem` |
+| `confusing promo code application`  | `checkout logic issue`     |
+| `late evening slot unavailable`     | `logistics inefficiency`   |
+
+This is the most important field in Section 2. Get it right, and orchestration becomes inevitable.
+
+---
+
+## 📦 **Orchestration Unit – Required Payload Inputs (Cluster Mode)**
+
+Each synthesized **Orchestration Unit (OU)** must be constructed using the following fields. Only **5 fields are to be actively generated** — all others are **provided as context**.
+
+| **Field**                     | **Generated or Provided?** | **Description**                                               |
+| ----------------------------- | -------------------------- | ------------------------------------------------------------- |
+| **Interaction Moment**        | ✅ Generated by prompt      | Precise moment or trigger that surfaced the feedback          |
+| **Context**                   | ✅ Generated by prompt      | Unified factual narrative describing what happened            |
+| **Matters**                   | ✅ Generated by prompt      | Core behavioral trigger synthesized from cluster repetition   |
+| **Semantic Action Statement** | ✅ Generated by prompt      | Two-part OU statement (Customer Reality + Strategic Response) |
+| **OU Name**                   | ✅ Generated by prompt      | Label in format: `[Entity Name] – [Feedback Type] – [Stream]` |
+
+---
+
+### 🧠 **Pre-Classified Fields (Available as Context Only)**
+
+| Field                  | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| **Experience Driver**  | Canonical category → subcategory format                        |
+| **Feedback Type**      | Cluster-assigned label (e.g., Complaint, Suggestion)           |
+| **Opportunity Stream** | Stream routing based on emotion, behavior, and urgency         |
+| **Customer Journey**   | Journey Domain (e.g., Delivery, App Interaction)               |
+| **Journey Stage**      | Journey Phase (e.g., Checkout, Order Fulfillment)              |
+| **Theme**              | Theme from Layer 1 (e.g., Digital Checkout, Staff Behavior)    |
+| **Keywords**           | NLP-extracted repeating objects or actions across cluster rows |
+
+---
+
+✅ When the 5 target fields are completed using the provided metadata and feedback rows, the output becomes a **deployable emotional instruction layer** — ready to be:
+
+* ⚙️ Executed without manual translation
+* 🧠 Archived into the IOA for strategic recall
+* 🔁 Nudged back via SG during future pattern matches
+
+This is your **final OU synthesis layer** — memory-traceable, enterprise-routable, and behaviorally precise.
+
+---
+
+## 🧩 **Orchestration Unit Format – Experience Driver Specific (CLUSTER MODE – MANDATORY)**
+
+### 🎯 **Two-Part Semantic Action Statement**
+
+```
+SECTION 1: THE CUSTOMER REALITY  
+The customer submitted a [Feedback Type] that during [Interaction Moment] [Context]
+
+SECTION 2: THE STRATEGIC RESPONSE  
+We need to [Opportunity Stream] → [Experience Driver] to address [Matters]
+```
+
+This is not:
+* ❌ a summary
+* ❌ an insight
+* ❌ an abstraction
+
+This is a **semantic instruction string** — the execution-grade representation of a **clustered customer experience**, 
+expressing an aggregated, behaviorally coherent signal.
+
+---
+
+## 🧠 **Why This Format Exists**
+
+Each section encodes a distinct layer of orchestration logic:
+
+| Section       | Purpose                                                                     |
+| ------------- | --------------------------------------------------------------------------- |
+| **Section 1** | Captures **intent fidelity** and **shared situational trigger** across rows |
+| **Section 2** | Declares the **enterprise response** and **behavioral justification**       |
+
+Together, they guarantee:
+* 🔁 Feedback-to-action traceability across clusters
+* 🎯 Alignment with one strategic stream
+* ⚙️ Execution-readiness, with no ambiguity or interpretation required
+
+---
+
+## 🔁 **Flexible, Not Loose – Phrasing Guidelines (Cluster-Aware)**
+
+You may adjust **surface phrasing** for fluidity or grammar — but you must preserve:
+* **Exact structural format**
+* **Emotion-stream-driver alignment**
+* **Cluster-consistent feedback type voice**
+
+---
+
+### ✅ **Section 1 – Feedback Phrasing Templates**
+
+| Feedback Type          | Valid Openers for Cluster Narratives                           |
+| ---------------------- | -------------------------------------------------------------- |
+| Complaint              | `"The customer submitted a Complaint that during..."`          |
+| Compliment             | `"The customer gave a Compliment that during..."`              |
+| Request                | `"The customer made a Request that during..."`                 |
+| Suggestion             | `"The customer made a Suggestion that during..."`              |
+| Question               | `"The customer asked a Question that during..."`               |
+| Product Usage Insight  | `"The customer shared a Product Usage Insight that during..."` |
+| Emerging Trend / Alert | `"The customer surfaced a Market Insight that during..."`      |
+
+✅ Use “during” or “while” — whichever reads fluently with the selected interaction moment and context.
+
+---
+
+### ✅ **Section 2 – Action Statement Templates**
+
+| Stream   | Allowed Verbs (Cluster Output)                                             |
+| -------- | -------------------------------------------------------------------------- |
+| Fix      | `We need to Fix...` / `We must Fix...` / `We should Fix...`                |
+| Optimize | `We need to Optimize...` / `We must Optimize...` / `We should Optimize...` |
+| Innovate | `We need to Innovate...` / `We must Innovate...` / `We should Innovate...` |
+| Amplify  | `We need to Amplify...` / `We must Amplify...` / `We should Amplify...`    |
+
+⚠ Maintain consistency. Do **not** mix "need to" and "must" in the same OU statement.
+
+---
+
+## 🔐 **Component Construction Rules (Cluster Mode)**
+
+### 🧩 **Section 1: The Customer Reality**
+
+| Component              | Rule                                                                 |
+| ---------------------- | -------------------------------------------------------------------- |
+| **Feedback Type**      | Must match the classified, dominant cluster type                     |
+| **Interaction Moment** | Must be derived from shared, repeated temporal triggers across rows  |
+| **Context**            | Must be behaviorally distilled from factual, converging row patterns |
+
+---
+
+### 🎯 **Section 2: The Strategic Response**
+
+| Component              | Rule                                                                       |
+| ---------------------- | -------------------------------------------------------------------------- |
+| **Opportunity Stream** | Must match the preassigned stream for this cluster                         |
+| **Experience Driver**  | Use canonical form only: `"Theme → Subcategory"` — no aliases or shortcuts |
+| **MATTERS**            | Must be derived from repeat, observable behaviors — not inferred meaning   |
+
+---
+
+## 🚫 **Do Not Violate These Rules**
+
+| ❌ Violation                                | ⚠ Why It Fails                                            |
+| ------------------------------------------ | --------------------------------------------------------- |
+| Merging Section 1 and 2                    | Breaks cause-effect linkage                               |
+| Using abstract terms like “UX issue”       | Fails execution anchoring — lacks behavioral clarity      |
+| Omitting required fields (e.g., Context)   | Produces structurally incomplete or non-actionable output |
+| Generic phrasing (“concerning \[Matters]”) | Deprecated — fails MATTERS discipline                     |
+
+---
+
+## 🔍 **Final Instruction**
+
+This format is **non-negotiable**.
+It is the **semantic contract** between:
+
+> 🧠 DecipherOS Intelligence Engine × 🏢 Enterprise Execution Systems
+
+When correctly formed, this becomes the **atomic unit of EmotionOps** — capable of:
+* Being archived
+* Nudged into future memory
+* Evaluated for business impact
+* Routed to the correct domain with zero ambiguity
+
+---
+
+## ✅ **Examples (Two-Section Format)**
+
+### **Fix Example**
+
+- SECTION 1: THE CUSTOMER REALITY  
+The customer submitted a Complaint that when their order arrived items were missing without prior notification
+
+- SECTION 2: THE STRATEGIC RESPONSE  
+We need to Fix → Order Accuracy → Missing Item Notification to address missing items that weren’t flagged before delivery
+
+---
+
+### **Amplify Example**
+
+- SECTION 1: THE CUSTOMER REALITY  
+The customer gave a Compliment that during the delivery handoff the staff remembered their preferences 
+and created a personal connection
+
+- SECTION 2: THE STRATEGIC RESPONSE  
+We need to Amplify → Staff Interaction to address personalized delivery behavior that strengthens customer rapport
+
+---
+
+### **Optimize Example**
+
+SECTION 1: THE CUSTOMER REALITY  
+The customer shared a Product Usage Insight that while searching for products, inconsistent results 
+disrupts discovery
+
+SECTION 2: THE STRATEGIC RESPONSE  
+We need to Optimize → Product Search to address inconsistent search results that interrupt browsing confidence
+
+---
+
+### **Innovate Example**
+
+SECTION 1: THE CUSTOMER REALITY  
+The customer made a Suggestion that while browsing the snack section they wanted more snack 
+options to match evolving preferences
+
+SECTION 2: THE STRATEGIC RESPONSE  
+We need to Innovate → Product Variety → Inventory Expansion to address emerging snack preferences that call for expanded selection
+
+
+---
+
+## 🧠 **PROBLEM STATEMENT – EXECUTION-GRADE STRATEGIC SYNTHESIS**
+
+### 🎯 **Purpose**
+Transform the orchestration unit into a **PDCA-ready problem statement** — a natural, fluent paragraph that 
+preserves all execution-critical components, grounded in behavior, timing, and consequence.
+
+This is not a stitched template.
+It is a **semantic narrative** constructed using five structured ingredients:
+
+---
+
+### 🔐 **Canonical Inputs**
+
+You will be given the following:
+- `semantic_action_statement` → contains SECTION 1 (Customer Reality) and SECTION 2 (Strategic Response)
+- `customer_journey` → e.g., “Delivery Fulfillment”
+- `journey_stage` → e.g., “Time Slot Commitment”
+- `stream_justification` → rationale for why the stream was selected (Fix, Optimize, Innovate, Amplify)
+- `behavioral_impact` → describes what happens if the issue is left unresolved or the opportunity is missed
+
+---
+
+### 🧬 **Construction Rules**
+
+| Component                  | What to Do                                                                                  |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| **Customer Reality**       | Begin with what the customer said or felt — emotional tone matters                          |
+| **Interaction Context**    | Embed when and where it occurred — use `customer_journey` and `journey_stage` fluently      |
+| **Stream Declaration**     | State the orchestration stream (Fix / Optimize / Innovate / Amplify) and its strategic role |
+| **Routing Justification**  | Use `stream_justification` to explain **why** this stream was chosen                        |
+| **Behavioral Consequence** | Close with `behavioral_impact` — what’s at stake if ignored or unutilized                   |
+
+---
+
+### ✅ **Examples**
+
+problem_statement: >
+  The customer shared a Complaint that their promo code wouldn’t apply properly during checkout. 
+  This occurred in the Checkout Preparation stage within the Offer Application journey. 
+  The orchestration stream is Fix — the expectation exists but the current interface fails to honor it reliably. 
+  This issue was routed here because the redemption input is present but not intuitive or functional under all flows. 
+  If left unaddressed, it could suppress promo usage and increase checkout friction.
+
+---
+
+problem_statement: >
+  The customer expressed adoration for their experience and suggested that their positive reviews 
+  should be more visible on product pages. This occurred during the Post-Purchase phase at the Product Feedback moment. 
+  The orchestration stream is Amplify — designed to surface and scale emotionally positive moments. 
+  It was routed here because latent trust and goodwill are not being leveraged to reinforce future conversion. 
+  If unutilized, the business misses an opportunity to build social proof and deepen brand equity.
+```
+
+---
+
+### 🔁 **Final Law**
+
+This is not a stitched block.
+This is a **strategic diagnosis statement** — the exact entry point for the Plan phase of the PDCA loop.
+It must be fluent, strategic, emotionally grounded, and execution-ready.
+
+When done right, it becomes the **first sentence of enterprise orchestration**.
+
+---
+
+
+### 🔐 **MANDATORY COMPLIANCE WITH EXAMPLES**
+> You must **treat the full examples at the end of this prompt as canonical ground truth**.
+> They represent the **definitive blueprint** for tone, format, field relationships, and stream-specific logic.
+
+This is **non-negotiable**.
+* Do **not** skip them.
+* Do **not** deviate from their structural fidelity.
+* Do **not** introduce your own abstractions or interpretations.
+
+Your entire output **must mirror the logic and fluency demonstrated in those examples**. If there is ever 
+ambiguity, **resolve it by matching the pattern shown** — not by inventing new phrasing or structure.
+
+These examples are the **contract of execution**.
+Break it, and the orchestration logic fails.
+
+---
+
+### 📘 **Output Format**
+
+Produce the complete block with all fields in this exact format:
+
+- Matters: "[brief issue description]"
+- Semantic Action Statement: 
+  SECTION 1: THE CUSTOMER REALITY
+  [Customer reality content]
+  
+  SECTION 2: THE STRATEGIC RESPONSE
+  [Strategic response content]
+- Stream Justification: [Justification content]
+- Behavioral Impact: [Impact content]
+- problem_statement: [Fluent paragraph combining all elements]
+
+---
+
+### ✅ **Example 1 — FIX STREAM**
+
+- Matters: "late premium deliveries that lead to product spoilage"
+- Semantic Action Statement: 
+  SECTION 1: THE CUSTOMER REALITY
+  The customer submitted a Complaint that their frozen items were ruined when their premium delivery arrived late 
+
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Fix → Delivery Experience → Timing to address late premium deliveries that lead to product spoilage
+- Stream Justification: A premium time slot was missed, directly causing product loss. This breaks a paid service promise
+  and demands urgent remediation.
+- Behavioral Impact: Restore reliability of paid delivery services, reduce risk of perishable spoilage,
+  and protect customer loyalty.
+- problem_statement: The customer submitted a Complaint that their frozen items were ruined when their premium delivery arrived late.
+  The orchestration stream is Fix — aimed at remediating breakdowns in paid service expectations.
+  This issue occurred during the Post-Purchase phase at the Delivery Completion interaction moment.
+  It was routed here because a promised time slot was missed, directly causing product loss.
+  If unaddressed, this breaks trust in premium services and threatens long-term customer retention.
+
+---
+
+### ✅ **Example 2 — OPTIMIZE STREAM | Ambivalence | Website Navigation**
+
+- Matters: "unpredictable layouts that make item search confusing"
+- Semantic Action Statement: 
+  SECTION 1: THE CUSTOMER REALITY
+  The customer submitted a Complaint that when trying to find items on the site the layout kept 
+  changing unpredictably
+
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Optimize → Product Discovery → Navigation Experience to address unpredictable layouts that make item search confusing
+- Stream Justification: The core function works, but erratic layout behavior introduces friction that undermines browsing confidence. This creates hesitation — not total failure — making it an Optimize case.
+- Behavioral Impact: Reduce cognitive load, increase findability, and improve first-attempt product discovery.
+- problem_statement: The customer submitted a Complaint that when trying to find items on the site the layout kept changing unpredictably.
+  The orchestration stream is Optimize — focused on refining existing experiences that cause usability friction.
+  This issue emerged during the Product Discovery phase at the Navigation Experience interaction moment.
+  It was routed here because the core function exists but inconsistent layout behavior disrupts confidence.
+  If not resolved, it may reduce findability, increase effort, and lead to browsing drop-offs.
+
+---
+
+### ✅ **Example 3 — AMPLIFY STREAM | Adoration | Staff Interaction**
+
+- Matters: "unprompted, proactive gestures that show human care"
+- Semantic Action Statement: 
+  SECTION 1: THE CUSTOMER REALITY
+  The customer gave a Compliment that during their home delivery the delivery person noticed their 
+  injury and brought the bags inside without being asked
+
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Amplify → Customer Service → Staff Interaction to address unprompted, proactive gestures that show human care
+- Stream Justification: A spontaneous act of empathy created a memorable human moment. It represents emotional surplus,
+  worthy of institutional memory and amplification.
+- Behavioral Impact: Deepen emotional loyalty, reinforce service reputation, and create brand stories worth sharing.
+- problem_statement: The customer gave a Compliment that during their home delivery the delivery person noticed their injury 
+  and brought the bags inside without being asked. The orchestration stream is Amplify — designed to scale 
+  emotionally resonant moments that exceed expectations. This occurred during the Post-Purchase phase at 
+  the Staff Interaction interaction moment. It was routed here because the gesture reflects unprompted empathy 
+  not yet formalized into service SOPs. If not institutionalized, such moments remain isolated and lose their 
+  potential to drive brand loyalty and emotional differentiation.
+
+---
+
+### ✅ **Example 4 — INNOVATE STREAM | Appreciation | Checkout Features**
+
+- Matters: "one-tap basket reordering that simplifies repeat purchase journeys"
+- Semantic Action Statement: 
+  SECTION 1: THE CUSTOMER REALITY
+  The customer made a Suggestion that when reordering items they wanted a simpler way to repeat past 
+  purchases with a single tap
+
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Innovate → Checkout Experience → Reorder Flow to address one-tap basket reordering that simplifies repeat purchase journeys
+- Stream Justification: The customer expresses a desire for a new convenience feature that does not currently exist — making it a clear innovation opportunity.
+- Behavioral Impact: Increase reordering conversion, reduce friction for habitual buyers, and strengthen app loyalty.
+- problem_statement: The customer made a Suggestion that when reordering items they wanted a simpler way to repeat past purchases 
+  with a single tap. The orchestration stream is Innovate — intended to introduce net-new capabilities that 
+  anticipate convenience expectations. This occurred during the Post-Purchase phase at the Reorder Preparation 
+  interaction moment. It was routed here because current reorder flows lack one-tap simplicity for repeat buyers. 
+  If not addressed, this gap may reduce conversion efficiency and weaken loyalty among habitual customers.
+
+---
+
+"""
+
+
+

@@ -1,0 +1,157 @@
+from sentence_transformers import SentenceTransformer, util
+from collections import defaultdict
+import uuid
+import numpy as np
+from typing import List, Dict, Any, Tuple
+import logging
+
+class CSLIClusteringEngine:
+"""
+Cross-Stream Learning Intelligence (CSLI) Clustering Engine
+Detects semantic convergence across disparate Orchestration Units
+"""
+
+```
+def __init__(self, model_name: str = 'all-mpnet-base-v2'):
+    self.model = SentenceTransformer(model_name)
+    self.logger = logging.getLogger(__name__)
+    logging.basicConfig(level=logging.INFO)
+
+def generate_embeddings(self, ou_list: List[Dict[str, Any]]) -> Tuple[np.ndarray, List[int]]:
+    problem_statements = [ou.get('problem_statement', '') for ou in ou_list]
+    valid_statements = [(i, stmt) for i, stmt in enumerate(problem_statements) if stmt.strip()]
+    if not valid_statements:
+        raise ValueError("No valid problem statements found")
+    statements_only = [stmt for _, stmt in valid_statements]
+    embeddings = self.model.encode(statements_only, convert_to_tensor=True, show_progress_bar=True)
+    return embeddings, [i for i, _ in valid_statements]
+
+def compute_similarity_matrix(self, embeddings: np.ndarray) -> np.ndarray:
+    return util.cos_sim(embeddings, embeddings).cpu().numpy()
+
+def find_optimal_threshold(self, similarity_matrix: np.ndarray, min_threshold: float = 0.75,
+                           max_threshold: float = 0.95, step: float = 0.05) -> float:
+    best_threshold = min_threshold
+    best_score = 0
+    for threshold in np.arange(min_threshold, max_threshold + step, step):
+        clusters = self._cluster_with_threshold(similarity_matrix, threshold)
+        if clusters:
+            cluster_sizes = [len(cluster) for cluster in clusters if len(cluster) > 1]
+            if cluster_sizes:
+                size_score = np.mean([min(size / 10, 1) for size in cluster_sizes])
+                quality_score = len(cluster_sizes) / len(similarity_matrix)
+                total_score = size_score * quality_score
+                if total_score > best_score:
+                    best_score = total_score
+                    best_threshold = threshold
+    self.logger.info(f"Optimal threshold selected: {best_threshold:.3f} (score: {best_score:.3f})")
+    return best_threshold
+
+def _cluster_with_threshold(self, similarity_matrix: np.ndarray, threshold: float) -> List[List[int]]:
+    visited = set()
+    clusters = []
+    n = len(similarity_matrix)
+    for i in range(n):
+        if i in visited:
+            continue
+        cluster = []
+        stack = [i]
+        while stack:
+            current = stack.pop()
+            if current in visited:
+                continue
+            visited.add(current)
+            cluster.append(current)
+            for j in range(n):
+                if j not in visited and similarity_matrix[current][j] >= threshold:
+                    stack.append(j)
+        if len(cluster) > 1:
+            clusters.append(cluster)
+    return clusters
+
+def synthesize_problem_statement(self, members: List[Dict[str, Any]]) -> str:
+    statements = [m['problem_statement'] for m in members if 'problem_statement' in m]
+    if not statements:
+        return ""
+    embeddings = self.model.encode(statements, convert_to_tensor=True)
+    centroid = embeddings.mean(dim=0)
+    similarities = util.cos_sim(centroid, embeddings)[0]
+    best_idx = int(similarities.argmax())
+    return statements[best_idx]
+
+def cluster_ous_by_similarity(self, ou_list: List[Dict[str, Any]], threshold: float = None) -> Tuple[List[List[int]], float, Dict[str, Any]]:
+    embeddings, valid_indices = self.generate_embeddings(ou_list)
+    similarity_matrix = self.compute_similarity_matrix(embeddings)
+    if threshold is None:
+        threshold = self.find_optimal_threshold(similarity_matrix)
+    clusters = self._cluster_with_threshold(similarity_matrix, threshold)
+    mapped_clusters = [[valid_indices[i] for i in cluster] for cluster in clusters]
+    quality_metrics = self._compute_cluster_quality(similarity_matrix, clusters, threshold)
+    return mapped_clusters, threshold, quality_metrics
+
+def _compute_cluster_quality(self, similarity_matrix: np.ndarray, clusters: List[List[int]], threshold: float) -> Dict[str, Any]:
+    if not clusters:
+        return {"avg_intra_cluster_similarity": 0, "cluster_cohesion": 0, "coverage": 0}
+    intra_similarities = []
+    cohesion_scores = []
+    for cluster in clusters:
+        if len(cluster) > 1:
+            cluster_sims = [similarity_matrix[i][j] for i in range(len(cluster)) for j in range(i + 1, len(cluster))]
+            intra_similarities.extend(cluster_sims)
+            cluster_matrix = similarity_matrix[np.ix_(cluster, cluster)]
+            cohesion_scores.append(np.mean(cluster_matrix[cluster_matrix < 1.0]))
+    avg_intra_sim = np.mean(intra_similarities) if intra_similarities else 0
+    avg_cohesion = np.mean(cohesion_scores) if cohesion_scores else 0
+    coverage = sum(len(cluster) for cluster in clusters) / len(similarity_matrix)
+    return {
+        "avg_intra_cluster_similarity": round(avg_intra_sim, 3),
+        "cluster_cohesion": round(avg_cohesion, 3),
+        "coverage": round(coverage, 3),
+        "num_clusters": len(clusters),
+        "threshold_used": threshold
+    }
+
+def build_csli_units(self, ou_list: List[Dict[str, Any]], bcs_id: str = "BCS-001", threshold: float = None) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    ou_list_filtered = [ou for ou in ou_list if ou.get('bcs_id') == bcs_id]
+    if len(ou_list_filtered) < 2:
+        self.logger.warning(f"Insufficient OUs for clustering in BCS {bcs_id}")
+        return [], {"error": "Insufficient data for clustering"}
+    clusters, used_threshold, quality_metrics = self.cluster_ous_by_similarity(ou_list_filtered, threshold)
+    csli_units = []
+    for cluster_indices in clusters:
+        members = [ou_list_filtered[i] for i in cluster_indices]
+        lead_ou = members[0]
+        canonical_problem_statement = self.synthesize_problem_statement(members)
+        group_id = f"{bcs_id}-CSLI-{uuid.uuid4().hex[:6].upper()}"
+        span = {
+            "experience_drivers": list(set(m.get('experience_driver', 'Unknown') for m in members)),
+            "emotions": list(set(m.get('emotion', 'Unknown') for m in members)),
+            "streams": list(set(m.get('opportunity_stream', 'Unknown') for m in members)),
+            "themes": list(set(m.get('theme', 'Unknown') for m in members)),
+            "journey_stages": list(set(m.get('journey_stage', 'Unknown') for m in members))
+        }
+        impact_metrics = {
+            "cluster_size": len(members),
+            "experience_driver_diversity": len(span["experience_drivers"]),
+            "emotional_diversity": len(span["emotions"]),
+            "stream_diversity": len(span["streams"]),
+            "avg_customer_effort": np.mean([m.get('customer_effort_score', 0) for m in members])
+        }
+        csli_unit = {
+            "csli_group_id": group_id,
+            "canonical_problem_statement": canonical_problem_statement,
+            "canonical_ou_id": lead_ou.get('ou_id', ''),
+            "cluster_member_ou_ids": [m.get('ou_id', '') for m in members],
+            "experience_driver_anchor": lead_ou.get('experience_driver', ''),
+            "activation_status_distribution": list(set(m.get('activation_status', 'Unknown') for m in members)),
+            "span_analysis": span,
+            "impact_metrics": impact_metrics
+        }
+        csli_units.append(csli_unit)
+    execution_summary = {
+        "total_clusters_formed": len(csli_units),
+        "total_ous_clustered": sum(unit["impact_metrics"]["cluster_size"] for unit in csli_units),
+        "clustering_quality": quality_metrics
+    }
+    return csli_units, execution_summary
+```
