@@ -2625,29 +2625,29 @@ class Layer3Computer:
                     "min_required_days": pattern_block.get("min_required_days"),
                     "eri_by_day": pattern_block.get("eri_by_day") if pattern_block["pattern_type"].lower()=="weekly" else None
                 },
-                "quadrant_block": quadrant_block,
-                "signal_strength_block": signal_strength_block,
-                "pem_block": pem_block,
+                "momentum_saturation_insight": quadrant_block,
+                "signal_intensity_block": signal_strength_block,
+                "predictive_emotion_forecast": pem_block,
 
-                "quadrant_storyline": storyline,
-                "quadrant_confidence_score": quadrant_block["meta"]["quadrant_confidence"],
-                "quadrant_borderline_flag": quadrant_block["meta"]["borderline"],
-                "layer3_confidence_score": layer3_confidence_score,
+                "momentum_saturation_story": storyline,
+                "momentum_saturation_confidence": quadrant_block["meta"]["quadrant_confidence"],
+                "momentum_saturation_borderline_flag": quadrant_block["meta"]["borderline"],
+                "analytics_suite_confidence": layer3_confidence_score,
 
                 "provenance": {
-                    "window_days_used": int(self.timeframe_days),
-                    "num_days_observed": num_days_observed,
-                    "pct_days_with_signal": pct_days_with_signal,
-                    "trend_horizon_days": num_days_observed,
-                    "momentum_horizon_days": int(num_days_observed//2),
-                    "series_completed": True
+                    "analysis_window_days": int(self.timeframe_days),
+                    "total_days_observed": num_days_observed,
+                    "signal_presence_pct": pct_days_with_signal,
+                    "trend_analysis_days": num_days_observed,
+                    "momentum_analysis_days": int(num_days_observed//2),
+                    "series_data_complete": True
                 },
 
                 "pdca_hint": {
-                    "quadrant_label": quadrant_block["quadrant_interpretation"]["quadrant_label"],
-                    "urgency": quadrant_block["quadrant_interpretation"]["urgency_level"],
-                    "recommended_owner": quadrant_block["actionable_strategy"]["recommended_owner"],
-                    "action_guidance": quadrant_block["actionable_strategy"]["action_guidance"]
+                    "momentum_saturation_label": quadrant_block["quadrant_interpretation"]["quadrant_label"],
+                    "execution_urgency_level": quadrant_block["quadrant_interpretation"]["urgency_level"],
+                    "suggested_action_owner": quadrant_block["actionable_strategy"]["recommended_owner"],
+                    "preliminary_action_guidance": quadrant_block["actionable_strategy"]["action_guidance"]
                 }
             })
 
