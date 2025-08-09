@@ -3145,7 +3145,68 @@ This PEM implementation **is god-tier** for CX use cases:
 
 If you wanted to make it even more investor-ready, I’d suggest **a single 1-page diagram** showing how PEM consumes the upstream modules (QSSI, Pattern Recognition, Volatility, Saturation) and outputs a **trajectory forecast** that routes into PDCA.
 
----
+--------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Capsule Meta, Provenance & PDCA Hint — Field Guide
+
+1) Capsule Meta (capsule_meta)
+What it is: identity + build info for the exact artifact you’re looking at.
+Why it matters: makes every capsule traceable, comparable, and safe to cache.
+
+| Field               | Type                  | Example                    | Meaning / How it’s made                     | Notes                                                |
+| ------------------- | --------------------- | -------------------------- | ------------------------------------------- | ---------------------------------------------------- |
+| `capsule_id`        | string                | `SC-a1b2c3d4e5f6`          | 12-hex UUID fragment prefixed with `SC-`    | Globally unique per build. Use as primary key.       |
+| `generated_at`      | ISO 8601 string (UTC) | `2025-08-09T12:45:33.219Z` | `pd.Timestamp.utcnow().isoformat()`         | Treat as the canonical build time for freshness/TTL. |
+| `version`           | string                | `XDI.v1`                   | Spec/contract version of the Signal Capsule | Bump on breaking changes to fields/semantics.        |
+| `window_start_date` | `YYYY-MM-DD`          | `2025-07-10`               | `self.cutoff_date`                          | Start of analysis window (inclusive).                |
+| `window_end_date`   | `YYYY-MM-DD`          | `2025-08-09`               | `self.today`                                | End of analysis window (inclusive).                  |
 
 
+Consumer tips
+- Cache keys: capsule_id + version.
+- If generated_at drifts outside the last processing SLA (e.g., >24h), treat downstream forecasts as stale.
 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2) Provenance (provenance)
+What it is: audit trail of how much data powered this capsule, aligned to the same window and derived metrics.
+Why it matters: lets operators trust—or challenge—the analytics with hard context.
+
+| Field                       | Type                | Example | Meaning / How it’s made                                                                               |
+| --------------------------- | ------------------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `analysis_window_days`      | int                 | `30`    | The configured time window length.                                                                    |
+| `total_days_observed`       | int                 | `30`    | Count of distinct days in `daily_eri` after continuity fill; equals window length if continuous.      |
+| `signal_presence_pct`       | float (0–1, 3 d.p.) | `0.867` | Share of days in window with ≥1 mention (`days_with_signal>0` / `total_days_observed`).               |
+| `trend_analysis_days`       | int                 | `30`    | Days used for trend calc (same as `total_days_observed`).                                             |
+| `momentum_analysis_days`    | int                 | `15`    | Half-window used for early/late momentum bands.                                                       |
+| `series_data_complete`      | bool                | `true`  | True if the continuity-filled daily series spans the full window without gaps that break computation. |
+| **(spread)** `capsule_meta` | object              | —       | The five `capsule_meta` fields are merged here for one-stop auditing.                                 |
+
+How to read it
+- High signal_presence_pct (≥0.7) → strong basis for momentum/volatility; low (<0.3) → treat PEM & QSSI as tentative.
+- series_data_complete=false → visualization/alerts should badge results as partial.
+- Window drift check: (window_end_date − window_start_date) should align with analysis_window_days.
+
+Guardrails (optional validation)
+- 0 ≤ signal_presence_pct ≤ 1
+- momentum_analysis_days = floor(total_days_observed/2)
+- window_end_date ≥ window_start_date
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3) PDCA Hint (pdca_hint)
+What it is: a micro-brief that translates diagnostics into an execution nudge—good enough to route, not to replace the Problem Statement.
+Why it matters: it reduces hand-offs: product/ops can see what to do next at a glance.
+
+| Field                         | Type   | Example                                                         | Source in Capsule                                       | How to use                                              |
+| ----------------------------- | ------ | --------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------- |
+| `momentum_saturation_label`   | string | `Optimization Zone`                                             | `quadrant_block.quadrant_interpretation.quadrant_label` | Human-readable positioning of the ED (diagnostic name). |
+| `execution_urgency_level`     | string | `🌱 Opportunity` / `🚨 Crisis`                                  | `quadrant_block.quadrant_interpretation.urgency_level`  | Drives initial routing SLA / escalation paths.          |
+| `suggested_action_owner`      | string | `CX/Product`                                                    | `quadrant_block.actionable_strategy.recommended_owner`  | Default team/role to page. Can map to group IDs.        |
+| `preliminary_action_guidance` | string | e.g., `Double down on what's working; deepen positive signals.` | `quadrant_block.actionable_strategy.action_guidance`    | One-line tactical prompt prior to full PDCA.            |
+
+
+Operator flow
+- Triage: read label + urgency.
+- Route: use suggested_action_owner to assign.
+- Prime PDCA: seed the PLAN step with preliminary_action_guidance while the full Problem Statement is generated.
