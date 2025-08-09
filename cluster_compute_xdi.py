@@ -19,6 +19,7 @@ from datetime import datetime, timedelta
 from statsmodels.tsa.stattools import acf
 from typing import List, Dict, Any, Tuple
 from collections import Counter
+from uuid import uuid4     
 
 import logging
 logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
@@ -2578,14 +2579,25 @@ class Layer3Computer:
 
             # provenance & horizons
             num_days_observed = int(len(daily_eri))
-            # % days with any mentions
-            days_with_signal = data.groupby("date").size().reindex(daily_eri.index, fill_value=0)
+            
+            # % days with any mentions — align index types first
+            ds = data.groupby("date").size()                 # index is Python date
+            ds.index = pd.to_datetime(ds.index)              # make it DatetimeIndex
+            days_with_signal = ds.reindex(daily_eri.index, fill_value=0)
             pct_days_with_signal = round(float((days_with_signal > 0).sum()) / num_days_observed, 3)
-
+            
             # optional unified Layer-3 confidence (blend of existing scalars)
-            pattern_conf_norm = 1.0 if pattern_block.get("pattern_confidence") == "Strong" else 0.6 if pattern_block.get("pattern_confidence") == "Weak" else 0.3
-            vol_norm = max(0.0, min(volatility_score/45.0, 1.0))
-            layer3_confidence_score = round(0.4*quadrant_block["meta"]["quadrant_confidence"] + 0.3*(1.0 - vol_norm) + 0.3*pattern_conf_norm, 2)
+            pattern_conf_norm = (
+                1.0 if pattern_block.get("pattern_confidence") == "Strong"
+                else 0.6 if pattern_block.get("pattern_confidence") == "Weak"
+                else 0.3
+            )
+            vol_norm = max(0.0, min(volatility_score / 45.0, 1.0))
+            layer3_confidence_score = round(
+                min(1.0, max(0.0, 0.4*quadrant_block["meta"]["quadrant_confidence"] + 0.3*(1.0 - vol_norm) + 0.3*pattern_conf_norm)),
+                2
+            )
+
 
             # storyline
             storyline = (
@@ -2597,9 +2609,7 @@ class Layer3Computer:
                 f"(Owner: {quadrant_block['actionable_strategy']['recommended_owner']})."
             )
 
-            from uuid import uuid4
-            import pandas as pd
-            
+                         
             # --- safe helpers before building dict ---
             ptype = (pattern_block.get("pattern_type") or "").lower()
             has_weekly = ptype == "weekly"
