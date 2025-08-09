@@ -2793,13 +2793,12 @@ class Layer3Computer:
                     continue
     
                 # daily ERI series
-                daily_eri = (
-                    data.groupby("date").apply(self.compute_normalized_eri).sort_index()
-                )
+                daily_eri = (data.groupby("date").apply(self.compute_normalized_eri).sort_index())
                 if len(daily_eri) > 1:
-                    full_idx = pd.date_range(start=daily_eri.index.min(),
-                                             end=daily_eri.index.max(),
-                                             freq="D")
+                    # full_idx = pd.date_range(start=daily_eri.index.min(), end=daily_eri.index.max(), freq="D")
+                    # daily_eri = daily_eri.reindex(full_idx).bfill().ffill()
+                    # USE YOUR ESTABLISHED WINDOW BOUNDARIES
+                    full_idx = pd.date_range(start=self.cutoff_date, end=self.today, freq="D")
                     daily_eri = daily_eri.reindex(full_idx).bfill().ffill()
                 if len(daily_eri) <= 1:
                     if self.verbose:
