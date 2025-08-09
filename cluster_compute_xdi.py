@@ -2531,164 +2531,191 @@ class Layer3Computer:
     def compute(self):
         results, skipped = [], []
         self.raw_df["experience_driver"] = self.raw_df["experience_driver"].str.strip()
-        entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(["P0","P1","P2","P3"])]
-
+        entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(["P0", "P1", "P2", "P3"])]
+    
         for _, row in entities.iterrows():
-            ed = str(row["experience_driver"]).strip()
-            data = self.raw_df[self.raw_df["experience_driver"] == ed]
-            if data.empty:
-                if self.verbose: print(f"❌ DROP [{ed}] → no raw data")
-                skipped.append((ed,"No raw data")); continue
-
-            # daily ERI series
-            daily_eri = (
-                data.groupby("date").apply(self.compute_normalized_eri).sort_index()
-            )
-            if len(daily_eri) > 1:
-                full_idx = pd.date_range(start=daily_eri.index.min(), end=daily_eri.index.max(), freq="D")
-                daily_eri = daily_eri.reindex(full_idx).bfill().ffill()
-            if len(daily_eri) <= 1:
-                if self.verbose: print(f"⏭️ DROP [{ed}] → insufficient days ({len(daily_eri)})")
-                skipped.append((ed,f"Insufficient days: {len(daily_eri)}")); continue
-
-            # modules
-            trend = self._compute_trend_series(daily_eri)
-            momentum = self._compute_momentum_series(daily_eri)
-            volatility = self._compute_volatility_series(daily_eri)
-            pattern_block = self._compute_pattern_recognition(daily_eri, data, self.pattern_lags)
-
-            trend_symbol, trend_pct = trend["symbol"], trend["trend_pct"]
-            momentum_symbol, momentum_delta = momentum["symbol"], momentum["delta"]
-            volatility_tier, volatility_score = volatility["tier"], volatility["score"]
-
-            quadrant_block = self._compute_momentum_saturation_insight(row["ERI"], momentum_symbol)
-            signal_strength_block = self._compute_signal_strength(trend_symbol, momentum_symbol, quadrant_block["signal_classification"]["saturation_index"])
-
-            pem_block = self.build_predictive_emotional_modeling(
-                state_of_play={
-                    "momentum_tier": quadrant_block["signal_classification"]["momentum_tier"],
-                    "saturation_tier": quadrant_block["signal_classification"]["saturation_tier"],
-                    "trajectory_story": quadrant_block["actionable_strategy"]["trajectory_story"],
-                    "action_guidance": quadrant_block["actionable_strategy"]["action_guidance"],
-                    "recommended_owner": quadrant_block["actionable_strategy"]["recommended_owner"]
-                },
-                volatility=volatility_score,
-                has_pattern=pattern_block["has_pattern"],
-                qssi_tier=signal_strength_block["qssi_summary"]["qssi_tier"]
-            )
-
-            # provenance & horizons
-            num_days_observed = int(len(daily_eri))
-            
-            # % days with any mentions — align index types first
-            ds = data.groupby("date").size()                 # index is Python date
-            ds.index = pd.to_datetime(ds.index)              # make it DatetimeIndex
-            days_with_signal = ds.reindex(daily_eri.index, fill_value=0)
-            pct_days_with_signal = round(float((days_with_signal > 0).sum()) / num_days_observed, 3)
-            
-            # optional unified Layer-3 confidence (blend of existing scalars)
-            pattern_conf_norm = (
-                1.0 if pattern_block.get("pattern_confidence") == "Strong"
-                else 0.6 if pattern_block.get("pattern_confidence") == "Weak"
-                else 0.3
-            )
-            vol_norm = max(0.0, min(volatility_score / 45.0, 1.0))
-            layer3_confidence_score = round(
-                min(1.0, max(0.0, 0.4*quadrant_block["meta"]["quadrant_confidence"] + 0.3*(1.0 - vol_norm) + 0.3*pattern_conf_norm)),
-                2
-            )
-
-
-            # storyline
-            storyline = (
-                f"{ed} is in {quadrant_block['quadrant_interpretation']['quadrant_label']} with "
-                f"{quadrant_block['signal_classification']['momentum_tier']} momentum and "
-                f"{quadrant_block['signal_classification']['saturation_tier']} saturation. "
-                f"{quadrant_block['quadrant_interpretation']['interpretation']} "
-                f"Action: {quadrant_block['actionable_strategy']['action_guidance']} "
-                f"(Owner: {quadrant_block['actionable_strategy']['recommended_owner']})."
-            )
-
-                         
-            # --- safe helpers before building dict ---
-            ptype = (pattern_block.get("pattern_type") or "").lower()
-            has_weekly = ptype == "weekly"
-            
-            pattern_payload = {
-                "has_pattern": bool(pattern_block["has_pattern"]),
-                "pattern_type": pattern_block["pattern_type"] if pattern_block["has_pattern"] else None,
-                "pattern_strength": (
-                    round(float(pattern_block["pattern_strength"]), 2)
-                    if pattern_block["has_pattern"] and pattern_block.get("pattern_strength") is not None else None
-                ),
-                "pattern_confidence": pattern_block.get("pattern_confidence") if pattern_block["has_pattern"] else None,
-                "pain_day": pattern_block["pain_day"] if has_weekly else None,
-                "data_coverage_days": pattern_block.get("data_coverage_days"),
-                "min_required_days": pattern_block.get("min_required_days"),
-                "eri_by_day": pattern_block.get("eri_by_day") if has_weekly else None
-            }
-            
-            capsule_meta = {
-                "capsule_id": f"SC-{uuid4().hex[:12]}",
-                "generated_at": pd.Timestamp.utcnow().isoformat(),
-                "version": "XDI.v1",
-                "window_start_date": str(self.cutoff_date),
-                "window_end_date": str(self.today)
-            }
-            
-            # --- now build the capsule dict ---
-            results.append({
-                "experience_driver": ed,
-                "priority_class": row["Priority_Status"],
-                "associated_entity_names": row.get("Associated_Entity_Names"),
-                "most_recent_mention": row.get("Most_Recent_Date"),
-                "no_of_mentions": row.get("No_of_Mentions"),
-                "eri_score": round(row["ERI"], 2),
-                "r_score": round(row["R"], 2),
-                "f_score": round(row["F"], 2),
-                "rf_score": round(row["RF"], 2),
-                "rfi_score": round(row["RFI"], 2),
-                "emotion_perception_tier": row.get("Loyalty_State"),
-                "rf_urgency_category": row.get("RF_Urgency_Category"),
-                "eri_rf_urgency_category": row.get("ERI_RF_Quadrant"),
-            
-                "trend_block": {"trend_symbol": trend_symbol, "trend_pct": round(trend_pct, 2)},
-                "momentum_block": {"momentum_symbol": momentum_symbol, "momentum_delta": round(momentum_delta, 2)},
-                "volatility_block": {"volatility_tier": volatility_tier, "volatility_score": round(volatility_score, 2)},
-                "pattern_block": pattern_payload,
-            
-                "momentum_saturation_insight": quadrant_block,
-                "signal_strength_index": signal_strength_block,  # renamed from signal_intensity_block
-                "predictive_emotion_forecast": pem_block,
-            
-                "momentum_saturation_story": storyline,
-                "momentum_saturation_confidence": quadrant_block["meta"]["quadrant_confidence"],
-                "momentum_saturation_borderline_flag": quadrant_block["meta"]["borderline"],
-                "analytics_suite_confidence": layer3_confidence_score,
-            
-                "provenance": {
-                    "analysis_window_days": int(self.timeframe_days),
-                    "total_days_observed": num_days_observed,
-                    "signal_presence_pct": pct_days_with_signal,
-                    "trend_analysis_days": num_days_observed,
-                    "momentum_analysis_days": int(num_days_observed // 2),
-                    "series_data_complete": True,
-                    **capsule_meta  # merge in capsule meta
-                },
-            
-                "pdca_hint": {
-                    "momentum_saturation_label": quadrant_block["quadrant_interpretation"]["quadrant_label"],
-                    "execution_urgency_level": quadrant_block["quadrant_interpretation"]["urgency_level"],
-                    "suggested_action_owner": quadrant_block["actionable_strategy"]["recommended_owner"],
-                    "preliminary_action_guidance": quadrant_block["actionable_strategy"]["action_guidance"]
+            try:
+                ed = str(row["experience_driver"]).strip()
+                data = self.raw_df[self.raw_df["experience_driver"] == ed]
+                if data.empty:
+                    if self.verbose:
+                        print(f"❌ DROP [{ed}] → no raw data")
+                    skipped.append((ed, "No raw data"))
+                    continue
+    
+                # daily ERI series
+                daily_eri = (
+                    data.groupby("date").apply(self.compute_normalized_eri).sort_index()
+                )
+                if len(daily_eri) > 1:
+                    full_idx = pd.date_range(start=daily_eri.index.min(),
+                                             end=daily_eri.index.max(),
+                                             freq="D")
+                    daily_eri = daily_eri.reindex(full_idx).bfill().ffill()
+                if len(daily_eri) <= 1:
+                    if self.verbose:
+                        print(f"⏭️ DROP [{ed}] → insufficient days ({len(daily_eri)})")
+                    skipped.append((ed, f"Insufficient days: {len(daily_eri)}"))
+                    continue
+    
+                # modules
+                trend = self._compute_trend_series(daily_eri)
+                momentum = self._compute_momentum_series(daily_eri)
+                volatility = self._compute_volatility_series(daily_eri)
+                pattern_block = self._compute_pattern_recognition(
+                    daily_eri, data, self.pattern_lags
+                )
+    
+                trend_symbol, trend_pct = trend["symbol"], trend["trend_pct"]
+                momentum_symbol, momentum_delta = momentum["symbol"], momentum["delta"]
+                volatility_tier, volatility_score = volatility["tier"], volatility["score"]
+    
+                quadrant_block = self._compute_momentum_saturation_insight(
+                    row["ERI"], momentum_symbol
+                )
+                signal_strength_block = self._compute_signal_strength(
+                    trend_symbol,
+                    momentum_symbol,
+                    quadrant_block["signal_classification"]["saturation_index"]
+                )
+    
+                pem_block = self.build_predictive_emotional_modeling(
+                    state_of_play={
+                        "momentum_tier": quadrant_block["signal_classification"]["momentum_tier"],
+                        "saturation_tier": quadrant_block["signal_classification"]["saturation_tier"],
+                        "trajectory_story": quadrant_block["actionable_strategy"]["trajectory_story"],
+                        "action_guidance": quadrant_block["actionable_strategy"]["action_guidance"],
+                        "recommended_owner": quadrant_block["actionable_strategy"]["recommended_owner"]
+                    },
+                    volatility=volatility_score,
+                    has_pattern=pattern_block["has_pattern"],
+                    qssi_tier=signal_strength_block["qssi_summary"]["qssi_tier"]
+                )
+    
+                # provenance & horizons
+                num_days_observed = int(len(daily_eri))
+    
+                # % days with any mentions — align index types first
+                ds = data.groupby("date").size()  # index is Python date
+                ds.index = pd.to_datetime(ds.index)  # make it DatetimeIndex
+                days_with_signal = ds.reindex(daily_eri.index, fill_value=0)
+                pct_days_with_signal = round(
+                    float((days_with_signal > 0).sum()) / num_days_observed, 3
+                )
+    
+                # unified Layer-3 confidence
+                pattern_conf_norm = (
+                    1.0 if pattern_block.get("pattern_confidence") == "Strong"
+                    else 0.6 if pattern_block.get("pattern_confidence") == "Weak"
+                    else 0.3
+                )
+                vol_norm = max(0.0, min(volatility_score / 45.0, 1.0))
+                layer3_confidence_score = round(
+                    min(1.0, max(0.0,
+                        0.4 * quadrant_block["meta"]["quadrant_confidence"]
+                        + 0.3 * (1.0 - vol_norm)
+                        + 0.3 * pattern_conf_norm
+                    )), 2
+                )
+    
+                # storyline
+                storyline = (
+                    f"{ed} is in {quadrant_block['quadrant_interpretation']['quadrant_label']} with "
+                    f"{quadrant_block['signal_classification']['momentum_tier']} momentum and "
+                    f"{quadrant_block['signal_classification']['saturation_tier']} saturation. "
+                    f"{quadrant_block['quadrant_interpretation']['interpretation']} "
+                    f"Action: {quadrant_block['actionable_strategy']['action_guidance']} "
+                    f"(Owner: {quadrant_block['actionable_strategy']['recommended_owner']})."
+                )
+    
+                # safe helpers
+                ptype = (pattern_block.get("pattern_type") or "").lower()
+                has_weekly = ptype == "weekly"
+                pattern_payload = {
+                    "has_pattern": bool(pattern_block["has_pattern"]),
+                    "pattern_type": pattern_block["pattern_type"] if pattern_block["has_pattern"] else None,
+                    "pattern_strength": (
+                        round(float(pattern_block["pattern_strength"]), 2)
+                        if pattern_block["has_pattern"]
+                        and pattern_block.get("pattern_strength") is not None
+                        else None
+                    ),
+                    "pattern_confidence": pattern_block.get("pattern_confidence")
+                    if pattern_block["has_pattern"] else None,
+                    "pain_day": pattern_block["pain_day"] if has_weekly else None,
+                    "data_coverage_days": pattern_block.get("data_coverage_days"),
+                    "min_required_days": pattern_block.get("min_required_days"),
+                    "eri_by_day": pattern_block.get("eri_by_day") if has_weekly else None
                 }
-            })
-
+    
+                capsule_meta = {
+                    "capsule_id": f"SC-{uuid4().hex[:12]}",
+                    "generated_at": pd.Timestamp.utcnow().isoformat(),
+                    "version": "XDI.v1",
+                    "window_start_date": str(self.cutoff_date),
+                    "window_end_date": str(self.today)
+                }
+    
+                # build capsule
+                results.append({
+                    "experience_driver": ed,
+                    "priority_class": row["Priority_Status"],
+                    "associated_entity_names": row.get("Associated_Entity_Names"),
+                    "most_recent_mention": row.get("Most_Recent_Date"),
+                    "no_of_mentions": row.get("No_of_Mentions"),
+                    "eri_score": round(row["ERI"], 2),
+                    "r_score": round(row["R"], 2),
+                    "f_score": round(row["F"], 2),
+                    "rf_score": round(row["RF"], 2),
+                    "rfi_score": round(row["RFI"], 2),
+                    "emotion_perception_tier": row.get("Loyalty_State"),
+                    "rf_urgency_category": row.get("RF_Urgency_Category"),
+                    "eri_rf_urgency_category": row.get("ERI_RF_Quadrant"),
+    
+                    "trend_block": {"trend_symbol": trend_symbol, "trend_pct": round(trend_pct, 2)},
+                    "momentum_block": {"momentum_symbol": momentum_symbol, "momentum_delta": round(momentum_delta, 2)},
+                    "volatility_block": {"volatility_tier": volatility_tier, "volatility_score": round(volatility_score, 2)},
+                    "pattern_block": pattern_payload,
+    
+                    "momentum_saturation_insight": quadrant_block,
+                    "signal_strength_index": signal_strength_block,
+                    "predictive_emotion_forecast": pem_block,
+    
+                    "momentum_saturation_story": storyline,
+                    "momentum_saturation_confidence": quadrant_block["meta"]["quadrant_confidence"],
+                    "momentum_saturation_borderline_flag": quadrant_block["meta"]["borderline"],
+                    "analytics_suite_confidence": layer3_confidence_score,
+    
+                    "provenance": {
+                        "analysis_window_days": int(self.timeframe_days),
+                        "total_days_observed": num_days_observed,
+                        "signal_presence_pct": pct_days_with_signal,
+                        "trend_analysis_days": num_days_observed,
+                        "momentum_analysis_days": int(num_days_observed // 2),
+                        "series_data_complete": True,
+                        **capsule_meta
+                    },
+    
+                    "pdca_hint": {
+                        "momentum_saturation_label": quadrant_block["quadrant_interpretation"]["quadrant_label"],
+                        "execution_urgency_level": quadrant_block["quadrant_interpretation"]["urgency_level"],
+                        "suggested_action_owner": quadrant_block["actionable_strategy"]["recommended_owner"],
+                        "preliminary_action_guidance": quadrant_block["actionable_strategy"]["action_guidance"]
+                    }
+                })
+    
+            except Exception as e:
+                if self.verbose:
+                    print(f"💥 FAIL [{ed}] → {e}")
+                skipped.append((ed, str(e)))
+                continue
+    
         self.layer3_df = pd.DataFrame(results)
+        self.skipped_entities = skipped
         return self.layer3_df
-
-
+        
 """
+
 `_compute_pattern_recognition()` function explained step-by-step
 
 ## **Purpose**
