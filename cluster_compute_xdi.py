@@ -2653,3 +2653,439 @@ class Layer3Computer:
 
         self.layer3_df = pd.DataFrame(results)
         return self.layer3_df
+
+
+"""
+`_compute_pattern_recognition()` function explained step-by-step
+
+## **Purpose**
+Detect whether an **ERI time series** (emotion score over time for an Experience Driver) shows a **repeating 
+temporal pattern** — weekly, monthly, or quarterly — and, if so:
+
+* Classify its type (Weekly/Monthly/Quarterly)
+* Measure its strength & confidence
+* Identify pain points (like worst-performing weekday)
+* Return a structured diagnostic block
+
+
+## **Inputs**
+
+* **series** → Pandas Series, indexed by date, containing ERI values (normalized emotion score over time)
+* **entity_data** → DataFrame with raw entity-level data (contains `emotion_score` and `date` columns)
+* **lags** → List of period types to check, e.g., `["weekly", "monthly", "quarterly"]`
+
+
+## **Step-by-Step Logic**
+
+### 1️⃣ **Setup & Defaults**
+
+```python
+lag_days = {"weekly":7,"monthly":30,"quarterly":90}
+```
+
+Maps pattern types to the number of days in their cycle.
+**Initial `result`** is a "no pattern" default — used if detection fails:
+
+* `has_pattern` → False
+* `pattern_type` → None
+* `pattern_strength` → None
+* `pain_day` → None
+* Coverage metadata (`data_coverage_days`, `min_required_days`, `eri_by_day`)
+
+
+### 2️⃣ **Ensure Continuity in the Time Series**
+
+```python
+full_index = pd.date_range(start=series.index.min(), end=series.index.max(), freq='D')
+series = series.reindex(full_index).ffill()
+```
+
+* Fills **gaps** in the time series (ensures every day is present)
+* Forward-fills missing values to maintain continuity for autocorrelation
+
+### 3️⃣ **Skip Flat or Empty Series**
+If the series has **zero standard deviation** or is entirely null → no pattern possible, return defaults.
+
+
+### 4️⃣ **Determine Which Lags Are Valid**
+
+```python
+valid_lags = [lag for lag in lags if series_days >= lag_days[lag] + 1]
+```
+
+* Only consider lags if there’s enough data coverage (e.g., you can’t check quarterly pattern if you have only 
+60 days of data)
+* `series_days` = total days of data coverage
+
+
+### 5️⃣ **Search for the Strongest Pattern**
+
+For each **valid lag**:
+1. Compute **ACF** (Autocorrelation Function) for up to that lag length:
+
+   ```python
+   acf_vals = acf(series, nlags=L, fft=True, missing='conservative')
+   ```
+2. Look at correlation at **exact lag step** (`acf_vals[L]`).
+3. If correlation score ≥ **0.3**, consider it a valid pattern:
+
+   * `Strong` confidence if score ≥ **0.6**
+   * Keep track of **best pattern found so far**.
+
+
+### 6️⃣ **Special Handling for Weekly Patterns**
+If the strongest pattern is **weekly**:
+
+* Recompute **normalized ERI** for each day of week:
+
+  ```python
+  eri_norm = ((emotion_score + 3) / 6) * 200 - 100
+  ```
+* Group by weekday, find **average ERI** per day.
+* Identify **worst performing weekday** (`pain_day`).
+* Save per-day ERI distribution in `eri_by_day`.
+
+
+### 7️⃣ **Return Result**
+If **best pattern** was found → return it.
+Otherwise → return "no pattern" default.
+
+## **Key Output Fields**
+
+* `has_pattern` → True/False
+* `pattern_type` → Weekly/Monthly/Quarterly
+* `pattern_strength` → Autocorrelation score (0–1)
+* `pattern_confidence` → "Strong" or "Weak"
+* `pain_day` → Worst-performing weekday (only for weekly)
+* `eri_by_day` → Dict of weekday → average ERI (only for weekly)
+* `data_coverage_days` → Total days of data available
+* `min_required_days` → Days needed to detect pattern of that lag
+
+## **Why This Matters in Decipher**
+This module powers the **`has_pattern`** flag and related diagnostics in XDI Layer 3.
+PEM uses `has_pattern` as a **predictive anchor** — repeating emotional rhythms indicate **either sustained opportunity or sustained risk** depending on the trend.
+
+---------------------------------------------------------------------------------------------------------------------
+
+`_compute_momentum_saturation_insight` step-by-step explanation:
+
+## **Function Purpose**
+This method combines **emotional saturation** (how “full” or “empty” the emotional tank is) with **momentum** 
+(the direction and intensity of change) to classify a signal into a **strategic quadrant**.
+It produces a **rich payload** describing the current state, quadrant meaning, tactical advice, and meta diagnostics.
+
+## **Step-by-Step Breakdown**
+
+### **1. Compute the Saturation Index**
+
+```python
+sat_idx = (eri_score + 100) / 200.0
+sat_idx = max(0.0, min(1.0, float(sat_idx)))
+```
+
+* Converts ERI score (−100 to +100) into a **0.0–1.0** scale.
+* Clamps to ensure values stay within range.
+* **Meaning:** 0 = totally empty emotional energy, 1 = fully saturated emotional energy.
+
+### **2. Map Momentum Symbols**
+
+```python
+momentum_map = {
+    "↑↑": "↑↑ 🚀 Strongly Rising",
+    "↑":  "↑ 📈 Moderately Rising",
+    "→":  "→ ➖ Stable",
+    "↓":  "↓ 📉 Moderately Falling",
+    "↓↓": "↓↓ 🧨 Strongly Falling"
+}
+momentum_symbol = momentum_symbol if momentum_symbol in momentum_map else "→"
+```
+
+* Momentum comes in 5 discrete symbols.
+* Each symbol has a **visual emoji** + **plain description**.
+* If the input momentum symbol is invalid, it defaults to `"→"` (Stable).
+
+### **3. Assign Saturation Tiers**
+
+```python
+if   sat_idx >= 0.90: sat_emoji, sat_clean = "🏆 Very High", "Very High"
+elif sat_idx >= 0.65: sat_emoji, sat_clean = "✅ High", "High"
+elif sat_idx >= 0.45: sat_emoji, sat_clean = "⚖️ Medium", "Medium"
+elif sat_idx >= 0.25: sat_emoji, sat_clean = "⚠️ Low", "Low"
+else:                 sat_emoji, sat_clean = "❌ Very Low", "Very Low"
+```
+
+* Emotional energy is categorized into **Very Low → Very High**.
+* Emojis provide instant readability.
+
+### **4. Lookup in the Quadrant Matrix**
+
+```python
+qm = self.quadrant_matrix
+hit = qm[(qm["Saturation_Tier"] == sat_emoji) & (qm["Momentum_Tier"] == mom_emoji)]
+```
+
+* `quadrant_matrix` holds the **strategic meaning** for every Saturation × Momentum combination.
+* A “hit” means we have a predefined interpretation and action for this emotional state.
+
+### **5. Borderline Detection & Confidence**
+
+```python
+sat_bounds = [0.0, 0.25, 0.45, 0.65, 0.90, 1.0]
+nearest = min(sat_bounds, key=lambda b: abs(b - sat_idx))
+sat_distance = abs(sat_idx - nearest)
+borderline = sat_distance < 0.02
+mom_strength = {"↑↑":1.0,"↑":0.6,"→":0.3,"↓":0.6,"↓↓":1.0}[momentum_symbol]
+quadrant_confidence = round(0.5 * mom_strength + 0.5 * min(1.0, sat_distance/0.20), 2)
+```
+
+* **Borderline:** True if we are within 2% of crossing into another saturation tier.
+* **Quadrant Confidence:** Combines momentum strength with how close we are to a tier center.
+* This is important for **forecast sensitivity** in PEM.
+
+
+### **6. Build the Payload**
+
+If quadrant data exists:
+
+* **signal_classification** → Pure metrics (saturation, momentum, combined quadrant).
+* **quadrant_interpretation** → Label, urgency code, and narrative from the quadrant matrix.
+* **tactical_insight** → Emotional pulse, battle status, and strategic reality.
+* **actionable_strategy** → Specific guidance, context, and suggested owner.
+
+If quadrant data is missing:
+
+* All fields return `"Unknown"` with instructions to validate data.
+
+### **7. Add Meta Information**
+
+```python
+payload["meta"] = {
+    "matrix_key": matrix_key,
+    "saturation_tier_emoji": sat_emoji,
+    "momentum_tier_emoji": mom_emoji,
+    "quadrant_confidence": quadrant_confidence,
+    "borderline": borderline
+}
+```
+
+* `matrix_key` is a shorthand like `"High|Moderately Rising"`.
+* Confidence score + borderline flag are preserved for decision-making transparency.
+
+
+## **Key Strengths**
+
+1. **Fully grounded in existing ERI, momentum, and quadrant data.**
+2. **Borderline detection** ensures proactive alerts before a shift happens.
+3. **Separation of metrics, meaning, and actions** — perfect for PDCA and PEM integration.
+4. Produces an **execution-ready object** — no extra processing needed downstream.
+
+--------------------------------------------------------------------------------------------------------------
+
+ `_compute_signal_strength` (QSSI) step-by-step explanation:
+
+# Function Purpose
+
+Quantify **signal strength** by fusing:
+
+* **Velocity** (trend × momentum) → how forcefully things are moving
+* **Saturation** (headroom) → how much emotional capacity remains
+
+Outputs a **QSSI score & tier** with human-readable rationales for each component.
+
+# Step-by-Step
+
+## 1) Velocity score (trend × momentum → 0..6)
+
+```python
+if trend in ("↑","↓") and momentum == "↓↓": velocity_score = 6
+elif trend in ("↑","↓") and momentum == "↑↑": velocity_score = 5
+elif trend in ("↑","↓") and momentum in ("↑","↓"): velocity_score = 4
+elif trend in ("↑","↓") and momentum == "→": velocity_score = 2
+elif trend == "→" and momentum in ("↑↑","↓↓"): velocity_score = 3
+elif trend == "→" and momentum in ("↑","↓"): velocity_score = 1
+else: velocity_score = 0
+```
+
+* Translates the **directional trajectory** (trend) and **recent force** (momentum) into a single **velocity dial**.
+* Comes with a `velocity_rationale` string explaining the choice (e.g., “Sharp trend shift with strong counter-momentum”).
+
+## 2) Saturation score (headroom → 0..4)
+
+```python
+si = clamp01(saturation_index)
+if si <= .20: saturation_score = 4
+elif si <= .40: 3
+elif si <= .60: 2
+elif si <= .80: 1
+else: 0
+```
+
+* Lower saturation = **more headroom**, so **higher score** (more responsive/impactful).
+* Provides `saturation_rationale` (e.g., “Very low emotional saturation — fresh pain or interest forming”).
+
+## 3) QSSI calculation & tiering
+
+```python
+qssi = velocity_score + saturation_score  # 0..10
+if qssi >= 9:  "💥 Critical Signal"
+elif qssi >= 6:"🔥 Strong Signal"
+elif qssi >= 4:"🌱 Emerging Signal"
+elif qssi >= 1:"🔁 Weak Signal"
+else:          "❌ No Signal"
+```
+
+* Sum creates a **0–10 urgency scale** that respects both **movement** and **headroom**.
+* Maps to an interpretable tier + `qssi_interpretation`.
+
+## 4) Return payload (explainable blocks)
+
+```python
+{
+  "velocity_component": { trend_symbol, momentum_symbol, velocity_score, velocity_rationale },
+  "saturation_component": { saturation_index, saturation_score, saturation_rationale },
+  "qssi_summary": { qssi_score, qssi_tier, qssi_interpretation }
+}
+```
+
+* Clean separation of **inputs → reasoning → result** for dashboards and audits.
+
+# Why this is strong
+* **Directional + capacity-aware:** avoids false alarms when near ceiling and spotlights fresh, high-leverage signals.
+* **Explainable:** every score has a plain-English rationale.
+* **Composable:** feeds naturally into PEM and prioritization.
+
+------------------------------------------------------------------------------------------------------------
+
+ **Predictive Emotional Modeling (PEM)** function step-by-step explanation:
+
+## **What This Function Does**
+
+This function **forecasts the likely future trajectory** of an emotional signal, using *only existing state 
+variables* from the XDI analytics suite — no external data.
+It answers the question:
+**“Given the current state of this Experience Driver, is it more likely to intensify, decay, or stay stable 
+over the next N days?”**
+
+## **Step-by-Step Explanation**
+
+### **1. Input unpacking**
+
+```python
+momentum_tier = state_of_play["momentum_tier"]
+saturation_tier = state_of_play["saturation_tier"]
+trajectory_story = state_of_play["trajectory_story"]
+action_guidance = state_of_play["action_guidance"]
+recommended_owner = state_of_play["recommended_owner"]
+```
+
+* Pulls pre-computed emotional dynamics from `state_of_play`.
+* These come from earlier modules (Momentum/Saturation/QSSI, etc.).
+
+### **2. Mapping qualitative tiers to quantitative scores**
+
+```python
+qssi_map = {...}
+momentum_map = {...}
+headroom_map = {...}
+```
+
+* **QSSI strength** → how strong the current signal is (0–1 scale).
+* **Momentum score** → normalized directional energy (positive for rising, negative for falling).
+* **Headroom** → how much emotional space is left before saturation.
+
+### **3. Volatility normalization**
+
+```python
+vol_norm = max(0.0, min(float(volatility) / 45.0, 1.0))
+stability = 1.0 - vol_norm
+```
+
+* Converts raw volatility to 0–1 scale.
+* Stability is the inverse of volatility.
+
+### **4. Competing score calculation**
+
+```python
+esc_raw = (0.50*qssi_strength + 0.40*max(0.0, momentum_score) + 0.30*headroom + 0.20*(1.0 if has_pattern else 0.0) + 0.20*stability)
+dec_raw = (0.50*qssi_strength + 0.60*max(0.0, -momentum_score) + 0.30*(1.0 - headroom) + 0.20*vol_norm)
+```
+
+* **Escalation score (esc_raw)**: likelihood of intensifying, driven by strong QSSI, upward momentum, available headroom, repeating pattern, and stability.
+* **Decay score (dec_raw)**: likelihood of fading, driven by strong QSSI, downward momentum, lack of headroom, and volatility.
+
+### **5. Probabilities**
+
+```python
+total = esc_raw + dec_raw
+esc_prob = esc_raw / total
+dec_prob = dec_raw / total
+```
+
+* Converts raw scores into relative probabilities.
+
+### **6. Rule-based overrides**
+
+```python
+signal_is_precursor = (...)
+signal_is_at_risk_of_decay = (...)
+```
+
+* Detects **obvious cases** before falling back to pure probability.
+* Example: Rising momentum + strong QSSI + repeating pattern → escalation.
+
+### **7. Model-driven decision**
+
+If no hard rules trigger:
+
+* Compare `esc_prob` and `dec_prob` to pick trajectory.
+* Apply a threshold for “Stable / Inconclusive” if neither probability is dominant.
+
+### **8. Confidence scoring**
+
+```python
+if has_pattern and volatility >= 10: High
+elif has_pattern or volatility >= 10: Moderate
+else: Low
+```
+
+* Confidence depends on repeating patterns and volatility — both make the forecast more certain.
+
+### **9. Elasticity rating**
+
+* **High**: lots of headroom and strong momentum.
+* **Moderate**: some headroom.
+* **Low**: saturated or low movement.
+
+### **10. Final output**
+
+Returns a **three-part object**:
+
+1. **trajectory_forecast** → the PEM’s final decision, probability, risk class, and reasoning.
+2. **signal_diagnostics** → snapshot of key emotional state variables.
+3. **future_risk_profile** → narrative guidance from `state_of_play`.
+4. **audit** → all numeric feature values for traceability.
+
+## **Why This is Perfect for Predictive Emotional Intelligence**
+
+✅ **Uses existing emotional telemetry** — No outside dependencies; everything is derived from XDI layers 1–3.
+✅ **Balances statistical & rule-based reasoning** — Ensures intuitive overrides where the model is obvious.
+✅ **Transparent decision logic** — The `feature_vector` + `basis` fields make it explainable.
+✅ **Action-oriented** — Output ties directly into “risk_class” and “recommended_owner.”
+✅ **Bidirectional prediction** — Models both escalation and decay probabilities.
+✅ **Built for CX reality** — Takes patterns, volatility, and headroom into account, which directly map to how customer emotions evolve.
+
+---
+
+## **Verdict**
+
+This PEM implementation **is god-tier** for CX use cases:
+* It is **complete** — no missing input dimensions from earlier layers.
+* It is **explainable** — clear rationale, counterfactual pointers, and full audit.
+* It is **operationally actionable** — directly plugs into orchestration logic and owner assignment.
+
+If you wanted to make it even more investor-ready, I’d suggest **a single 1-page diagram** showing how PEM consumes the upstream modules (QSSI, Pattern Recognition, Volatility, Saturation) and outputs a **trajectory forecast** that routes into PDCA.
+
+---
+
+
+
