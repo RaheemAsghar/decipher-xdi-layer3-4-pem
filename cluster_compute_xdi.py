@@ -2597,6 +2597,36 @@ class Layer3Computer:
                 f"(Owner: {quadrant_block['actionable_strategy']['recommended_owner']})."
             )
 
+            from uuid import uuid4
+            import pandas as pd
+            
+            # --- safe helpers before building dict ---
+            ptype = (pattern_block.get("pattern_type") or "").lower()
+            has_weekly = ptype == "weekly"
+            
+            pattern_payload = {
+                "has_pattern": bool(pattern_block["has_pattern"]),
+                "pattern_type": pattern_block["pattern_type"] if pattern_block["has_pattern"] else None,
+                "pattern_strength": (
+                    round(float(pattern_block["pattern_strength"]), 2)
+                    if pattern_block["has_pattern"] and pattern_block.get("pattern_strength") is not None else None
+                ),
+                "pattern_confidence": pattern_block.get("pattern_confidence") if pattern_block["has_pattern"] else None,
+                "pain_day": pattern_block["pain_day"] if has_weekly else None,
+                "data_coverage_days": pattern_block.get("data_coverage_days"),
+                "min_required_days": pattern_block.get("min_required_days"),
+                "eri_by_day": pattern_block.get("eri_by_day") if has_weekly else None
+            }
+            
+            capsule_meta = {
+                "capsule_id": f"SC-{uuid4().hex[:12]}",
+                "generated_at": pd.Timestamp.utcnow().isoformat(),
+                "version": "XDI.v1",
+                "window_start_date": str(self.cutoff_date),
+                "window_end_date": str(self.today)
+            }
+            
+            # --- now build the capsule dict ---
             results.append({
                 "experience_driver": ed,
                 "priority_class": row["Priority_Status"],
@@ -2611,38 +2641,31 @@ class Layer3Computer:
                 "emotion_perception_tier": row.get("Loyalty_State"),
                 "rf_urgency_category": row.get("RF_Urgency_Category"),
                 "eri_rf_urgency_category": row.get("ERI_RF_Quadrant"),
-
-                "trend_block": {"trend_symbol":trend_symbol, "trend_pct":round(trend_pct,2)},
-                "momentum_block": {"momentum_symbol":momentum_symbol, "momentum_delta":round(momentum_delta,2)},
-                "volatility_block": {"volatility_tier":volatility_tier, "volatility_score":round(volatility_score,2)},
-                "pattern_block": {
-                    "has_pattern": pattern_block["has_pattern"],
-                    "pattern_type": pattern_block["pattern_type"] if pattern_block["has_pattern"] else "N/A",
-                    "pattern_strength": (round(pattern_block["pattern_strength"],2) if pattern_block["has_pattern"] and pattern_block["pattern_strength"] is not None else "N/A"),
-                    "pattern_confidence": pattern_block.get("pattern_confidence","N/A"),
-                    "pain_day": pattern_block["pain_day"] if pattern_block["pattern_type"].lower()=="weekly" else "N/A",
-                    "data_coverage_days": pattern_block.get("data_coverage_days"),
-                    "min_required_days": pattern_block.get("min_required_days"),
-                    "eri_by_day": pattern_block.get("eri_by_day") if pattern_block["pattern_type"].lower()=="weekly" else None
-                },
+            
+                "trend_block": {"trend_symbol": trend_symbol, "trend_pct": round(trend_pct, 2)},
+                "momentum_block": {"momentum_symbol": momentum_symbol, "momentum_delta": round(momentum_delta, 2)},
+                "volatility_block": {"volatility_tier": volatility_tier, "volatility_score": round(volatility_score, 2)},
+                "pattern_block": pattern_payload,
+            
                 "momentum_saturation_insight": quadrant_block,
-                "signal_intensity_block": signal_strength_block,
+                "signal_strength_index": signal_strength_block,  # renamed from signal_intensity_block
                 "predictive_emotion_forecast": pem_block,
-
+            
                 "momentum_saturation_story": storyline,
                 "momentum_saturation_confidence": quadrant_block["meta"]["quadrant_confidence"],
                 "momentum_saturation_borderline_flag": quadrant_block["meta"]["borderline"],
                 "analytics_suite_confidence": layer3_confidence_score,
-
+            
                 "provenance": {
                     "analysis_window_days": int(self.timeframe_days),
                     "total_days_observed": num_days_observed,
                     "signal_presence_pct": pct_days_with_signal,
                     "trend_analysis_days": num_days_observed,
-                    "momentum_analysis_days": int(num_days_observed//2),
-                    "series_data_complete": True
+                    "momentum_analysis_days": int(num_days_observed // 2),
+                    "series_data_complete": True,
+                    **capsule_meta  # merge in capsule meta
                 },
-
+            
                 "pdca_hint": {
                     "momentum_saturation_label": quadrant_block["quadrant_interpretation"]["quadrant_label"],
                     "execution_urgency_level": quadrant_block["quadrant_interpretation"]["urgency_level"],
