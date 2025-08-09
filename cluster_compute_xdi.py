@@ -2118,55 +2118,171 @@ class Layer3Computer:
         raw_eri = group["emotion_score"].mean()
         return ((raw_eri + 3) / 6) * 200 - 100
 
-    def _compute_trend_series(self, series) -> dict:
+    def _compute_trend_series(self, series,
+                          min_n=3,
+                          smooth_min_n=7,
+                          ewma_alpha=0.2,
+                          pct_thresh=5.0,
+                          snr_thresh=0.75) -> dict:
+        """
+        Window-agnostic trend:
+        - Works for any n ≥ 3 (e.g., 7, 14, 28, 75 days)
+        - Linear interpolate gaps; EWMA only if n ≥ smooth_min_n
+        - Fit slope across window; convert to % of full ERI band (200 wide)
+        - Tiny SNR guard scaled by sqrt(n)
+        """
         try:
-            if len(series) < 2:
-                return {"symbol":"→","trend_pct":0.0}
-            start, end = float(series.iloc[0]), float(series.iloc[-1])
-            pct = ((end - start) / 200.0) * 100.0
-            pct = max(min(pct, 100.0), -100.0)
-            pct = round(pct, 2)
-            symbol = "↑" if pct > 5.0 else "↓" if pct < -5.0 else "→"
-            return {"symbol":symbol,"trend_pct":pct}
-        except Exception as e:
-            if self.verbose: print(f"⚠️ Trend computation failed: {e}")
-            return {"symbol":"→","trend_pct":0.0}
+            s = pd.Series(series).astype(float)
+            s = s.replace([np.inf, -np.inf], np.nan).dropna()
+            n = len(s)
+            if n < min_n:
+                return {"symbol": "→", "trend_pct": 0.0}
+    
+            # de-gap gently; then (optionally) smooth
+            s = s.interpolate(method="linear", limit_direction="both")
+            if n >= smooth_min_n:
+                s = s.ewm(alpha=ewma_alpha, adjust=False).mean()
+    
+            # quick flatness guard
+            if s.max() - s.min() < 1e-9:
+                return {"symbol": "→", "trend_pct": 0.0, "trend_snr": 0.0}
+    
+            # slope over the window (days 0..n-1)
+            x = np.arange(n, dtype=float)
+            slope = np.polyfit(x, s, 1)[0]           # ERI units/day
+            delta = slope * (n - 1)                  # modeled change over the window
+    
+            # % of full ERI span (−100..+100 => 200)
+            pct = (delta / 200.0) * 100.0
+            pct = float(max(min(pct, 100.0), -100.0))
+            pct_r = round(pct, 2)
+    
+            # SNR: day-to-day wiggle + length scaling
+            noise = s.diff().std()
+            if pd.isna(noise) or noise == 0.0:
+                noise = 1.0
+            snr = abs(delta) / (noise * max(np.sqrt(n), 1.0))
+    
+            if pct > pct_thresh and snr >= snr_thresh:
+                sym = "↑"
+            elif pct < -pct_thresh and snr >= snr_thresh:
+                sym = "↓"
+            else:
+                sym = "→"
+    
+            return {"symbol": sym, "trend_pct": pct_r, "trend_snr": round(float(snr), 2)}
+        except Exception:
+            return {"symbol": "→", "trend_pct": 0.0}
+
 
     def _compute_momentum_series(self, series) -> dict:
+        """
+        Momentum = avg(second half) − avg(first half) on daily ERI
+        - Linear interpolate gaps (avoids artificial persistence)
+        - Optional EWMA smoothing (α=0.2) when n≥7
+        - Light SNR guard on the two half-means
+        - Same % scaling and thresholds (5%, 20%)
+        """
         try:
-            n = len(series)
+            s = pd.Series(series).astype(float)
+            s = s.replace([np.inf, -np.inf], np.nan).dropna()
+            n = len(s)
             if n < 4:
-                return {"symbol":"→","delta":0.0}
+                return {"symbol": "→", "delta": 0.0}
+    
+            # De-gap gently; then optional smoothing
+            s = s.interpolate(method="linear", limit_direction="both")
+            if n >= 7:
+                s = s.ewm(alpha=0.2, adjust=False).mean()
+    
             mid = n // 2
-            avg1, avg2 = float(series[:mid].mean()), float(series[mid:].mean())
-            delta = ((avg2 - avg1) / 200.0) * 100.0
-            delta = max(min(delta, 100.0), -100.0)
-            delta = round(delta, 2)
-            if   delta > 20.0: sym = "↑↑"
-            elif delta > 5.0:  sym = "↑"
-            elif delta < -20.0: sym = "↓↓"
-            elif delta < -5.0:  sym = "↓"
-            else:               sym = "→"
-            return {"symbol":sym,"delta":delta}
+            first_half = s.iloc[:mid]
+            second_half = s.iloc[mid:]
+            if len(first_half) == 0 or len(second_half) == 0:
+                return {"symbol": "→", "delta": 0.0}
+    
+            avg1 = float(first_half.mean())
+            avg2 = float(second_half.mean())
+            delta_raw = avg2 - avg1  # ERI units
+    
+            # Scale to % of full ERI band (−100..+100 => 200 wide)
+            delta_pct = (delta_raw / 200.0) * 100.0
+            delta_pct = float(max(min(delta_pct, 100.0), -100.0))
+            delta_pct_r = round(delta_pct, 2)
+    
+            # Pooled standard error of the two half-means (guard tiny sizes)
+            import math
+            k1, k2 = max(len(first_half), 1), max(len(second_half), 1)
+            sd1 = first_half.std() if k1 > 1 else 0.0
+            sd2 = second_half.std() if k2 > 1 else 0.0
+            se1 = sd1 / max(math.sqrt(k1), 1e-9)
+            se2 = sd2 / max(math.sqrt(k2), 1e-9)
+            pooled_se = math.sqrt(max(se1**2 + se2**2, 1e-12))
+            snr = abs(delta_raw) / pooled_se if pooled_se > 0 else 0.0
+    
+            # Same thresholds, gated by light SNR
+            if   delta_pct > 20.0 and snr >= 1.25: sym = "↑↑"
+            elif delta_pct > 5.0  and snr >= 0.75: sym = "↑"
+            elif delta_pct < -20.0 and snr >= 1.25: sym = "↓↓"
+            elif delta_pct < -5.0  and snr >= 0.75: sym = "↓"
+            else:                                   sym = "→"
+    
+            return {"symbol": sym, "delta": delta_pct_r}
         except Exception as e:
-            if self.verbose: print(f"⚠️ Momentum computation failed: {e}")
-            return {"symbol":"→","delta":0.0}
+            if getattr(self, "verbose", False):
+                print(f"⚠️ Momentum computation failed: {e}")
+            return {"symbol": "→", "delta": 0.0}
+
 
     def _compute_volatility_series(self, series) -> dict:
         try:
-            std = series.std()
-            if pd.isna(std):
-                return {"tier":"✅ Stable","score":0.0}
-            if std <= 15: tier = "✅ Stable"
-            elif std <= 45: tier = "⚠ Fluctuating"
-            else: tier = "🔴 Highly Fluctuating"
-            return {"tier":tier,"score":round(std,2)}
+            s = pd.Series(series).astype(float)
+            s = s.replace([np.inf, -np.inf], np.nan).dropna()
+            n = len(s)
+            if n < 3:
+                return {"tier": "✅ Stable", "score": 0.0, "score_adj": 0.0}
+    
+            # De-gap gently; then optional smoothing to tame spikes
+            s = s.interpolate(method="linear", limit_direction="both")
+            if n >= 7:
+                s = s.ewm(alpha=0.2, adjust=False).mean()
+    
+            # Std as % of full ERI span (−100..+100 => 200)
+            std = s.std()
+            if pd.isna(std) or std == 0.0:
+                return {"tier": "✅ Stable", "score": 0.0, "score_adj": 0.0}
+    
+            std_pct = (std / 200.0) * 100.0
+            std_pct = round(float(std_pct), 2)
+    
+            # Length-normalized (for fair tiering across short vs long windows)
+            score_adj = std_pct / max(np.sqrt(n), 1.0)
+            score_adj = round(float(score_adj), 2)
+    
+            # Tiers on adjusted % (keeps labels fair across 7/14/28/75d windows)
+            if score_adj <= 7.0:
+                tier = "✅ Stable"
+            elif score_adj <= 20.0:
+                tier = "⚠ Fluctuating"
+            else:
+                tier = "🔴 Highly Fluctuating"
+    
+            return {"tier": tier, "score": std_pct, "score_adj": score_adj}
         except Exception as e:
-            if self.verbose: print(f"⚠️ Volatility computation failed: {e}")
-            return {"tier":"✅ Stable","score":0.0}
+            if getattr(self, "verbose", False):
+                print(f"⚠️ Volatility computation failed: {e}")
+            return {"tier": "✅ Stable", "score": 0.0, "score_adj": 0.0}
 
-    def _compute_pattern_recognition(self, series, entity_data, lags):
-        lag_days = {"weekly":7,"monthly":30,"quarterly":90}
+
+   def _compute_pattern_recognition(self, series, entity_data, lags):
+        """
+        Seasonal pattern detector (weekly / monthly / quarterly) for daily ERI.
+        - Linear interpolate gaps (avoid ffill persistence)
+        - Detrend + de-mean before ACF
+        - ACF at seasonal lag with significance gate that scales with coverage
+        - Weekly pain_day only if we have enough support per weekday
+        """
+        lag_days = {"weekly":7, "monthly":30, "quarterly":90}
         result = {
             "has_pattern": False,
             "pattern_type": "None",
@@ -2177,27 +2293,65 @@ class Layer3Computer:
             "min_required_days": None,
             "eri_by_day": None
         }
-
-        # ensure continuity
-        full_index = pd.date_range(start=series.index.min(), end=series.index.max(), freq='D')
-        series = series.reindex(full_index).ffill()
-
-        if series.std() == 0 or series.isnull().all():
-            if self.verbose: print("⚠️ Skipping pattern detection: Flat or null ERI series")
+    
+        # 0) ensure continuous daily index
+        if len(series) == 0:
             return result
-
-        series_days = (series.index.max() - series.index.min()).days + 1
-        valid_lags = [lag for lag in lags if series_days >= lag_days[lag] + 1]
-        if self.verbose: print(f"🔍 Valid pattern lags for {series_days} days: {valid_lags}")
-
+        full_index = pd.date_range(start=series.index.min(), end=series.index.max(), freq="D")
+        s = series.reindex(full_index)
+    
+        # 1) de-gap gently, not ffill (avoid artificial persistence)
+        s = s.interpolate(method="linear", limit_direction="both")
+    
+        # 2) detrend + center (avoid drift faking seasonality)
+        # linear detrend
+        try:
+            x = np.arange(len(s), dtype=float)
+            coef = np.polyfit(x, s.values.astype(float), 1)
+            trend = coef[0]*x + coef[1]
+            s_dt = pd.Series(s.values - trend, index=s.index)
+        except Exception:
+            s_dt = s.copy()
+    
+        # de-mean
+        s_dt = s_dt - s_dt.mean()
+    
+        # quick flat/null guard
+        if s_dt.std() == 0 or s_dt.isnull().all():
+            if getattr(self, "verbose", False): print("⚠️ Skipping pattern: flat/null after detrend")
+            return result
+    
+        # 3) coverage + valid lags
+        series_days = (s_dt.index.max() - s_dt.index.min()).days + 1
+        # require at least (lag + 1) and a modest extra buffer for stability
+        valid_lags = [lag for lag in lags if series_days >= lag_days[lag] + 7]
+        if getattr(self, "verbose", False):
+            print(f"🔍 Valid pattern lags for {series_days} days: {valid_lags}")
+    
+        # 4) find strongest significant seasonal ACF
         best_pattern, best_score = None, 0.0
         for lag in valid_lags:
             L = lag_days[lag]
             try:
-                acf_vals = acf(series, nlags=L, fft=True, missing='conservative')
+                # conservative acf; we only need value at lag L
+                acf_vals = acf(s_dt, nlags=L, fft=True, missing='conservative')
                 score = float(acf_vals[L])
-                if score >= 0.3 and score > best_score:
-                    confidence = "Strong" if score >= 0.6 else "Weak"
+    
+                # significance gate ~ white-noise CI: ±1.96/sqrt(N)
+                # use effective N = number of days
+                N = len(s_dt)
+                sig = 1.96 / max(np.sqrt(N), 1.0)
+    
+                # require both: passes CI AND above practical threshold (0.30)
+                if (abs(score) >= sig) and (score >= 0.30) and (score > best_score):
+                    # confidence tiers scale with strength above CI
+                    if score >= 0.60:
+                        confidence = "Strong"
+                    elif score >= 0.45:
+                        confidence = "Moderate"
+                    else:
+                        confidence = "Weak"
+    
                     best_pattern = {
                         "has_pattern": True,
                         "pattern_type": lag.capitalize(),
@@ -2208,30 +2362,53 @@ class Layer3Computer:
                         "min_required_days": int(L),
                         "eri_by_day": None
                     }
+    
+                    # 5) weekly extras: pain_day + eri_by_day only with support
                     if lag == "weekly":
                         ed = entity_data.copy()
+                        # normalize ERI for the raw rows of this ED/day
                         ed["eri_norm"] = ((ed["emotion_score"] + 3.0)/6.0)*200.0 - 100.0
-                        weekday_means = (
-                            ed.assign(weekday=ed["date"].apply(lambda x: x.strftime("%A")))
-                              .groupby("weekday", as_index=True)["eri_norm"]
-                              .mean()
-                              .round(2)
-                        )
-                        if not weekday_means.empty:
-                            best_pattern["pain_day"] = weekday_means.idxmin()
+                        ed["weekday"] = ed["date"].apply(lambda x: x.strftime("%A"))
+    
+                        # require at least 2 observations per weekday to avoid flaky pain_day
+                        counts = ed.groupby("weekday")["eri_norm"].size()
+                        if (counts.min() if len(counts) >= 5 else 0) >= 2:
+                            weekday_means = (
+                                ed.groupby("weekday", as_index=True)["eri_norm"]
+                                  .mean().round(2)
+                            )
                             order = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
-                            best_pattern["eri_by_day"] = {d: float(weekday_means.get(d)) if d in weekday_means.index else None for d in order}
+                            if not weekday_means.empty:
+                                # pick min on the ordered set for determinism
+                                wmeans = {d: float(weekday_means.get(d)) if d in weekday_means.index else None for d in order}
+                                # pain_day is the day with minimum mean ERI among days with data
+                                avail = {d:v for d,v in wmeans.items() if v is not None}
+                                if avail:
+                                    best_pattern["pain_day"] = min(avail, key=avail.get)
+                                    best_pattern["eri_by_day"] = wmeans
+    
                     best_score = score
             except Exception as e:
-                if self.verbose: print(f"❌ ACF error for {lag}: {e}")
-
+                if getattr(self, "verbose", False): print(f"❌ ACF error for {lag}: {e}")
+    
         return best_pattern if best_pattern else result
 
-    def _compute_momentum_saturation_insight(self, eri_score, momentum_symbol) -> dict:
-        # 1) tiers
-        sat_idx = (eri_score + 100) / 200.0
-        sat_idx = max(0.0, min(1.0, float(sat_idx)))
-
+   def _compute_momentum_saturation_insight(self, eri_score, momentum_symbol) -> dict:
+        """
+        Map (saturation index from ERI, momentum symbol) -> 25-cell quadrant insight.
+        - Tier-aware confidence (uses actual half-width of the current saturation tier)
+        - Borderline flag when near a tier edge
+        - Safe handling of NaN/inf ERI and unexpected momentum formatting
+        """
+        # 1) Saturation index + tiers
+        try:
+            sat_idx = (float(eri_score) + 100.0) / 200.0
+        except Exception:
+            sat_idx = 0.5  # neutral fallback
+        if not np.isfinite(sat_idx):
+            sat_idx = 0.5
+        sat_idx = max(0.0, min(1.0, sat_idx))
+    
         momentum_map = {
             "↑↑": "↑↑ 🚀 Strongly Rising",
             "↑":  "↑ 📈 Moderately Rising",
@@ -2240,30 +2417,36 @@ class Layer3Computer:
             "↓↓": "↓↓ 🧨 Strongly Falling"
         }
         momentum_symbol = momentum_symbol if momentum_symbol in momentum_map else "→"
-
+    
         if   sat_idx >= 0.90: sat_emoji, sat_clean = "🏆 Very High", "Very High"
         elif sat_idx >= 0.65: sat_emoji, sat_clean = "✅ High", "High"
         elif sat_idx >= 0.45: sat_emoji, sat_clean = "⚖️ Medium", "Medium"
         elif sat_idx >= 0.25: sat_emoji, sat_clean = "⚠️ Low", "Low"
         else:                 sat_emoji, sat_clean = "❌ Very Low", "Very Low"
-
+    
         mom_emoji = momentum_map[momentum_symbol]
-        mom_clean = mom_emoji.split(" ", 2)[2]
-
-        # 2) lookup
+        parts = mom_emoji.split(" ", 2)
+        mom_clean = parts[2] if len(parts) == 3 else "Stable"
+    
+        # 2) Lookup in the 25-cell matrix
         qm = self.quadrant_matrix
         hit = qm[(qm["Saturation_Tier"] == sat_emoji) & (qm["Momentum_Tier"] == mom_emoji)]
-
-        # 3) confidence + borderline
+    
+        # 3) Confidence + borderline (tier-aware)
         sat_bounds = [0.0, 0.25, 0.45, 0.65, 0.90, 1.0]
-        nearest = min(sat_bounds, key=lambda b: abs(b - sat_idx))
-        sat_distance = abs(sat_idx - nearest)
+        lower = max([b for b in sat_bounds if b <= sat_idx])
+        upper = min([b for b in sat_bounds if b >= sat_idx])
+        half_width = max((upper - lower) / 2.0, 1e-9)
+        sat_distance = min(sat_idx - lower, upper - sat_idx)
         borderline = sat_distance < 0.02
-        mom_strength = {"↑↑":1.0,"↑":0.6,"→":0.3,"↓":0.6,"↓↓":1.0}[momentum_symbol]
-        quadrant_confidence = round(0.5 * mom_strength + 0.5 * min(1.0, sat_distance/0.20), 2)
-
+    
+        mom_strength = {"↑↑":1.0, "↑":0.6, "→":0.3, "↓":0.6, "↓↓":1.0}[momentum_symbol]
+        quadrant_confidence = round(
+            0.5 * mom_strength + 0.5 * min(1.0, sat_distance / half_width), 2
+        )
+    
         matrix_key = f"{sat_clean}|{mom_clean}"
-
+    
         if not hit.empty:
             q = hit.iloc[0]
             payload = {
@@ -2317,7 +2500,7 @@ class Layer3Computer:
                     "recommended_owner": "Data Team"
                 }
             }
-
+    
         payload["meta"] = {
             "matrix_key": matrix_key,
             "saturation_tier_emoji": sat_emoji,
@@ -2328,163 +2511,230 @@ class Layer3Computer:
         return payload
 
     # === Layer 4: Signal Strength (QSSI) ===
-    def _compute_signal_strength(self, trend: str, momentum: str, saturation_index: float) -> dict:
-        # velocity score
-        if trend in ("↑", "↓") and momentum == "↓↓":
+    def _compute_signal_strength(
+        self,
+        trend: str,
+        momentum: str,
+        saturation_index: float,
+        trend_pct: float = None,          # optional: % of ERI band from trend module
+        momentum_delta: float = None,     # optional: % of ERI band from momentum module
+        n_days: int = None,               # optional: series length
+        vol_norm: float = None            # optional: volatility normalized to [0,1]
+    ) -> dict:
+        # --- sanitize inputs ---
+        sym_trend = trend if trend in ("↑", "→", "↓") else "→"
+        sym_mom   = momentum if momentum in ("↑↑","↑","→","↓","↓↓") else "→"
+        si = saturation_index
+        try:
+            si = float(si)
+        except Exception:
+            si = 0.5
+        si = max(0.0, min(1.0, si))
+    
+        # --- velocity score (symbol-only base, same as your logic) ---
+        if sym_trend in ("↑","↓") and sym_mom == "↓↓":
             velocity_score, rationale = 6, "Sharp trend shift with strong counter-momentum"
-        elif trend in ("↑", "↓") and momentum == "↑↑":
+        elif sym_trend in ("↑","↓") and sym_mom == "↑↑":
             velocity_score, rationale = 5, "Rapid acceleration with positive momentum surge"
-        elif trend in ("↑", "↓") and momentum in ("↑", "↓"):
+        elif sym_trend in ("↑","↓") and sym_mom in ("↑","↓"):
             velocity_score, rationale = 4, "Moderate directional movement with matching momentum"
-        elif trend in ("↑", "↓") and momentum == "→":
+        elif sym_trend in ("↑","↓") and sym_mom == "→":
             velocity_score, rationale = 2, "Directional change but stable momentum"
-        elif trend == "→" and momentum in ("↑↑", "↓↓"):
+        elif sym_trend == "→" and sym_mom in ("↑↑","↓↓"):
             velocity_score, rationale = 3, "Flat trend with sudden strong shift emerging"
-        elif trend == "→" and momentum in ("↑", "↓"):
+        elif sym_trend == "→" and sym_mom in ("↑","↓"):
             velocity_score, rationale = 1, "Stable trend with mild fluctuation"
         else:
             velocity_score, rationale = 0, "No meaningful trend or momentum detected"
-
-        # saturation score
-        si = max(0.0, min(1.0, float(saturation_index)))
-        if   si <= 0.20: saturation_score, sat_r = 4, "Very low emotional saturation — fresh pain or interest forming"
-        elif si <= 0.40: saturation_score, sat_r = 3, "Low saturation — likely early-stage signal"
-        elif si <= 0.60: saturation_score, sat_r = 2, "Medium saturation — emotionally stable signal"
-        elif si <= 0.80: saturation_score, sat_r = 1, "High saturation — signal is nearing emotional capacity"
-        else:            saturation_score, sat_r = 0, "Very high saturation — emotional exhaustion or signal decay"
-
-        qssi = velocity_score + saturation_score
-        if   qssi >= 9: qssi_tier, interp = "💥 Critical Signal","Extreme movement detected with low saturation — high potential volatility or opportunity"
-        elif qssi >= 6: qssi_tier, interp = "🔥 Strong Signal","Substantial shift in emotional dynamics — active attention required"
-        elif qssi >= 4: qssi_tier, interp = "🌱 Emerging Signal","Signal beginning to form — track evolution"
-        elif qssi >= 1: qssi_tier, interp = "🔁 Weak Signal","Low signal strength — may resolve on its own"
-        else:           qssi_tier, interp = "❌ No Signal","Dormant — not actionable"
-
+    
+        # --- optional micro-nudges (NO effect unless you pass values) ---
+        bump = 0
+        if trend_pct is not None:
+            # +1 if the trend magnitude is clearly non-trivial
+            if abs(float(trend_pct)) >= 10.0:
+                bump += 1
+        if momentum_delta is not None:
+            # +1 if the momentum magnitude is clearly non-trivial
+            if abs(float(momentum_delta)) >= 20.0:
+                bump += 1
+        # small conservatism for short/noisy windows, only if provided
+        penalty = 0
+        if n_days is not None and n_days < 10:
+            penalty += 1
+        if vol_norm is not None and float(vol_norm) > 0.8:
+            penalty += 1
+    
+        velocity_score = max(0, min(6, velocity_score + bump - penalty))
+    
+        # --- saturation score (headroom) ---
+        if   si <= 0.20:
+            saturation_score, sat_r = 4, "Very low emotional saturation — fresh pain or interest forming"
+        elif si <= 0.40:
+            saturation_score, sat_r = 3, "Low saturation — likely early-stage signal"
+        elif si <= 0.60:
+            saturation_score, sat_r = 2, "Medium saturation — emotionally stable signal"
+        elif si <= 0.80:
+            saturation_score, sat_r = 1, "High saturation — signal is nearing emotional capacity"
+        else:
+            saturation_score, sat_r = 0, "Very high saturation — emotional exhaustion or signal decay"
+    
+        # --- composite ---
+        qssi = int(velocity_score + saturation_score)  # stays in 0..10
+    
+        if   qssi >= 9:
+            qssi_tier, interp = "💥 Critical Signal","Extreme movement detected with low saturation — high potential volatility or opportunity"
+        elif qssi >= 6:
+            qssi_tier, interp = "🔥 Strong Signal","Substantial shift in emotional dynamics — active attention required"
+        elif qssi >= 4:
+            qssi_tier, interp = "🌱 Emerging Signal","Signal beginning to form — track evolution"
+        elif qssi >= 1:
+            qssi_tier, interp = "🔁 Weak Signal","Low signal strength — may resolve on its own"
+        else:
+            qssi_tier, interp = "❌ No Signal","Dormant — not actionable"
+    
         return {
             "velocity_component": {
-                "trend_symbol": trend,
-                "momentum_symbol": momentum,
-                "velocity_score": velocity_score,
-                "velocity_rationale": rationale
+                "trend_symbol": sym_trend,
+                "momentum_symbol": sym_mom,
+                "velocity_score": int(velocity_score),
+                "velocity_rationale": rationale,
+                # expose nudges only if they applied
+                **({"nudges": {"bump": bump, "penalty": penalty}} if (bump or penalty) else {})
             },
             "saturation_component": {
                 "saturation_index": round(si, 2),
-                "saturation_score": saturation_score,
+                "saturation_score": int(saturation_score),
                 "saturation_rationale": sat_r
             },
             "qssi_summary": {
-                "qssi_score": qssi,
+                "qssi_score": int(qssi),
                 "qssi_tier": qssi_tier,
                 "qssi_interpretation": interp
             }
         }
 
-    # === PEM (Predictive Emotional Modeling) ===
+   # === PEM (Predictive Emotional Modeling) — aligned to new modules ===
     def build_predictive_emotional_modeling(self, state_of_play, volatility, has_pattern, qssi_tier) -> dict:
-        # upstream
-        momentum_tier = state_of_play["momentum_tier"]      # "Strongly Rising" | ... | "Strongly Falling"
-        saturation_tier = state_of_play["saturation_tier"]  # "Very High" | ... | "Very Low"
-        trajectory_story = state_of_play["trajectory_story"]
-        action_guidance = state_of_play["action_guidance"]
-        recommended_owner = state_of_play["recommended_owner"]
-
-        # explainable maps
-        qssi_map = {"💥 Critical Signal":1.00,"🔥 Strong Signal":0.80,"🌱 Emerging Signal":0.50,"🔁 Weak Signal":0.20,"❌ No Signal":0.00}
-        momentum_map = {"Strongly Rising":1.00,"Moderately Rising":0.60,"Stable":0.00,"Moderately Falling":-0.60,"Strongly Falling":-1.00}
-        headroom_map = {"Very High":0.00,"High":0.25,"Medium":0.50,"Low":0.75,"Very Low":1.00}
-
-        qssi_strength = qssi_map.get(qssi_tier, 0.0)
+        """
+        Expect:
+          - state_of_play: {
+              momentum_tier: "Strongly Rising"|"Moderately Rising"|"Stable"|"Moderately Falling"|"Strongly Falling",
+              saturation_tier: "Very High"|"High"|"Medium"|"Low"|"Very Low",
+              trajectory_story, action_guidance, recommended_owner
+            }
+          - volatility: float  # **% of ERI band** (from volatility.score, not score_adj)
+          - has_pattern: bool
+          - qssi_tier: "💥 Critical Signal"|"🔥 Strong Signal"|"🌱 Emerging Signal"|"🔁 Weak Signal"|"❌ No Signal"
+        """
+    
+        # --- unpack ---
+        momentum_tier      = state_of_play["momentum_tier"]
+        saturation_tier    = state_of_play["saturation_tier"]
+        trajectory_story   = state_of_play["trajectory_story"]
+        action_guidance    = state_of_play["action_guidance"]
+        recommended_owner  = state_of_play["recommended_owner"]
+    
+        # --- maps (explainable + stable) ---
+        qssi_map     = {"💥 Critical Signal":1.00, "🔥 Strong Signal":0.80, "🌱 Emerging Signal":0.50, "🔁 Weak Signal":0.20, "❌ No Signal":0.00}
+        momentum_map = {"Strongly Rising":1.00, "Moderately Rising":0.60, "Stable":0.00, "Moderately Falling":-0.60, "Strongly Falling":-1.00}
+        headroom_map = {"Very High":0.00, "High":0.25, "Medium":0.50, "Low":0.75, "Very Low":1.00}
+    
+        qssi_strength  = float(qssi_map.get(qssi_tier, 0.0))
         momentum_score = float(momentum_map.get(momentum_tier, 0.0))
-        headroom = float(headroom_map.get(saturation_tier, 0.5))
-
-        # volatility to [0,1]
-        vol_norm = max(0.0, min(float(volatility) / 45.0, 1.0))
+        headroom       = float(headroom_map.get(saturation_tier, 0.5))
+    
+        # --- volatility normalization (now in % of ERI band) ---
+        # old raw thresholds (10, 45) map to ≈5% and ≈22.5% of ERI band
+        vol_pct  = max(0.0, float(volatility))
+        vol_norm = min(vol_pct / 20.0, 1.0)   # ~20% considered "high"
         stability = 1.0 - vol_norm
-
-        # competing scores
+    
+        # --- directionalized QSSI + balanced components ---
         esc_raw = (
-            0.50*qssi_strength +
-            0.40*max(0.0, momentum_score) +
-            0.30*headroom +
-            0.20*(1.0 if has_pattern else 0.0) +
-            0.20*stability
+            0.35 * qssi_strength * max(0.0,  momentum_score) +  # QSSI pushes with direction
+            0.40 * max(0.0,  momentum_score) +
+            0.30 * headroom +
+            0.20 * (1.0 if has_pattern else 0.0) +
+            0.20 * stability
         )
         dec_raw = (
-            0.50*qssi_strength +
-            0.60*max(0.0, -momentum_score) +
-            0.30*(1.0 - headroom) +
-            0.20*vol_norm
+            0.35 * qssi_strength * max(0.0, -momentum_score) +  # QSSI pushes with direction
+            0.60 * max(0.0, -momentum_score) +
+            0.30 * (1.0 - headroom) +
+            0.20 * vol_norm
         )
+    
         esc_raw = max(0.0, esc_raw)
         dec_raw = max(0.0, dec_raw)
         total = esc_raw + dec_raw
-        esc_prob = (esc_raw/total) if total > 1e-9 else 0.0
-        dec_prob = (dec_raw/total) if total > 1e-9 else 0.0
-
-        # decisions (rule-first, then model)
-        signal_is_precursor = (momentum_tier in ["Strongly Rising","Moderately Rising"] and
-                               qssi_tier in ["🔥 Strong Signal","💥 Critical Signal"] and
-                               has_pattern)
-        signal_is_at_risk_of_decay = (momentum_tier in ["Strongly Falling","Moderately Falling"] and
-                                      volatility >= 15)
-
+        esc_prob = (esc_raw / total) if total > 1e-9 else 0.0
+        dec_prob = (dec_raw / total) if total > 1e-9 else 0.0
+    
+        # --- rules-first overrides (aligned thresholds in % terms) ---
+        signal_is_precursor = (
+            momentum_tier in ["Strongly Rising", "Moderately Rising"] and
+            qssi_tier in ["🔥 Strong Signal", "💥 Critical Signal"] and
+            has_pattern
+        )
+        signal_is_at_risk_of_decay = (
+            momentum_tier in ["Strongly Falling", "Moderately Falling"] and
+            vol_pct >= 5.0   # ≈ old 10 units
+        )
+    
         if signal_is_precursor:
-            pem_trajectory = "Likely Escalation"
+            pem_trajectory  = "Likely Escalation"
             pem_probability = max(esc_prob, 0.65)
-            explanation = "Rising momentum + strong/critical signal + repeating pattern indicates intensification"
-            risk_class = "Opportunity"
+            explanation     = "Rising momentum + strong/critical signal + repeating pattern indicates intensification"
+            risk_class      = "Opportunity"
             rule_trigger, basis = "rising+strong_qssi+pattern", "esc_prob"
-            counterfactual_pointer = "Flip if momentum ≤ 'Moderately Falling' or volatility > 45"
+            counterfactual_pointer = "Flip if momentum ≤ 'Moderately Falling' or volatility > 22.5%"
         elif signal_is_at_risk_of_decay:
-            pem_trajectory = "At Risk of Decay"
+            pem_trajectory  = "At Risk of Decay"
             pem_probability = max(dec_prob, 0.65)
-            explanation = "Falling momentum + elevated volatility suggests emotional energy is fading or fracturing"
-            risk_class = "Risk"
+            explanation     = "Falling momentum + elevated volatility suggests emotional energy is fading or fracturing"
+            risk_class      = "Risk"
             rule_trigger, basis = "falling+volatility", "dec_prob"
-            counterfactual_pointer = "Flip if momentum ≥ 'Moderately Rising' and volatility < 10"
+            counterfactual_pointer = "Flip if momentum ≥ 'Moderately Rising' and volatility < 5%"
         else:
             if max(esc_prob, dec_prob) < 0.55:
-                pem_trajectory = "Stable / Inconclusive"
+                pem_trajectory  = "Stable / Inconclusive"
                 pem_probability = max(esc_prob, dec_prob)
-                explanation = "No dominant predictive anchors; continue monitoring"
-                risk_class = "Neutral"
+                explanation     = "No dominant predictive anchors; continue monitoring"
+                risk_class      = "Neutral"
             else:
                 if esc_prob > dec_prob:
-                    pem_trajectory = "Likely Escalation"
-                    pem_probability = esc_prob
-                    explanation = "Model indicates upward trajectory dominance (momentum/headroom/stability blend)"
-                    risk_class = "Opportunity"
+                    pem_trajectory, pem_probability = "Likely Escalation", esc_prob
+                    explanation, risk_class = "Model indicates upward trajectory dominance (momentum/headroom/stability blend)", "Opportunity"
                 else:
-                    pem_trajectory = "At Risk of Decay"
-                    pem_probability = dec_prob
-                    explanation = "Model indicates downward trajectory dominance (momentum/volatility/ceiling pressure)"
-                    risk_class = "Risk"
+                    pem_trajectory, pem_probability = "At Risk of Decay", dec_prob
+                    explanation, risk_class = "Model indicates downward trajectory dominance (momentum/volatility/ceiling pressure)", "Risk"
             rule_trigger = "model_choice"
             basis = "esc_prob" if esc_prob >= dec_prob else "dec_prob"
             counterfactual_pointer = "Flip if next horizon favors the opposite momentum tier"
-
-        # confidence
-        if has_pattern and volatility >= 10:
+    
+        # --- confidence (aligned to % thresholds) ---
+        if has_pattern and vol_pct >= 5.0:
             confidence_tier, confidence_score = "High", 0.85
-        elif has_pattern or volatility >= 10:
+        elif has_pattern or vol_pct >= 5.0:
             confidence_tier, confidence_score = "Moderate", 0.55
         else:
             confidence_tier, confidence_score = "Low", 0.30
-
-        # elasticity (responsiveness) — derived from existing vars only
+    
+        # --- elasticity (unchanged logic) ---
         elasticity_rating = (
             "High" if headroom >= 0.5 and abs(momentum_score) >= 0.6
             else "Moderate" if headroom >= 0.25
             else "Low"
         )
-
-        horizon_days = getattr(self, "pem_horizon_days", 14)
-        version = "PEM.v1.1"
-
+    
+        horizon_days = int(getattr(self, "pem_horizon_days", 14))
+        version = "PEM.v1.2"
+    
         feature_vector = {
             "qssi_strength": round(qssi_strength, 3),
             "momentum_score": round(momentum_score, 3),
             "headroom": round(headroom, 3),
+            "volatility_pct": round(vol_pct, 3),
             "volatility_norm": round(vol_norm, 3),
             "stability": round(stability, 3),
             "has_pattern": bool(has_pattern),
@@ -2493,7 +2743,7 @@ class Layer3Computer:
             "esc_prob": round(esc_prob, 3),
             "dec_prob": round(dec_prob, 3)
         }
-
+    
         return {
             "trajectory_forecast": {
                 "pem_trajectory": pem_trajectory,
@@ -2501,7 +2751,7 @@ class Layer3Computer:
                 "pem_confidence": confidence_tier,
                 "confidence_score": round(confidence_score, 2),
                 "risk_class": risk_class,
-                "horizon_days": int(horizon_days),
+                "horizon_days": horizon_days,
                 "explanation": explanation,
                 "version": version,
                 "rule_trigger": rule_trigger,
@@ -2510,11 +2760,10 @@ class Layer3Computer:
             },
             "signal_diagnostics": {
                 "has_repeating_pattern": bool(has_pattern),
-                "volatility_score": round(float(volatility), 2),
+                "volatility_pct": round(vol_pct, 2),
                 "momentum_tier": momentum_tier,
                 "saturation_tier": saturation_tier,
                 "qssi_tier": qssi_tier
-                # optional: "qssi_score": state_of_play.get("qssi_score")
             },
             "future_risk_profile": {
                 "trajectory_story": trajectory_story,
@@ -2527,7 +2776,7 @@ class Layer3Computer:
             }
         }
 
-    # === Main compute ===
+   # === Main compute ===
     def compute(self):
         results, skipped = [], []
         self.raw_df["experience_driver"] = self.raw_df["experience_driver"].str.strip()
@@ -2568,17 +2817,30 @@ class Layer3Computer:
     
                 trend_symbol, trend_pct = trend["symbol"], trend["trend_pct"]
                 momentum_symbol, momentum_delta = momentum["symbol"], momentum["delta"]
-                volatility_tier, volatility_score = volatility["tier"], volatility["score"]
+    
+                # volatility now in % of ERI band; keep adj if present
+                volatility_tier = volatility["tier"]
+                volatility_pct = float(volatility.get("score", 0.0))           # % of ERI band
+                volatility_pct_adj = float(volatility.get("score_adj", volatility_pct))
+                # normalized 0..1 for confidence/QSSI (≈20% considered "high")
+                vol_norm = min(max(volatility_pct / 20.0, 0.0), 1.0)
     
                 quadrant_block = self._compute_momentum_saturation_insight(
                     row["ERI"], momentum_symbol
                 )
+    
+                # QSSI: pass new optional signals for tiny nudges (safe if unused)
                 signal_strength_block = self._compute_signal_strength(
                     trend_symbol,
                     momentum_symbol,
-                    quadrant_block["signal_classification"]["saturation_index"]
+                    quadrant_block["signal_classification"]["saturation_index"],
+                    trend_pct=float(trend_pct),
+                    momentum_delta=float(momentum_delta),
+                    n_days=int(len(daily_eri)),
+                    vol_norm=vol_norm
                 )
     
+                # PEM expects volatility **% of ERI band**
                 pem_block = self.build_predictive_emotional_modeling(
                     state_of_play={
                         "momentum_tier": quadrant_block["signal_classification"]["momentum_tier"],
@@ -2587,7 +2849,7 @@ class Layer3Computer:
                         "action_guidance": quadrant_block["actionable_strategy"]["action_guidance"],
                         "recommended_owner": quadrant_block["actionable_strategy"]["recommended_owner"]
                     },
-                    volatility=volatility_score,
+                    volatility=volatility_pct,                       # % of ERI band
                     has_pattern=pattern_block["has_pattern"],
                     qssi_tier=signal_strength_block["qssi_summary"]["qssi_tier"]
                 )
@@ -2596,20 +2858,19 @@ class Layer3Computer:
                 num_days_observed = int(len(daily_eri))
     
                 # % days with any mentions — align index types first
-                ds = data.groupby("date").size()  # index is Python date
-                ds.index = pd.to_datetime(ds.index)  # make it DatetimeIndex
+                ds = data.groupby("date").size()
+                ds.index = pd.to_datetime(ds.index)
                 days_with_signal = ds.reindex(daily_eri.index, fill_value=0)
                 pct_days_with_signal = round(
                     float((days_with_signal > 0).sum()) / num_days_observed, 3
                 )
     
-                # unified Layer-3 confidence
+                # unified Layer-3 confidence (vol_norm uses new scaling)
                 pattern_conf_norm = (
                     1.0 if pattern_block.get("pattern_confidence") == "Strong"
                     else 0.6 if pattern_block.get("pattern_confidence") == "Weak"
                     else 0.3
                 )
-                vol_norm = max(0.0, min(volatility_score / 45.0, 1.0))
                 layer3_confidence_score = round(
                     min(1.0, max(0.0,
                         0.4 * quadrant_block["meta"]["quadrant_confidence"]
@@ -2674,7 +2935,11 @@ class Layer3Computer:
     
                     "trend_block": {"trend_symbol": trend_symbol, "trend_pct": round(trend_pct, 2)},
                     "momentum_block": {"momentum_symbol": momentum_symbol, "momentum_delta": round(momentum_delta, 2)},
-                    "volatility_block": {"volatility_tier": volatility_tier, "volatility_score": round(volatility_score, 2)},
+                    "volatility_block": {
+                        "volatility_tier": volatility_tier,
+                        "volatility_score": round(volatility_pct, 2),        # % of ERI band (human-facing)
+                        **({"volatility_score_adj": round(volatility_pct_adj, 2)} if "score_adj" in volatility else {})
+                    },
                     "pattern_block": pattern_payload,
     
                     "momentum_saturation_insight": quadrant_block,
@@ -2713,7 +2978,7 @@ class Layer3Computer:
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
-        
+
 """
 
 `_compute_pattern_recognition()` function explained step-by-step
