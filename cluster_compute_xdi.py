@@ -942,91 +942,206 @@ class FlexibleTimeframeAnalyzer:
     def compute_granular_details_snapshot(self, raw_df: pd.DataFrame, layer3_df: pd.DataFrame) -> pd.DataFrame:
         """
         Compute OU-level cluster summaries for Signal Capsule display only.
-        This version excludes semantic fields (context, matters, etc.) which will be LLM-generated later.
+        This version includes all 4-tier distributions: ED → Emotion → Stream → Cluster Theme
         """
         
         all_df_chunks = []
         all_full_composites = {}
         all_cluster_store = {}
-
+    
         if layer3_df is None:
             raise ValueError("Layer 3 diagnostics must be supplied.")
-
+    
         records: List[Dict[str, Any]] = []
-
+    
         for _, hdr in layer3_df.iterrows():
             driver = hdr["experience_driver"]
             emotion_focus = hdr.get("emotional_audit_focus", [])
-
+    
             # 🔥 FIX: Convert string representation back to actual list
             if isinstance(emotion_focus, str):
                 try:
-                    emotion_focus = ast.literal_eval(emotion_focus)  # Convert string to list
+                    emotion_focus = ast.literal_eval(emotion_focus)
                 except (ValueError, SyntaxError):
-                    emotion_focus = []  # Fallback to empty list if parsing fails
-
+                    emotion_focus = []
+    
             emotion_dist = hdr.get("emotion_distribution", {})
-
+    
             driver_rows = raw_df[raw_df["experience_driver"] == driver]
-
+    
             for emotion in emotion_focus:
                 emotion_rows = driver_rows[driver_rows["emotion_primary"].str.lower() == emotion.lower()]
                 if emotion_rows.empty:
                     continue
-
+    
                 stream_counts = emotion_rows["opportunity_stream"].value_counts()
                 dominant_streams, stream_distribution = self.apply_stream_threshold_and_distribution(
                     stream_counts, threshold=self.OU_CFG["stream_threshold"]
                 )
-
+    
                 if not dominant_streams:
-                    continue  # ✅ Skip if no dominant stream found
-
+                    continue
+    
                 for stream in dominant_streams:
                     stream_rows = emotion_rows[emotion_rows["opportunity_stream"] == stream]
                     if stream_rows.empty:
-                        continue  # Skip if nothing to cluster
-
+                        continue
+    
                     clust_df, full_distribution, cluster_store, df_chunk, full_composites = self.cluster_behavior(
-                                                        stream_rows, driver=driver, emotion=emotion, stream=stream)
-
-
+                        stream_rows, driver=driver, emotion=emotion, stream=stream)
+    
+                    # 🎯 NEW: Calculate cluster_theme_distribution
+                    cluster_theme_distribution = self._calculate_cluster_theme_distribution(clust_df)
+    
                     # Accumulate for final DB creation
                     all_df_chunks.append(df_chunk)
                     all_cluster_store.update(cluster_store)
                     all_full_composites.update(full_composites)
-
+    
                     # Create lookup for quick access
                     meta_lookup = {meta["bcs_id"]: meta for meta in full_distribution}
-
+    
                     for cid, grp in clust_df.groupby("bcs_id"):
                         meta = meta_lookup.get(cid, {})
-
-                        # Inject cluster-local overrides
+    
+                        # 🔥 COMPLETE 4-TIER HIERARCHY WITH DISTRIBUTIONS
                         composite = {
                             **meta,
                             "emotion_distribution": emotion_dist,
                             "stream_distribution": stream_distribution,
+                            "cluster_theme_distribution": cluster_theme_distribution,  # 🎯 NEW 4TH TIER
                         }
-
+    
                         records.append(composite)
-
+    
         print(f"\n📦 FINAL DEBUG SUMMARY")
         print(f"🔢 Total full_composites: {len(all_full_composites)}")
         print(f"🔢 Total cluster_store: {len(all_cluster_store)}")
         missing = [cid for cid in all_cluster_store if cid not in all_full_composites]
         print(f"❌ Missing composites for: {missing}")
-  
+    
         # Create DB once using full data
         merged_df = pd.concat(all_df_chunks, ignore_index=True)
         self.create_cluster_database(
-                df=merged_df,
-                full_composites=all_full_composites,
-                cluster_store=all_cluster_store,
-                db_path="outputs/clusters.db"
-            )
-
+            df=merged_df,
+            full_composites=all_full_composites,
+            cluster_store=all_cluster_store,
+            db_path="outputs/clusters.db"
+        )
+    
         return pd.DataFrame(records)
+    
+    def _calculate_cluster_theme_distribution(self, clust_df: pd.DataFrame) -> Dict[str, float]:
+        """
+        Calculate distribution of cluster themes (root causes) within this stream slice.
+        Uses cluster_theme_preview as proxy for root cause until actual root cause analysis.
+        """
+        if clust_df.empty:
+            return {}
+        
+        # Extract theme previews (temporary root cause proxy)
+        theme_counts = clust_df["cluster_theme_preview"].value_counts()
+        total = theme_counts.sum()
+        
+        if total == 0:
+            return {}
+        
+        # Convert to percentage distribution
+        theme_distribution = {
+            theme: round((count / total) * 100, 1) 
+            for theme, count in theme_counts.items()
+        }
+        
+        return theme_distribution
+    
+    # def compute_granular_details_snapshot(self, raw_df: pd.DataFrame, layer3_df: pd.DataFrame) -> pd.DataFrame:
+    #     """
+    #     Compute OU-level cluster summaries for Signal Capsule display only.
+    #     This version excludes semantic fields (context, matters, etc.) which will be LLM-generated later.
+    #     """
+        
+    #     all_df_chunks = []
+    #     all_full_composites = {}
+    #     all_cluster_store = {}
+
+    #     if layer3_df is None:
+    #         raise ValueError("Layer 3 diagnostics must be supplied.")
+
+    #     records: List[Dict[str, Any]] = []
+
+    #     for _, hdr in layer3_df.iterrows():
+    #         driver = hdr["experience_driver"]
+    #         emotion_focus = hdr.get("emotional_audit_focus", [])
+
+    #         # 🔥 FIX: Convert string representation back to actual list
+    #         if isinstance(emotion_focus, str):
+    #             try:
+    #                 emotion_focus = ast.literal_eval(emotion_focus)  # Convert string to list
+    #             except (ValueError, SyntaxError):
+    #                 emotion_focus = []  # Fallback to empty list if parsing fails
+
+    #         emotion_dist = hdr.get("emotion_distribution", {})
+
+    #         driver_rows = raw_df[raw_df["experience_driver"] == driver]
+
+    #         for emotion in emotion_focus:
+    #             emotion_rows = driver_rows[driver_rows["emotion_primary"].str.lower() == emotion.lower()]
+    #             if emotion_rows.empty:
+    #                 continue
+
+    #             stream_counts = emotion_rows["opportunity_stream"].value_counts()
+    #             dominant_streams, stream_distribution = self.apply_stream_threshold_and_distribution(
+    #                 stream_counts, threshold=self.OU_CFG["stream_threshold"]
+    #             )
+
+    #             if not dominant_streams:
+    #                 continue  # ✅ Skip if no dominant stream found
+
+    #             for stream in dominant_streams:
+    #                 stream_rows = emotion_rows[emotion_rows["opportunity_stream"] == stream]
+    #                 if stream_rows.empty:
+    #                     continue  # Skip if nothing to cluster
+
+    #                 clust_df, full_distribution, cluster_store, df_chunk, full_composites = self.cluster_behavior(
+    #                                                     stream_rows, driver=driver, emotion=emotion, stream=stream)
+
+
+    #                 # Accumulate for final DB creation
+    #                 all_df_chunks.append(df_chunk)
+    #                 all_cluster_store.update(cluster_store)
+    #                 all_full_composites.update(full_composites)
+
+    #                 # Create lookup for quick access
+    #                 meta_lookup = {meta["bcs_id"]: meta for meta in full_distribution}
+
+    #                 for cid, grp in clust_df.groupby("bcs_id"):
+    #                     meta = meta_lookup.get(cid, {})
+
+    #                     # Inject cluster-local overrides
+    #                     composite = {
+    #                         **meta,
+    #                         "emotion_distribution": emotion_dist,
+    #                         "stream_distribution": stream_distribution,
+    #                     }
+
+    #                     records.append(composite)
+
+    #     print(f"\n📦 FINAL DEBUG SUMMARY")
+    #     print(f"🔢 Total full_composites: {len(all_full_composites)}")
+    #     print(f"🔢 Total cluster_store: {len(all_cluster_store)}")
+    #     missing = [cid for cid in all_cluster_store if cid not in all_full_composites]
+    #     print(f"❌ Missing composites for: {missing}")
+  
+    #     # Create DB once using full data
+    #     merged_df = pd.concat(all_df_chunks, ignore_index=True)
+    #     self.create_cluster_database(
+    #             df=merged_df,
+    #             full_composites=all_full_composites,
+    #             cluster_store=all_cluster_store,
+    #             db_path="outputs/clusters.db"
+    #         )
+
+    #     return pd.DataFrame(records)
           
     def _infer_owner(self, df):
         """
