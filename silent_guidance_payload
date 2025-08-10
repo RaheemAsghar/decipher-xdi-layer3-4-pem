@@ -1,0 +1,44 @@
+Silent Guidance Payload (IME Phase 3: Pattern Recall)
+
+Purpose: Provide execution-ready intelligence whenever a new OU is forming, by recalling precedents from IME.
+
+silent_guidance_payload:
+  guidance_id: "SG-ED473-2025Q3"
+  generated_at: "2025-08-10T14:02:55Z"
+  linked_experience_driver:
+    experience_driver: "Refund Status & Delays"
+    ed_id: "ED-473"
+  match_criteria:
+    emotion_group: "Agitation"
+    opportunity_stream: "Fix"
+    interaction_moment: "Post-Purchase Support"
+  precedent_matches:
+    - ou_id: "OU-2371"
+      activation_date: "2025-04-12"
+      owner: "CX Operations – Refund Team"
+      effort_score: 4
+      feasibility_score: 3
+      past_outcome_disposition: "Archived – Success"
+      emotional_shift:
+        eri_pre: -75
+        eri_post: -10
+        dominant_emotion_change: "Agitation → Neutral"
+      key_lessons:
+        - "Customer frustration reduced with proactive notifications."
+        - "Estimated refund timelines must be precise to maintain trust."
+    - ou_id: "OU-1984"
+      activation_date: "2024-11-02"
+      owner: "CX Operations – Refund Team"
+      disposition: "Extended – Partial Success"
+      key_lessons:
+        - "Automation scripts improved speed but created status blind spots."
+  strategic_guidance:
+    recommendation_summary: "Leverage proactive refund status updates with a hybrid of automation and human verification."
+    caution_notes:
+      - "Avoid over-promising refund timelines; past mission failure flagged."
+    opportunity_alignment: "High – ED recurrence within same emotion-stream cluster."
+  reference_links:
+    - ou_payload: "OU-2371"
+    - problem_statement: "PS-2371"
+    - outcome_evaluation: "OE-2371"
+
