@@ -2776,7 +2776,201 @@ class Layer3Computer:
             }
         }
 
-   # === Main compute ===
+    # # COMPLETE CUSTOMER-CONFIGURABLE PEM MODULE: 🚀🔧
+    # def build_predictive_emotional_modeling_configurable(self, state_of_play, volatility, has_pattern, qssi_tier, customer_config=None) -> dict:
+    #     """
+    #     PEM with customer-configurable sensitivity controls while protecting core IP.
+    #     Alternative to standard PEM with customer tuning capabilities.
+    #     """
+        
+    #     # --- Customer Configuration Layer (what they can control) ---
+    #     default_config = {
+    #         "momentum_sensitivity": 1.0,     # 0.5 - 2.0 multiplier
+    #         "volatility_tolerance": 1.0,     # 0.5 - 1.5 multiplier  
+    #         "pattern_importance": 1.0,       # 0.5 - 2.0 multiplier
+    #         "confidence_threshold": 0.55,    # 0.4 - 0.8 decision boundary
+    #         "prediction_aggressiveness": 1.0 # 0.7 - 1.3 overall sensitivity
+    #     }
+    #     config = {**default_config, **(customer_config or {})}
+        
+    #     # --- Unpack state_of_play ---
+    #     momentum_tier = state_of_play["momentum_tier"]
+    #     saturation_tier = state_of_play["saturation_tier"]
+    #     trajectory_story = state_of_play["trajectory_story"]
+    #     action_guidance = state_of_play["action_guidance"]
+    #     recommended_owner = state_of_play["recommended_owner"]
+        
+    #     # --- Protected Core Logic (your secret sauce) ---
+    #     qssi_map = {"💥 Critical Signal":1.00, "🔥 Strong Signal":0.80, "🌱 Emerging Signal":0.50, "🔁 Weak Signal":0.20, "❌ No Signal":0.00}
+    #     momentum_map = {"Strongly Rising":1.00, "Moderately Rising":0.60, "Stable":0.00, "Moderately Falling":-0.60, "Strongly Falling":-1.00}
+    #     headroom_map = {"Very High":0.00, "High":0.25, "Medium":0.50, "Low":0.75, "Very Low":1.00}
+        
+    #     # --- Apply Customer Sensitivity Multipliers ---
+    #     qssi_strength = float(qssi_map.get(qssi_tier, 0.0)) * config["prediction_aggressiveness"]
+    #     momentum_score = float(momentum_map.get(momentum_tier, 0.0)) * config["momentum_sensitivity"] 
+    #     headroom = float(headroom_map.get(saturation_tier, 0.5))
+        
+    #     # --- Volatility with customer tolerance adjustment ---
+    #     vol_pct = max(0.0, float(volatility))
+    #     adjusted_vol_threshold = 20.0 / config["volatility_tolerance"]  # Higher tolerance = higher threshold
+    #     vol_norm = min(vol_pct / adjusted_vol_threshold, 1.0)
+    #     stability = 1.0 - vol_norm
+        
+    #     # --- PROTECTED CORE WEIGHTS (never exposed) ---
+    #     esc_raw = (
+    #         0.35 * qssi_strength * max(0.0, momentum_score) +  # Your secret weights
+    #         0.40 * max(0.0, momentum_score) +
+    #         0.30 * headroom +
+    #         0.20 * (config["pattern_importance"] if has_pattern else 0.0) +
+    #         0.20 * stability
+    #     )
+    #     dec_raw = (
+    #         0.35 * qssi_strength * max(0.0, -momentum_score) +
+    #         0.60 * max(0.0, -momentum_score) +
+    #         0.30 * (1.0 - headroom) +
+    #         0.20 * vol_norm
+    #     )
+        
+    #     # --- Convert to probabilities ---
+    #     esc_raw = max(0.0, esc_raw)
+    #     dec_raw = max(0.0, dec_raw)
+    #     total = esc_raw + dec_raw
+    #     esc_prob = (esc_raw / total) if total > 1e-9 else 0.0
+    #     dec_prob = (dec_raw / total) if total > 1e-9 else 0.0
+        
+    #     # --- Rules with customer sensitivity ---
+    #     signal_is_precursor = (
+    #         momentum_tier in ["Strongly Rising", "Moderately Rising"] and
+    #         qssi_tier in ["🔥 Strong Signal", "💥 Critical Signal"] and
+    #         has_pattern and
+    #         config["pattern_importance"] >= 0.8  # Customer must value patterns
+    #     )
+        
+    #     # Adjust volatility threshold based on customer tolerance
+    #     decay_vol_threshold = 5.0 / config["volatility_tolerance"]
+    #     signal_is_at_risk_of_decay = (
+    #         momentum_tier in ["Strongly Falling", "Moderately Falling"] and
+    #         vol_pct >= decay_vol_threshold
+    #     )
+        
+    #     # --- Decision Logic with Customer Threshold ---
+    #     customer_threshold = config["confidence_threshold"]
+        
+    #     if signal_is_precursor:
+    #         pem_trajectory = "Likely Escalation"
+    #         pem_probability = max(esc_prob, 0.65 * config["prediction_aggressiveness"])
+    #         explanation = f"Rising momentum + strong/critical signal + repeating pattern indicates intensification (sensitivity: {config['momentum_sensitivity']}x)"
+    #         risk_class = "Opportunity"
+    #         rule_trigger, basis = "rising+strong_qssi+pattern", "esc_prob"
+    #         counterfactual_pointer = f"Flip if momentum ≤ 'Moderately Falling' or volatility > {22.5 / config['volatility_tolerance']}%"
+    #     elif signal_is_at_risk_of_decay:
+    #         pem_trajectory = "At Risk of Decay"
+    #         pem_probability = max(dec_prob, 0.65 * config["prediction_aggressiveness"])
+    #         explanation = f"Falling momentum + elevated volatility suggests emotional energy is fading (tolerance: {config['volatility_tolerance']}x)"
+    #         risk_class = "Risk"
+    #         rule_trigger, basis = "falling+volatility", "dec_prob"
+    #         counterfactual_pointer = f"Flip if momentum ≥ 'Moderately Rising' and volatility < {decay_vol_threshold}%"
+    #     else:
+    #         if max(esc_prob, dec_prob) < customer_threshold:
+    #             pem_trajectory = "Stable / Inconclusive"
+    #             pem_probability = max(esc_prob, dec_prob)
+    #             explanation = f"No dominant predictive anchors; continue monitoring (threshold: {customer_threshold})"
+    #             risk_class = "Neutral"
+    #         else:
+    #             if esc_prob > dec_prob:
+    #                 pem_trajectory, pem_probability = "Likely Escalation", esc_prob
+    #                 explanation = f"Model indicates upward trajectory dominance (aggressiveness: {config['prediction_aggressiveness']}x)"
+    #                 risk_class = "Opportunity"
+    #             else:
+    #                 pem_trajectory, pem_probability = "At Risk of Decay", dec_prob
+    #                 explanation = f"Model indicates downward trajectory dominance (volatility tolerance: {config['volatility_tolerance']}x)"
+    #                 risk_class = "Risk"
+    #         rule_trigger = "model_choice"
+    #         basis = "esc_prob" if esc_prob >= dec_prob else "dec_prob"
+    #         counterfactual_pointer = "Flip if next horizon favors the opposite momentum tier"
+        
+    #     # --- Confidence with customer adjustments ---
+    #     pattern_boost = config["pattern_importance"] >= 1.2  # Customer values patterns highly
+    #     vol_sensitivity = vol_pct >= (5.0 / config["volatility_tolerance"])
+        
+    #     if has_pattern and pattern_boost and vol_sensitivity:
+    #         confidence_tier, confidence_score = "High", 0.85
+    #     elif has_pattern and pattern_boost or vol_sensitivity:
+    #         confidence_tier, confidence_score = "Moderate", 0.55
+    #     else:
+    #         confidence_tier, confidence_score = "Low", 0.30
+        
+    #     # --- Elasticity ---
+    #     elasticity_rating = (
+    #         "High" if headroom >= 0.5 and abs(momentum_score) >= 0.6
+    #         else "Moderate" if headroom >= 0.25
+    #         else "Low"
+    #     )
+        
+    #     horizon_days = int(getattr(self, "pem_horizon_days", 14))
+    #     version = "PEM.v1.2-Configurable"
+        
+    #     feature_vector = {
+    #         "qssi_strength": round(qssi_strength, 3),
+    #         "momentum_score": round(momentum_score, 3),
+    #         "headroom": round(headroom, 3),
+    #         "volatility_pct": round(vol_pct, 3),
+    #         "volatility_norm": round(vol_norm, 3),
+    #         "stability": round(stability, 3),
+    #         "has_pattern": bool(has_pattern),
+    #         "esc_raw": round(esc_raw, 3),
+    #         "dec_raw": round(dec_raw, 3),
+    #         "esc_prob": round(esc_prob, 3),
+    #         "dec_prob": round(dec_prob, 3),
+    #         # Customer config transparency
+    #         "config_applied": config,
+    #         "adjusted_thresholds": {
+    #             "volatility_threshold": round(adjusted_vol_threshold, 2),
+    #             "decay_threshold": round(decay_vol_threshold, 2),
+    #             "confidence_threshold": customer_threshold
+    #         }
+    #     }
+        
+    #     return {
+    #         "trajectory_forecast": {
+    #             "pem_trajectory": pem_trajectory,
+    #             "pem_probability": round(float(pem_probability), 3),
+    #             "pem_confidence": confidence_tier,
+    #             "confidence_score": round(confidence_score, 2),
+    #             "risk_class": risk_class,
+    #             "horizon_days": horizon_days,
+    #             "explanation": explanation,
+    #             "version": version,
+    #             "rule_trigger": rule_trigger,
+    #             "basis": basis,
+    #             "counterfactual_pointer": counterfactual_pointer,
+    #             "customer_config_applied": config,
+    #             "sensitivity_profile": f"Momentum: {config['momentum_sensitivity']}x, Patterns: {config['pattern_importance']}x, Volatility: {config['volatility_tolerance']}x"
+    #         },
+    #         "signal_diagnostics": {
+    #             "has_repeating_pattern": bool(has_pattern),
+    #             "volatility_pct": round(vol_pct, 2),
+    #             "momentum_tier": momentum_tier,
+    #             "saturation_tier": saturation_tier,
+    #             "qssi_tier": qssi_tier
+    #         },
+    #         "future_risk_profile": {
+    #             "trajectory_story": trajectory_story,
+    #             "action_guidance": action_guidance,
+    #             "recommended_owner": recommended_owner
+    #         },
+    #         "audit": {
+    #             "feature_vector": feature_vector,
+    #             "elasticity_rating": elasticity_rating
+    #         },
+    #         "customer_insights": {
+    #             "config_impact": f"Customer settings adjusted prediction by {abs(1.0 - config['prediction_aggressiveness']) * 100:.1f}%",
+    #             "threshold_adjustments": f"Volatility tolerance: {config['volatility_tolerance']}x, Pattern weight: {config['pattern_importance']}x",
+    #             "decision_sensitivity": f"Confidence threshold set to {customer_threshold} (default: 0.55)"
+    #         }
+    #     }
+    
+    # === Main compute ===
     def compute(self):
         results, skipped = [], []
         self.raw_df["experience_driver"] = self.raw_df["experience_driver"].str.strip()
