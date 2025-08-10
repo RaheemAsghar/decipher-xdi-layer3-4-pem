@@ -1,0 +1,41 @@
+#### Example 3 – Optimize Stream
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_customer_reality:**
+  The customer submitted a Complaint about other employees at the Metro store being unfriendly and unprofessional during interactions.
+* **matters:** Unfriendly and unprofessional staff interactions that degrade customer experience.
+* **context:** Other employees at the Metro store are not friendly or professional.
+* **experience_driver:** Customer Service → Staff Interaction
+* **customer_journey:** In-Store Experience
+* **customer_journey_stage:** Service Interaction
+* **interaction_moment:** During interactions with other store employees
+* **stream_justification:** While the core service is functional, the quality of staff interaction introduces friction and dissatisfaction, necessitating optimization to enhance customer experience.
+* **behavioral_impact:** Improve staff professionalism, enhance customer interactions, and elevate overall service quality.
+* **opportunity_stream:** Optimize
+* **emotion:** Agitation – Disappointed
+* **feedback_type:** Complaint
+
+**🧠 Output:**
+
+```json
+{
+  "problem_statement": "The customer submitted a Complaint about other employees at the Metro store being unfriendly and unprofessional during interactions. This occurred during interactions with other store employees within the Service Interaction stage of the In-Store Experience journey, focused on the Customer Service → Staff Interaction driver. The orchestration stream is Optimize — aimed at improving existing service quality without altering the core service itself. It was routed here because staff professionalism gaps create friction and dissatisfaction even when the core service is functional. If not addressed, it risks ongoing erosion of customer satisfaction, diminished loyalty, and reduced perception of service quality.",
+  "breakdown": {
+    "what": "Unfriendly and unprofessional staff interactions that degrade customer experience.",
+    "when": "During interactions with other store employees",
+    "where": {
+      "experience_driver": "Customer Service → Staff Interaction",
+      "customer_journey": "In-Store Experience",
+      "customer_journey_stage": "Service Interaction"
+    },
+    "why": "While the core service is functional, the quality of staff interaction introduces friction and dissatisfaction, necessitating optimization to enhance customer experience.",
+    "so_what": "If not addressed, it risks ongoing erosion of customer satisfaction, diminished loyalty, and reduced perception of service quality."
+  },
+  "meta": {
+    "opportunity_stream": "Optimize",
+    "emotion": "Agitation – Disappointed",
+    "feedback_type": "Complaint"
+  }
+}
+```
