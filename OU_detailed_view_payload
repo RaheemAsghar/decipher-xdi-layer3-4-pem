@@ -1,0 +1,132 @@
+{
+  "payload_meta": {
+    "payload_id": "OU-07732ffac5bc",
+    "payload_type": "orchestration_unit_foundation",
+    "payload_version": "OU.v2.0",
+    "generated_at": "2025-01-15T14:30:45.123Z",
+    "source_signal_capsule_id": "SC-a1b2c3d4e5f6",
+    "lifecycle_stage": "layer_1_selection_expansion",
+    "parent_ou_summary": "Staff Interaction Quality – Agitation – Optimize"
+  },
+
+  "ou_core_identity": {
+    "bcs_id": "07732ffac5bc4fd284109c824794bb45",
+    "bcs_group_id": "customer_agi_opt_d81eb2d0",
+    "experience_driver": "Customer Service → Staff Interaction",
+    "emotion": "Agitation – Disappointed", 
+    "opportunity_stream": "Optimize",
+    "feedback_type": "Complaint"
+  },
+
+  "cluster_analytics": {
+    "cluster_size": 1,
+    "bcs_share": 1.0,
+    "cluster_cohesion": 1.0,
+    "cluster_theme_preview": "Unfriendly and unprofessional staff interactions that degrade customer experience"
+  },
+
+  "4_tier_distributions": {
+    "emotion_distribution": {
+      "Agitation": 50.0,
+      "Adoration": 50.0
+    },
+    "stream_distribution": {
+      "Optimize": 1.0
+    },
+    "cluster_theme_distribution": {
+      "Staff Professionalism": 60.0,
+      "Training Gaps": 25.0,
+      "Communication Skills": 15.0
+    }
+  },
+
+  "customer_voice_details": {
+    "customer_review": "I order on line 4 plus kg raue and mushka on friday 13 the january 2024 and received the same at about 8.30 pm. We barbeque half the same on saturday evening and my family fell sick like food poisining. Sunday mornoing i called on line delievry department and Mr. Akhtar act very very professionally and solve my problem at the spot. Your all other empolyes in metro store are not friendly or professional. I suggest that Mr. Akhtar should teach all of your lower empolyes how to deal with clients professionally. I appresiate Mr. Akhtar very much. THanks Metro. Nisar Ahmed. A client since Metro store Opening in capitol.",
+    "context": "Other employees at the Metro store are not friendly or professional.",
+    "keywords": "['unfriendly', 'unprofessional', 'staff interaction', 'customer service']",
+    "matters": "unfriendly and unprofessional staff interactions that degrade customer experience"
+  },
+
+  "journey_context": {
+    "customer_journey": "In-Store Experience",
+    "customer_journey_stage": "Service Interaction", 
+    "interaction_moment": "during interactions with other store employees",
+    "customer_effort_score": 5,
+    "entity_name": "Metro Store Employees",
+    "theme": "Customer Support"
+  },
+
+  "execution_intelligence": {
+    "semantic_action_statement": "SECTION 1: THE CUSTOMER REALITY\n  The customer submitted a Complaint about other employees at the Metro store being unfriendly and unprofessional during interactions\n  SECTION 2: THE STRATEGIC RESPONSE\n  We need to Optimize → Customer Service → Staff Interaction to address unfriendly and unprofessional staff interactions that degrade customer experience",
+    "stream_justification": "While the core service is functional, the quality of staff interaction introduces friction and dissatisfaction, necessitating optimization to enhance customer experience.",
+    "behavioral_impact": "Improve staff professionalism, enhance customer interactions, and elevate overall service quality."
+  },
+
+  "operational_metadata": {
+    "comment_review": 1.0
+  },
+
+  "selection_enablement": {
+    "expansion_from_summary": {
+      "clicked_ou_name": "Staff Interaction Quality – Agitation – Optimize",
+      "now_revealed": [
+        "Full customer voice with complete context",
+        "Detailed semantic action statement with customer reality + strategic response",
+        "Complete journey context and interaction moment",
+        "Cluster analytics and cohesion metrics",
+        "4-tier behavioral hierarchy distributions",
+        "Execution intelligence with stream justification"
+      ]
+    },
+    "decision_support": {
+      "cluster_confidence": "Perfect (1.0 cohesion)",
+      "behavioral_clarity": "Complete customer reality captured",
+      "action_readiness": "Detailed strategic response defined",
+      "execution_specificity": "Staff interaction optimization with clear behavioral impact"
+    }
+  },
+
+  "fragmentation_atoms": {
+    "micro_components": {
+      "cluster_badge": {
+        "size": 1,
+        "cohesion": 1.0,
+        "share": "100%"
+      },
+      "emotion_chip": {
+        "primary": "Agitation",
+        "variant": "Disappointed",
+        "distribution": "50% Agitation, 50% Adoration"
+      },
+      "action_directive": {
+        "stream": "Optimize",
+        "target": "Staff Interaction",
+        "urgency": "Moderate Priority"
+      },
+      "effort_indicator": {
+        "score": 5,
+        "level": "Moderate Friction"
+      }
+    },
+    "injectable_snippets": {
+      "customer_quote": "Your all other empolyes in metro store are not friendly or professional",
+      "action_summary": "Optimize staff interaction professionalism",
+      "pain_point": "Unfriendly and unprofessional staff interactions",
+      "impact_statement": "Improve staff professionalism, enhance customer interactions"
+    }
+  },
+
+  "layer_1_completion": {
+    "selection_readiness": "Complete",
+    "next_stage_prep": {
+      "problem_statement_inputs": [
+        "semantic_action_statement",
+        "matters", 
+        "context",
+        "interaction_moment",
+        "stream_justification"
+      ],
+      "stage_2_handoff": "Ready for Problem Statement Generation (Layer 2)"
+    }
+  }
+}
