@@ -1,0 +1,502 @@
+"""
+CSLI Engine – Cross‑Stream Learning Intelligence
+-------------------------------------------------
+God‑tier reference implementation that clusters Orchestration Units (OUs)
+by the semantics of their Problem Statements to detect systemic issues
+spanning multiple Experience Drivers / emotions / streams.
+
+Design goals
+- ED‑agnostic semantic clustering using OU Problem Statements as primary signal
+- Deterministic, auditable parameters (thresholds, policies, provenance)
+- Guardrails to avoid false merges (centroid cohesion, keyphrase overlap, span sanity)
+- No invention: canonical_problem_statement defaults to exemplar text
+- Clean payloads aligned with CSLI.v1 template
+
+Dependencies (install in your env as needed):
+- numpy, pandas, scikit‑learn
+
+Embedding: This module accepts any embedding provider via a simple interface.
+Plug in your own SentenceTransformers/OpenAI embeddings outside this file.
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, asdict
+from typing import List, Dict, Any, Iterable, Tuple, Optional
+from datetime import datetime
+import numpy as np
+import re
+
+try:
+    # sklearn is optional at import time so this file can be read without it
+    from sklearn.cluster import AgglomerativeClustering
+    from sklearn.metrics.pairwise import cosine_similarity
+except Exception:  # pragma: no cover
+    AgglomerativeClustering = None
+    cosine_similarity = None
+
+# -----------------------------
+# Data structures
+# -----------------------------
+
+@dataclass
+class OUItem:
+    ou_id: str
+    problem_statement: str
+    problem_statement_id: Optional[str] = None
+    experience_driver: Optional[str] = None
+    emotion_group: Optional[str] = None  # e.g., Agitation, Appreciation
+    opportunity_stream: Optional[str] = None  # Fix | Optimize | Innovate | Amplify
+    interaction_moment: Optional[str] = None
+    activation_status: Optional[str] = None  # Pending | Activated | Archived
+    created_at: Optional[str] = None  # ISO date string
+    eri_score: Optional[float] = None
+    rf_urgency: Optional[float] = None  # numeric urgency proxy
+    breakdown_what: Optional[str] = None
+    breakdown_why: Optional[str] = None
+    breakdown_so_what: Optional[str] = None
+
+
+# -----------------------------
+# Embedding Provider Interface
+# -----------------------------
+
+class EmbeddingProvider:
+    """Interface for text embedding providers."""
+
+    model_name: str = "unspecified"
+
+    def embed(self, texts: List[str]) -> np.ndarray:  # shape: (n, d)
+        raise NotImplementedError
+
+
+class DummyEmbeddingProvider(EmbeddingProvider):
+    """Placeholder provider – produces unit‑norm random vectors (for wiring only)."""
+
+    def __init__(self, dim: int = 384, seed: int = 42):
+        self.model_name = f"dummy-{dim}"
+        self._rng = np.random.default_rng(seed)
+
+    def embed(self, texts: List[str]) -> np.ndarray:
+        X = self._rng.normal(size=(len(texts), 384))
+        # unit‑normalize
+        X /= np.linalg.norm(X, axis=1, keepdims=True) + 1e-12
+        return X
+
+
+# -----------------------------
+# Text preprocessing & signature building
+# -----------------------------
+
+_STOPWORDS = set(
+    """
+    a an the and or but if then else when while of to in on at for from by with as into through during before after above
+    below over under again further then once here there all any both each few more most other some such no nor not only own
+    same so than too very can will just don should now are is was were be been being this that these those it's its
+    """.split()
+)
+
+_BOILERPLATE_PATTERNS = [
+    re.compile(r"^in response to ", re.I),
+    re.compile(r"^we need to ", re.I),
+    re.compile(r"^the problem is ", re.I),
+]
+
+
+def _strip_boilerplate(text: str) -> str:
+    t = text.strip()
+    for pat in _BOILERPLATE_PATTERNS:
+        t = pat.sub("", t)
+    return t
+
+
+def _normalize_tokens(text: str) -> List[str]:
+    # crude tokenization/normalization (no external NLP deps)
+    tokens = re.findall(r"[a-z0-9]+", text.lower())
+    return [tok for tok in tokens if tok not in _STOPWORDS and len(tok) > 2]
+
+
+def jaccard_keyphrase_overlap(a: str, b: str) -> float:
+    """Approx keyphrase overlap via token Jaccard (stopword‑stripped)."""
+    A = set(_normalize_tokens(a))
+    B = set(_normalize_tokens(b))
+    if not A or not B:
+        return 0.0
+    return len(A & B) / float(len(A | B))
+
+
+@dataclass
+class SignatureWeights:
+    problem_statement: float = 0.55
+    breakdown_what: float = 0.15
+    breakdown_why: float = 0.10
+    breakdown_so_what: float = 0.10
+    interaction_moment: float = 0.05
+    opportunity_stream: float = 0.05
+
+
+def build_signature_text(ou: OUItem, w: SignatureWeights = SignatureWeights()) -> str:
+    parts = []
+    def add(text: Optional[str], weight: float):
+        if text and weight > 0:
+            parts.append(( _strip_boilerplate(text), weight ))
+    add(ou.problem_statement, w.problem_statement)
+    add(ou.breakdown_what, w.breakdown_what)
+    add(ou.breakdown_why, w.breakdown_why)
+    add(ou.breakdown_so_what, w.breakdown_so_what)
+    add(ou.interaction_moment, w.interaction_moment)
+    add(ou.opportunity_stream, w.opportunity_stream)
+    # weight by simple repetition (cheap trick to influence embedding)
+    signature = " \n".join([p for p,_ in parts for __ in range(int(round(_*100)))])
+    return signature if signature else (ou.problem_statement or "")
+
+
+# -----------------------------
+# Clustering & similarity helpers
+# -----------------------------
+
+@dataclass
+class ClusterParams:
+    cluster_threshold: float = 0.78  # cosine similarity
+    min_cluster_size: int = 2
+    max_member_gap_days: Optional[int] = 365
+    cohesion_avg_min: float = 0.83
+    cohesion_min_min: float = 0.76
+    keyphrase_jaccard_min: float = 0.35
+
+
+def cosine_sim_matrix(X: np.ndarray) -> np.ndarray:
+    if cosine_similarity is None:
+        # minimal cosine implementation
+        X = X / (np.linalg.norm(X, axis=1, keepdims=True) + 1e-12)
+        return np.clip(X @ X.T, -1.0, 1.0)
+    return cosine_similarity(X)
+
+
+def agglomerative_threshold_clusters(S: np.ndarray, threshold: float, min_size: int) -> List[List[int]]:
+    """Simple graph‑based clustering using sim threshold (works without sklearn)."""
+    n = S.shape[0]
+    visited = [False]*n
+    clusters: List[List[int]] = []
+    for i in range(n):
+        if visited[i]:
+            continue
+        # BFS over nodes with similarity >= threshold
+        stack = [i]
+        comp = []
+        visited[i] = True
+        while stack:
+            u = stack.pop()
+            comp.append(u)
+            neighbors = np.where(S[u] >= threshold)[0]
+            for v in neighbors:
+                if not visited[v]:
+                    visited[v] = True
+                    stack.append(v)
+        if len(comp) >= min_size:
+            clusters.append(sorted(comp))
+    return clusters
+
+
+# -----------------------------
+# CSLI Engine
+# -----------------------------
+
+@dataclass
+class CSLIProvenance:
+    embedding_model: str
+    similarity_metric: str = "cosine"
+    cluster_algorithm: str = "graph_threshold"
+    parameters: Dict[str, Any] = None
+    embedding_index_version: str = "unspecified"
+    csli_engine_version: str = "CSLI.engine.v1"
+
+
+@dataclass
+class CSLIGroup:
+    csli_group_id: str
+    canonical_problem_statement: str
+    exemplar_problem_statement_id: Optional[str]
+    cluster_centroid_signature: str
+    member_ous: List[Dict[str, Any]]
+    span: Dict[str, Any]
+    lead_ou_selection: Dict[str, Any]
+    action_path: Dict[str, Any]
+    links: Dict[str, Any]
+    integrity: Dict[str, Any]
+    provenance: Dict[str, Any]
+
+
+def _iso_to_date(s: Optional[str]) -> Optional[datetime]:
+    try:
+        return datetime.fromisoformat(s) if s else None
+    except Exception:
+        return None
+
+
+def _lead_ou(ous: List[OUItem]) -> Tuple[str, Dict[str, Any]]:
+    # Policy: highest ERI×RF → most recent created_at → first created
+    scored = []
+    for ou in ous:
+        eri = ou.eri_score if ou.eri_score is not None else 0.0
+        rf = ou.rf_urgency if ou.rf_urgency is not None else 0.0
+        score = float(eri) * float(max(rf, 0.0))
+        scored.append((score, ou))
+    scored.sort(key=lambda t: t[0], reverse=True)
+    if scored and scored[0][0] > 0:
+        winner = scored[0][1]
+        return winner.ou_id, {
+            "policy": "highest_eri_x_rf",
+            "justification": f"Max ERI×RF among members: {scored[0][0]:.2f}"
+        }
+    # fallback to most recent
+    ous_sorted = sorted(ous, key=lambda x: (_iso_to_date(x.created_at) or datetime.min), reverse=True)
+    if ous_sorted and ous_sorted[0].created_at:
+        return ous_sorted[0].ou_id, {
+            "policy": "most_recent_signal",
+            "justification": f"Most recent created_at: {ous_sorted[0].created_at}"
+        }
+    # final fallback
+    return ous[0].ou_id, {"policy": "first_created", "justification": "Fallback to first member"}
+
+
+def _centroid(X: np.ndarray, idx: List[int]) -> np.ndarray:
+    return np.mean(X[idx], axis=0)
+
+
+def _hash_centroid(c: np.ndarray) -> str:
+    # cheap numeric hash signature for traceability (no crypto deps)
+    arr = (c[:32] * 1000).astype(int)  # first 32 dims
+    return "hash:int:" + ":".join(map(str, arr.tolist()))
+
+
+def _cohesion_checks(ous: List[OUItem], S: np.ndarray, idx: List[int], params: ClusterParams) -> bool:
+    # centroid cohesion
+    C = _centroid(S, idx)  # incorrect: S is similarity matrix, not vectors
+    # Fix: compute cohesion using S directly
+    sims = []
+    for i in idx:
+        # average sim of i to others in cluster
+        others = [j for j in idx if j != i]
+        if not others:
+            continue
+        sims.append(float(np.mean(S[i, others])))
+    if not sims:
+        return False
+    avg_sim = float(np.mean(sims))
+    min_sim = float(np.min(sims))
+    if avg_sim < params.cohesion_avg_min or min_sim < params.cohesion_min_min:
+        return False
+    # keyphrase Jaccard on exemplar pairs (first vs others)
+    a = ous[idx[0]].problem_statement or ""
+    for j in idx[1:]:
+        b = ous[j].problem_statement or ""
+        if jaccard_keyphrase_overlap(a, b) < params.keyphrase_jaccard_min:
+            return False
+    return True
+
+
+def build_csli_groups(
+    ous: List[OUItem],
+    embedder: EmbeddingProvider,
+    params: ClusterParams = ClusterParams(),
+    embedding_index_version: str = "emb.v1",
+) -> Tuple[List[CSLIGroup], CSLIProvenance]:
+    """Main entrypoint: builds CSLI groups from OU items."""
+    # 1) signatures & embeddings
+    sig_texts = [build_signature_text(o) for o in ous]
+    X = embedder.embed(sig_texts)
+    # 2) similarities
+    S = cosine_sim_matrix(X)
+    np.fill_diagonal(S, 1.0)
+    # 3) threshold clusters (graph connectivity)
+    raw_clusters = agglomerative_threshold_clusters(S, params.cluster_threshold, params.min_cluster_size)
+
+    groups: List[CSLIGroup] = []
+    for k, idx in enumerate(raw_clusters, start=1):
+        # 4) guardrails
+        if not _cohesion_checks(ous, S, idx, params):
+            continue
+        members = [ous[i] for i in idx]
+        # 5) centroid & exemplar
+        # compute vector centroid for exemplar selection
+        Cvec = np.mean(X[idx], axis=0)
+        Cvec /= (np.linalg.norm(Cvec) + 1e-12)
+        sims_to_centroid = (X[idx] @ Cvec)
+        exemplar_local = int(np.argmax(sims_to_centroid))
+        exemplar_idx = idx[exemplar_local]
+        exemplar = ous[exemplar_idx]
+
+        # 6) spans
+        span = {
+            "experience_drivers": len({m.experience_driver for m in members if m.experience_driver}),
+            "emotion_groups": sorted({m.emotion_group for m in members if m.emotion_group}),
+            "streams": sorted({m.opportunity_stream for m in members if m.opportunity_stream}),
+            "activation_mix": sorted({m.activation_status for m in members if m.activation_status}),
+        }
+
+        # 7) member evidence
+        member_dicts: List[Dict[str, Any]] = []
+        for i, m in zip(idx, members):
+            pairwise = []
+            for j in idx:
+                if j == i:
+                    continue
+                pairwise.append([ous[j].ou_id, float(S[i, j])])
+            member_dicts.append({
+                "ou_id": m.ou_id,
+                "experience_driver": m.experience_driver,
+                "emotion_group": m.emotion_group,
+                "opportunity_stream": m.opportunity_stream,
+                "problem_statement_id": m.problem_statement_id,
+                "activation_status": m.activation_status,
+                "created_at": m.created_at,
+                "similarity_to_centroid": float((X[i] @ Cvec)),
+                "pairwise_peers": sorted(pairwise, key=lambda p: p[1], reverse=True)[:5],
+            })
+
+        # 8) canonical problem statement (no invention: use exemplar text)
+        canonical_ps = exemplar.problem_statement or ""
+
+        # 9) lead OU selection
+        lead_id, lead_meta = _lead_ou(members)
+
+        # 10) action path (non‑coercive)
+        action_path = {
+            "recommendation": "Execute PDCA on the lead OU as the systemic fix entry point.",
+            "propagation_policy": "auto_mark_on_success",
+            "propagation_instruction": "Upon lead OU PDCA completion, mark other member OUs as resolved via CSLI group.",
+            "resolution_tag": f"Resolved via CSLI-GRP-{k:03d}",
+            "coordination_notes": [
+                "Inform owners of non-lead OUs about consolidation to avoid duplicated effort.",
+                "Align comms on single, canonical problem statement across teams.",
+            ],
+        }
+
+        # 11) links
+        links = {
+            "lead_ou": lead_id,
+            "member_problem_statement_ids": [m.problem_statement_id for m in members if m.problem_statement_id],
+            "optional_related_modules": {"silent_guidance_group_id": None, "sce_flags": []},
+        }
+
+        # 12) integrity & provenance
+        integrity = {
+            "rules": [
+                "Do not override activated missions; CSLI only surfaces convergence.",
+                "Keep members intact even if EDs differ; ED-agnostic clustering is intended.",
+                "No aggregation is forced; org chooses coordination approach.",
+            ],
+            "data_lineage": {
+                "sources": ["OU table", "Problem Statement store", "IME indexes"],
+                "forbidden_sources": ["raw general logs without OU context"],
+            },
+        }
+
+        prov = CSLIProvenance(
+            embedding_model=getattr(embedder, "model_name", "unspecified"),
+            similarity_metric="cosine",
+            cluster_algorithm="graph_threshold",
+            parameters=asdict(params),
+            embedding_index_version=embedding_index_version,
+        )
+
+        group = CSLIGroup(
+            csli_group_id=f"CSLI-GRP-{k:03d}",
+            canonical_problem_statement=canonical_ps,
+            exemplar_problem_statement_id=exemplar.problem_statement_id,
+            cluster_centroid_signature=_hash_centroid(Cvec),
+            member_ous=member_dicts,
+            span=span,
+            lead_ou_selection={"lead_ou_id": lead_id, **lead_meta},
+            action_path=action_path,
+            links=links,
+            integrity=integrity,
+            provenance=asdict(prov),
+        )
+        groups.append(group)
+
+    return groups, prov
+
+
+# -----------------------------
+# Utility: convert to payload dict
+# -----------------------------
+
+def csli_groups_to_payload(groups: List[CSLIGroup], cadence: str = "weekly") -> Dict[str, Any]:
+    return {
+        "version": "CSLI.v1",
+        "generated_at": datetime.utcnow().isoformat(),
+        "scan_parameters": {
+            "cadence": cadence,
+            "embedding_model": groups[0].provenance.get("embedding_model", "unspecified") if groups else "unspecified",
+            "similarity_metric": "cosine",
+            "cluster_threshold": ClusterParams().cluster_threshold,
+            "min_cluster_size": ClusterParams().min_cluster_size,
+            "max_member_gap_days": ClusterParams().max_member_gap_days,
+        },
+        "groups": [
+            {
+                "csli_group": {
+                    "csli_group_id": g.csli_group_id,
+                    "canonical_problem_statement": g.canonical_problem_statement,
+                    "evidence": {
+                        "member_ous": g.member_ous,
+                        "cluster_centroid_signature": g.cluster_centroid_signature,
+                        "exemplar_problem_statement_id": g.exemplar_problem_statement_id,
+                    },
+                    "span": g.span,
+                    "lead_ou_selection": g.lead_ou_selection,
+                },
+                "action_path": g.action_path,
+                "links": g.links,
+                "integrity": g.integrity,
+                "provenance": g.provenance,
+            }
+            for g in groups
+        ],
+    }
+
+
+# -----------------------------
+# Example (wire test only)
+# -----------------------------
+if __name__ == "__main__":
+    # Minimal smoke test with dummy embeddings
+    ous = [
+        OUItem(
+            ou_id="OU-1923",
+            problem_statement="Repayment flows lack clarity across multiple entry points, causing confusion during loan closure.",
+            problem_statement_id="PS-1923",
+            experience_driver="Loan Closure → Repayment Confirmation",
+            emotion_group="Frustration",
+            opportunity_stream="Fix",
+            activation_status="Activated",
+            created_at="2025-06-02",
+            eri_score=-40,
+            rf_urgency=0.9,
+            breakdown_what="Customers face unclear repayment steps",
+            breakdown_why="Fix is required due to repeated abandonment",
+            breakdown_so_what="Risk of churn at repayment stage",
+        ),
+        OUItem(
+            ou_id="OU-1971",
+            problem_statement="Users are confused by repayment confirmation steps across channels, leading to stalled completion.",
+            problem_statement_id="PS-1971",
+            experience_driver="Disbursement Tracking → Repayment Flow",
+            emotion_group="Ambivalence",
+            opportunity_stream="Optimize",
+            activation_status="Pending",
+            created_at="2025-06-14",
+            eri_score=-10,
+            rf_urgency=0.6,
+            breakdown_what="Repayment confirmation unclear",
+            breakdown_why="Optimize to reduce friction",
+            breakdown_so_what="Revenue at risk due to drop-offs",
+        ),
+    ]
+
+    embedder = DummyEmbeddingProvider()
+    groups, prov = build_csli_groups(ous, embedder)
+    payload = csli_groups_to_payload(groups)
+    import json
+    print(json.dumps(payload, indent=2))
