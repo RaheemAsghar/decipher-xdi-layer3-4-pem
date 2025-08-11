@@ -1,0 +1,91 @@
+{
+  "version": "CSLI.v1",
+  "generated_at": "<ISO-8601>",
+  "scan_parameters": {
+    "cadence": "weekly",
+    "embedding_model": "<model-name>",
+    "similarity_metric": "cosine",
+    "cluster_threshold": 0.78,
+    "min_cluster_size": 2,
+    "max_member_gap_days": 365
+  },
+  "groups": [
+    {
+      "csli_group": {
+        "csli_group_id": "CSLI-GRP-204",
+        "canonical_problem_statement": "<exemplar PS text>",
+        "evidence": {
+          "member_ous": [
+            {
+              "ou_id": "OU-1923",
+              "experience_driver": "Loan Closure → Repayment Confirmation",
+              "emotion_group": "Frustration",
+              "opportunity_stream": "Fix",
+              "problem_statement_id": "PS-1923",
+              "activation_status": "Activated",
+              "created_at": "2025-06-02",
+              "similarity_to_centroid": 0.91,
+              "pairwise_peers": [["OU-1971", 0.88], ["OU-1988", 0.86]]
+            }
+          ],
+          "cluster_centroid_signature": "hash:int:…",
+          "exemplar_problem_statement_id": "PS-1923"
+        },
+        "span": {
+          "experience_drivers": 3,
+          "emotion_groups": ["Frustration", "Ambivalence"],
+          "streams": ["Fix", "Optimize"],
+          "activation_mix": ["Pending", "Activated"]
+        },
+        "lead_ou_selection": {
+          "lead_ou_id": "OU-1923",
+          "policy": "highest_eri_x_rf",
+          "justification": "Max ERI×RF among members: 0.72",
+          "alternates": ["OU-1971", "OU-1988"]
+        }
+      },
+      "action_path": {
+        "recommendation": "Execute PDCA on the lead OU as the systemic fix entry point.",
+        "propagation_policy": "auto_mark_on_success",
+        "propagation_instruction": "Upon lead OU PDCA completion, mark other member OUs as resolved via CSLI group.",
+        "resolution_tag": "Resolved via CSLI-GRP-204",
+        "coordination_notes": [
+          "Inform owners of non-lead OUs about consolidation to avoid duplicated effort.",
+          "Align comms on single, canonical problem statement across teams."
+        ]
+      },
+      "links": {
+        "lead_ou": "OU-1923",
+        "member_problem_statement_ids": ["PS-1923", "PS-1971", "PS-1988"],
+        "optional_related_modules": {
+          "silent_guidance_group_id": null,
+          "sce_flags": []
+        }
+      },
+      "integrity": {
+        "rules": [
+          "Do not override activated missions; CSLI only surfaces convergence.",
+          "Keep members intact even if EDs differ; ED-agnostic clustering is intended.",
+          "No aggregation is forced; org chooses coordination approach."
+        ],
+        "data_lineage": {
+          "sources": ["OU table", "Problem Statement store", "IME indexes"],
+          "forbidden_sources": ["raw general logs without OU context"]
+        }
+      },
+      "provenance": {
+        "cluster_algorithm": "graph_threshold",
+        "parameters": {
+          "cluster_threshold": 0.78,
+          "min_cluster_size": 2,
+          "cohesion_avg_min": 0.83,
+          "cohesion_min_min": 0.76,
+          "keyphrase_jaccard_min": 0.35
+        },
+        "embedding_index_version": "emb.v1",
+        "csli_engine_version": "CSLI.engine.v1",
+        "embedding_model": "<model-name>"
+      }
+    }
+  ]
+}
