@@ -4,55 +4,70 @@ Silent Cognition Engine (SCE) Payload (IME Phase 4: Silence Absence Intelligence
 Purpose: Diagnose why an ED, once activated, has gone quiet — and classify the strategic meaning of that silence.
 
 {
-  "version": "OE.v1",
+  "version": "SCE.v1",
   "generated_at": "<ISO-8601>",
-  "ou_id": "OU-00087-FIX",
-  "ou_name": "Card Freeze Failure – Complaint – Fix",
-  "ou_stream": "Fix",
-  "ou_semantic_action": "We need to Fix → Card Freeze Failure in response to a Complaint reflecting Agitation over failed real-time freeze requests during high-fraud alerts.",
 
-  "linked_signal_capsule_id": "SC-8743AC0298B1",
-  "linked_ou_activation_id": "OUA-00087",
-  "linked_problem_statement_id": "PS-00087",
-  "linked_pdca_id": "PDCA-00087",
-
-  "mission_status": "Completed",
-  "mission_duration_days": 18,
-  "owner": "Payments Ops",
-
-  "comparison_block": {
-    "eri_score": { "before": -75, "after": 22 },
-    "dominant_emotion": { "before": "Agitation", "after": "Appreciation" },
-    "emotion_perception_tier": { "before": "Very Negative", "after": "Slightly Positive" },
-    "trend": { "before": "↓", "after": "→" },
-    "momentum": { "before": "↓↓", "after": "→" },
-    "volatility": { "before": "⚠ Fluctuating", "after": "✅ Stable" },
-    "has_pattern": { "before": true, "after": false },
-    "quadrant_purpose": { "before": "Fix Priority – Escalation Zone", "after": "Watch Zone" },
-    "emotional_alert_level": { "before": 8.7, "after": 3.2 },
-    "qssi_tier": { "before": "🔥 Strong", "after": "⚠ Moderate" },
-    "priority_class": { "before": "P1", "after": "P4" }
+  "detection_summary": {
+    "experience_driver": "Card Freeze Failure",
+    "ed_id": "ED-00087",
+    "silence_detected": true,
+    "silence_duration_days": 112,
+    "silence_trigger_date": "2025-04-12",
+    "silence_scan_window": "90-day post-activation",
+    "last_known_ou_id": "OU-00087-FIX"
   },
 
-  "elasticity_impact": {
-    "elasticity_rating": "High",
-    "signal_shift_validated": true,
-    "root_cause_recurrence": false
-  },
-
-  "mission_footprint": {
-    "emotion_distribution_before": {
-      "Agitation": 68.2,
-      "Anger": 24.7,
-      "Ambivalence": 7.1
+  "last_ou_activation_summary": {
+    "ou_id": "OU-00087-FIX",
+    "ou_name": "Card Freeze Failure – Complaint – Fix",
+    "ou_stream": "Fix",
+    "ou_semantic_action": "We need to Fix → Card Freeze Failure in response to a Complaint reflecting Agitation over failed real-time freeze requests during high-fraud alerts.",
+    "activation_date": "2025-04-12",
+    "owner": "Payments Ops",
+    "comparison_block": {
+      "eri_score": { "before": -75, "after": 22 },
+      "dominant_emotion": { "before": "Agitation", "after": "Appreciation" },
+      "emotion_perception_tier": { "before": "Very Negative", "after": "Slightly Positive" },
+      "trend": { "before": "↓", "after": "→" },
+      "momentum": { "before": "↓↓", "after": "→" },
+      "volatility": { "before": "⚠ Fluctuating", "after": "✅ Stable" },
+      "has_pattern": { "before": true, "after": false },
+      "quadrant_purpose": { "before": "Fix Priority – Escalation Zone", "after": "Watch Zone" },
+      "emotional_alert_level": { "before": 8.7, "after": 3.2 },
+      "qssi_tier": { "before": "🔥 Strong", "after": "⚠ Moderate" },
+      "priority_class": { "before": "P1", "after": "P4" }
     },
-    "emotion_distribution_after": {
-      "Appreciation": 52.4,
-      "Ambivalence": 30.3,
-      "Agitation": 17.3
-    }
+    "elasticity_impact": {
+      "elasticity_rating": "High",
+      "signal_shift_validated": true,
+      "root_cause_recurrence": false
+    },
+    "mission_footprint": {
+      "emotion_distribution_before": {
+        "Agitation": 68.2,
+        "Anger": 24.7,
+        "Ambivalence": 7.1
+      },
+      "emotion_distribution_after": {
+        "Appreciation": 52.4,
+        "Ambivalence": 30.3,
+        "Agitation": 17.3
+      }
+    },
+    "disposition": "Archive"
   },
 
-  "disposition": "Archive",
-  "mission_tagline": "MISSION ACCOMPLISHED – SIGNAL TRANSFORMED, IMPACT QUANTIFIED, INTELLIGENCE CAPTURED"
+  "silence_classification": {
+    "condition": "OU triggered → now silence",
+    "diagnosis": "Resolution",
+    "suggested_action": "Amplify"
+  },
+
+  "deep_memory_links": {
+    "signal_capsule_id": "SC-8743AC0298B1",
+    "ou_payload_id": "OU-00087",
+    "problem_statement_id": "PS-00087",
+    "pdca_lifecycle_id": "PDCA-00087",
+    "outcome_evaluation_id": "OE-00087"
+  }
 }
