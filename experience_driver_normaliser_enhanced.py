@@ -1,48 +1,43 @@
 import pandas as pd
-import numpy as np
 import os
 import json
-import logging
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.cluster import AgglomerativeClustering
-import pickle
-from datetime import datetime
-from collections import defaultdict
+import numpy as np
 from rapidfuzz import fuzz, process
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from datetime import datetime
+import pickle
+from collections import defaultdict
+import logging
 
-class MLExperienceDriverNormalizer:
-    """
-    ML-powered Experience Driver Normalizer using semantic embeddings
-    of PDCA problem statement fields for intelligent clustering
-    """
-    
-    def __init__(self, config_path="ml_normalizer_config.json"):
+class HighPerformanceCanonicalizer:
+    def __init__(self, config_path="canonicalization_config.json"):
         self.config = self.load_config(config_path)
-        self.model = self.load_embedding_model()
-        self.embedding_cache = self.load_embedding_cache()
-        self.canonical_registry = self.load_canonical_registry()
+        self.registry = self.load_registry()
+        self.indexes = self.load_or_build_indexes()
+        self.vectorizer = TfidfVectorizer(
+            ngram_range=(1, 3),
+            max_features=10000,
+            stop_words='english'
+        )
         self.setup_logging()
-        
+    
     def load_config(self, config_path):
-        """Load ML-specific configuration"""
+        """Load domain-specific threshold configuration"""
         default_config = {
-            "embedding_model": "all-MiniLM-L6-v2",  # Fast, good quality
-            "similarity_threshold": 0.85,  # Cosine similarity threshold for clustering
-            "clustering_threshold": 0.80,  # AgglomerativeClustering threshold
-            "min_cluster_size": 2,  # Minimum items to form cluster
-            "cache_embeddings": True,
-            "batch_size": 100,
-            "field_weights": {
-                # Removed - now using signature builder with fixed weights
-                "semantic_action_statement": 8,  # 8x weight (TIER 1: Problem essence)
-                "behavioral_impact": 6,          # 6x weight (TIER 1: Consequence core)
-                "stream_justification": 4,       # 4x weight (TIER 2: Strategic context)
-                "customer_journey": 2,           # 2x weight (TIER 3: Journey context)
-                "journey_stage": 1               # 1x weight (TIER 3: Journey timing)
+            "domain_thresholds": {
+                "financial_services": {"theme": 95, "category": 95, "subcategory": 95},
+                "healthcare": {"theme": 95, "category": 94, "subcategory": 93},
+                "legal": {"theme": 96, "category": 95, "subcategory": 94},
+                "retail": {"theme": 95, "category": 85, "subcategory": 80},
+                "ecommerce": {"theme": 88, "category": 89, "subcategory": 90},
+                "support": {"theme": 82, "category": 85, "subcategory": 87},
+                "social_media": {"theme": 80, "category": 82, "subcategory": 85},
+                "general": {"theme": 90, "category": 90, "subcategory": 90}
             },
-            "enable_fuzzy_fallback": True,  # Fallback to original fuzzy matching
-            "fuzzy_threshold": 85
+            "batch_size": 1000,
+            "cache_size": 10000,
+            "rebuild_index_threshold": 100  # Rebuild after N new entries
         }
         
         if os.path.exists(config_path):
@@ -52,496 +47,401 @@ class MLExperienceDriverNormalizer:
         
         return default_config
     
-    def load_embedding_model(self):
-        """Load sentence transformer model"""
-        try:
-            model = SentenceTransformer(self.config["embedding_model"])
-            logging.info(f"✅ Loaded embedding model: {self.config['embedding_model']}")
-            return model
-        except Exception as e:
-            logging.error(f"❌ Failed to load embedding model: {e}")
-            raise
-    
-    def load_embedding_cache(self):
-        """Load cached embeddings to avoid recomputation"""
-        cache_path = "ml_embedding_cache.pkl"
-        if os.path.exists(cache_path) and self.config["cache_embeddings"]:
-            try:
-                with open(cache_path, 'rb') as f:
-                    cache = pickle.load(f)
-                    logging.info(f"✅ Loaded embedding cache with {len(cache)} entries")
-                    return cache
-            except Exception as e:
-                logging.warning(f"⚠️ Failed to load embedding cache: {e}")
-        
-        return {}
-    
-    def load_canonical_registry(self):
-        """Load existing canonical registry or create new"""
-        registry_path = "ml_canonical_registry.json"
+    def load_registry(self):
+        """Load existing registry or create new one"""
+        registry_path = "canonical_registry.json"
         if os.path.exists(registry_path):
             with open(registry_path, "r", encoding="utf-8") as f:
-                registry = json.load(f)
-                logging.info(f"✅ Loaded canonical registry with {len(registry.get('clusters', {}))} clusters")
-                return registry
-        
-        return {
-            "clusters": {},  # canonical_ed -> cluster info
-            "embeddings_meta": {},  # metadata about embeddings
-            "stats": {
-                "total_processed": 0,
-                "clusters_created": 0,
-                "last_updated": datetime.now().isoformat()
-            }
-        }
+                return json.load(f)
+        return {"themes": {}, "experience_drivers": {}}
     
-    def _build_pdca_signature(self, row: pd.Series) -> str:
-        """
-        🔥 PDCA SEMANTIC SIGNATURE BUILDER
-        Optimized for maximum clustering accuracy by prioritizing problem essence
-        over contextual noise that creates false similarities.
-        """
-        from typing import List
-        
-        toks: List[str] = []
-        
-        # 🎯 TIER 1: PROBLEM ESSENCE (Heavy Weight - captures core issue)
-        semantic_action = row.get("semantic_action_statement")
-        if pd.notna(semantic_action):
-            toks += [str(semantic_action)] * 8  # PRIMARY DRIVER - customer reality + strategic response
-        
-        behavioral_impact = row.get("behavioral_impact") 
-        if pd.notna(behavioral_impact):
-            toks += [str(behavioral_impact)] * 6  # CONSEQUENCE CORE - what happens if ignored
-        
-        # 🎯 TIER 2: STRATEGIC CONTEXT (Medium Weight - shapes response type)
-        stream_justification = row.get("stream_justification")
-        if pd.notna(stream_justification):
-            toks += [str(stream_justification)] * 4  # WHY this stream (Fix/Optimize/Innovate/Amplify)
-        
-        # 🎯 TIER 3: JOURNEY CONTEXT (Light Weight - situational placement)
-        customer_journey = row.get("customer_journey")
-        if pd.notna(customer_journey):
-            toks += [str(customer_journey)] * 2  # WHERE in customer experience
-        
-        journey_stage = row.get("journey_stage")
-        if pd.notna(journey_stage):
-            toks.append(str(journey_stage))  # WHEN in journey flow
-        
-        return " ".join(toks)
-    
-    def get_embedding(self, text, cache_key=None):
-        """
-        Get embedding for text with caching
-        """
-        if cache_key and cache_key in self.embedding_cache:
-            return self.embedding_cache[cache_key]
-        
-        try:
-            embedding = self.model.encode([text])[0]
-            
-            if cache_key and self.config["cache_embeddings"]:
-                self.embedding_cache[cache_key] = embedding
-            
-            return embedding
-        except Exception as e:
-            logging.error(f"❌ Failed to create embedding: {e}")
-            return None
-    
-    def find_similar_clusters(self, target_embedding, threshold=None):
-        """
-        Find existing clusters similar to target embedding
-        """
-        threshold = threshold or self.config["similarity_threshold"]
-        
-        if not self.canonical_registry["clusters"]:
-            return []
-        
-        similarities = []
-        
-        for canonical_ed, cluster_info in self.canonical_registry["clusters"].items():
-            if "centroid_embedding" not in cluster_info:
-                continue
-                
-            centroid = np.array(cluster_info["centroid_embedding"])
-            similarity = cosine_similarity([target_embedding], [centroid])[0][0]
-            
-            if similarity >= threshold:
-                similarities.append({
-                    "canonical_ed": canonical_ed,
-                    "similarity": similarity,
-                    "cluster_info": cluster_info
-                })
-        
-        # Return top matches sorted by similarity
-        return sorted(similarities, key=lambda x: x["similarity"], reverse=True)
-    
-    def create_canonical_ed_name(self, experience_drivers):
-        """
-        Create canonical name from cluster of similar EDs
-        """
-        # Use the most frequent or first ED as base
-        ed_counts = defaultdict(int)
-        for ed in experience_drivers:
-            ed_counts[ed] += 1
-        
-        # Get most common ED
-        most_common = max(ed_counts.items(), key=lambda x: x[1])[0]
-        
-        # Clean and standardize
-        canonical = most_common.strip()
-        
-        # TODO: Could add more sophisticated name generation logic here
-        
-        return canonical
-    
-    def update_cluster_registry(self, canonical_ed, members, centroid_embedding, pdca_signatures):
-        """
-        Update the canonical registry with new cluster
-        """
-        self.canonical_registry["clusters"][canonical_ed] = {
-            "canonical_experience_driver": canonical_ed,
-            "members": list(set(members)),  # Remove duplicates
-            "member_count": len(set(members)),
-            "centroid_embedding": centroid_embedding.tolist(),
-            "created_date": datetime.now().isoformat(),
-            "last_updated": datetime.now().isoformat(),
-            "sample_pdca_signatures": pdca_signatures[:3]  # Store first 3 for debugging
-        }
-        
-        self.canonical_registry["stats"]["clusters_created"] += 1
-        self.canonical_registry["stats"]["last_updated"] = datetime.now().isoformat()
-    
-    def ml_normalize_batch(self, df):
-        """
-        Main ML normalization function using semantic embeddings
-        """
-        logging.info(f"🚀 Starting ML normalization for {len(df)} rows")
-        
-        # Create PDCA signatures and embeddings
-        df["pdca_signature"] = df.apply(self._build_pdca_signature, axis=1)
-        
-        # Filter out rows with empty PDCA signature
-        valid_mask = df["pdca_signature"].str.len() > 10  # Minimum length check
-        df_valid = df[valid_mask].copy()
-        
-        if len(df_valid) == 0:
-            logging.warning("⚠️ No valid PDCA signatures found")
-            return df
-        
-        logging.info(f"📝 Created PDCA signatures for {len(df_valid)} valid rows")
-        
-        # Generate embeddings
-        embeddings = []
-        for i, row in df_valid.iterrows():
-            cache_key = f"pdca_{hash(row['pdca_signature'])}"
-            embedding = self.get_embedding(row["pdca_signature"], cache_key)
-            embeddings.append(embedding)
-        
-        embeddings = np.array(embeddings)
-        logging.info(f"🎯 Generated {len(embeddings)} embeddings")
-        
-        # Initialize results
-        df["canonical_experience_driver_ml"] = df["experience_driver"]
-        df["ml_similarity_score"] = 0.0
-        df["ml_cluster_id"] = ""
-        df["ml_method"] = "original"
-        
-        # Process each valid row
-        for idx, (df_idx, row) in enumerate(df_valid.iterrows()):
+    def load_or_build_indexes(self):
+        """Load pre-built indexes or create new ones"""
+        index_path = "performance_indexes.pkl"
+        if os.path.exists(index_path):
             try:
-                current_embedding = embeddings[idx]
-                experience_driver = row["experience_driver"]
+                with open(index_path, 'rb') as f:
+                    return pickle.load(f)
+            except:
+                logging.warning("Failed to load indexes, rebuilding...")
+        
+        return self.build_indexes()
+    
+    def build_indexes(self):
+        """Build optimized lookup indexes"""
+        logging.info("Building performance indexes...")
+        
+        indexes = {
+            "theme_lookup": {},
+            "category_lookup": defaultdict(list),
+            "subcategory_lookup": defaultdict(list),
+            "ed_vectors": None,
+            "ed_list": [],
+            "last_rebuild": datetime.now().isoformat(),
+            "entry_count": 0
+        }
+        
+        # Build theme index
+        for theme in self.registry["themes"].keys():
+            normalized = self._normalize_text(theme)
+            indexes["theme_lookup"][normalized] = theme
+        
+        # Build Experience Driver indexes
+        ed_texts = []
+        for ed_key, ed_data in self.registry["experience_drivers"].items():
+            indexes["ed_list"].append(ed_key)
+            ed_texts.append(ed_key)
+            
+            # Category lookup
+            category = ed_data.get("canonical_category", "")
+            if category:
+                normalized_cat = self._normalize_text(category)
+                indexes["category_lookup"][normalized_cat].append(ed_key)
+            
+            # Subcategory lookup
+            subcategory = ed_data.get("canonical_subcategory", "")
+            if subcategory:
+                normalized_subcat = self._normalize_text(subcategory)
+                indexes["subcategory_lookup"][normalized_subcat].append(ed_key)
+        
+        # Build vector representations for semantic similarity
+        if ed_texts:
+            try:
+                tfidf_matrix = self.vectorizer.fit_transform(ed_texts)
+                indexes["ed_vectors"] = tfidf_matrix
+                indexes["entry_count"] = len(ed_texts)
+            except Exception as e:
+                logging.warning(f"Failed to build vector index: {e}")
+        
+        self.save_indexes(indexes)
+        logging.info(f"Built indexes for {len(ed_texts)} Experience Drivers")
+        return indexes
+    
+    def _normalize_text(self, text):
+        """Normalize text for consistent lookups"""
+        return text.lower().strip().replace("  ", " ")
+    
+    def get_domain_thresholds(self, domain="general"):
+        """Get thresholds for specific domain"""
+        return self.config["domain_thresholds"].get(
+            domain, 
+            self.config["domain_thresholds"]["general"]
+        )
+    
+    def fast_theme_match(self, raw_theme, domain="general"):
+        """Optimized theme matching using pre-built indexes"""
+        thresholds = self.get_domain_thresholds(domain)
+        normalized = self._normalize_text(raw_theme)
+        
+        # Exact match first (O(1))
+        if normalized in self.indexes["theme_lookup"]:
+            return self.indexes["theme_lookup"][normalized], 100
+        
+        # Fuzzy match only if needed (O(n) but smaller n)
+        theme_choices = list(self.registry["themes"].keys())
+        if not theme_choices:
+            return self._create_new_theme(raw_theme), 100
+        
+        match = process.extractOne(
+            raw_theme, 
+            theme_choices, 
+            scorer=fuzz.token_set_ratio
+        )
+        
+        if match and match[1] >= thresholds["theme"]:
+            return match[0], match[1]
+        
+        return self._create_new_theme(raw_theme), 100
+    
+    def fast_ed_match(self, theme, raw_ed, domain="general"):
+        """High-performance Experience Driver matching"""
+        if "→" not in raw_ed:
+            return raw_ed.strip(), None, None, 0, 0
+        
+        thresholds = self.get_domain_thresholds(domain)
+        category_raw, subcategory_raw = (x.strip() for x in raw_ed.split("→"))
+        
+        # Quick category lookup using indexes
+        cat_match = self._fast_category_match(theme, category_raw, thresholds["category"])
+        subcat_match = self._fast_subcategory_match(theme, cat_match, subcategory_raw, thresholds["subcategory"])
+        
+        canonical_ed = f"{cat_match} → {subcat_match}"
+        
+        # Update or create registry entry
+        self._update_ed_registry(canonical_ed, theme, cat_match, subcat_match, f"{category_raw} → {subcategory_raw}")
+        
+        return canonical_ed, cat_match, subcat_match, 100, 100
+    
+    def _fast_category_match(self, theme, category_raw, threshold):
+        """Fast category matching using indexes"""
+        normalized = self._normalize_text(category_raw)
+        
+        # Quick lookup in category index
+        if normalized in self.indexes["category_lookup"]:
+            candidates = self.indexes["category_lookup"][normalized]
+            theme_filtered = [
+                self.registry["experience_drivers"][ed]["canonical_category"]
+                for ed in candidates
+                if self.registry["experience_drivers"][ed]["theme"] == theme
+            ]
+            if theme_filtered:
+                return theme_filtered[0]  # Return first match
+        
+        # Fallback to fuzzy matching
+        existing_cats = list(set([
+            ed["canonical_category"]
+            for ed in self.registry["experience_drivers"].values()
+            if ed["theme"] == theme
+        ]))
+        
+        if existing_cats:
+            match = process.extractOne(category_raw, existing_cats, scorer=fuzz.token_set_ratio)
+            if match and match[1] >= threshold:
+                return match[0]
+        
+        return category_raw
+    
+    def _fast_subcategory_match(self, theme, category, subcategory_raw, threshold):
+        """Fast subcategory matching using indexes"""
+        normalized = self._normalize_text(subcategory_raw)
+        
+        # Quick lookup
+        if normalized in self.indexes["subcategory_lookup"]:
+            candidates = self.indexes["subcategory_lookup"][normalized]
+            filtered = [
+                self.registry["experience_drivers"][ed]["canonical_subcategory"]
+                for ed in candidates
+                if (self.registry["experience_drivers"][ed]["theme"] == theme and
+                    self.registry["experience_drivers"][ed]["canonical_category"] == category)
+            ]
+            if filtered:
+                return filtered[0]
+        
+        # Fallback to fuzzy matching
+        existing_subcats = list(set([
+            ed["canonical_subcategory"]
+            for ed in self.registry["experience_drivers"].values()
+            if (ed["theme"] == theme and ed["canonical_category"] == category)
+        ]))
+        
+        if existing_subcats:
+            match = process.extractOne(subcategory_raw, existing_subcats, scorer=fuzz.token_set_ratio)
+            if match and match[1] >= threshold:
+                return match[0]
+        
+        return subcategory_raw
+    
+    def batch_process(self, df, domain="general", batch_size=None):
+        """Process large datasets in optimized batches"""
+        batch_size = batch_size or self.config["batch_size"]
+        total_rows = len(df)
+        
+        # Pre-allocate result columns
+        df["canonical_theme"] = ""
+        df["canonical_category"] = ""
+        df["canonical_subcategory"] = ""
+        df["canonical_experience_driver"] = ""
+        df["theme_match_score"] = 0
+        df["category_match_score"] = 0
+        df["subcategory_match_score"] = 0
+        
+        logging.info(f"Processing {total_rows} rows in batches of {batch_size}")
+        
+        for start_idx in range(0, total_rows, batch_size):
+            end_idx = min(start_idx + batch_size, total_rows)
+            batch = df.iloc[start_idx:end_idx]
+            
+            self._process_batch(batch, domain, start_idx)
+            
+            if start_idx % (batch_size * 10) == 0:  # Log every 10 batches
+                logging.info(f"Processed {end_idx}/{total_rows} rows ({end_idx/total_rows*100:.1f}%)")
+        
+        return df
+    
+    def _process_batch(self, batch, domain, start_idx):
+        """Process a single batch efficiently"""
+        for i, row in batch.iterrows():
+            try:
+                raw_theme = str(row["theme"]).strip()
+                raw_ed = str(row["experience_driver"]).strip()
                 
-                # Find similar existing clusters
-                similar_clusters = self.find_similar_clusters(current_embedding)
+                canonical_theme, theme_score = self.fast_theme_match(raw_theme, domain)
+                canonical_ed, canonical_cat, canonical_subcat, cat_score, subcat_score = self.fast_ed_match(canonical_theme, raw_ed, domain)
                 
-                if similar_clusters:
-                    # Assign to most similar cluster
-                    best_match = similar_clusters[0]
-                    df.at[df_idx, "canonical_experience_driver_ml"] = best_match["canonical_ed"]
-                    df.at[df_idx, "ml_similarity_score"] = best_match["similarity"]
-                    df.at[df_idx, "ml_cluster_id"] = best_match["canonical_ed"]
-                    df.at[df_idx, "ml_method"] = "cluster_match"
-                    
-                    # Update cluster membership
-                    cluster_info = self.canonical_registry["clusters"][best_match["canonical_ed"]]
-                    if experience_driver not in cluster_info["members"]:
-                        cluster_info["members"].append(experience_driver)
-                        cluster_info["member_count"] = len(cluster_info["members"])
-                        cluster_info["last_updated"] = datetime.now().isoformat()
-                    
-                else:
-                    # Create new cluster
-                    canonical_ed = self.create_canonical_ed_name([experience_driver])
-                    
-                    self.update_cluster_registry(
-                        canonical_ed,
-                        [experience_driver],
-                        current_embedding,
-                        [row["pdca_signature"]]
-                    )
-                    
-                    df.at[df_idx, "canonical_experience_driver_ml"] = canonical_ed
-                    df.at[df_idx, "ml_similarity_score"] = 1.0
-                    df.at[df_idx, "ml_cluster_id"] = canonical_ed
-                    df.at[df_idx, "ml_method"] = "new_cluster"
+                # Update DataFrame
+                batch.at[i, "canonical_theme"] = canonical_theme
+                batch.at[i, "canonical_category"] = canonical_cat or ""
+                batch.at[i, "canonical_subcategory"] = canonical_subcat or ""
+                batch.at[i, "canonical_experience_driver"] = canonical_ed
+                batch.at[i, "theme_match_score"] = theme_score
+                batch.at[i, "category_match_score"] = cat_score
+                batch.at[i, "subcategory_match_score"] = subcat_score
                 
             except Exception as e:
-                logging.error(f"❌ Error processing row {df_idx}: {e}")
-                # Fallback to original ED
+                logging.error(f"Error processing row {i}: {e}")
                 continue
-        
-        # Update stats
-        self.canonical_registry["stats"]["total_processed"] += len(df_valid)
-        self.canonical_registry["stats"]["last_updated"] = datetime.now().isoformat()
-        
-        return df
     
-    def fuzzy_fallback_normalize(self, df):
-        """
-        Fallback to fuzzy matching for rows without PDCA fields
-        """
-        if not self.config["enable_fuzzy_fallback"]:
-            return df
-        
-        logging.info("🔄 Applying fuzzy fallback normalization")
-        
-        # Get rows that weren't processed by ML
-        ml_unprocessed = df[df["ml_method"] == "original"]
-        
-        if len(ml_unprocessed) == 0:
-            return df
-        
-        # Simple fuzzy matching on experience_driver
-        experience_drivers = list(self.canonical_registry["clusters"].keys())
-        
-        for idx, row in ml_unprocessed.iterrows():
-            ed = str(row["experience_driver"]).strip()
-            
-            if experience_drivers:
-                match = process.extractOne(
-                    ed, 
-                    experience_drivers, 
-                    scorer=fuzz.token_set_ratio
-                )
-                
-                if match and match[1] >= self.config["fuzzy_threshold"]:
-                    df.at[idx, "canonical_experience_driver_ml"] = match[0]
-                    df.at[idx, "ml_similarity_score"] = match[1] / 100.0
-                    df.at[idx, "ml_method"] = "fuzzy_fallback"
-        
-        return df
-    
-    def process_dataframe(self, df):
-        """
-        Main processing function
-        """
-        try:
-            # ML-based normalization
-            df_processed = self.ml_normalize_batch(df)
-            
-            # Fuzzy fallback for remaining
-            df_final = self.fuzzy_fallback_normalize(df_processed)
-            
-            # Generate summary stats
-            self.log_processing_stats(df_final)
-            
-            return df_final
-            
-        except Exception as e:
-            logging.error(f"❌ Processing failed: {e}")
-            raise
-    
-    def log_processing_stats(self, df):
-        """
-        Log processing statistics
-        """
-        stats = {
-            "total_rows": len(df),
-            "ml_clustered": len(df[df["ml_method"] == "cluster_match"]),
-            "new_clusters": len(df[df["ml_method"] == "new_cluster"]),
-            "fuzzy_fallback": len(df[df["ml_method"] == "fuzzy_fallback"]),
-            "unchanged": len(df[df["ml_method"] == "original"]),
-            "unique_original_eds": df["experience_driver"].nunique(),
-            "unique_canonical_eds": df["canonical_experience_driver_ml"].nunique()
+    def _create_new_theme(self, raw_theme):
+        """Create new theme entry"""
+        self.registry["themes"][raw_theme] = {
+            "raw_variants": [raw_theme],
+            "experience_drivers": [],
+            "frozen": False
         }
-        
-        compression_ratio = stats["unique_original_eds"] / stats["unique_canonical_eds"] if stats["unique_canonical_eds"] > 0 else 1
-        
-        logging.info("📊 ML Processing Stats:")
-        logging.info(f"  Total rows: {stats['total_rows']}")
-        logging.info(f"  ML clustered: {stats['ml_clustered']}")
-        logging.info(f"  New clusters: {stats['new_clusters']}")
-        logging.info(f"  Fuzzy fallback: {stats['fuzzy_fallback']}")
-        logging.info(f"  Unchanged: {stats['unchanged']}")
-        logging.info(f"  Compression ratio: {compression_ratio:.2f}x")
-        logging.info(f"  Original EDs: {stats['unique_original_eds']} → Canonical: {stats['unique_canonical_eds']}")
+        return raw_theme
     
-    def save_cache_and_registry(self):
-        """
-        Save embeddings cache and canonical registry
-        """
-        try:
-            # Save embedding cache
-            if self.config["cache_embeddings"]:
-                with open("ml_embedding_cache.pkl", 'wb') as f:
-                    pickle.dump(self.embedding_cache, f)
-                logging.info(f"💾 Saved embedding cache with {len(self.embedding_cache)} entries")
+    def _update_ed_registry(self, canonical_ed, theme, cat_match, subcat_match, raw_variant):
+        """Update Experience Driver registry efficiently"""
+        if canonical_ed not in self.registry["experience_drivers"]:
+            self.registry["experience_drivers"][canonical_ed] = {
+                "canonical_experience_driver": canonical_ed,
+                "canonical_category": cat_match,
+                "canonical_subcategory": subcat_match,
+                "theme": theme,
+                "raw_variants": [raw_variant],
+                "frozen": False,
+                "first_seen": datetime.today().strftime("%Y-%m-%d"),
+                "last_seen": datetime.today().strftime("%Y-%m-%d"),
+                "frequency": 1
+            }
             
-            # Save canonical registry
-            with open("ml_canonical_registry.json", "w", encoding="utf-8") as f:
-                json.dump(self.canonical_registry, f, indent=2, ensure_ascii=False)
-            logging.info(f"💾 Saved canonical registry with {len(self.canonical_registry['clusters'])} clusters")
-            
-        except Exception as e:
-            logging.error(f"❌ Failed to save cache/registry: {e}")
-    
-    def export_cluster_report(self, output_path="ml_cluster_report.csv"):
-        """
-        Export detailed cluster analysis report
-        """
-        records = []
-        
-        for canonical_ed, cluster_info in self.canonical_registry["clusters"].items():
-            for member in cluster_info["members"]:
-                records.append({
-                    "member_experience_driver": member,
-                    "canonical_experience_driver": canonical_ed,
-                    "cluster_size": cluster_info["member_count"],
-                    "created_date": cluster_info["created_date"],
-                    "last_updated": cluster_info["last_updated"]
-                })
-        
-        if records:
-            df_report = pd.DataFrame(records)
-            df_report.to_csv(output_path, index=False)
-            logging.info(f"📋 Cluster report exported: {output_path}")
+            if canonical_ed not in self.registry["themes"][theme]["experience_drivers"]:
+                self.registry["themes"][theme]["experience_drivers"].append(canonical_ed)
         else:
-            logging.warning("⚠️ No clusters to export")
+            ed_entry = self.registry["experience_drivers"][canonical_ed]
+            if raw_variant not in ed_entry["raw_variants"]:
+                ed_entry["raw_variants"].append(raw_variant)
+            ed_entry["last_seen"] = datetime.today().strftime("%Y-%m-%d")
+            ed_entry["frequency"] += 1
+    
+    def save_indexes(self, indexes):
+        """Save indexes to disk for future use"""
+        try:
+            with open("performance_indexes.pkl", 'wb') as f:
+                pickle.dump(indexes, f)
+        except Exception as e:
+            logging.error(f"Failed to save indexes: {e}")
+    
+    def save_registry(self):
+        """Save updated registry"""
+        with open("canonical_registry.json", "w", encoding="utf-8") as f:
+            json.dump(self.registry, f, indent=2, ensure_ascii=False)
     
     def setup_logging(self):
-        """Setup logging configuration"""
+        """Setup performance logging"""
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(message)s',
             handlers=[
-                logging.FileHandler('ml_normalizer.log'),
+                logging.FileHandler('canonicalization.log'),
                 logging.StreamHandler()
             ]
         )
+    
+    def export_canonical_report(self, output_path="canonicalization_report.csv"):
+        records = []
+        for ed, data in self.registry["experience_drivers"].items():
+            for variant in data["raw_variants"]:
+                records.append({
+                    "raw_variant": variant,
+                    "canonical_experience_driver": ed,
+                    "theme": data.get("theme"),
+                    "canonical_category": data.get("canonical_category"),
+                    "canonical_subcategory": data.get("canonical_subcategory"),
+                    "needs_review": data.get("needs_review", False),
+                    "first_seen": data.get("first_seen"),
+                    "last_seen": data.get("last_seen"),
+                    "frozen": data.get("frozen"),
+                    "frequency": data.get("frequency", 0)
+                })
+        df = pd.DataFrame(records)
+        df.to_csv(output_path, index=False)
+        logging.info(f"[✓] Canonicalization report saved: {output_path}") 
+    
+    def get_performance_stats(self):
+        """Get performance statistics"""
+        return {
+            "total_themes": len(self.registry["themes"]),
+            "total_experience_drivers": len(self.registry["experience_drivers"]),
+            "index_entry_count": self.indexes.get("entry_count", 0),
+            "last_index_rebuild": self.indexes.get("last_rebuild", "Never")
+        }
 
 # === USAGE EXAMPLE ===
-def main():
-    """
-    ML Experience Driver Normalizer - Production Main Function
-    """
+def process_with_performance_engine(input_file, output_file, domain="general"):
+    """Main processing function using high-performance engine"""
     
+    # Initialize the engine
+    engine = HighPerformanceCanonicalizer()
+    
+    # Load data
+    df = pd.read_csv(input_file)
+    
+    # Process with domain-specific settings
+    processed_df = engine.batch_process(df, domain=domain)
+    
+    # Save results
+    processed_df.to_csv(output_file, index=False)
+    engine.save_registry()
+    
+    # Print performance stats
+    stats = engine.get_performance_stats()
+    print(f"✅ Processing complete!")
+    print(f"📊 Performance Stats: {stats}")
+    
+    return processed_df
+
+def main():
     # === INPUT & OUTPUT CONFIGURATION ===
     input_file = "data/decipher_retail_grocery_analytics_flattened.csv"
     output_dir = "outputs"
     base_name = os.path.basename(input_file).replace(".csv", "")
-    output_file = os.path.join(output_dir, f"{base_name}_ml_normalized.csv")
-    cluster_report_file = os.path.join(output_dir, f"{base_name}_ml_cluster_report.csv")
-    stats_file = os.path.join(output_dir, f"{base_name}_ml_normalization_stats.txt")
+    output_file = os.path.join(output_dir, f"{base_name}_canonicalized.csv")
+    report_file = os.path.join(output_dir, f"{base_name}_canonical_map.csv")
+    stats_file = os.path.join(output_dir, f"{base_name}_explosion_stats.txt")
     domain = "retail"
 
     os.makedirs(output_dir, exist_ok=True)
 
     # === INIT & RUN ===
-    normalizer = MLExperienceDriverNormalizer()
+    engine = HighPerformanceCanonicalizer()
     print(f"[INFO] Loading data from: {input_file}")
     df = pd.read_csv(input_file)
-    
-    print(f"[INFO] Processing {len(df)} rows with ML normalization...")
-    processed_df = normalizer.process_dataframe(df)
+    processed_df = engine.batch_process(df, domain=domain)
 
     # === SAVE OUTPUT ===
     processed_df.to_csv(output_file, index=False)
-    normalizer.save_cache_and_registry()
+    engine.save_registry()
 
-    # === GENERATE & SAVE CLUSTER REPORT ===
-    normalizer.export_cluster_report(cluster_report_file)
+    # === GENERATE & SAVE REPORT ===
+    engine.export_canonical_report(report_file)
 
-    # === STATS CALCULATION ===
+    # === STATS ===
     unique_raw = df["experience_driver"].nunique()
-    unique_canonical = processed_df["canonical_experience_driver_ml"].nunique()
-    compression_ratio = unique_raw / unique_canonical if unique_canonical > 0 else 1
+    unique_canonical = processed_df["canonical_experience_driver"].nunique()
+    compression_ratio = unique_raw / unique_canonical if unique_canonical > 0 else 0
 
-    # ML-specific stats
-    ml_stats = {
-        "total_rows": len(processed_df),
-        "ml_clustered": len(processed_df[processed_df["ml_method"] == "cluster_match"]),
-        "new_clusters": len(processed_df[processed_df["ml_method"] == "new_cluster"]),
-        "fuzzy_fallback": len(processed_df[processed_df["ml_method"] == "fuzzy_fallback"]),
-        "unchanged": len(processed_df[processed_df["ml_method"] == "original"]),
-        "avg_similarity": processed_df[processed_df["ml_similarity_score"] > 0]["ml_similarity_score"].mean()
-    }
+    needs_review_count = processed_df[
+        (processed_df["category_match_score"] < 90) |
+        (processed_df["subcategory_match_score"] < 90)
+    ].shape[0]
 
-    # High similarity clusters (potential over-clustering)
-    high_similarity_count = len(processed_df[processed_df["ml_similarity_score"] > 0.95])
-    
-    # Low similarity clusters (potential under-clustering)
-    low_similarity_count = len(processed_df[
-        (processed_df["ml_similarity_score"] > 0) & 
-        (processed_df["ml_similarity_score"] < 0.85)
-    ])
-
-    # === SAVE STATS ===
     with open(stats_file, 'w', encoding="utf-8") as f:
-        f.write("ML EXPERIENCE DRIVER NORMALIZATION STATS\n")
-        f.write("=" * 55 + "\n\n")
-        f.write("📊 COMPRESSION ANALYSIS\n")
-        f.write("-" * 25 + "\n")
+        f.write("EXPERIENCE DRIVER CANONICALIZATION STATS\n")
+        f.write("=" * 50 + "\n\n")
         f.write(f"Original unique experience drivers: {unique_raw}\n")
-        f.write(f"ML canonical unique experience drivers: {unique_canonical}\n")
+        f.write(f"Canonical unique experience drivers: {unique_canonical}\n")
         f.write(f"Compression ratio: {compression_ratio:.2f}x\n")
-        f.write(f"Total records processed: {len(df)}\n\n")
-        
-        f.write("🤖 ML PROCESSING BREAKDOWN\n")
-        f.write("-" * 28 + "\n")
-        f.write(f"ML clustered (existing): {ml_stats['ml_clustered']}\n")
-        f.write(f"New clusters created: {ml_stats['new_clusters']}\n")
-        f.write(f"Fuzzy fallback used: {ml_stats['fuzzy_fallback']}\n")
-        f.write(f"Unchanged (no PDCA fields): {ml_stats['unchanged']}\n")
-        f.write(f"Average similarity score: {ml_stats['avg_similarity']:.3f}\n\n")
-        
-        f.write("🎯 CLUSTERING QUALITY\n")
-        f.write("-" * 20 + "\n")
-        f.write(f"High similarity clusters (>95%): {high_similarity_count}\n")
-        f.write(f"Low similarity clusters (<85%): {low_similarity_count}\n")
-        f.write(f"Total ML clusters: {len(normalizer.canonical_registry['clusters'])}\n\n")
-        
-        f.write("⚙️ CONFIGURATION USED\n")
-        f.write("-" * 21 + "\n")
-        f.write(f"Embedding model: {normalizer.config['embedding_model']}\n")
-        f.write(f"Similarity threshold: {normalizer.config['similarity_threshold']}\n")
-        f.write(f"Domain: {domain}\n")
+        f.write(f"Total records processed: {len(df)}\n")
+        f.write(f"Mappings requiring review: {needs_review_count}\n")
+        f.write(f"Domain Thresholds Used: {engine.get_domain_thresholds(domain)}\n")
 
-    # === CONSOLE OUTPUT ===
-    print("\n[✓] ML Normalization completed successfully")
-    print(f"Original Experience Drivers:  {unique_raw}")
-    print(f"ML Canonical Drivers: {unique_canonical}")
+    print("\n[✓] Canonicalization completed successfully")
+    print(f"Original Drivers:  {unique_raw}")
+    print(f"Canonical Drivers: {unique_canonical}")
     print(f"Compression Ratio: {compression_ratio:.2f}x")
-    print(f"ML Clustered: {ml_stats['ml_clustered']}")
-    print(f"New Clusters: {ml_stats['new_clusters']}")
-    print(f"Avg Similarity: {ml_stats['avg_similarity']:.3f}")
-    print(f"Output directory: {output_dir}")
-    
-    # === COMPARISON PREVIEW ===
-    print("\n🔍 Sample ML Normalization Results:")
-    sample_results = processed_df[processed_df["ml_method"] != "original"].head(5)
-    if len(sample_results) > 0:
-        for _, row in sample_results.iterrows():
-            print(f"  '{row['experience_driver']}' → '{row['canonical_experience_driver_ml']}' ({row['ml_similarity_score']:.3f})")
-    else:
-        print("  No ML normalization results to display (missing PDCA fields)")
-    
-    print(f"\n📋 Full results saved to: {output_file}")
-    print(f"📊 Cluster report saved to: {cluster_report_file}")
-    print(f"📈 Stats saved to: {stats_file}\n")
-    
-    return processed_df
+    print(f"Needs Review:      {needs_review_count}")
+    print(f"Output directory:  {output_dir}\n")
 
 if __name__ == "__main__":
     main()
