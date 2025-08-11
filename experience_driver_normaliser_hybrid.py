@@ -1,541 +1,619 @@
 # ed_normalizer.py
-from __future__ import annotations
-from dataclasses import dataclass
-from typing import List, Dict, Any, Optional, Tuple
-import json, os, re, hashlib, logging, pickle
+# -*- coding: utf-8 -*-
+
+import os, re, json, hashlib, logging, time, uuid, math
 from datetime import datetime
-from collections import defaultdict
+from typing import Dict, List, Tuple, Optional
 
 import numpy as np
-from rapidfuzz import fuzz
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
+from rapidfuzz import fuzz, process
 
 try:
-    from sentence_transformers import SentenceTransformer, util as st_util
-except Exception:  # allow import to fail in environments without the lib
+    from sentence_transformers import SentenceTransformer
+except Exception:
     SentenceTransformer = None
-    st_util = None
 
-# ──────────────────────────────────────────────────────────────────────────────
-# CONFIG (edit here as needed)
-# ──────────────────────────────────────────────────────────────────────────────
-DEFAULTS = {
+# ---------------------------
+# Config (tweak as needed)
+# ---------------------------
+DEFAULT_CONFIG = {
+    # Models / batching
     "embedding_model": "all-MiniLM-L6-v2",
-    "registry_path": "ed_registry.v1.json",
-    "proposed_queue_path": "proposed_ed_queue.jsonl",
-    "embedding_cache_path": "embedding_cache.pkl",
-    "tfidf_index_path": "tfidf_index.pkl",
-    # Decision thresholds
-    "theme_gate": 0.70,            # fuzzy theme min (0..1)
-    "auto_accept": 0.86,           # final score band
-    "soft_accept": 0.74,
-    # Weights (hierarchical fuzzy)
-    "weights_depth_4": [0.35, 0.25, 0.20, 0.20],  # Theme, Category, Subcat, Entity
-    "weights_depth_3": [0.40, 0.35, 0.25],        # Theme, Category, Entity
-    "weights_depth_2": [0.60, 0.40],              # Category, Entity
-    # Blend fuzzy/semantic
-    "blend_fuzzy": 0.55,
-    "blend_semantic": 0.45,
-    # Boosts / penalties
-    "alias_boost": 0.06,
-    "cue_boost": 0.02,
-    "neg_penalty": 0.08,
-    "journey_penalty": 0.03,
-    "moment_penalty": 0.03,
-    # Candidate pruning
-    "tfidf_top_k": 50,
-    # Adaptive cluster protections
-    "min_cluster_size_bonus": 0.02,   # require +0.02 if cluster < 5
-    "max_cluster_size_bonus": 0.01,   # require +0.01 if cluster > 20
-    "small_cluster_lt": 5,
-    "large_cluster_gt": 20,
+    "embed_batch_size": 64,
+    "show_embed_progress": False,
+    "cache_embeddings": True,
+    "cache_path": "cache/ed_embed_cache.pkl",
+
+    # Paths
+    "registry_path": "registry/ed_registry.json",
+    "proposals_path": "registry/proposals.jsonl",
+
+    # Thresholds
+    "ml_accept": 0.86,            # cosine to accept an existing cluster
+    "ml_strong": 0.90,            # very strong cosine
+    "theme_gate_min": 0.75,       # (optional) if you add theme fuzzy later
+    "fuzzy_cat_min": 0.86,        # category min
+    "fuzzy_sub_min": 0.86,        # subcategory min
+    "fuzzy_strong": 0.92,         # very strong fuzzy
+
+    # Consensus
+    "consensus_weight_ml": 0.7,
+    "consensus_weight_fuzzy": 0.3,
+    "consensus_min": 0.92,
+
+    # Governance
+    "auto_commit_new_on_empty_registry": True,  # day-1 bootstrap
+    "auto_commit_new_when_strong": True,        # commit if ML>=0.92 OR (ML>=0.88 & fuzzy per-level>=0.94)
+    "min_pdca_signature_length": 15,
+
+    # Centroid / cluster constraints
+    "max_cluster_size": 100,   # only affects confidence modifier (not hard stop)
+
+    # 5Ws signature weights (must reflect your upstream)
+    "signature_fields": {
+        "what_reality": "semantic_action_statement.section_1_customer_reality",
+        "what_matters": "matters",
+        "what_context": "context",
+        "when_moment": "interaction_moment",
+        "where_driver": "experience_driver",
+        "where_journey": "customer_journey",
+        "where_stage": "customer_journey_stage",
+        "why_justification": "stream_justification",
+        "so_what_impact": "behavioral_impact",
+    },
+    "signature_weights": {
+        "what_reality": 8,
+        "what_matters": 6,
+        "what_context": 2,
+        "when_moment": 4,
+        "where_driver": 3,
+        "where_journey": 2,
+        "where_stage": 1,
+        "why_justification": 5,
+        "so_what_impact": 7
+    },
+
+    # Logging
+    "log_path": "logs/ed_normalizer.log",
+    "log_level": "INFO",
 }
 
-SEP_PATTERN = re.compile(r"\s*(?:>|→|/|:|-)\s*")
-PUNCT = re.compile(r"[^\w\s]")
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Registry
-# ──────────────────────────────────────────────────────────────────────────────
-@dataclass
-class EDEntry:
-    ed_id: str
-    path: List[str]                          # ["Theme","Category","Subcategory","Entity"] (2..4 levels ok)
-    aliases: List[str]
-    negatives: List[str]
-    cues_journey: List[str]
-    cues_moments: List[str]
-    description: str
-    frozen: bool = True
-
-class EDRegistry:
-    def __init__(self, eds: Dict[str, EDEntry]):
-        self.eds = eds
-        # Theme strings present in registry (from path[0])
-        self.themes: List[str] = sorted({e.path[0] for e in self.eds.values() if e.path})
-        # Precompute a list for TF-IDF labels
-        self._labels: List[str] = []
-        self._label_ids: List[str] = []
-        for e in self.eds.values():
-            label = " > ".join(e.path)
-            if e.aliases:
-                label += " " + " ".join(e.aliases)
-            self._labels.append(label)
-            self._label_ids.append(e.ed_id)
-
-    @classmethod
-    def from_file(cls, path: str) -> "EDRegistry":
-        with open(path, "r", encoding="utf-8") as f:
-            raw = json.load(f)
-        eds = {}
-        for ed_id, payload in raw.get("eds", {}).items():
-            eds[ed_id] = EDEntry(
-                ed_id=ed_id,
-                path=payload.get("path", []),
-                aliases=payload.get("aliases", []),
-                negatives=payload.get("negatives", []),
-                cues_journey=payload.get("cues", {}).get("journey", []),
-                cues_moments=payload.get("cues", {}).get("moments", []),
-                description=payload.get("description", ""),
-                frozen=payload.get("frozen", True),
-            )
-        return cls(eds)
-
-    def eds_in_theme(self, theme: str) -> List[EDEntry]:
-        return [e for e in self.eds.values() if e.path and e.path[0].lower() == theme.lower()]
-
-# ──────────────────────────────────────────────────────────────────────────────
+# ---------------------------
 # Utilities
-# ──────────────────────────────────────────────────────────────────────────────
-def norm(s: Optional[str]) -> str:
-    s = (s or "").lower().strip()
-    s = PUNCT.sub(" ", s)
-    return re.sub(r"\s+", " ", s)
+# ---------------------------
+ARROW = " → "
+DELIMS_RE = re.compile(r"\s*(?:→|>|/|:|-)\s*")
 
-def split_path(s: str) -> List[str]:
-    parts = [p for p in SEP_PATTERN.split(s) if p.strip()]
-    return parts[:4]  # cap at 4
+def ensure_dirs(path: str):
+    d = os.path.dirname(path)
+    if d and not os.path.exists(d):
+        os.makedirs(d, exist_ok=True)
 
-def rf_sim(a: str, b: str) -> float:
-    return (fuzz.token_set_ratio(norm(a), norm(b)) or 0) / 100.0
+def now_iso() -> str:
+    return datetime.utcnow().isoformat() + "Z"
 
-def sha1(text: str) -> str:
-    return hashlib.sha1(text.encode("utf-8")).hexdigest()
+def stable_ed_id(theme: str, canonical_label: str) -> str:
+    key = f"{theme}::{canonical_label}".lower().strip()
+    h = hashlib.md5(key.encode("utf-8")).hexdigest()[:10].upper()
+    return f"ED-{h}"
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Embedding & centroid store
-# ──────────────────────────────────────────────────────────────────────────────
-class EmbeddingIndex:
-    def __init__(self, model_name: str, cache_path: str):
-        self.model_name = model_name
-        self.cache_path = cache_path
-        self.cache: Dict[str, np.ndarray] = self._load_cache()
-        self.model = SentenceTransformer(model_name) if SentenceTransformer else None
-        self.centroids: Dict[str, Tuple[np.ndarray, int]] = {}  # ed_id -> (centroid, count)
+def canonical_label_from_parts(category: str, subcategory: str) -> str:
+    return f"{category.strip()}{ARROW}{subcategory.strip()}"
 
-    def _load_cache(self) -> Dict[str, np.ndarray]:
-        if os.path.exists(self.cache_path):
-            try:
-                with open(self.cache_path, "rb") as f:
-                    return pickle.load(f)
-            except Exception:
-                pass
-        return {}
+def parse_ed(raw: str) -> Tuple[str, str]:
+    parts = [p.strip() for p in DELIMS_RE.split(raw, maxsplit=1)]
+    if len(parts) == 1:
+        return parts[0], ""
+    return parts[0], parts[1]
 
-    def save_cache(self):
-        try:
-            with open(self.cache_path, "wb") as f:
-                pickle.dump(self.cache, f)
-        except Exception:
-            pass
+def cosine(a: np.ndarray, b: np.ndarray) -> float:
+    if a is None or b is None: return 0.0
+    na = np.linalg.norm(a); nb = np.linalg.norm(b)
+    if na == 0 or nb == 0: return 0.0
+    return float(np.dot(a, b) / (na * nb))
 
-    def embed(self, text: str) -> Optional[np.ndarray]:
-        if not self.model:
-            return None
-        key = f"{self.model_name}:{sha1(text)}"
-        if key in self.cache:
-            return self.cache[key]
-        emb = self.model.encode([text], convert_to_numpy=True)[0]
-        self.cache[key] = emb
-        return emb
 
-    def cosine_to_centroid(self, ed_id: str, vec: np.ndarray) -> Optional[float]:
-        if ed_id not in self.centroids:
-            return None
-        c, _ = self.centroids[ed_id]
-        # safe cosine
-        a = c / (np.linalg.norm(c) + 1e-12)
-        b = vec / (np.linalg.norm(vec) + 1e-12)
-        return float(np.dot(a, b))
-
-    def update_centroid(self, ed_id: str, vec: np.ndarray):
-        # incremental running mean
-        if ed_id not in self.centroids:
-            self.centroids[ed_id] = (vec.copy(), 1)
-            return
-        c, n = self.centroids[ed_id]
-        new_c = (c * n + vec) / (n + 1)
-        self.centroids[ed_id] = (new_c, n + 1)
-
-# ──────────────────────────────────────────────────────────────────────────────
-# TF-IDF candidate pruner
-# ──────────────────────────────────────────────────────────────────────────────
-class TFIDFPruner:
-    def __init__(self, labels: List[str], label_ids: List[str], index_path: str):
-        self.labels = labels
-        self.label_ids = label_ids
-        self.index_path = index_path
-        self.vectorizer: Optional[TfidfVectorizer] = None
-        self.matrix = None
-        self._load_or_build()
-
-    def _load_or_build(self):
-        if os.path.exists(self.index_path):
-            try:
-                with open(self.index_path, "rb") as f:
-                    self.vectorizer, self.matrix = pickle.load(f)
-                    return
-            except Exception:
-                pass
-        self.vectorizer = TfidfVectorizer(ngram_range=(1, 3), stop_words="english", max_features=20000)
-        self.matrix = self.vectorizer.fit_transform(self.labels)
-        with open(self.index_path, "wb") as f:
-            pickle.dump((self.vectorizer, self.matrix), f)
-
-    def top_k(self, query: str, k: int) -> List[str]:
-        if not self.vectorizer or self.matrix is None:
-            return self.label_ids
-        qv = self.vectorizer.transform([query])
-        sims = cosine_similarity(qv, self.matrix)[0]
-        idx = np.argsort(-sims)[:k]
-        return [self.label_ids[i] for i in idx]
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Normalizer
-# ──────────────────────────────────────────────────────────────────────────────
-class EDNormalizer:
-    def __init__(self, cfg: Dict[str, Any] = None):
-        self.cfg = {**DEFAULTS, **(cfg or {})}
-        self.registry = EDRegistry.from_file(self.cfg["registry_path"])
-        self.embed_index = EmbeddingIndex(self.cfg["embedding_model"], self.cfg["embedding_cache_path"])
-        self.pruner = TFIDFPruner(self.registry._labels, self.registry._label_ids, self.cfg["tfidf_index_path"])
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-
-    # ——— Signature (PDCA) ———
-    @staticmethod
-    def build_pdca_signature(row: Dict[str, Any]) -> str:
-        toks: List[str] = []
-        def add(field, times): 
-            val = row.get(field)
-            if val: toks.extend([str(val)] * times)
-        add("semantic_action_statement", 8)
-        add("behavioral_impact", 6)
-        add("stream_justification", 4)
-        add("customer_journey", 2)
-        add("journey_stage", 1)
-        return " ".join(toks).strip()
-
-    # ——— Theme gate ———
-    def _best_theme(self, candidate_theme: str) -> Optional[str]:
-        best_theme = None
-        best_sim = 0.0
-        for theme in self.registry.themes:
-            s = rf_sim(candidate_theme, theme)
-            if s > best_sim:
-                best_sim, best_theme = s, theme
-        return best_theme if best_sim >= self.cfg["theme_gate"] else None
-
-    # ——— Candidate pool ———
-    def _candidates_for_theme(self, theme: str, candidate_label: str) -> List[EDEntry]:
-        # prune with tfidf to speed; ensure union with alias hits
-        pruned_ids = set(self.pruner.top_k(candidate_label, self.cfg["tfidf_top_k"]))
-        pool = [e for e in self.registry.eds_in_theme(theme) if e.ed_id in pruned_ids]
-        # ensure alias hits included
-        last_part = split_path(candidate_label)[-1] if split_path(candidate_label) else candidate_label
-        for e in self.registry.eds_in_theme(theme):
-            if any(rf_sim(last_part, a) >= 0.90 for a in e.aliases):
-                if e not in pool:
-                    pool.append(e)
-        return pool
-
-    # ——— Hierarchical fuzzy score ———
-    def _hier_score(self, parts: List[str], entry: EDEntry) -> Tuple[float, Dict[str, float]]:
-        target = entry.path
-        # right-align by depth overlap
-        d = min(len(parts), len(target))
-        cand = parts[-d:]
-        targ = target[-d:]
-
-        if d == 4:
-            weights = self.cfg["weights_depth_4"]
-            labels = ["theme", "category", "subcategory", "entity"]
-        elif d == 3:
-            weights = self.cfg["weights_depth_3"]
-            labels = ["theme", "category", "entity"]
-        elif d == 2:
-            weights = self.cfg["weights_depth_2"]
-            labels = ["category", "entity"]
+# ---------------------------
+# Registry (read/write with governance)
+# ---------------------------
+class EDRegistry:
+    """
+    Persistent store of ED clusters.
+    Shape:
+    {
+      "version": "1.0",
+      "created_at": "...",
+      "updated_at": "...",
+      "themes": { "<Theme>": {"ed_ids": [...] } },
+      "clusters": {
+        "ED-XXXX": {
+          "theme": "...",
+          "canonical_label": "Category → Subcategory",
+          "category": "...",
+          "subcategory": "...",
+          "aliases": [...],
+          "centroid": [float...],
+          "count": int,
+          "created_at": "...",
+          "updated_at": "..."
+        }
+      }
+    }
+    """
+    def __init__(self, path: str):
+        self.path = path
+        ensure_dirs(path)
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as f:
+                self.data = json.load(f)
         else:
-            weights = [1.0]
-            labels = ["theme"]
+            self.data = {
+                "version": "1.0",
+                "created_at": now_iso(),
+                "updated_at": now_iso(),
+                "themes": {},
+                "clusters": {}
+            }
+            self.save()
 
-        # use trailing weights (align with depth d)
-        weights = weights[-d:]
+    def save(self):
+        self.data["updated_at"] = now_iso()
+        with open(self.path, "w", encoding="utf-8") as f:
+            json.dump(self.data, f, indent=2, ensure_ascii=False)
 
-        sims = []
-        per_level = {}
-        for p, t, w, lab in zip(cand, targ, weights, labels[-d:]):
-            s = rf_sim(p, t)
-            sims.append(w * s)
-            per_level[lab] = s
-        return sum(sims), per_level
+    def is_empty(self) -> bool:
+        return len(self.data["clusters"]) == 0
 
-    # ——— Semantic score (to centroid) ———
-    def _semantic_score(self, ed_id: str, signature: str) -> Optional[float]:
-        if not signature or not self.embed_index.model:
-            return None
-        vec = self.embed_index.embed(signature)
+    def by_theme(self, theme: str) -> List[str]:
+        return self.data["themes"].get(theme, {}).get("ed_ids", [])
+
+    def get_cluster(self, ed_id: str) -> Optional[Dict]:
+        return self.data["clusters"].get(ed_id)
+
+    def list_theme_clusters(self, theme: str) -> List[Dict]:
+        return [self.data["clusters"][eid] for eid in self.by_theme(theme)]
+
+    # ---- governance-approved commits (safe updates) ----
+    def commit_new_cluster(self, theme: str, category: str, subcategory: str,
+                           centroid_vec: Optional[np.ndarray], alias: Optional[str] = None) -> str:
+        canonical = canonical_label_from_parts(category, subcategory)
+        ed_id = stable_ed_id(theme, canonical)
+
+        if ed_id in self.data["clusters"]:
+            # already exists; optionally add alias
+            if alias and alias not in self.data["clusters"][ed_id]["aliases"]:
+                self.data["clusters"][ed_id]["aliases"].append(alias)
+            self.save()
+            return ed_id
+
+        self.data["clusters"][ed_id] = {
+            "theme": theme,
+            "canonical_label": canonical,
+            "category": category,
+            "subcategory": subcategory,
+            "aliases": [alias] if alias else [],
+            "centroid": (centroid_vec.tolist() if centroid_vec is not None else []),
+            "count": 1 if centroid_vec is not None else 0,
+            "created_at": now_iso(),
+            "updated_at": now_iso()
+        }
+        self.data["themes"].setdefault(theme, {"ed_ids": []})
+        if ed_id not in self.data["themes"][theme]["ed_ids"]:
+            self.data["themes"][theme]["ed_ids"].append(ed_id)
+        self.save()
+        return ed_id
+
+    def commit_alias(self, ed_id: str, alias: str):
+        c = self.get_cluster(ed_id)
+        if not c: return
+        if alias not in c["aliases"]:
+            c["aliases"].append(alias)
+            c["updated_at"] = now_iso()
+            self.save()
+
+    def commit_observation(self, ed_id: str, vector: Optional[np.ndarray]):
+        """
+        Weighted centroid update; count += 1
+        """
+        c = self.get_cluster(ed_id)
+        if not c or vector is None: return
+        old = np.array(c["centroid"], dtype=float) if c["centroid"] else None
+        if old is None or old.size == 0:
+            c["centroid"] = vector.tolist()
+            c["count"] = 1
+        else:
+            n = max(1, int(c.get("count", 1)))
+            new_centroid = (old * n + vector) / (n + 1)
+            c["centroid"] = new_centroid.tolist()
+            c["count"] = n + 1
+        c["updated_at"] = now_iso()
+        self.save()
+
+
+# ---------------------------
+# Proposals (append-only)
+# ---------------------------
+class ProposalsSink:
+    def __init__(self, path: str):
+        self.path = path
+        ensure_dirs(path)
+        if not os.path.exists(path):
+            with open(path, "w", encoding="utf-8") as f:
+                pass  # create empty file
+
+    def append(self, obj: Dict):
+        obj["_ts"] = now_iso()
+        with open(self.path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(obj, ensure_ascii=False) + "\n")
+
+
+# ---------------------------
+# Embedding cache
+# ---------------------------
+class EmbeddingCache:
+    def __init__(self, path: str, enabled: bool):
+        self.path = path
+        self.enabled = enabled
+        ensure_dirs(path)
+        if enabled and os.path.exists(path):
+            try:
+                self._store = pd.read_pickle(path)
+            except Exception:
+                self._store = {}
+        else:
+            self._store = {}
+
+    def get(self, key: str):
+        return self._store.get(key)
+
+    def set(self, key: str, vec: np.ndarray):
+        self._store[key] = vec
+        if self.enabled:
+            pd.to_pickle(self._store, self.path)
+
+
+# ---------------------------
+# Normalizer (read-only matching, proposals out; optional safe auto-commit)
+# ---------------------------
+class EDNormalizer:
+    def __init__(self, config: Dict = None):
+        self.cfg = {**DEFAULT_CONFIG, **(config or {})}
+        ensure_dirs(self.cfg["log_path"])
+        logging.basicConfig(
+            level=getattr(logging, self.cfg["log_level"]),
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            handlers=[logging.FileHandler(self.cfg["log_path"]), logging.StreamHandler()]
+        )
+
+        self.registry = EDRegistry(self.cfg["registry_path"])
+        self.proposals = ProposalsSink(self.cfg["proposals_path"])
+
+        self.model = None
+        if SentenceTransformer:
+            try:
+                self.model = SentenceTransformer(self.cfg["embedding_model"])
+                logging.info(f"Loaded embedding model: {self.cfg['embedding_model']}")
+            except Exception as e:
+                logging.warning(f"Could not load embedding model ({e}). Running fuzzy-only.")
+        else:
+            logging.warning("sentence_transformers not available. Running fuzzy-only.")
+
+        self.cache = EmbeddingCache(self.cfg["cache_path"], self.cfg["cache_embeddings"])
+
+    # ----- Signature builder (5Ws) -----
+    def build_signature(self, row: pd.Series) -> str:
+        fields = self.cfg["signature_fields"]
+        weights = self.cfg["signature_weights"]
+        toks: List[str] = []
+
+        def pick(key: str) -> str:
+            col = fields.get(key)
+            if not col: return ""
+            val = row.get(col, "")
+            return (str(val) if pd.notna(val) else "").strip()
+
+        def add(key: str, times: int):
+            v = pick(key)
+            if v:
+                toks.extend([v] * times)
+
+        add("what_reality", weights["what_reality"])
+        add("what_matters", weights["what_matters"])
+        ctx = pick("what_context")
+        if ctx:
+            toks.extend([ctx[:100]] * weights["what_context"])  # short clause
+
+        add("when_moment", weights["when_moment"])
+        add("where_driver", weights["where_driver"])
+        add("where_journey", weights["where_journey"])
+        add("where_stage", weights["where_stage"])
+        add("why_justification", weights["why_justification"])
+        add("so_what_impact", weights["so_what_impact"])
+
+        return " ".join(toks)
+
+    # ----- Batch embed -----
+    def embed_signatures(self, sigs: List[str]) -> List[Optional[np.ndarray]]:
+        if not self.model:
+            return [None] * len(sigs)
+
+        out: List[Optional[np.ndarray]] = [None] * len(sigs)
+        batch = self.cfg["embed_batch_size"]
+        for i in range(0, len(sigs), batch):
+            chunk = sigs[i:i+batch]
+            keys = [hashlib.md5(s.encode("utf-8")).hexdigest() for s in chunk]
+            to_compute_idx = []
+            to_compute = []
+            for j, (k, s) in enumerate(zip(keys, chunk)):
+                vec = self.cache.get(k) if self.cache else None
+                if vec is None:
+                    to_compute_idx.append(j)
+                    to_compute.append(s)
+                else:
+                    out[i+j] = vec
+
+            if to_compute:
+                arr = self.model.encode(
+                    to_compute,
+                    batch_size=min(batch, len(to_compute)),
+                    show_progress_bar=self.cfg["show_embed_progress"],
+                    convert_to_numpy=True,
+                    normalize_embeddings=False
+                )
+                for j_local, vec in enumerate(arr):
+                    j = to_compute_idx[j_local]
+                    out[i+j] = vec
+                    if self.cache:
+                        self.cache.set(keys[j], vec)
+
+        return out
+
+    # ----- Theme gate (exact for now; add fuzzy later if you need cross-theme) -----
+    def theme_gate(self, theme: str, cluster_theme: str) -> bool:
+        return (theme or "").strip().lower() == (cluster_theme or "").strip().lower()
+
+    # ----- Fuzzy per-level against a candidate canonical label -----
+    def fuzzy_per_level(self, raw_ed: str, canonical_label: str) -> Tuple[float, float]:
+        raw_cat, raw_sub = parse_ed(raw_ed)
+        can_cat, can_sub = parse_ed(canonical_label)
+        cat_score = fuzz.token_set_ratio(raw_cat, can_cat) / 100.0 if raw_cat and can_cat else 0.0
+        sub_score = fuzz.token_set_ratio(raw_sub, can_sub) / 100.0 if raw_sub and can_sub else 0.0
+        return cat_score, sub_score
+
+    # ----- ML match against theme clusters -----
+    def ml_best_cluster(self, theme: str, vec: Optional[np.ndarray]) -> Tuple[Optional[str], float]:
         if vec is None:
-            return None
-        return self.embed_index.cosine_to_centroid(ed_id, vec)
+            return None, 0.0
+        clusters = self.registry.list_theme_clusters(theme)
+        if not clusters:
+            return None, 0.0
+        best_id, best_cos = None, 0.0
+        for c in clusters:
+            centroid = np.array(c.get("centroid", []), dtype=float)
+            if centroid.size == 0: 
+                continue
+            cos = cosine(vec, centroid)
+            if cos > best_cos:
+                best_cos, best_id = cos, stable_ed_id(theme, c["canonical_label"])
+        return best_id, best_cos
 
-    # ——— Boosts/penalties ———
-    def _adjust(self, entry: EDEntry, parts: List[str], journey: Optional[str], moment: Optional[str]) -> Tuple[float, Dict[str, float]]:
-        last = parts[-1] if parts else ""
-        alias_hit = max([rf_sim(last, a) for a in entry.aliases], default=0.0) if entry.aliases else 0.0
-        neg_hit = max([rf_sim(" ".join(parts), n) for n in entry.negatives], default=0.0) if entry.negatives else 0.0
+    # ----- Decision logic for a single row -----
+    def resolve_row(self, row: pd.Series, vec: Optional[np.ndarray]) -> Dict:
+        cfg = self.cfg
+        theme = (row.get("theme") or "").strip()
+        raw_ed = (row.get("experience_driver") or "").strip()
 
-        cue_boost = 0.0
-        if journey and any(rf_sim(journey, j) >= 0.88 for j in entry.cues_journey):
-            cue_boost += self.cfg["cue_boost"]
-        if moment and any(rf_sim(moment, m) >= 0.88 for m in entry.cues_moments):
-            cue_boost += self.cfg["cue_boost"]
+        if not raw_ed:
+            return {"resolution": "skip", "reason": "empty_ed"}
 
-        alias_boost = self.cfg["alias_boost"] if alias_hit >= 0.90 else 0.0
-        neg_pen = self.cfg["neg_penalty"] if neg_hit >= 0.85 else 0.0
+        # 1) ML candidate (by theme)
+        ml_id, ml_cos = self.ml_best_cluster(theme, vec)
+        ml_label = self.registry.get_cluster(ml_id)["canonical_label"] if ml_id else None
 
-        return (alias_boost + cue_boost - neg_pen), {
-            "alias_hit": round(alias_hit, 3),
-            "neg_hit": round(neg_hit, 3),
-            "alias_boost": alias_boost,
-            "cue_boost": cue_boost,
-            "neg_penalty": neg_pen
+        # 2) Fuzzy per-level against ML candidate (if present)
+        fuzzy_cat = fuzzy_sub = 0.0
+        if ml_label:
+            fuzzy_cat, fuzzy_sub = self.fuzzy_per_level(raw_ed, ml_label)
+
+        # 3) Decide acceptance
+        accepted_id = None
+        method = ""
+        consensus = ml_cos * cfg["consensus_weight_ml"] + ((fuzzy_cat+fuzzy_sub)/2.0) * cfg["consensus_weight_fuzzy"]
+
+        if ml_id and ml_cos >= cfg["ml_accept"] and (fuzzy_cat >= cfg["fuzzy_cat_min"] and fuzzy_sub >= cfg["fuzzy_sub_min"]):
+            accepted_id, method = ml_id, "ml+fuzzy_accept"
+        elif ml_id and ml_cos >= cfg["ml_strong"]:
+            accepted_id, method = ml_id, "ml_strong_accept"
+        elif ml_id and consensus >= cfg["consensus_min"] and (fuzzy_cat >= cfg["fuzzy_cat_min"] and fuzzy_sub >= cfg["fuzzy_sub_min"]):
+            accepted_id, method = ml_id, "consensus_accept"
+
+        if accepted_id:
+            return {
+                "resolution": "attach_existing",
+                "ed_id": accepted_id,
+                "canonical_label": self.registry.get_cluster(accepted_id)["canonical_label"],
+                "ml_cos": round(ml_cos, 4),
+                "fuzzy_cat": round(fuzzy_cat, 4),
+                "fuzzy_sub": round(fuzzy_sub, 4),
+                "consensus": round(consensus, 4),
+                "method": method
+            }
+
+        # 4) No acceptable match → propose new
+        raw_cat, raw_sub = parse_ed(raw_ed)
+        if not raw_sub:  # if only one token given, treat as sub under itself
+            raw_sub = raw_cat
+
+        canonical = canonical_label_from_parts(raw_cat, raw_sub)
+        ed_id = stable_ed_id(theme, canonical)
+
+        # auto-commit rules:
+        will_autocommit = False
+        if self.registry.is_empty() and self.cfg["auto_commit_new_on_empty_registry"]:
+            will_autocommit = True
+        elif self.cfg["auto_commit_new_when_strong"]:
+            strong = (ml_cos >= 0.92) or (ml_cos >= 0.88 and min(fuzzy_cat, fuzzy_sub) >= 0.94)
+            will_autocommit = bool(strong)
+
+        # create proposal record
+        proposal = {
+            "type": "new_cluster",
+            "proposed_ed_id": ed_id,
+            "theme": theme,
+            "canonical_label": canonical,
+            "category": raw_cat,
+            "subcategory": raw_sub,
+            "alias_observed": raw_ed,
+            "ml_cos": round(ml_cos, 4),
+            "fuzzy_cat": round(fuzzy_cat, 4),
+            "fuzzy_sub": round(fuzzy_sub, 4),
+            "auto_commit": will_autocommit
+        }
+        self.proposals.append(proposal)
+
+        if will_autocommit:
+            self.registry.commit_new_cluster(theme, raw_cat, raw_sub, vec, alias=raw_ed)
+            method = "auto_commit_new"
+            return {
+                "resolution": "new_committed",
+                "ed_id": ed_id,
+                "canonical_label": canonical,
+                "ml_cos": round(ml_cos, 4),
+                "fuzzy_cat": round(fuzzy_cat, 4),
+                "fuzzy_sub": round(fuzzy_sub, 4),
+                "method": method
+            }
+
+        return {
+            "resolution": "proposed_new",
+            "proposed_ed_id": ed_id,
+            "canonical_label": canonical,
+            "ml_cos": round(ml_cos, 4),
+            "fuzzy_cat": round(fuzzy_cat, 4),
+            "fuzzy_sub": round(fuzzy_sub, 4),
+            "method": "propose"
         }
 
-    # ——— Final decision for one candidate ED ———
-    def _score_entry(
-        self,
-        entry: EDEntry,
-        parts: List[str],
-        signature: str,
-        journey: Optional[str],
-        moment: Optional[str],
-        cluster_size: int,
-    ) -> Tuple[float, Dict[str, Any]]:
-        s_hier, per_level = self._hier_score(parts, entry)
-        s_sem = self._semantic_score(entry.ed_id, signature)
-        s_sem = 0.0 if s_sem is None or np.isnan(s_sem) else float(s_sem)
-
-        blend = self.cfg["blend_fuzzy"] * s_hier + self.cfg["blend_semantic"] * s_sem
-        adj, dbg_adj = self._adjust(entry, parts, journey, moment)
-
-        # adaptive protections
-        req_bonus = 0.0
-        if cluster_size < self.cfg["small_cluster_lt"]:
-            req_bonus += self.cfg["min_cluster_size_bonus"]
-        if cluster_size > self.cfg["large_cluster_gt"]:
-            req_bonus += self.cfg["max_cluster_size_bonus"]
-
-        final = max(0.0, min(1.0, blend + adj))
-        return final, {
-            "per_level": {k: round(v, 3) for k, v in per_level.items()},
-            "s_hier": round(s_hier, 3),
-            "s_sem": round(s_sem, 3),
-            "blend_raw": round(blend, 3),
-            "adjustments": dbg_adj,
-            "req_bonus": req_bonus,
-        }
-
-    # ——— Public API: normalize one ED string + context ———
-    def normalize(
-        self,
-        experience_driver_string: str,
-        *,
-        theme_hint: Optional[str] = None,
-        problem_statement: Optional[str] = None,
-        semantic_action_statement: Optional[str] = None,
-        behavioral_impact: Optional[str] = None,
-        stream_justification: Optional[str] = None,
-        customer_journey: Optional[str] = None,
-        journey_stage: Optional[str] = None,
-        interaction_moment: Optional[str] = None,
-        top_k: int = 3,
-    ) -> Dict[str, Any]:
-        ed_str = (experience_driver_string or "").strip()
-        if not ed_str:
-            return {"resolution": "propose_new", "reason": "empty_ed", "alternatives": []}
-
-        parts = split_path(ed_str)
-        if not parts:
-            return {"resolution": "propose_new", "reason": "unparseable", "alternatives": []}
-
-        # theme gate
-        theme_guess = theme_hint or parts[0]
-        theme = self._best_theme(theme_guess)
-        if not theme:
-            return {"resolution": "propose_new", "reason": "theme_gate_fail", "alternatives": []}
-
-        # build label for pruning
-        label_query = " ".join(parts)
-        candidates = self._candidates_for_theme(theme, label_query)
-        if not candidates:
-            return {"resolution": "propose_new", "reason": "no_candidates_in_theme", "alternatives": []}
-
-        # PDCA signature (semantic)
-        row = {
-            "semantic_action_statement": semantic_action_statement,
-            "behavioral_impact": behavioral_impact,
-            "stream_justification": stream_justification,
-            "customer_journey": customer_journey,
-            "journey_stage": journey_stage,
-        }
-        signature = self.build_pdca_signature(row)
-
-        scored = []
-        for e in candidates:
-            # dummy sizes until you wire cluster sizes (can be 0)
-            cluster_size = 10  # replace with real value from your IME/CSLI store if available
-            score, dbg = self._score_entry(
-                e, parts, signature, customer_journey, interaction_moment, cluster_size
-            )
-            scored.append((e, score, dbg))
-
-        scored.sort(key=lambda x: x[1], reverse=True)
-        best_e, best_score, best_dbg = scored[0]
-        alts = [{"ed_id": e.ed_id, "score": round(s, 3)} for (e, s, _) in scored[:top_k]]
-
-        # apply adaptive bonus requirement (do not modify score; just change banding)
-        required = 0.0
-        required += best_dbg.get("req_bonus", 0.0)
-        band = "propose_new"
-        if best_score >= self.cfg["auto_accept"] + required:
-            band = "auto_accept"
-        elif best_score >= self.cfg["soft_accept"] + required:
-            band = "soft_accept"
-
-        result = {
-            "canonical_ed_id": best_e.ed_id,
-            "canonical_path": best_e.path,
-            "confidence": round(best_score, 3),
-            "resolution": band,
-            "matched_by": ["fuzzy_hierarchical", "semantic_centroid" if signature else "fuzzy_only"],
-            "alternatives": alts,
-            "per_level": best_dbg["per_level"],
-            "debug": {
-                "s_hier": best_dbg["s_hier"],
-                "s_sem": best_dbg["s_sem"],
-                "blend_raw": best_dbg["blend_raw"],
-                "adjustments": best_dbg["adjustments"],
-                "required_bonus": best_dbg["req_bonus"],
-                "theme_selected": theme,
-            },
-        }
-        return result
-
-    # ——— Batch helper (DataFrame-friendly) ———
-    def normalize_rows(self, df, ed_col="experience_driver") -> Any:
-        import pandas as pd
-        # add columns
-        out_cols = [
-            "canonical_ed_id","canonical_ed_path","ed_confidence",
-            "ed_resolution","ed_matched_by","ed_alternatives"
-        ]
-        for c in out_cols: 
-            if c not in df.columns: df[c] = None
-
+    # ----- Public entrypoint: normalize a dataframe -----
+    def normalize_df(self, df: pd.DataFrame) -> pd.DataFrame:
+        # build signatures (once)
+        sigs: List[str] = []
+        valid_sig_idx: List[int] = []
         for i, row in df.iterrows():
-            res = self.normalize(
-                str(row.get(ed_col, "")),
-                theme_hint=None,
-                problem_statement=row.get("problem_statement"),
-                semantic_action_statement=row.get("semantic_action_statement"),
-                behavioral_impact=row.get("behavioral_impact"),
-                stream_justification=row.get("stream_justification"),
-                customer_journey=row.get("customer_journey"),
-                journey_stage=row.get("journey_stage"),
-                interaction_moment=row.get("interaction_moment"),
-            )
-            df.at[i, "canonical_ed_id"] = res.get("canonical_ed_id")
-            df.at[i, "canonical_ed_path"] = " > ".join(res.get("canonical_path") or [])
-            df.at[i, "ed_confidence"] = res.get("confidence")
-            df.at[i, "ed_resolution"] = res.get("resolution")
-            df.at[i, "ed_matched_by"] = "|".join(res.get("matched_by", []))
-            df.at[i, "ed_alternatives"] = json.dumps(res.get("alternatives", []))
+            s = self.build_signature(row)
+            if len(s) >= self.cfg["min_pdca_signature_length"]:
+                sigs.append(s); valid_sig_idx.append(i)
+            else:
+                sigs.append("")  # placeholder; we won't embed
+                valid_sig_idx.append(i)
+
+        # embeddings (batched)
+        vecs = self.embed_signatures([s for s in sigs])
+
+        # outputs
+        out_cols = [
+            "canonical_experience_driver", "ed_id",
+            "normalization_confidence", "normalization_method",
+            "ml_cos", "fuzzy_cat", "fuzzy_sub", "consensus", "resolution"
+        ]
+        for c in out_cols:
+            df[c] = None
+
+        # resolve each row
+        for i, row in df.iterrows():
+            vec = vecs[i] if i < len(vecs) else None
+            res = self.resolve_row(row, vec)
+
+            if res["resolution"] in ("attach_existing", "new_committed"):
+                df.at[i, "canonical_experience_driver"] = res["canonical_label"]
+                df.at[i, "ed_id"] = res.get("ed_id")
+                df.at[i, "normalization_confidence"] = res.get("ml_cos")
+                df.at[i, "normalization_method"] = res.get("method")
+                df.at[i, "ml_cos"] = res.get("ml_cos")
+                df.at[i, "fuzzy_cat"] = res.get("fuzzy_cat")
+                df.at[i, "fuzzy_sub"] = res.get("fuzzy_sub")
+                df.at[i, "consensus"] = res.get("consensus")
+                df.at[i, "resolution"] = res["resolution"]
+
+                # commit observation to centroid (only when we attached/committed)
+                if res.get("ed_id") and vec is not None:
+                    self.registry.commit_observation(res["ed_id"], vec)
+
+            elif res["resolution"] == "proposed_new":
+                df.at[i, "canonical_experience_driver"] = res["canonical_label"]
+                df.at[i, "ed_id"] = res.get("proposed_ed_id")
+                df.at[i, "normalization_confidence"] = res.get("ml_cos")
+                df.at[i, "normalization_method"] = res.get("method")
+                df.at[i, "ml_cos"] = res.get("ml_cos")
+                df.at[i, "fuzzy_cat"] = res.get("fuzzy_cat")
+                df.at[i, "fuzzy_sub"] = res.get("fuzzy_sub")
+                df.at[i, "consensus"] = res.get("consensus")
+                df.at[i, "resolution"] = "proposed_new"
+
+            else:
+                df.at[i, "resolution"] = res["resolution"]
+
         return df
 
-    # ——— Commit and propose (separate from matching) ———
-    def commit_assignment(self, decision: Dict[str, Any], pdca_signature: str):
-        """
-        Call this ONLY when decision['resolution'] == 'auto_accept'.
-        Updates centroids (semantic) — no registry structure changes here.
-        """
-        if decision.get("resolution") != "auto_accept":
-            return
-        ed_id = decision["canonical_ed_id"]
-        if not self.embed_index.model:
-            return
-        vec = self.embed_index.embed(pdca_signature)
-        if vec is None:
-            return
-        self.embed_index.update_centroid(ed_id, vec)
-        self.embed_index.save_cache()
 
-    def propose_ed(self, candidate: Dict[str, Any]):
-        """
-        Append to proposals file (human/governance will later decide).
-        """
-        path = self.cfg["proposed_queue_path"]
-        record = {
-            "ts": datetime.utcnow().isoformat(),
-            **candidate
-        }
-        with open(path, "a", encoding="utf-8") as f:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+# ---------------------------
+# CLI-ish usage
+# ---------------------------
+def run_normalization(
+    input_csv: str,
+    output_dir: str = "outputs",
+    config: Dict = None,
+    domain_hint: str = "retail"  # reserved for future domain-tuned thresholds
+):
+    ensure_dirs(os.path.join(output_dir, "x.tmp"))
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
 
-# ──────────────────────────────────────────────────────────────────────────────
-# Minimal CLI example
-# ──────────────────────────────────────────────────────────────────────────────
+    normalizer = EDNormalizer(cfg)
+    df = pd.read_csv(input_csv)
+
+    # sanity columns
+    required_cols = ["theme", "experience_driver"]
+    missing = [c for c in required_cols if c not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
+
+    out_df = normalizer.normalize_df(df)
+
+    base = os.path.splitext(os.path.basename(input_csv))[0]
+    out_csv = os.path.join(output_dir, f"{base}_normalized.csv")
+    out_df.to_csv(out_csv, index=False)
+
+    # quick stats
+    uniq_raw = df["experience_driver"].nunique()
+    uniq_canon = out_df["canonical_experience_driver"].nunique()
+    compression = (uniq_raw / uniq_canon) if uniq_canon else 1.0
+
+    accepted = (out_df["resolution"] == "attach_existing").sum()
+    committed = (out_df["resolution"] == "new_committed").sum()
+    proposed = (out_df["resolution"] == "proposed_new").sum()
+
+    print("\n=== ED Normalization Summary ===")
+    print(f"Input rows:              {len(df):,}")
+    print(f"Unique raw EDs:          {uniq_raw:,}")
+    print(f"Unique canonical EDs:    {uniq_canon:,}")
+    print(f"Compression ratio:       {compression:.2f}x")
+    print(f"Attached existing:       {accepted:,}")
+    print(f"New committed (auto):    {committed:,}")
+    print(f"Proposed (needs review): {proposed:,}")
+    print(f"Output CSV:              {out_csv}")
+    print(f"Registry:                {cfg['registry_path']}")
+    print(f"Proposals:               {cfg['proposals_path']}\n")
+
+    return out_csv
+
+
 if __name__ == "__main__":
-    import pandas as pd
-
-    # Example usage with a tiny fake row (replace with your real data & registry)
-    normalizer = EDNormalizer()
-
-    row = {
-        "experience_driver": "Payments > Card Management > Card Freeze Functionality > Block Card",
-        "semantic_action_statement": "Customer tried to freeze the card urgently; feature failed to confirm.",
-        "behavioral_impact": "Unauthorized transactions slipped through; trust erosion; financial risk.",
-        "stream_justification": "Fix immediately: security-critical path must be reliable.",
-        "customer_journey": "Security & Fraud Management",
-        "journey_stage": "Card Freeze Attempt",
-        "interaction_moment": "while attempting to freeze the card",
-        "problem_statement": ""
-    }
-
-    res = normalizer.normalize(
-        row["experience_driver"],
-        semantic_action_statement=row["semantic_action_statement"],
-        behavioral_impact=row["behavioral_impact"],
-        stream_justification=row["stream_justification"],
-        customer_journey=row["customer_journey"],
-        journey_stage=row["journey_stage"],
-        interaction_moment=row["interaction_moment"],
-    )
-
-    print(json.dumps(res, indent=2))
-
-    # Commit example (only when auto_accept)
-    if res["resolution"] == "auto_accept":
-        sig = EDNormalizer.build_pdca_signature(row)
-        normalizer.commit_assignment(res, sig)
+    # Example:
+    # python ed_normalizer.py
+    INPUT = "data/decipher_retail_grocery_analytics_flattened.csv"
+    if os.path.exists(INPUT):
+        run_normalization(INPUT, output_dir="outputs")
+    else:
+        print("Place your CSV at data/decipher_retail_grocery_analytics_flattened.csv and rerun.")
