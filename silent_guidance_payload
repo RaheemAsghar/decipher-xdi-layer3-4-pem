@@ -1,44 +1,111 @@
-Silent Guidance Payload (IME Phase 3: Pattern Recall)
-
-Purpose: Provide execution-ready intelligence whenever a new OU is forming, by recalling precedents from IME.
-
 silent_guidance_payload:
-  guidance_id: "SG-ED473-2025Q3"
-  generated_at: "2025-08-10T14:02:55Z"
-  linked_experience_driver:
-    experience_driver: "Refund Status & Delays"
-    ed_id: "ED-473"
+  guidance_id: "SG-<auto>"
+  generated_at: "<ISO-8601>"
+  version: "IME.SG.v2-STRICT"
+
+  # Comes from the OU that is currently forming (your own runtime object)
+  trigger_context:
+    provisional_ou_id: "OU-<temp>"                # source: runtime/new OU
+    experience_driver: "<Theme→Category→Subcategory→Entity>"  # source: runtime/new OU
+    ed_id: "ED-<id>"                               # source: runtime/new OU
+    emotion_group: "<...>"                         # source: runtime/new OU
+    opportunity_stream: "<Fix|Optimize|Innovate|Amplify>"  # source: runtime/new OU
+    interaction_moment: "<...>"                    # source: runtime/new OU
+    cluster_preview:
+      cluster_id: "CLU-<id>"                       # source: runtime/new OU (if any)
+      label: "<...>"                               # source: runtime/new OU (if any)
+
+  # Your recall query definition (safe meta, no free text)
   match_criteria:
-    emotion_group: "Agitation"
-    opportunity_stream: "Fix"
-    interaction_moment: "Post-Purchase Support"
+    by_experience_driver: true
+    by_emotion_group: true
+    by_opportunity_stream: true
+    by_interaction_moment: true
+    window_days: 540
+    min_similarity_score: 0.70
+
+  # Computed only from counts/dates of retrieved precedents (no editorial text)
+  match_summary:
+    total_precedents_found: <int>                  # computed
+    strict_matches: <int>                          # computed
+    relaxed_matches: <int>                         # computed
+    best_match_strength: <0.00-1.00>               # computed
+    recurrence_stats:
+      first_seen_at: "<YYYY-MM-DD>"                # min(ou.activation_date)
+      last_activation_at: "<YYYY-MM-DD>"           # max(ou.activation_date)
+      activations_in_window: <int>                 # count
+      average_gap_days: <int>                      # computed
+      recurrence_tier: "<High|Moderate|Low>"       # computed via your fixed thresholds
+    filters_applied:                                # optional, machine-generated flags only
+      - "<rule_tag_1>"
+      - "<rule_tag_2>"
+
+  # For EACH precedent: only copy from artifacts or compute deltas; never invent
   precedent_matches:
-    - ou_id: "OU-2371"
-      activation_date: "2025-04-12"
-      owner: "CX Operations – Refund Team"
-      effort_score: 4
-      feasibility_score: 3
-      past_outcome_disposition: "Archived – Success"
-      emotional_shift:
-        eri_pre: -75
-        eri_post: -10
-        dominant_emotion_change: "Agitation → Neutral"
-      key_lessons:
-        - "Customer frustration reduced with proactive notifications."
-        - "Estimated refund timelines must be precise to maintain trust."
-    - ou_id: "OU-1984"
-      activation_date: "2024-11-02"
-      owner: "CX Operations – Refund Team"
-      disposition: "Extended – Partial Success"
-      key_lessons:
-        - "Automation scripts improved speed but created status blind spots."
+    - artifacts:
+        signal_capsule_id: "SC-<id>"
+        ou_payload_id: "OU-<id>"
+        problem_statement_id: "PS-<id>"
+        pdca_lifecycle_id: "PDCA-<id>"
+        outcome_evaluation_id: "OE-<id>"
+      snapshot:                                      # hydrated strictly from artifacts
+        ou_core:
+          ou_id: "<from:OU.id>"
+          activation_date: "<from:OU.activation_date>"
+          owner: "<from:OU.owner>"
+          experience_driver: "<from:OU.experience_driver>"
+          emotion_group: "<from:OU.emotion_group>"
+          opportunity_stream: "<from:OU.opportunity_stream>"
+          interaction_moment: "<from:OU.interaction_moment>"
+          match_strength: <0.00-1.00>                # computed by your matcher
+        outcomes_snapshot:
+          disposition: "<from:OE.disposition>"       # e.g., Archived – Success
+          emotional_shift:
+            eri_pre: <from:OE.eri_pre>
+            eri_post: <from:OE.eri_post>
+            delta: <calc:eri_post - eri_pre>
+          effort_score: <from:PDCA.metrics.effort_score | omit_if_missing>
+          feasibility_score: <from:PDCA.metrics.feasibility_score | omit_if_missing>
+        key_lessons:                                  # copy only; no paraphrase
+          - "<from:OE.lessons[i] | PDCA.Check.findings[i]>"
+      quick_nav:                                      # optional URI templates your UI resolves
+        signal_capsule_uri: "/capsules/{signal_capsule_id}"
+        ou_payload_uri: "/ous/{ou_payload_id}"
+        problem_statement_uri: "/pdca/plan/{problem_statement_id}"
+        pdca_lifecycle_uri: "/pdca/full/{pdca_lifecycle_id}"
+        outcome_evaluation_uri: "/outcomes/{outcome_evaluation_id}"
+
+  # Optional synthesis — but ONLY if fully traceable to cited lessons/findings
   strategic_guidance:
-    recommendation_summary: "Leverage proactive refund status updates with a hybrid of automation and human verification."
+    synthesis_policy: "derive-only"                  # never introduce new facts
+    used_sources:                                    # enumerate exact pointers used
+      - "OE-<id>#lessons[...]" 
+      - "PDCA-<id>#Check.findings[...]"
+    recommendation_summary: "<synthesized_from: used_sources | omit_if_none>"
     caution_notes:
-      - "Avoid over-promising refund timelines; past mission failure flagged."
-    opportunity_alignment: "High – ED recurrence within same emotion-stream cluster."
-  reference_links:
-    - ou_payload: "OU-2371"
-    - problem_statement: "PS-2371"
-    - outcome_evaluation: "OE-2371"
+      - "<synthesized_from: used_sources | omit_if_none>"
+    opportunity_alignment: "<computed_tag | omit_if_undefined>"
+    confidence: <0.00-1.00 | omit_if_undefined>      # computed formula only (doc in code)
+
+  retrieval_manifest:                                # for one-shot bulk fetch; IDs only
+    artifact_ids:
+      - "SC-<id>"
+      - "OU-<id>"
+      - "PS-<id>"
+      - "PDCA-<id>"
+      - "OE-<id>"
+    endpoint_templates:
+      signal_capsule: "/capsules/{id}"
+      ou_payload: "/ous/{id}"
+      problem_statement: "/pdca/plan/{id}"
+      pdca_lifecycle: "/pdca/full/{id}"
+      outcome_evaluation: "/outcomes/{id}"
+
+  provenance:
+    algorithm_version: "SG-recall.v1"
+    guarantees:
+      - "All non-ID values are copied from artifacts or deterministically computed."
+      - "No free-text invented beyond optional, traced synthesis."
+      - "Missing fields are omitted rather than fabricated."
+
 
