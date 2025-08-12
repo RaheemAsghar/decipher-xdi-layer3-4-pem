@@ -1,332 +1,238 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
-ED Normaliser – Component-Locked, Integrity-First
--------------------------------------------------
-- Treats Experience Driver (ED) as infrastructure: Theme → (Category → Subcategory) → Entity Name
-- Clubs only true mechanism-equivalents inside the same Theme
-- Blocks merges across contrastive heads and qualifier conflicts
-- Produces:
-    1) club_candidates.csv (pairwise decisions + reasons)
-    2) unique_ed_report.csv (final canonical EDs + semantic_stability)
-    3) canonical_registry.json (per theme, with aliases)
-    4) explosion_stats.txt
-    5) dataset_with_canonical_ed.csv (original rows + canonical_experience_driver)
-Dependencies: pandas, numpy (RapidFuzz optional; falls back to difflib)
+ED Normaliser — Day1/DayN + God-tier Compression
+- Theme-scoped
+- Component-aware (Category & Subcategory)
+- Zero curated lists (no contrastives/qualifiers/synonyms)
+- Deterministic merges via symmetric top-1 NN + thresholds
 """
 
-import os
-import re
-import json
-import argparse
+import os, re, json, argparse
 from collections import defaultdict
 from datetime import datetime
-
-import numpy as np
 import pandas as pd
 
-# Optional: RapidFuzz (faster/better similarity). Falls back to difflib if missing.
+# ---------- allowed hard-coded numbers (CLI-overridable) ----------
+THRESH_CAT = 0.90
+THRESH_SUB = 0.90
+
+# ---------- similarity (RapidFuzz -> difflib fallback) ----------
 try:
     from rapidfuzz import fuzz
-    def _lex_sim(a: str, b: str) -> float:
-        # Convert 0..100 to 0..1
+    def _sim(a: str, b: str) -> float:
         return fuzz.token_sort_ratio(a, b) / 100.0
 except Exception:
     import difflib
-    def _lex_sim(a: str, b: str) -> float:
+    def _sim(a: str, b: str) -> float:
         return difflib.SequenceMatcher(None, a, b).ratio()
 
+# ---------- neutral text utils ----------
+DELIM_REGEX = r"\s*(?:→|->|>|/|:)\s*"
 
-# ------------------------- Config (edit if needed) -------------------------
-
-THRESH_CAT = 0.90   # category similarity threshold (0..1)
-THRESH_SUB = 0.90   # subcategory similarity threshold (0..1)
-
-# Pairs that must NOT be merged (semantic contrasts)
-CONTRASTIVE = [
-    ("visibility","accuracy"),
-    ("availability","allocation"),
-    ("speed","reliability"),
-    ("timing","slotting"),
-    ("substitution","availability"),
-    ("fees","pricing"),
-    ("freeze","unfreeze"),
-    ("authorization","authentication")
-]
-
-# Qualifiers that change mechanics; if present in one ED but not the other -> reject
-QUALIFIERS = {"real-time","batch","scheduled","same-day","instant","async","offline","online"}
-
-# Mild synonym/morphology canon (safe set only)
-SYN_MAP = {
-    "timeliness": "timing",
-    "functionalities": "functionality",
-    "availabilities": "availability",
-}
-
-# --------------------------------------------------------------------------
-
-
-def norm_text(s: str) -> str:
-    """Lowercase, strip, normalize whitespace and hyphens, and apply mild canon."""
+def _norm(s):
     if not isinstance(s, str):
         s = "" if pd.isna(s) else str(s)
     s = s.lower().strip()
-    s = re.sub(r"[–—\-]+", " ", s)           # hyphens/dashes -> space
-    s = re.sub(r"\s+", " ", s)               # collapse spaces
-    s = s.replace("’", "'").replace("“","\"").replace("”","\"")
-    s = re.sub(r"\breal time\b", "real-time", s)
-    # apply SYN_MAP
-    tokens = s.split(" ")
-    tokens = [SYN_MAP.get(tok, tok) for tok in tokens]
-    return " ".join(tokens)
+    s = re.sub(r"[–—\-]+", " ", s)
+    s = re.sub(r"\s+", " ", s)
+    s = s.replace("’","'").replace("“",'"').replace("”",'"')
+    return s
 
+def _split_ed(ed: str):
+    parts = re.split(DELIM_REGEX, _norm(ed), maxsplit=1)
+    cat = parts[0].strip() if parts else ""
+    sub = parts[1].strip() if len(parts) > 1 else ""
+    return cat, sub
 
-def split_ed(ed: str):
-    """Split 'Category → Subcategory' into (cat, sub)."""
-    if not isinstance(ed, str):
-        ed = "" if pd.isna(ed) else str(ed)
-    parts = [p.strip() for p in str(ed).split("→")]
-    if len(parts) == 1:
-        return parts[0], ""
-    return parts[0], parts[1]
+# ---------- registry I/O ----------
+def load_registry(path: str):
+    if os.path.exists(path):
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"version":"ED-Normaliser.v3","created":datetime.utcnow().isoformat(),
+            "last_updated":None,"themes":{}}
 
-
-def contains_any(s: str, tokens: set) -> set:
-    words = set(re.findall(r"[a-z0-9\-]+", s.lower()))
-    return words & tokens
-
-
-def build_theme_ed_index(df: pd.DataFrame):
-    """Build unique ED keys per normalized theme."""
-    work = df.copy()
-    work["theme_norm"] = work["theme"].apply(norm_text)
-    work["ed_raw_norm"] = work["experience_driver"].apply(norm_text)
-    work[["cat_raw","subcat_raw"]] = work["ed_raw_norm"].apply(lambda x: pd.Series(split_ed(x)))
-
-    # heads (post-canon of individual parts only)
-    work["cat_head"] = work["cat_raw"]
-    work["sub_head"] = work["subcat_raw"]
-
-    eds_by_theme = defaultdict(list)
-    for _, r in work.iterrows():
-        theme = r["theme_norm"]
-        cat = r["cat_head"]
-        sub = r["sub_head"]
-        ed_key = f"{cat} → {sub}".strip()
-        eds_by_theme[theme].append(ed_key)
-
-    for t in eds_by_theme:
-        eds_by_theme[t] = sorted(list(set(eds_by_theme[t])))
-
-    return work, eds_by_theme
-
-
-def decide_clubs(eds_by_theme):
-    """Pairwise compare EDs inside each theme and decide clubbing."""
-    canonical_map = {}
-    club_records = []
-
-    for theme, ed_list in eds_by_theme.items():
-        # init
-        for ed in ed_list:
-            canonical_map[(theme, ed)] = ed
-
-        parts = {ed: tuple(split_ed(ed)) for ed in ed_list}
-
-        for i in range(len(ed_list)):
-            for j in range(i+1, len(ed_list)):
-                ed1 = ed_list[i]; ed2 = ed_list[j]
-                c1, s1 = parts[ed1]
-                c2, s2 = parts[ed2]
-
-                # Qualifier block
-                q1 = contains_any(ed1, QUALIFIERS)
-                q2 = contains_any(ed2, QUALIFIERS)
-                if q1 != q2:
-                    club_records.append({
-                        "theme": theme, "ed_1": ed1, "ed_2": ed2,
-                        "cat_sim": _lex_sim(c1,c2), "sub_sim": _lex_sim(s1,s2),
-                        "qualifier_conflict": True,
-                        "contrastive_conflict": False,
-                        "decision": "REJECT_QUALIFIER_CONFLICT"
-                    })
-                    continue
-
-                # Contrastive block
-                contrastive_hit = False
-                for a,b in CONTRASTIVE:
-                    if a in ed1 and b in ed2: contrastive_hit=True; break
-                    if b in ed1 and a in ed2: contrastive_hit=True; break
-                if contrastive_hit:
-                    club_records.append({
-                        "theme": theme, "ed_1": ed1, "ed_2": ed2,
-                        "cat_sim": _lex_sim(c1,c2), "sub_sim": _lex_sim(s1,s2),
-                        "qualifier_conflict": False,
-                        "contrastive_conflict": True,
-                        "decision": "REJECT_CONTRASTIVE"
-                    })
-                    continue
-
-                # Similarities
-                c_sim = _lex_sim(c1, c2)
-                s_sim = _lex_sim(s1, s2)
-
-                if c_sim >= THRESH_CAT and s_sim >= THRESH_SUB:
-                    canon = min(ed1, ed2, key=lambda x: (len(x), x))
-                    canonical_map[(theme, ed1)] = canon
-                    canonical_map[(theme, ed2)] = canon
-                    decision = "ACCEPT"
-                else:
-                    decision = "REJECT_LOW_SIM"
-
-                club_records.append({
-                    "theme": theme,
-                    "ed_1": ed1, "ed_2": ed2,
-                    "cat_sim": round(c_sim,4),
-                    "sub_sim": round(s_sim,4),
-                    "qualifier_conflict": False,
-                    "contrastive_conflict": False,
-                    "decision": decision
-                })
-
-    return canonical_map, pd.DataFrame(club_records)
-
-
-def build_registry(eds_by_theme, canonical_map):
-    """Create per-theme canonical registry with alias groups."""
-    registry = {
-        "version": "ED-Normaliser.v1",
-        "generated_at": datetime.utcnow().isoformat(),
-        "themes": {}
-    }
-
-    for theme, ed_list in eds_by_theme.items():
-        groups = defaultdict(list)
-        for ed in ed_list:
-            canon = canonical_map[(theme, ed)]
-            groups[canon].append(ed)
-
-        theme_entry = {"experience_drivers": []}
-        for canon, aliases in groups.items():
-            cat, sub = split_ed(canon)
-            theme_entry["experience_drivers"].append({
-                "canonical_experience_driver": canon,
-                "canonical_category": cat,
-                "canonical_subcategory": sub,
-                "aliases": sorted(list(set(aliases)))
-            })
-        registry["themes"][theme] = theme_entry
-
-    return registry
-
-
-def apply_canonical(work: pd.DataFrame, canonical_map: dict) -> pd.DataFrame:
-    """Map each row to its canonical ED (theme-scoped)."""
-    def map_row(r):
-        theme = norm_text(r["theme"])
-        cat, sub = split_ed(norm_text(r["experience_driver"]))
-        ed = f"{cat} → {sub}".strip()
-        return canonical_map.get((theme, ed), ed)
-
-    out = work.copy()
-    out["canonical_experience_driver"] = out.apply(map_row, axis=1)
-    return out
-
-
-def compute_unique_report(out_df: pd.DataFrame) -> pd.DataFrame:
-    """Unique canonical EDs per theme + 'semantic_stability' proxy score."""
-    unique_rows = out_df[["theme","canonical_experience_driver"]].drop_duplicates().copy()
-    unique_rows["theme_norm"] = unique_rows["theme"].apply(norm_text)
-
-    # split parts
-    parts = unique_rows["canonical_experience_driver"].apply(lambda x: pd.Series(split_ed(x)))
-    unique_rows["cat"] = parts[0]
-    unique_rows["sub"] = parts[1]
-
-    # stability
-    stabilities = []
-    for theme, grp in unique_rows.groupby("theme_norm"):
-        eds = grp["canonical_experience_driver"].tolist()
-        pts = [split_ed(e) for e in eds]
-        vals = []
-        for i, e in enumerate(eds):
-            c1, s1 = pts[i]
-            best = 0.0
-            for j, f in enumerate(eds):
-                if i==j: continue
-                c2, s2 = pts[j]
-                best = max(best, 0.5*_lex_sim(c1,c2) + 0.5*_lex_sim(s1,s2))
-            vals.append(1.0 - best)  # higher = more isolated/unique
-        stabilities.extend(vals)
-
-    unique_rows["semantic_stability"] = [round(v,4) for v in stabilities]
-    cols = ["theme","canonical_experience_driver","cat","sub","semantic_stability"]
-    return unique_rows[cols]
-
-
-def write_stats(df_in: pd.DataFrame, df_out: pd.DataFrame, club_df: pd.DataFrame, path: str):
-    orig_unique = df_in["experience_driver"].nunique()
-    canon_unique = df_out["canonical_experience_driver"].nunique()
-    compression_ratio = orig_unique / canon_unique if canon_unique else 0.0
-    needs_review = club_df[club_df["decision"].str.startswith("REJECT")].shape[0]
-
+def save_registry(reg: dict, path: str):
+    reg["last_updated"] = datetime.utcnow().isoformat()
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
-        f.write("EXPERIENCE DRIVER CANONICALIZATION STATS\n")
-        f.write("="*50 + "\n")
-        f.write(f"Original unique EDs: {orig_unique}\n")
-        f.write(f"Canonical unique EDs: {canon_unique}\n")
-        f.write(f"Compression ratio: {compression_ratio:.2f}x\n")
-        f.write(f"Pair decisions logged: {len(club_df)}\n")
-        f.write(f"Pairs requiring review (rejected): {needs_review}\n")
+        json.dump(reg, f, indent=2, ensure_ascii=False)
 
+# ---------- Day 1: build canonicals by symmetric NN (god-tier compression) ----------
+def day1_build_canonicals(df: pd.DataFrame, thresh_cat: float, thresh_sub: float):
+    """
+    Returns: registry dict, mapping df with canonical_experience_driver
+    """
+    reg = load_registry("<memory>")  # temporary
+    out = df.copy()
+    out["canonical_experience_driver"] = ""
 
-def run(input_csv: str, outdir: str):
+    # theme-scope
+    for theme, tdf in df.groupby(df["theme"].apply(_norm)):
+        eds = sorted({f"{_split_ed(ed)[0]} → {_split_ed(ed)[1]}" for ed in tdf["experience_driver"].dropna().map(_norm)})
+        if not eds:
+            continue
+
+        parts = {ed: _split_ed(ed) for ed in eds}
+        # nearest neighbor dict
+        nn = {}
+        for i, edi in enumerate(eds):
+            c1, s1 = parts[edi]
+            best_j, best_pair, best_c, best_s = None, -1.0, 0.0, 0.0
+            for j, edj in enumerate(eds):
+                if i == j: continue
+                c2, s2 = parts[edj]
+                cs, ss = _sim(c1,c2), _sim(s1,s2)
+                pair = min(cs, ss)
+                if pair > best_pair:
+                    best_j, best_pair, best_c, best_s = j, pair, cs, ss
+            nn[i] = (best_j, best_c, best_s)
+
+        # union by symmetric NN + thresholds
+        parent = {ed: ed for ed in eds}
+        def find(x):
+            while parent[x] != x:
+                parent[x] = parent[parent[x]]
+                x = parent[x]
+            return x
+        def union(a,b):
+            ra, rb = find(a), find(b)
+            if ra != rb: parent[rb] = ra
+
+        for i, edi in enumerate(eds):
+            j, c_ij, s_ij = nn[i]
+            if j is None: continue
+            edj = eds[j]
+            j_back, c_ji, s_ji = nn[j]
+            symmetric = (j_back == i)
+            cat_ok = min(c_ij, c_ji) >= thresh_cat
+            sub_ok = min(s_ij, s_ji) >= thresh_sub
+            if symmetric and cat_ok and sub_ok:
+                union(edi, edj)
+
+        # groups -> canonical = shortest then lexicographic
+        groups = defaultdict(list)
+        for ed in eds:
+            groups[find(ed)].append(ed)
+
+        theme_key = _norm(theme)
+        reg["themes"].setdefault(theme_key, {"canonicals":{}})
+        for root, members in groups.items():
+            canon = sorted(members, key=lambda x: (len(x), x))[0]
+            cat, sub = _split_ed(canon)
+            reg["themes"][theme_key]["canonicals"][canon] = {
+                "category": cat, "subcategory": sub, "aliases": sorted(set(members))
+            }
+
+        # write mapped canonicals to out
+        ed_to_canon = {}
+        for _, members in groups.items():
+            canon = sorted(members, key=lambda x: (len(x), x))[0]
+            for m in members: ed_to_canon[m] = canon
+
+        mask = df["theme"].apply(_norm) == theme_key
+        out.loc[mask, "canonical_experience_driver"] = (
+            df.loc[mask, "experience_driver"]
+              .map(lambda x: f"{_split_ed(x)[0]} → {_split_ed(x)[1]}")
+              .map(lambda ed: ed_to_canon.get(ed, ed))
+        )
+
+    return reg, out
+
+# ---------- Day N: compare to existing registry; merge or create ----------
+def dayn_assign_to_registry(df: pd.DataFrame, reg: dict, thresh_cat: float, thresh_sub: float):
+    out = df.copy()
+    out["canonical_experience_driver"] = ""
+
+    for idx, row in df.iterrows():
+        theme_key = _norm(row.get("theme",""))
+        raw_ed = row.get("experience_driver","")
+        if not theme_key or not isinstance(raw_ed, str):
+            continue
+        cat, sub = _split_ed(raw_ed)
+        candidate = f"{cat} → {sub}"
+
+        # if theme absent -> create theme + canonical
+        reg["themes"].setdefault(theme_key, {"canonicals":{}})
+        canonicals = list(reg["themes"][theme_key]["canonicals"].keys())
+        if not canonicals:
+            reg["themes"][theme_key]["canonicals"][candidate] = {
+                "category": cat, "subcategory": sub, "aliases":[candidate]
+            }
+            out.at[idx, "canonical_experience_driver"] = candidate
+            continue
+
+        # pick best canonical by min(cat_sim, sub_sim)
+        best, best_pair = None, -1.0
+        for can in canonicals:
+            c2, s2 = _split_ed(can)
+            cs, ss = _sim(cat, c2), _sim(sub, s2)
+            pair = min(cs, ss)
+            if pair > best_pair:
+                best, best_pair = can, pair
+
+        if best and best_pair >= min(thresh_cat, thresh_sub):
+            # merge into best canonical
+            out.at[idx, "canonical_experience_driver"] = best
+            if candidate not in reg["themes"][theme_key]["canonicals"][best]["aliases"]:
+                reg["themes"][theme_key]["canonicals"][best]["aliases"].append(candidate)
+        else:
+            # create new canonical
+            reg["themes"][theme_key]["canonicals"][candidate] = {
+                "category": cat, "subcategory": sub, "aliases":[candidate]
+            }
+            out.at[idx, "canonical_experience_driver"] = candidate
+
+    return reg, out
+
+# ---------- CLI runner ----------
+def run(input_csv: str, outdir: str, registry_path: str, thresh_cat: float, thresh_sub: float):
     os.makedirs(outdir, exist_ok=True)
-
     df = pd.read_csv(input_csv)
 
-    work, eds_by_theme = build_theme_ed_index(df)
-    canonical_map, club_df = decide_clubs(eds_by_theme)
-    registry = build_registry(eds_by_theme, canonical_map)
-    out_df = apply_canonical(work, canonical_map)
-    unique_report = compute_unique_report(out_df)
+    # Day1 if no registry; DayN otherwise
+    reg_exists = os.path.exists(registry_path)
+    if not reg_exists:
+        reg, mapped = day1_build_canonicals(df, thresh_cat, thresh_sub)
+    else:
+        reg = load_registry(registry_path)
+        reg, mapped = dayn_assign_to_registry(df, reg, thresh_cat, thresh_sub)
 
-    # Save artifacts
-    club_csv = os.path.join(outdir, "club_candidates.csv")
-    unique_csv = os.path.join(outdir, "unique_ed_report.csv")
-    canon_json = os.path.join(outdir, "canonical_registry.json")
-    stats_txt = os.path.join(outdir, "explosion_stats.txt")
-    canon_df_csv = os.path.join(outdir, "dataset_with_canonical_ed.csv")
+    # save registry + artifacts
+    save_registry(reg, registry_path)
 
-    club_df.to_csv(club_csv, index=False)
-    unique_report.to_csv(unique_csv, index=False)
-    with open(canon_json, "w", encoding="utf-8") as f:
-        json.dump(registry, f, indent=2)
-    out_df_origcols = df.copy()
-    out_df_origcols["canonical_experience_driver"] = out_df["canonical_experience_driver"]
-    out_df_origcols.to_csv(canon_df_csv, index=False)
-    write_stats(df, out_df_origcols, club_df, stats_txt)
+    mapped_path = os.path.join(outdir, "dataset_with_canonical_ed.csv")
+    uniq_path   = os.path.join(outdir, "unique_ed_report.csv")
+    reg_path    = registry_path
 
-    return club_csv, unique_csv, canon_json, stats_txt, canon_df_csv
+    mapped.to_csv(mapped_path, index=False)
+    uniq = mapped[["theme","canonical_experience_driver"]].drop_duplicates().copy()
+    uniq[["canonical_category","canonical_subcategory"]] = (
+        uniq["canonical_experience_driver"].apply(lambda x: pd.Series(_split_ed(x)))
+    )
+    uniq.to_csv(uniq_path, index=False)
 
+    return mapped_path, uniq_path, reg_path
 
 def main():
-    parser = argparse.ArgumentParser(description="Experience Driver Normaliser (component-locked)")
-    parser.add_argument("--input", required=True, help="Input CSV with columns: theme, experience_driver, ...")
-    parser.add_argument("--outdir", default="ed_normaliser_outputs", help="Output directory for artifacts")
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="ED Normaliser — Day1/DayN + God-tier Compression")
+    ap.add_argument("--input", required=True, help="CSV with columns: theme, experience_driver")
+    ap.add_argument("--outdir", default="ed_normaliser_outputs")
+    ap.add_argument("--registry", default="registry/ed_registry.json")
+    ap.add_argument("--thresh_cat", type=float, default=THRESH_CAT)
+    ap.add_argument("--thresh_sub", type=float, default=THRESH_SUB)
+    args = ap.parse_args()
 
-    club_csv, unique_csv, canon_json, stats_txt, canon_df_csv = run(args.input, args.outdir)
-    print("[✓] Canonicalization completed successfully")
+    global THRESH_CAT, THRESH_SUB
+    THRESH_CAT, THRESH_SUB = args.thresh_cat, args.thresh_sub
+
+    mapped, uniq, reg = run(args.input, args.outdir, args.registry, THRESH_CAT, THRESH_SUB)
     print("Artifacts:")
-    print(" -", club_csv)
-    print(" -", unique_csv)
-    print(" -", canon_json)
-    print(" -", stats_txt)
-    print(" -", canon_df_csv)
-
+    print(" -", mapped)
+    print(" -", uniq)
+    print(" -", reg)
 
 if __name__ == "__main__":
     main()
