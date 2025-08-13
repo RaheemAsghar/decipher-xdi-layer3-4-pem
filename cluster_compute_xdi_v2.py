@@ -534,6 +534,18 @@ class FlexibleTimeframeAnalyzer:
     # ---------- clustering ----------
     def cluster_behavior(self, df: pd.DataFrame, driver: str, emotion: str, stream: str):
         df = df.copy()
+
+        # 🔒 SSOT lock: only rows with this exact identity can be clustered
+        df = df[
+            (df["experience_driver"] == driver) &
+            (df["emotion"] == emotion) &
+            (df["opportunity_stream"] == stream)
+        ].copy()
+        
+        # 🛑 nothing to cluster after filter
+        if df.empty:
+            return df.copy(), [], {}, df.copy(), {}
+
         df["signature"] = df.apply(self._build_signature, axis=1).astype(str).str.lower()
         df = df.reset_index(drop=True)
 
@@ -638,6 +650,10 @@ class FlexibleTimeframeAnalyzer:
                         "semantic_action_statement", "stream_justification", "matters", "behavioral_impact"
                     ]}
                 }
+                # ✅ SSOT identity assertions
+                assert composite["experience_driver"] == driver
+                assert composite["emotion"] == emotion
+                assert composite["opportunity_stream"] == stream
             else:
                 # batch fields (deterministic)
                 batch_1 = self.extract_batch_1_fields(grp)
@@ -665,6 +681,10 @@ class FlexibleTimeframeAnalyzer:
                     "matters":                   self._mmr_summary(mat_list)  or self._centroid_pick(mat_list),
                     "behavioral_impact":         self._mmr_summary(beh_list)  or self._centroid_pick(beh_list),
                 }
+                # ✅ SSOT identity assertions
+                assert composite["experience_driver"] == driver
+                assert composite["emotion"] == emotion
+                assert composite["opportunity_stream"] == stream
 
             # store
             df.update(grp)
@@ -694,6 +714,7 @@ class FlexibleTimeframeAnalyzer:
     # ---------- DB ----------
     def create_cluster_database(self, df: pd.DataFrame, full_composites: Dict[str, Dict[str, Any]],
                             cluster_store: Dict[str, pd.DataFrame], db_path: str = "clusters.db"):
+        
         import os
         self.db_path = db_path
         os.makedirs(os.path.dirname(self.db_path) or ".", exist_ok=True)
