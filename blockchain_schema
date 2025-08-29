@@ -1,0 +1,130 @@
+Executive Summary
+
+Decipher’s core promise is to turn customer emotion into actionable, auditable infrastructure. Our Signal Capsule (ED‑centric Layer‑3 diagnostics) 
+already makes signals execution‑ready. The proposed blockchain‑esque ED Ledger ensures those signals are also traceable, tamper‑evident, and reusable 
+across time—for us and for clients. It’s not crypto; it’s a lightweight, append‑only design that chains ED snapshots and anchors OU/PDCA work to 
+those snapshots with verifiable provenance.
+
+Outcome: A provably honest history for each Experience Driver (ED): where the signal came from, how it evolved (trend, momentum, volatility, pattern, 
+quadrant/saturation, QSSI, PEM), and how downstream actions (OUs, PDCA, outcomes) were anchored to those states.
+
+
+Why We Need This (Rationale)
+
+1) The industry’s missing link: auditability of emotion.
+ VoC tools capture feedback; dashboards summarize it. No one can prove which exact words led to which actions, or how the signal changed over time.
+ Without proof, CX becomes debatable, not dependable—especially for high‑stakes decisions.
+
+2) “No invented data” as an engineering doctrine.
+ Every non‑header field must be either sourced (system, record\_id, span) or derived (fn\_name, version, inputs). The ledger enforces this rule at write time.
+
+3) Execution memory that compounds.
+ EDs are the atomic unit. Our ledger turns each ED into a time‑versioned, verifiable asset, so learnings are never lost and can be safely reused across teams and quarters.
+
+4) Governance & compliance by design.
+ Append‑only history, content hashes, and evidence Merkle roots make the trail tamper‑evident and auditor‑friendly (internal audit, regulators, ISO/ SOC, GDPR DPIA narratives).
+
+
+What It Is (Plain‑English)
+A per‑ED, append‑only chain of blocks that records:
+- The Signal Capsule (the seven Layer‑3 modules + provenance) as a dated snapshot.
+- Occasional ED meta events (re‑canonicalization, silence triggered/cleared, data correction with dual‑signature).
+- Each OU (Fix/Optimize/Innovate/Amplify) gets its own side‑chain. OU blocks anchor to a specific ED block hash, so every initiative and PDCA step is traceable to the exact diagnostic state that justified it.
+- No tokens. No mining. Just hash chaining and Merkle roots for low‑cost immutability.
+
+Design Principles
+
+- ED‑purity: The ED chain stores only ED diagnostics (the 7 modules) + provenance. No owners, streams, interaction moments, or problem statements.
+- OU side‑chains: All OU/PDCA content lives off the ED chain, with a cryptographic pointer back to the ED snapshot.
+- Extractability: Source lineage or derivation metadata is required for every non‑header field.
+- Determinism: Store function names, versions, input refs, and windows so results are reproducible.
+- Cheap & simple: SHA‑256 chaining and Merkle roots—no consensus layer.
+
+How It Fits the Existing Flow
+
+1. Signal Capsule (today): For each ED, we output the 7 modules (trend, momentum, volatility, pattern, momentum‑saturation insight, QSSI, PEM) with provenance.
+2. ED Ledger block: We serialize that capsule into an `ED_DAILY_SNAPSHOT` block (or `ED_GENESIS_SIGNAL` if first time) with a hash and previous‑hash.
+3. OU selection: When an OU is created, we open an OU side‑chain with `OU_COMMIT`, anchored to the current ED block hash.
+4. PDCA & outcome: Plan/Do/Check/Act and Outcome Evaluation append to the OU chain, preserving a verifiable trail from signal → action → result.
+
+What Gets Captured (ED Chain)
+
+Common headers: `block_id`, `prev_block_hash`, `schema_version`, `issued_at`, `actor`, `lineage[]`.
+
+ED snapshot payload:
+- Provenance: `capsule_id`, `generated_at`, `window_start_date`, `window_end_date`, `analysis_window_days`, `observed_days_with_signal`, `signal_presence_pct`, `series_data_complete`, `missing_days_pct`, `evidence_merkle_root`.
+- Layer‑2 recap (optional): `eri_score`, `r`, `f`, `rf`, `priority_class`, `emotion_perception_tier`, `rf_urgency_category`, `eri_rf_urgency_category`.
+- Layer‑3 modules (the seven):
+
+   * `trend_block`
+   * `momentum_block`
+   * `volatility_block`
+   * `pattern_block`
+   * `momentum_saturation_insight` (includes saturation + quadrant)
+   * `signal_strength_index` (QSSI)
+   * `predictive_emotion_forecast` (PEM)
+   * Narrative: `momentum_saturation_story` (descriptive only).
+   * ED meta events (rare): `ED_RECANONICALIZED`, `SCE_SILENCE_TRIGGERED`, `SCE_SILENCE_CLEARED`, `DATA_CORRECTION` (dual‑signature).
+
+What Gets Captured (OU Side‑Chains)
+
+- OU Commit: `stream`, `emotion`, `interaction_moment`, `matters`, `problem_statement`, `owner`, `SLA`, with `ed_anchor = {ed_canonical_id, ed_block_hash}`.
+- PDCA Blocks: `PLAN`, `DO`, `CHECK`, `ACT`, each with lineage to tickets, KPIs, and evidence.
+- Outcome Evaluation: pre/post deltas on ERI/RF/L3 diagnostics, elasticity rating, and mission disposition.
+- IME Commit: links the OU result to Institutional Memory.
+
+Benefits for Decipher (Internal)
+
+- Credible by default: We can prove where every number came from (lineage/derivation), eliminating “black‑box” accusations.
+- Low‑friction compliance: Tamper‑evident history accelerates audits, SOC/ISO reviews, and enterprise security assessments.
+- Composable intelligence: ED chains enable safe reuse of prior states for PEM, SCE, CSLI, and cross‑ED learning.
+- Faster onboarding: New engineers and analysts can read the chain to understand an ED’s evolution without digging through scattered systems.
+
+Benefits for Clients (External)
+
+- Traceable decisions: Executives can see exactly which customer words and diagnostics led to which initiatives.
+- Risk reduction: Audit‑ready provenance reduces legal/regulatory exposure in sensitive domains (FinTech, Healthcare, Airlines).
+- Operational trust: Cross‑functional teams align faster when the data is provable and versioned over time.
+- Time‑to‑impact: Clear anchors from signal → OU → outcome shrink debate cycles and speed execution.
+
+Risks & Mitigations
+
+- Perceived complexity → Mitigation: implementation is a thin layer over today’s pipeline (serialize the capsule + hash). No consensus or token economics.
+- Storage growth → Mitigation: ED blocks store compact diagnostics + hashes; raw evidence remains in object storage.
+- PII concerns → Mitigation: hashes/pseudonyms by default; evidence spans without raw PII in the ledger; access‑policy tags.
+
+Implementation (Phased)
+
+Phase 0 – Pilot (2 weeks): Serialize today’s capsules to `ED_DAILY_SNAPSHOT` blocks; persist in a simple table (`ed_blocks`).
+Phase 1 – Anchors (2–3 weeks): Add OU side‑chains; anchor `OU_COMMIT` to an ED block hash; add `ou_blocks` table.
+Phase 2 – Governance (2 weeks): Enforce purity rules, lineage validation, and dual‑signature for `DATA_CORRECTION`.
+Phase 3 – DevEx (ongoing): Lightweight viewers (per‑ED timeline), export APIs, and redaction workflows.
+
+Success Metrics
+
+- Ledger coverage: % of active EDs with daily blocks.
+- Lineage completeness: % of fields carrying source/derivation.
+- Audit latency: Time to trace an OU back to the responsible ED block (< 60 seconds goal).
+- Dispute cycle time: Time to resolve “why did we do X?” debates (baseline vs. post‑ledger).
+
+Objections & Crisp Responses
+
+ “Why not just a normal database?”  We use a database. The ledger adds immutability semantics and hash‑verified lineage, which standard mutable tables don’t enforce.
+ “Isn’t this crypto?”  No tokens, no miners. It’s a pragmatic append‑only audit layer using standard hashes.
+ “Will this slow us down?”  No. It serializes what we already produce (Signal Capsule) and appends a block. Sub‑millisecond hashing.
+
+One‑Page TL;DR (for slides)
+
+- Problem: CX lacks a provable chain from customer words → diagnostics → action → outcome.
+- Solution: Per‑ED append‑only ledger that chains the 7 diagnostics and anchors every OU/PDCA step.
+- Why it matters: Trust, compliance, reuse, and speed.
+- What we store: ED snapshots (trend, momentum, volatility, pattern, momentum‑saturation, QSSI, PEM) + provenance; OU/PDCA on side‑chains anchored to ED hash.
+- Value: Fewer debates, faster execution, audit‑ready proof of customer‑led decisions.
+
+Glossary
+
+- ED (Experience Driver): The atomic unit Decipher orchestrates around. One ED → many OUs.
+- Signal Capsule: ED‑centric payload containing Layer‑3 diagnostics and provenance.
+- Ledger Block: An append‑only record with a hash pointer to the previous block.
+- Anchor: A hash link from an OU block to a specific ED block.
+- Merkle Root: A compact hash summarizing a set of evidence items for tamper‑evident verification.
