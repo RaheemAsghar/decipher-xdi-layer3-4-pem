@@ -192,7 +192,7 @@ Return the **JSON** using the template below.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-XDI Payload (Signal Capsule) — Template v1.0
+XDI - Signal Capsule
 
 {
   "label": "Experience Driver Tile",
@@ -202,7 +202,7 @@ XDI Payload (Signal Capsule) — Template v1.0
     "capsule_id": "SC-<short-id>",
     "generated_at": "<ISO-8601 UTC>",
     "capsule_type": "ED",
-    "capsule_version": "signal_capsule.v1.0",
+    "capsule_version": "signal_capsule.v1.1",
     "engine_version": "XDI.v1"
   },
 
@@ -222,8 +222,7 @@ XDI Payload (Signal Capsule) — Template v1.0
       "emotion_perception_tier": "<str>",
       "eri_score": <float>,
       "rf_urgency_category": "<str>",
-      "eri_rf_urgency_category": "<str>",
-      "quadrant_purpose": "<optional>"
+      "eri_rf_urgency_category": "<str>"
     },
 
     "volume_urgency_metrics": {
@@ -243,11 +242,8 @@ XDI Payload (Signal Capsule) — Template v1.0
     },
 
     "signal_strength_index": {
-      "velocity_score": <int>,
-      "saturation_score": <int>,
       "qssi_score": <int>,
       "qssi_tier": "<💥 Critical Signal|🔥 Strong Signal|🌱 Emerging Signal|🔁 Weak Signal|❌ No Signal>",
-      "emotional_alert_level": <float>,
       "qssi_description": "<str>",
       "qssi_interpretation": "<str>",
       "components": {
@@ -261,26 +257,38 @@ XDI Payload (Signal Capsule) — Template v1.0
         "trend_symbol": "<↑|→|↓>",
         "momentum_symbol": "<↑↑|↑|→|↓|↓↓>",
         "saturation_index": <float>
-      }
+      },
+      "urgency_answer": "Urgency Level: <qssi_score>/10 - <description>"
     },
 
     "modules": {
       "trend_block": { "symbol": "<↑|→|↓>", "trend_pct": <float>, "trend_snr": <float> },
       "momentum_block": {
         "symbol": "<↑↑|↑|→|↓|↓↓>",
-        "delta": <float>, "label": "<str>", "description": "<str>",
-        "snr": <float>, "n_days": <int>, "emoji_full": "<str|null>",
-        "strength": <float|null>, "polarity": <int|null>,
+        "delta": <float>,
+        "label": "<str>",
+        "description": "<str>",
+        "snr": <float>,
+        "n_days": <int>,
+        "emoji_full": "<str|null>",
+        "strength": <float|null>,
+        "polarity": <int|null>,
         "thresholds_used": {
-          "rise_mod": <float>, "rise_strong": <float>,
-          "fall_mod": <float>, "fall_strong": <float>,
-          "snr_mod": <float>, "snr_strong": <float>
+          "rise_mod": <float>,
+          "rise_strong": <float>,
+          "fall_mod": <float>,
+          "fall_strong": <float>,
+          "snr_mod": <float>,
+          "snr_strong": <float>
         }
       },
       "volatility_block": {
         "tier": "<✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating>",
-        "score": <float>, "score_adj": <float>,
-        "n_days": <int>, "method": "std|mad_sigma", "detrended": <bool>
+        "score": <float>,
+        "score_adj": <float>,
+        "n_days": <int>,
+        "method": "std|mad_sigma",
+        "detrended": <bool>
       },
       "pattern_block": {
         "has_pattern": <bool>,
@@ -290,8 +298,8 @@ XDI Payload (Signal Capsule) — Template v1.0
         "pain_day": "Monday..Sunday|null",
         "data_coverage_days": <int>,
         "min_required_days": <int|null>,
-        "eri_by_day": {"Monday": <float|null>},
-        "acf": {"lag_days": <int>, "score": <float>, "sig": <float>, "gate": <float>}
+        "eri_by_day": { "Monday": <float|null> },
+        "acf": { "lag_days": <int>, "score": <float>, "sig": <float>, "gate": <float> }
       }
     }
   },
@@ -315,7 +323,7 @@ XDI Payload (Signal Capsule) — Template v1.0
       "meta": {
         "quadrant_confidence": <float>,
         "borderline": <bool>,
-        "saturation_bin": {"lower": <float>, "upper": <float>}
+        "saturation_bin": { "lower": <float>, "upper": <float> }
       }
     },
     "momentum_saturation_story": "<descriptive sentence only>"
@@ -356,49 +364,35 @@ XDI Payload (Signal Capsule) — Template v1.0
     "section_name": "OU Summary Preview (Generated from this ED)",
     "preview_only": true,
     "ed_anchor": { "capsule_id": "SC-<short-id>" },
-    "sample_size": <int>,  // number of verbatims/rows underpinning the distributions
+    "sample_size": <int>,
     "summaries": [
       {
-        "ou_name": "Proactive Refund Experience – Agitation – Innovate",
+        "ou_name": "<str>",
         "details": {
-          "experience_driver": "Refund Status & Delays",
-          "emotion": "Agitation",
-          "opportunity_stream": "Innovate",
-          "root_cause_snippet": "Proactive communication on refund delays"
+          "experience_driver": "<str>",
+          "emotion": "<str>",
+          "opportunity_stream": "<Fix|Optimize|Innovate|Amplify>",
+          "root_cause_snippet": "<str>"
         },
         "distribution_statistics": {
-          "emotion_distribution": { "Agitation": 64.7, "Ambivalence": 21.2, "Anger": 14.1 },
-          "stream_distribution": { "Fix": 47.3, "Innovate": 38.6, "Optimize": 14.1 },
-          "root_cause_snippet_distribution": {
-            "Proactive communication on refund delays": 51.4,
-            "Lack of timeline visibility": 33.2,
-            "No apology or empathy expressed": 15.4
-          }
-        }
-      },
-      {
-        "ou_name": "Refund Visibility Breakdown – Anger – Fix",
-        "details": {
-          "experience_driver": "Refund Status & Delays",
-          "emotion": "Anger",
-          "opportunity_stream": "Fix",
-          "root_cause_snippet": "No real-time visibility on refund progress"
-        },
-        "distribution_statistics": {
-          "emotion_distribution": { "Anger": 78.2, "Agitation": 19.6, "Ambivalence": 2.2 },
-          "stream_distribution": { "Fix": 82.4, "Optimize": 17.6 },
-          "root_cause_snippet_distribution": {
-            "No real-time visibility on refund progress": 62.8,
-            "Broken refund tracking link": 23.7,
-            "Confusing email updates": 13.5
-          }
+          "emotion_distribution": { "<Emotion>": <float> },
+          "stream_distribution": { "<Fix|Optimize|Innovate|Optimize>": <float> },
+          "root_cause_snippet_distribution": { "<snippet>": <float> }
         }
       }
     ],
     "generation_meta": {
       "fn_name": "ou_generator_from_ed",
       "fn_version": "v1.0.0",
-      "inputs": ["experience_driver", "trend_block", "momentum_block", "volatility_block", "pattern_block", "momentum_saturation_insight", "signal_strength_index"],
+      "inputs": [
+        "experience_driver",
+        "trend_block",
+        "momentum_block",
+        "volatility_block",
+        "pattern_block",
+        "momentum_saturation_insight",
+        "signal_strength_index"
+      ],
       "generated_at": "<ISO-8601 UTC>"
     }
   },
@@ -416,7 +410,865 @@ XDI Payload (Signal Capsule) — Template v1.0
   }
 }
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------
--------------------------------------------------------------------------------------------------------------------------------------------------------------
+```
+
+### Notes on fidelity
+
+* All your original fields are preserved (sometimes renamed) and placed in sections that match how we’ll 
+**anchor → commit → replay**.
+* Sections `selection_enablement` and `fragmentation_atoms` are explicitly `preview_only: true` 
+(UI/view facets, not committed facts).
+
+---
+
+2) OU Activation Commit Snapshot (when you’re ready to write the side-chain block)
+
+{
+  "schema_version": "ou_commit.v1.1",
+  "block_meta": {
+    "block_type": "OU_COMMIT",
+    "ou_block_id": "OU-BLOCK-<hash12>",            // deterministic hash of this commit payload
+    "prev_block_hash": null,                        // omit or set to last OU_COMMIT for this ou_id
+    "issued_at": "<ISO-8601 UTC>",
+    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
+  },
+
+  "ed_anchor": {
+    "source_signal_capsule_id": "SC-<id>",
+    "ed_block_hash": "<hash_of_ED_block_or_omit>"   // omit-if-unknown (anchor to SC alone is OK)
+  },
+
+  "ou_identity": {
+    "ou_id": "OU-<stable-id>",                      // minted on commit
+    "ou_name": "Staff Interaction Quality – Agitation – Optimize",
+    "experience_driver": "Customer Service → Staff Interaction",
+    "emotion": "Agitation – Disappointed",
+    "opportunity_stream": "Optimize",
+    "feedback_type": "Complaint"
+  },
+
+  "problem_statement_seed": {
+    "matters": "unfriendly and unprofessional staff interactions that degrade customer experience",
+    "context": "Other employees at the Metro store are not friendly or professional.",
+    "interaction_moment": "during interactions with other store employees"
+  },
+
+  "journey_context": {
+    "customer_journey": "In-Store Experience",
+    "customer_journey_stage": "Service Interaction",
+    "customer_effort_score": 5                      // omit-if-unknown
+  },
+
+  "cluster_signature": {
+    "cluster_group_id": "customer_agi_opt_d81eb2d0",
+    "cluster_size": 1,
+    "cluster_cohesion": 1.0
+  },
+
+  "lineage": [
+    { "field": "ou_name",  "derivation": { "fn_name": "ou_name_rule",     "fn_version": "v1.0.0" } },
+    { "field": "matters",  "derivation": { "fn_name": "matters_extract",  "fn_version": "v2.0.0" } }
+  ],
+
+  "evidence_merkle_root": "<hex>",                  // omit-if-ledger-computes
+  "ready_for_block": true
+}
+
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+
+# 1) Problem Statement Payload — View (Layer 2) v1.1 (lean)
+
+```json
+{
+  "schema_version": "problem_statement_view.v1.1",
+  "payload_meta": {
+    "payload_id": "PS-<short-id>",
+    "payload_type": "problem_statement_view",
+    "payload_version": "PS.v1.1",
+    "generated_at": "<ISO-8601 UTC>",
+    "lifecycle_stage": "layer_2_problem_statement",
+    "parent_ou_name": "<OU Name>"               // omit-if-unknown
+  },
+
+  "anchors": {
+    "ed_anchor": {
+      "source_signal_capsule_id": "SC-<id>",
+      "ed_block_hash": null                    // omit-if-unknown
+    },
+    "ou_anchor": {
+      "ou_draft_id": "<id>",
+      "ou_block_hash": null,                   // omit-if-unknown
+      "ou_name": "<OU Name>"
+    }
+  },
+
+  "section_1_inputs_snapshot": {
+    "semantic_action_statement__section_1_customer_reality": "<str>",
+    "matters": "<str>",
+    "context": "<str>",
+    "experience_driver": "<str>",
+    "customer_journey": "<str>",
+    "customer_journey_stage": "<str>",
+    "interaction_moment": "<str>",
+    "stream_justification": "<str>",
+    "behavioral_impact": "<str>",
+    "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
+    "emotion": "<group – specific>",
+    "feedback_type": "Complaint|Compliment|Suggestion|Request|Question|Product Usage Insight|Emerging Trend"
+  },
+
+  "section_2_problem_statement": {
+    "problem_statement": "<one clear, self-contained paragraph>",
+    "breakdown": {
+      "what": "<str>",
+      "when": "<str>",
+      "where": {
+        "experience_driver": "<str>",
+        "customer_journey": "<str>",
+        "customer_journey_stage": "<str>"
+      },
+      "why": "<str>",
+      "so_what": "<str>"
+    },
+    "meta": {
+      "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
+      "emotion": "<group – specific>",
+      "feedback_type": "<str>"
+    }
+  },
+
+  "section_3_generation_trace": {
+    "generation_source_mapping": {
+      "what_source":  { "primary": "<field>", "supporting": "<field|none>", "extracted": "<str>" },
+      "when_source":  { "field": "<field>", "extracted": "<str>" },
+      "where_source": { "experience_driver": "<str>", "customer_journey": "<str>", "customer_journey_stage": "<str>" },
+      "why_source":   { "field": "<field>", "extracted": "<str>" },
+      "so_what_source": { "field": "<field>", "extracted": "<str>" }
+    },
+    "derivation": {
+      "fn_name": "ps_builder_v1",
+      "fn_version": "v1.0.0",
+      "inputs": [
+        "semantic_action_statement",
+        "matters",
+        "context",
+        "journey_fields",
+        "stream_justification",
+        "behavioral_impact"
+      ]
+    }
+  },
+
+  "section_4_pdca_readiness": {
+    "go_no_go_status": "GO|HOLD|NO_GO",
+    "validation_checklist": {
+      "emotionally_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "customer_rooted": true,
+      "business_impact_clear": true
+    }
+  },
+
+  "provenance": {
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1",
+    "source_layers": ["L1_extraction", "L2_selection", "L2_problem_statement"]
+  },
+
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "PDCA_PLAN",
+    "evidence_merkle_root": null               // omit-if-ledger-computes
+  }
+}
+```
+
+---
+
+# 2) PDCA Plan — Commit Snapshot (Problem Statement step) v1.1
+
+```json
+{
+  "schema_version": "pdca_plan_problem_statement.v1.1",
+  "block_meta": {
+    "block_type": "PDCA_PLAN",
+    "step": "PROBLEM_STATEMENT",
+    "ou_block_id": "OU-BLOCK-<hash12>",
+    "prev_block_hash": "<hash_or_null>",          // null on first PDCA step for this OU
+    "issued_at": "<ISO-8601 UTC>",
+    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
+  },
+
+  "anchors": {
+    "ed_anchor": { "ed_block_hash": "<hash_or_omit>", "source_signal_capsule_id": "SC-<id>" },
+    "ou_anchor": { "ou_id": "OU-<stable>", "ou_block_hash": "<hash_or_null>" }
+  },
+
+  "problem_statement_core": {
+    "problem_statement": "<text>",
+    "what": "<str>",
+    "when": "<str>",
+    "where": {
+      "experience_driver": "<str>",
+      "customer_journey": "<str>",
+      "customer_journey_stage": "<str>"
+    },
+    "why": "<str>",
+    "so_what": "<str>"
+  },
+
+  "meta": {
+    "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
+    "emotion": "<group – specific>",
+    "feedback_type": "<str>"
+  },
+
+  "validation": {
+    "go_no_go_status": "GO|HOLD|NO_GO",
+    "checklist": {
+      "emotionally_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "customer_rooted": true,
+      "business_impact_clear": true
+    }
+  },
+
+  "lineage": [
+    { "field": "problem_statement", "derivation": { "fn_name": "ps_builder_v1", "fn_version": "v1.0.0" } }
+  ],
+
+  "evidence_merkle_root": "<hex>",                // omit-if-ledger-computes
+  "ready_for_block": true
+}
+```
+
+-----------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------
+
+PDCA Execution Memory — Sectioned, ED/OU-anchored (view) v1.0
+
+```json
+{
+  "schema_version": "pdca_view.v1.0",
+  "payload_meta": {
+    "payload_id": "PDCA-<uuid>",
+    "payload_type": "pdca_execution_memory",
+    "payload_version": "PDCA.v1.0",
+    "generated_at": "<ISO-8601 UTC>",
+    "mission_snapshot_id": "MS-<bcs_group_id>",
+    "lifecycle_stage": "layer_3_pdca_execution",
+    "institutional_memory_archive": true,
+    "mission_window": {
+      "start_date": "<YYYY-MM-DD>",
+      "target_completion": "<YYYY-MM-DD>",
+      "evaluation_trigger": "30|60|90_days_post_start"
+    }
+  },
+
+  "anchors": {
+    "ed_anchor": { "source_signal_capsule_id": "SC-<id>", "ed_block_hash": null },
+    "ou_anchor": { "ou_id": "OU-<id>", "ou_block_hash": null, "ou_name": "<OU Name>" },
+    "ps_anchor": { "problem_statement_id": "PS-<id>", "ps_block_hash": null }
+  },
+
+  "mission_provenance": {
+    "bcs_group_id": "<bcs_group_id>",
+    "cluster_size": <int>,
+    "cluster_cohesion": <float>
+  },
+
+  "pdca_cycle": {
+    "orchestration_unit": "<OU Name>",
+
+    "plan_phase": {
+      "problem_statement_ref": "PS-<id>",
+      "problem_statement_text": "# Locked upstream narrative — do not edit",
+      "five_whys": [
+        { "level": 1, "why": "<Surface-level symptom>" },
+        { "level": 2, "why": "<Deeper behavioural cause>" },
+        { "level": 3, "why": "<Systemic/contextual breakdown>" },
+        { "level": 4, "why": "<Structural/process/ownership flaw>" },
+        { "level": 5, "why": "<Root cause — actionable & stream-aligned>" }
+      ],
+      "cross_domain_validation": [
+        { "domain": "<Category>", "insight": "<Cross-domain lens insight>" }
+      ],
+      "systemic_implications": ["<Org/process pattern #1>"],
+      "diagnostic_epiphany": "<Synthesis that ties customer reality to Why 5 (root cause)>"
+    },
+
+    "do_phase": {
+      "initiatives": [
+        {
+          "name": "<Initiative Title>",
+          "description": "<What it does and why it matters>",
+          "stream": "Fix|Optimize|Innovate|Amplify",
+          "innovation_score": <1-5>,
+          "justification": "<Ties to diagnostic_epiphany + risk/inclusion insight>",
+          "pillar_attribution": ["RFE","CRE","TRS","FIA-BVS"],
+          "regulatory_alignment": "<Frameworks addressed (optional)>",
+          "risk_mitigation": "<How this mitigates fraud/abuse/systemic risk>",
+          "hybrid_value_proposition": "<Customer emotional benefit + institutional value>"
+        }
+      ]
+    },
+
+    "check_phase": {
+      "scoring_formula": "impact + feasibility + alignment - risk",
+      "prioritization": [
+        {
+          "name": "<initiative_name>",
+          "impact": <1-5>,
+          "feasibility": <1-5>,
+          "alignment": <1-5>,
+          "risk": <1-5>,
+          "total_score": <int>,
+          "justification": "<Why this priority given emotion, root cause fit, stream relevance, effort, owner readiness>"
+        }
+      ]
+    },
+
+    "act_phase": {
+      "outcomes": [
+        {
+          "initiative": "<initiative_name_from_Do>",
+          "strategic_pillars": ["<Pillar 1>", "<Pillar 2>"],
+          "outcome": "<One sentence success condition linked to root cause + stream intent>",
+          "metrics": ["<SMART metric 1>", "<SMART metric 2>"],
+          "explanation": "<Why these pillars/metrics prove value; tie to emotion/root-cause/journey pain point>"
+        }
+      ]
+    }
+  },
+
+  "OU_lifecycle_layer_3_completion": {
+    "pdca_status": "Committed|Draft",
+    "institutional_archive": true,
+    "next_milestone": "30-day checkpoint",
+    "handoff_readiness": "Ready for outcome evaluation"
+  },
+
+  "provenance": {
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1",
+    "source_layers": ["L2_problem_statement", "L3_pdca"]
+  },
+
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "PDCA_CYCLE",
+    "evidence_merkle_root": null
+  }
+}
+```
+
+---
+
+# Your Sample (Fix Stream) — remapped to the template
+
+```json
+{
+  "schema_version": "pdca_view.v1.0",
+  "payload_meta": {
+    "payload_id": "PDCA-fix_alert_duplication_001",
+    "payload_type": "pdca_execution_memory",
+    "payload_version": "PDCA.v1.0",
+    "generated_at": "2025-08-10T14:35:00.000Z",
+    "mission_snapshot_id": "MS-alert_duplication_fix",
+    "lifecycle_stage": "layer_3_pdca_execution",
+    "institutional_memory_archive": true,
+    "mission_window": {
+      "start_date": "2025-08-10",
+      "target_completion": "2025-11-10",
+      "evaluation_trigger": "90_days_post_start"
+    }
+  },
+  "anchors": {
+    "ed_anchor": { "source_signal_capsule_id": "SC-dup_alert_fintech_001", "ed_block_hash": null },
+    "ou_anchor": { "ou_id": "OU-dup_alert_fix", "ou_block_hash": null, "ou_name": "Payment Processing – Anger – Fix" },
+    "ps_anchor": { "problem_statement_id": "PS-dup_alert_fix", "ps_block_hash": null }
+  },
+  "mission_provenance": {
+    "bcs_group_id": "payment_proc_trust_dedup",
+    "cluster_size": 1,
+    "cluster_cohesion": 1.0
+  },
+  "pdca_cycle": {
+    "orchestration_unit": "Payment Processing – Anger – Fix",
+    "plan_phase": {
+      "problem_statement_ref": "PS-dup_alert_fix",
+      "problem_statement_text": "# Locked upstream narrative — do not edit",
+      "five_whys": [
+        { "level": 1, "why": "Customer panicked after receiving two debit alerts for the same payment." },
+        { "level": 2, "why": "System issued redundant confirmation messages." },
+        { "level": 3, "why": "No anomaly detection layer to flag/suppress duplicates." },
+        { "level": 4, "why": "Monitoring historically biased to backend success, not perception signals." },
+        { "level": 5, "why": "KPIs optimized for reconciliation accuracy, not experience fidelity (trust layer gap)." }
+      ],
+      "cross_domain_validation": [
+        { "domain": "Technology and Innovation", "insight": "Real-time anomaly suppression missing in event notification system." },
+        { "domain": "Customer Service and Support", "insight": "Users must manually verify; increases support load and emotional volatility." },
+        { "domain": "Compliance and Regulatory Exposure", "insight": "Duplicate debit alerts may be perceived as misleading billing behavior." }
+      ],
+      "systemic_implications": [
+        "Monitoring frameworks are backend-biased and miss emotionally critical UX-layer signals.",
+        "Alert logic ties to system state rather than customer perception, widening perception-risk gap."
+      ],
+      "diagnostic_epiphany": "The breach occurred in the trust layer—not reconciliation. Duplicate alerts created perceived fraud risk, breaking the emotional contract in digital transactions."
+    },
+    "do_phase": {
+      "initiatives": [
+        {
+          "name": "Real-Time Alert Deduplication Layer",
+          "description": "Suppress redundant debit alerts to prevent trust shocks during legitimate transactions.",
+          "stream": "Fix",
+          "innovation_score": 3,
+          "justification": "Directly eliminates emotionally destabilizing anomalies in alerts.",
+          "pillar_attribution": ["RFE", "TRS"],
+          "risk_mitigation": "Reduces perceived fraud risk by ensuring verified, non-redundant confirmations."
+        },
+        {
+          "name": "Notification UX Guardrails",
+          "description": "Add contextual guidance to clarify successful vs failed payments in-app.",
+          "stream": "Fix",
+          "innovation_score": 2,
+          "justification": "Improves clarity at emotionally charged confirmation moments.",
+          "pillar_attribution": ["TRS", "FIA-BVS"],
+          "risk_mitigation": "Prevents misinterpretation of legitimate charges; supports literacy-focused onboarding."
+        },
+        {
+          "name": "Anomaly Perception Monitoring (APM)",
+          "description": "Track 'perceived anomalies' via trust signals and confusion markers.",
+          "stream": "Fix",
+          "innovation_score": 4,
+          "justification": "Elevates perception risk into measurable KPIs.",
+          "pillar_attribution": ["RFE", "TRS", "CRE"],
+          "risk_mitigation": "Flags trust-triggering flows before escalation to regulatory/churn risk."
+        }
+      ]
+    },
+    "check_phase": {
+      "scoring_formula": "impact + feasibility + alignment - risk",
+      "prioritization": [
+        { "name": "Real-Time Alert Deduplication Layer", "impact": 5, "feasibility": 3, "alignment": 5, "risk": 2, "total_score": 11,
+          "justification": "Largest trust impact; aligns to root cause; feasible with current infra; manageable risk." },
+        { "name": "Notification UX Guardrails", "impact": 4, "feasibility": 4, "alignment": 4, "risk": 3, "total_score": 9,
+          "justification": "Quick UX win; strong alignment; medium dependency risk." },
+        { "name": "Anomaly Perception Monitoring (APM)", "impact": 4, "feasibility": 2, "alignment": 5, "risk": 3, "total_score": 8,
+          "justification": "Strategic KPI uplift; lower feasibility short term; requires data plumbing." }
+      ]
+    },
+    "act_phase": {
+      "outcomes": [
+        {
+          "initiative": "Real-Time Alert Deduplication Layer",
+          "strategic_pillars": ["RFE", "TRS"],
+          "outcome": "Eliminate redundant debit alerts to restore emotional stability and reduce fraud misperception.",
+          "metrics": [
+            "Reported Alert Confusion Rate ↓ (target: -60% in 90 days)",
+            "Debit Notification Redundancy Index ↓ (target: -90%)",
+            "Trust Signal Deviation Score ↓ (target: -50%)"
+          ],
+          "explanation": "Directly resolves the trust-layer root cause by removing duplicate alerts; pillars confirm reliability and transaction safety."
+        },
+        {
+          "initiative": "Notification UX Guardrails",
+          "strategic_pillars": ["TRS", "FIA-BVS"],
+          "outcome": "Clarify notifications to reduce panic and misinterpretation at payment confirmation/failure.",
+          "metrics": [
+            "Alert Comprehension Rate ↑ (target: +40%)",
+            "Support Ticket Volume (Alert Confusion) ↓ (target: -35%)",
+            "Misinterpreted Payment Rate ↓ (target: -45%)"
+          ],
+          "explanation": "Targets emotional clarity at critical moments; metrics prove comprehension and reduced confusion load."
+        },
+        {
+          "initiative": "Anomaly Perception Monitoring (APM)",
+          "strategic_pillars": ["RFE", "TRS", "CRE"],
+          "outcome": "Detect perceived anomalies before escalation to regulatory exposure or churn.",
+          "metrics": [
+            "Trust Risk Signal Index ↓ (target: -40%)",
+            "Regulatory Escalation Lag Time ↑ (early detection; target: +2 weeks)",
+            "Churn Risk Spike Post-Anomaly ↓ (target: -25%)"
+          ],
+          "explanation": "Builds a perception-sensitive early warning system; pillars ensure reliability, safety, and compliance readiness."
+        }
+      ]
+    }
+  },
+  "OU_lifecycle_layer_3_completion": {
+    "pdca_status": "Committed",
+    "institutional_archive": true,
+    "next_milestone": "30-day checkpoint",
+    "handoff_readiness": "Ready for outcome evaluation"
+  },
+  "provenance": {
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1",
+    "source_layers": ["L2_problem_statement", "L3_pdca"]
+  },
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "PDCA_CYCLE",
+    "evidence_merkle_root": null
+  }
+}
+```
+
+---
+
+# Side-chain Commit Snapshot (when PDCA is approved)
+
+```json
+{
+  "schema_version": "pdca_commit.v1.0",
+  "block_meta": {
+    "block_type": "PDCA_CYCLE",
+    "pdca_block_id": "PDCA-BLOCK-<hash12>",
+    "prev_block_hash": "<hash_or_null>",
+    "issued_at": "<ISO-8601 UTC>",
+    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
+  },
+  "anchors": {
+    "ed_anchor": { "ed_block_hash": "<hash>", "source_signal_capsule_id": "SC-<id>" },
+    "ou_anchor": { "ou_id": "OU-<id>", "ou_block_hash": "<hash_or_null>", "ou_name": "<OU Name>" },
+    "ps_anchor": { "problem_statement_id": "PS-<id>", "ps_block_hash": "<hash_or_null>" }
+  },
+  "plan_phase_root": {
+    "problem_statement_ref": "PS-<id>",
+    "root_cause": "<Why 5>",
+    "diagnostic_epiphany": "<text>"
+  },
+  "do_check_act": {
+    "initiatives": [
+      { "name": "<init>", "stream": "Fix|Optimize|Innovate|Amplify", "pillar_attribution": ["RFE","TRS","CRE"], "innovation_score": <1-5> }
+    ],
+    "prioritization": [
+      { "name": "<init>", "impact": <1-5>, "feasibility": <1-5>, "alignment": <1-5>, "risk": <1-5>, "total_score": <int> }
+    ],
+    "outcomes": [
+      { "initiative": "<init>", "outcome": "<text>", "metrics": ["<SMART 1>", "<SMART 2>"] }
+    ]
+  },
+  "lineage": [
+    { "field": "root_cause", "derivation": { "fn_name": "five_whys_v1", "fn_version": "v1.0.0" } },
+    { "field": "prioritization.total_score", "derivation": { "fn_name": "priority_score_v1", "fn_version": "v1.0.0", "formula": "impact + feasibility + alignment - risk" } }
+  ],
+  "evidence_merkle_root": "<hex>",
+  "ready_for_block": true
+}
+```
+
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+
+perfect — here’s the **tightened, SG-compatible Outcome Evaluation** pair. It stays copy-or-compute only, no imagination, and anchors cleanly for SG linking.
+
+---
+
+# Outcome Evaluation Checkpoint — View (Layer 3) v1.1
+
+```json
+{
+  "schema_version": "outcome_evaluation_view.v1.1",
+  "payload_meta": {
+    "payload_id": "OEC-<uuid>",
+    "payload_type": "outcome_evaluation_checkpoint",
+    "payload_version": "OEC.v1.1",
+    "generated_at": "<ISO-8601 UTC>",
+    "lifecycle_stage": "layer_3_pdca_evaluation"
+  },
+
+  "anchors": {
+    "ed_anchor":  { "source_signal_capsule_id": "<SC-id>",   "ed_block_hash": null },
+    "ou_anchor":  { "ou_id": "<OU-id>", "ou_block_hash": null, "ou_name": "<OU Name>", "ou_stream": "Fix|Optimize|Innovate|Amplify" },
+    "ps_anchor":  { "problem_statement_id": "<PS-id>",       "ps_block_hash": null },
+    "pdca_anchor":{ "pdca_id": "<PDCA-id>",                  "pdca_block_hash": null },
+    "ou_activation_anchor": { "ou_activation_id": "<OUA-id>" }
+  },
+
+  "checkpoint_window": {
+    "mission_status": "Completed|In-Progress|Abandoned",
+    "mission_duration_days": <int>,
+    "owner": "<str>",
+    "ou_semantic_action": "<str>"
+  },
+
+  "comparison_block": {
+    "eri_score": { "before": <float>, "after": <float> },
+    "dominant_emotion": { "before": "<str>", "after": "<str>" },
+    "emotion_perception_tier": { "before": "<str>", "after": "<str>" },
+    "trend": { "before": "↑|→|↓", "after": "↑|→|↓" },
+    "momentum": { "before": "↑↑|↑|→|↓|↓↓", "after": "↑↑|↑|→|↓|↓↓" },
+    "volatility": { "before": "✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating", "after": "✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating" },
+    "has_pattern": { "before": true, "after": false },
+    "quadrant_purpose": { "before": "<str>", "after": "<str>" },
+    "emotional_alert_level": { "before": <float>, "after": <float> },
+    "qssi_tier": { "before": "<str>", "after": "<str>" },
+    "priority_class": { "before": "P0|P1|P2|P3|P4", "after": "P0|P1|P2|P3|P4" }
+  },
+
+  "derived_deltas": {
+    "delta_eri": <float>,
+    "delta_emotional_alert_level": <float>,
+    "improved_trend": <bool>,
+    "improved_momentum": <bool>,
+    "stabilized_volatility": <bool>,
+    "pattern_resolved": <bool>,
+    "priority_deescalated": <bool>,
+    "quadrant_shift": { "from": "<str>", "to": "<str>" },
+    "derivation": {
+      "fn_name": "oec_delta_calc_v1",
+      "fn_version": "v1.0.0",
+      "inputs": ["comparison_block.*"]
+    }
+  },
+
+  "elasticity_impact": {
+    "elasticity_rating": "High|Medium|Low",
+    "signal_shift_validated": <bool>,
+    "root_cause_recurrence": <bool>
+  },
+
+  "mission_footprint": {
+    "emotion_distribution_before": { "<emotion>": <float> },
+    "emotion_distribution_after":  { "<emotion>": <float> }
+  },
+
+  "verdict_and_disposition": {
+    "disposition": "Archive|Extend|Re-run",
+    "mission_tagline": "<str>",
+    "verdict": "Success|Partial|No Impact",
+    "notes": "<optional>"
+  },
+
+  "provenance": {
+    "linked_ids": {
+      "signal_capsule_id": "<SC-id>",
+      "ou_activation_id": "<OUA-id>",
+      "problem_statement_id": "<PS-id>",
+      "pdca_id": "<PDCA-id>"
+    },
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1"
+  },
+
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "OUTCOME_EVALUATION",
+    "evidence_merkle_root": null
+  }
+}
+```
+
+---
+
+# Outcome Evaluation — Side-chain Commit Snapshot v1.1 (minimal, immutable)
+
+```json
+{
+  "schema_version": "outcome_evaluation_commit.v1.1",
+  "block_meta": {
+    "block_type": "OUTCOME_EVALUATION",
+    "oec_block_id": "OEC-BLOCK-<hash12>",
+    "prev_block_hash": "<hash_or_null>",
+    "issued_at": "<ISO-8601 UTC>",
+    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
+  },
+
+  "anchors": {
+    "ed_anchor":  { "ed_block_hash": "<hash_or_null>", "source_signal_capsule_id": "<SC-id>" },
+    "ou_anchor":  { "ou_id": "<OU-id>", "ou_block_hash": "<hash_or_null>", "ou_name": "<OU Name>", "ou_stream": "Fix|Optimize|Innovate|Amplify" },
+    "ps_anchor":  { "problem_statement_id": "<PS-id>", "ps_block_hash": "<hash_or_null>" },
+    "pdca_anchor":{ "pdca_id": "<PDCA-id>", "pdca_block_hash": "<hash_or_null>" },
+    "ou_activation_anchor": { "ou_activation_id": "<OUA-id>" }
+  },
+
+  "checkpoint_core": {
+    "mission_status": "Completed|In-Progress|Abandoned",
+    "mission_duration_days": <int>,
+    "owner": "<str>",
+    "quadrant_shift": { "from": "<str>", "to": "<str>" },
+    "delta_eri": <float>,
+    "delta_emotional_alert_level": <float>,
+    "stabilized_volatility": <bool>,
+    "priority_deescalated": <bool>,
+    "pattern_resolved": <bool>
+  },
+
+  "lineage": [
+    { "field": "delta_eri", "derivation": { "fn_name": "oec_delta_calc_v1", "fn_version": "v1.0.0" } }
+  ],
+
+  "evidence_merkle_root": "<hex>",
+  "ready_for_block": true
+}
+```
+
+--------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
+
+# Silent Guidance — View (SG v1.1, minimal)
+
+```json
+{
+  "schema_version": "sg_view.v1.1",
+  "payload_meta": {
+    "guidance_id": "SG-<auto>",
+    "generated_at": "<ISO-8601>",
+    "version": "IME.SG.v2-STRICT",
+    "lifecycle_stage": "derivative_silent_guidance",
+    "strict_policy": true
+  },
+
+  "anchors": {
+    "ed_anchor": { "source_signal_capsule_id": "SC-<id>" },
+    "ou_anchor": { "ou_id": "OU-<id_or_temp>" },
+    "ps_anchor": { "problem_statement_id": null },
+    "pdca_anchor": { "pdca_id": null }
+  },
+
+  "trigger_context": {
+    "provisional_ou_id": "OU-<temp>",
+    "experience_driver": "<Theme→Category→Subcategory→Entity>",
+    "ed_id": "ED-<id>",
+    "emotion_group": "<…>",
+    "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
+    "interaction_moment": "<…>"
+  },
+
+  "match_criteria": {
+    "strategy": "exact_equality",
+    "by_experience_driver": true,
+    "by_emotion_group": true,
+    "by_opportunity_stream": true,
+    "by_interaction_moment": true,
+    "window_days": 540
+  },
+
+  "match_summary": {
+    "total_precedents_found": 0,
+    "first_seen_at": "<YYYY-MM-DD>",
+    "last_activation_at": "<YYYY-MM-DD>"
+  },
+
+  "precedent_matches": [
+    {
+      "artifacts": {
+        "signal_capsule_id": "SC-<id>",
+        "ou_payload_id": "OU-<id>",
+        "problem_statement_id": "PS-<id>",
+        "pdca_lifecycle_id": "PDCA-<id>",
+        "outcome_evaluation_id": "OEC-<id>"
+      },
+      "snapshot": {
+        "ou_core": {
+          "ou_id": "<from:OU.id>",
+          "activation_date": "<from:OU.activation_date>",
+          "owner": "<from:OU.owner>",
+          "experience_driver": "<from:OU.experience_driver>",
+          "emotion_group": "<from:OU.emotion_group>",
+          "opportunity_stream": "<from:OU.opportunity_stream>",
+          "interaction_moment": "<from:OU.interaction_moment>"
+        },
+        "outcome_evaluation": {
+          "disposition": "<from:OEC.verdict_and_disposition.disposition>",
+          "verdict": "<from:OEC.verdict_and_disposition.verdict>",
+          "mission_tagline": "<from:OEC.verdict_and_disposition.mission_tagline>",
+          "eri_shift": {
+            "before": "<from:OEC.comparison_block.eri_score.before>",
+            "after": "<from:OEC.comparison_block.eri_score.after>",
+            "delta": "<calc: after - before>"
+          }
+        }
+      },
+      "quick_nav": {
+        "signal_capsule_uri": "/capsules/{signal_capsule_id}",
+        "ou_payload_uri": "/ous/{ou_payload_id}",
+        "problem_statement_uri": "/pdca/plan/{problem_statement_id}",
+        "pdca_lifecycle_uri": "/pdca/full/{pdca_lifecycle_id}",
+        "outcome_evaluation_uri": "/outcomes/{outcome_evaluation_id}"
+      }
+    }
+  ],
+
+  "retrieval_manifest": {
+    "artifact_ids": ["SC-<id>", "OU-<id>", "PS-<id>", "PDCA-<id>", "OEC-<id>"],
+    "endpoint_templates": {
+      "signal_capsule": "/capsules/{id}",
+      "ou_payload": "/ous/{id}",
+      "problem_statement": "/pdca/plan/{id}",
+      "pdca_lifecycle": "/pdca/full/{id}",
+      "outcome_evaluation": "/outcomes/{id}"
+    }
+  },
+
+  "provenance": {
+    "algorithm_version": "SG-recall.min.v1",
+    "guarantees": [
+      "All values are copied from artifacts or simple arithmetic deltas.",
+      "No free-text invention; missing fields are omitted."
+    ]
+  }
+}
+```
+
+---
+
+# Silent Guidance — Commit Snapshot (minimal)
+
+```json
+{
+  "schema_version": "sg_commit.v1.1",
+  "block_meta": {
+    "block_type": "SILENT_GUIDANCE",
+    "sg_block_id": "SG-BLOCK-<hash12>",
+    "prev_block_hash": "<hash_or_null>",
+    "issued_at": "<ISO-8601>",
+    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
+  },
+  "anchors": {
+    "ed_anchor": { "source_signal_capsule_id": "SC-<id>" },
+    "ou_anchor": { "ou_id": "OU-<id_or_temp>" }
+  },
+  "trigger_context_core": {
+    "experience_driver": "<…>",
+    "emotion_group": "<…>",
+    "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
+    "interaction_moment": "<…>"
+  },
+  "match_header": {
+    "strategy": "exact_equality",
+    "window_days": 540,
+    "total_precedents_found": <int>,
+    "first_seen_at": "<YYYY-MM-DD>",
+    "last_activation_at": "<YYYY-MM-DD>"
+  },
+  "precedents": [
+    {
+      "ou_id": "OU-<id>",
+      "pdca_id": "PDCA-<id>",
+      "oec_id": "OEC-<id>",
+      "links": {
+        "xdi": "/capsules/SC-<id>",
+        "ou": "/ous/OU-<id>",
+        "pdca": "/pdca/full/PDCA-<id>",
+        "oec": "/outcomes/OEC-<id>"
+      }
+    }
+  ],
+  "ready_for_block": true
+}
+```
+
+-----------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------
+
+
+
+
 
 
