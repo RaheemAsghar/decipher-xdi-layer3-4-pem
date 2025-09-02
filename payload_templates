@@ -1267,8 +1267,474 @@ perfect — here’s the **tightened, SG-compatible Outcome Evaluation** pair. I
 -----------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------
 
+# Silent Cognition Engine — View (Phase 4) v1.0
 
+```json
+{
+  "schema_version": "sce_view.v1.0",
+  "payload_meta": {
+    "payload_id": "SCE-<short-id>",
+    "payload_type": "silence_cognition_view",
+    "payload_version": "SCE.v1",
+    "generated_at": "<ISO-8601 UTC>",
+    "lifecycle_stage": "phase_4_silence_absence_intelligence"
+  },
 
+  "anchors": {
+    "ed_anchor":  { "source_signal_capsule_id": "SC-<id>", "ed_block_hash": null, "experience_driver": "<str>" },
+    "ou_anchor":  { "ou_id": "<OU-id>", "ou_block_hash": null, "ou_name": "<OU Name>", "ou_stream": "Fix|Optimize|Innovate|Amplify" },
+    "ps_anchor":  { "problem_statement_id": "<PS-id>", "ps_block_hash": null },
+    "pdca_anchor":{ "pdca_id": "<PDCA-id>", "pdca_block_hash": null },
+    "oec_anchor": { "outcome_evaluation_id": "<OEC-id>", "oec_block_hash": null }
+  },
 
+  "detection_inputs": {
+    "scan_window_days": 90,
+    "window_start": "<YYYY-MM-DD>",
+    "window_end": "<YYYY-MM-DD>",
+    "mention_count_in_window": <int>,
+    "last_mention_date": "<YYYY-MM-DD|null>",
+    "thresholds_used": { "silence_if_mentions_at_most": 0 }
+  },
 
+  "detection_summary": {
+    "experience_driver": "<str>",
+    "ed_id": "<ED-id>",
+    "silence_detected": "<bool: mention_count_in_window <= thresholds_used.silence_if_mentions_at_most>",
+    "silence_duration_days": "<int: window_end - (last_mention_date or window_start) + 1>",
+    "silence_trigger_date": "<YYYY-MM-DD: (last_mention_date + 1 day) or window_start>",
+    "silence_scan_window": "rolling_<scan_window_days>d_post-activation",
+    "last_known_ou_id": "<OU-id>"
+  },
 
+  "last_ou_activation_summary": {
+    "source": "outcome_evaluation|ou_commit",
+    "ou_id": "<OU-id>",
+    "ou_name": "<OU Name>",
+    "ou_stream": "Fix|Optimize|Innovate|Amplify",
+    "ou_semantic_action": "<from OU/PS>",
+    "activation_date": "<from OU commit>",
+    "owner": "<from OU/OEC>",
+    "comparison_block": {                // copy from Outcome Evaluation if present
+      "eri_score": { "before": <float>, "after": <float> },
+      "dominant_emotion": { "before": "<str>", "after": "<str>" },
+      "emotion_perception_tier": { "before": "<str>", "after": "<str>" },
+      "trend": { "before": "↑|→|↓", "after": "↑|→|↓" },
+      "momentum": { "before": "↑↑|↑|→|↓|↓↓", "after": "↑↑|↑|→|↓|↓↓" },
+      "volatility": { "before": "✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating", "after": "✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating" },
+      "has_pattern": { "before": true, "after": false },
+      "quadrant_purpose": { "before": "<str>", "after": "<str>" },
+      "emotional_alert_level": { "before": <float>, "after": <float> },
+      "qssi_tier": { "before": "<str>", "after": "<str>" },
+      "priority_class": { "before": "P0|P1|P2|P3|P4", "after": "P0|P1|P2|P3|P4" }
+    },
+    "elasticity_impact": { "elasticity_rating": "<str>", "signal_shift_validated": <bool>, "root_cause_recurrence": <bool> },
+    "mission_footprint": {              // copy-only if present
+      "emotion_distribution_before": { "<emotion>": <float> },
+      "emotion_distribution_after":  { "<emotion>": <float> }
+    },
+    "disposition": "<from OEC.disposition | omit>"
+  },
+
+  "silence_classification": {
+    "classification": "<Resolution|Dormancy|Seasonality|Migration|Data_Gap|Unclassified>",
+    "rule_hits": [
+      "<explicit boolean rules evaluated on anchors/OEC, e.g., OEC.disposition=Archive>",
+      "<no_mentions_in_window=TRUE>"
+    ],
+    "suggested_action": "<Amplify|Monitor|Re-route|Re-ingest|N/A>",   // mapping table, derive-only
+    "derivation": {
+      "classifier_fn": "sce_classifier_rules_v1",
+      "version": "1.0.0",
+      "inputs": ["detection_summary", "last_ou_activation_summary.comparison_block", "disposition"]
+    }
+  },
+
+  "deep_memory_links": {
+    "signal_capsule_id": "<SC-id>",
+    "ou_payload_id": "<OU-id>",
+    "problem_statement_id": "<PS-id>",
+    "pdca_lifecycle_id": "<PDCA-id>",
+    "outcome_evaluation_id": "<OEC-id>"
+  },
+
+  "provenance": {
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1",
+    "guarantees": [
+      "All non-ID values are copied from artifacts or deterministically computed.",
+      "No free-text invented; classification is rule-based only.",
+      "If an upstream artifact is missing, its fields are omitted."
+    ]
+  },
+
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "SILENCE_COGNITION",
+    "evidence_merkle_root": null
+  }
+}
+```
+
+---
+
+## Your Example — strictly remapped to the template (derive-only)
+
+```json
+{
+  "schema_version": "sce_view.v1.0",
+  "payload_meta": {
+    "payload_id": "SCE-ED-00087",
+    "payload_type": "silence_cognition_view",
+    "payload_version": "SCE.v1",
+    "generated_at": "2025-08-28T00:00:00.000Z",
+    "lifecycle_stage": "phase_4_silence_absence_intelligence"
+  },
+  "anchors": {
+    "ed_anchor":  { "source_signal_capsule_id": "SC-8743AC0298B1", "ed_block_hash": null, "experience_driver": "Card Freeze Failure" },
+    "ou_anchor":  { "ou_id": "OU-00087-FIX", "ou_block_hash": null, "ou_name": "Card Freeze Failure – Complaint – Fix", "ou_stream": "Fix" },
+    "ps_anchor":  { "problem_statement_id": "PS-00087", "ps_block_hash": null },
+    "pdca_anchor":{ "pdca_id": "PDCA-00087", "pdca_block_hash": null },
+    "oec_anchor": { "outcome_evaluation_id": "OE-00087", "oec_block_hash": null }
+  },
+  "detection_inputs": {
+    "scan_window_days": 90,
+    "window_start": "2025-04-12",
+    "window_end": "2025-07-11",
+    "mention_count_in_window": 0,
+    "last_mention_date": "2025-04-11",
+    "thresholds_used": { "silence_if_mentions_at_most": 0 }
+  },
+  "detection_summary": {
+    "experience_driver": "Card Freeze Failure",
+    "ed_id": "ED-00087",
+    "silence_detected": true,
+    "silence_duration_days": 112,
+    "silence_trigger_date": "2025-04-12",
+    "silence_scan_window": "rolling_90d_post-activation",
+    "last_known_ou_id": "OU-00087-FIX"
+  },
+  "last_ou_activation_summary": {
+    "source": "outcome_evaluation",
+    "ou_id": "OU-00087-FIX",
+    "ou_name": "Card Freeze Failure – Complaint – Fix",
+    "ou_stream": "Fix",
+    "ou_semantic_action": "We need to Fix → Card Freeze Failure in response to a Complaint reflecting Agitation over failed real-time freeze requests during high-fraud alerts.",
+    "activation_date": "2025-04-12",
+    "owner": "Payments Ops",
+    "comparison_block": {
+      "eri_score": { "before": -75, "after": 22 },
+      "dominant_emotion": { "before": "Agitation", "after": "Appreciation" },
+      "emotion_perception_tier": { "before": "Very Negative", "after": "Slightly Positive" },
+      "trend": { "before": "↓", "after": "→" },
+      "momentum": { "before": "↓↓", "after": "→" },
+      "volatility": { "before": "⚠ Fluctuating", "after": "✅ Stable" },
+      "has_pattern": { "before": true, "after": false },
+      "quadrant_purpose": { "before": "Fix Priority – Escalation Zone", "after": "Watch Zone" },
+      "emotional_alert_level": { "before": 8.7, "after": 3.2 },
+      "qssi_tier": { "before": "🔥 Strong", "after": "⚠ Moderate" },
+      "priority_class": { "before": "P1", "after": "P4" }
+    },
+    "elasticity_impact": {
+      "elasticity_rating": "High",
+      "signal_shift_validated": true,
+      "root_cause_recurrence": false
+    },
+    "mission_footprint": {
+      "emotion_distribution_before": { "Agitation": 68.2, "Anger": 24.7, "Ambivalence": 7.1 },
+      "emotion_distribution_after":  { "Appreciation": 52.4, "Ambivalence": 30.3, "Agitation": 17.3 }
+    },
+    "disposition": "Archive"
+  },
+  "silence_classification": {
+    "classification": "Resolution",
+    "rule_hits": [
+      "no_mentions_in_window=true",
+      "oec.disposition=Archive",
+      "eri_after > eri_before",
+      "validated_shift=true",
+      "root_cause_recurrence=false"
+    ],
+    "suggested_action": "Amplify",
+    "derivation": {
+      "classifier_fn": "sce_classifier_rules_v1",
+      "version": "1.0.0",
+      "inputs": ["detection_summary", "last_ou_activation_summary.comparison_block", "last_ou_activation_summary.disposition"]
+    }
+  },
+  "deep_memory_links": {
+    "signal_capsule_id": "SC-8743AC0298B1",
+    "ou_payload_id": "OU-00087",
+    "problem_statement_id": "PS-00087",
+    "pdca_lifecycle_id": "PDCA-00087",
+    "outcome_evaluation_id": "OE-00087"
+  },
+  "provenance": {
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1",
+    "guarantees": [
+      "All non-ID values are copied from artifacts or deterministically computed.",
+      "Classification is rule-based with explicit rule hits."
+    ]
+  },
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "SILENCE_COGNITION",
+    "evidence_merkle_root": null
+  }
+}
+```
+
+---
+
+# Silent Cognition — Commit Snapshot (minimal) v1.0
+
+```json
+{
+  "schema_version": "sce_commit.v1.0",
+  "block_meta": {
+    "block_type": "SILENCE_COGNITION",
+    "sce_block_id": "SCE-BLOCK-<hash12>",
+    "prev_block_hash": "<hash_or_null>",
+    "issued_at": "<ISO-8601 UTC>",
+    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
+  },
+  "anchors": {
+    "ed_anchor":  { "ed_block_hash": "<hash_or_null>", "source_signal_capsule_id": "SC-<id>" },
+    "ou_anchor":  { "ou_id": "<OU-id>", "ou_block_hash": "<hash_or_null>", "ou_name": "<OU Name>", "ou_stream": "<Stream>" },
+    "ps_anchor":  { "problem_statement_id": "<PS-id>", "ps_block_hash": "<hash_or_null>" },
+    "pdca_anchor":{ "pdca_id": "<PDCA-id>", "pdca_block_hash": "<hash_or_null>" },
+    "oec_anchor": { "outcome_evaluation_id": "<OEC-id>", "oec_block_hash": "<hash_or_null>" }
+  },
+  "detection_header": {
+    "scan_window_days": 90,
+    "mention_count_in_window": <int>,
+    "silence_detected": <bool>,
+    "silence_trigger_date": "<YYYY-MM-DD>"
+  },
+  "classification_header": {
+    "classification": "<Resolution|Dormancy|Seasonality|Migration|Data_Gap|Unclassified>",
+    "suggested_action": "<Amplify|Monitor|Re-route|Re-ingest|N/A>",
+    "rule_hits": ["<rule_id_1>", "<rule_id_2>"]
+  },
+  "lineage": [
+    { "field": "classification", "derivation": { "fn_name": "sce_classifier_rules_v1", "version": "1.0.0" } }
+  ],
+  "evidence_merkle_root": "<hex>",
+  "ready_for_block": true
+}
+```
+
+-----------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------
+
+# Cross-Stream Learning Intelligence (CSLI)
+
+## 1) CSLI View Payload — v1.0 (derivative; not committed)
+
+```json
+{
+  "schema_version": "csli_view.v1.0",
+  "payload_meta": {
+    "payload_id": "CSLI-GRP-<short-id>",
+    "payload_type": "cross_stream_learning_intelligence_view",
+    "payload_version": "CSLI.v1.0",
+    "generated_at": "<ISO-8601 UTC>",
+    "lifecycle_stage": "derivative_csli_scan"
+  },
+
+  "scan_provenance": {
+    "run_id": "CSLI-SCAN-<short-id>",
+    "run_window": { "start_date": "<YYYY-MM-DD>", "end_date": "<YYYY-MM-DD>" },
+    "corpus_scope": { "ou_count": <int>, "ps_count": <int> },
+    "embedding_model": "all-MiniLM-L6-v2",
+    "similarity_fn": "cosine",
+    "similarity_threshold": 0.70,
+    "min_cluster_size": 2
+  },
+
+  "anchors": {
+    "member_ou_anchors": [
+      {
+        "ou_id": "OU-<id>",
+        "ou_block_hash": null,
+        "ps_id": "PS-<id>",
+        "ps_block_hash": null
+      }
+    ]
+  },
+
+  "match_criteria": {
+    "ignore_fields_for_matching": ["experience_driver", "opportunity_stream", "emotion_group"],
+    "consider_fields": ["problem_statement.text"],
+    "window_days": 540,
+    "min_similarity_score": 0.70
+  },
+
+  "cluster_manifest": {
+    "csli_group_id": "CSLI-GRP-<short-id>",
+    "cluster_method": "thresholded_pairwise",
+    "members": [
+      {
+        "ou_id": "OU-<id>",
+        "ps_id": "PS-<id>",
+        "activation_status": "Pending|Activated|Completed|Archived",
+        "experience_driver": "<str>",
+        "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
+        "emotion_group": "<str>",
+        "match_strength": <0.00-1.00>,
+        "ps_excerpt": "<first 200 chars copied>"
+      }
+    ],
+    "pairwise_summary": {
+      "count_pairs": <int>,
+      "min_strength": <float>,
+      "max_strength": <float>,
+      "mean_strength": <float>
+    }
+  },
+
+  "canonical_problem_statement": {
+    "selection_rule": "medoid_problem_statement", 
+    "source_ps_id": "PS-<id>",                   
+    "text": "<exact copy of PS.text>"            
+  },
+
+  "span_statistics": {
+    "experience_drivers": { "distinct_count": <int>, "values": ["<ED 1>", "<ED 2>"] },
+    "opportunity_streams": { "distinct_count": <int>, "values": ["Fix","Optimize"] },
+    "emotion_groups": { "distinct_count": <int>, "values": ["Frustration","Ambivalence"] },
+    "activation_mix": { "Pending": <int>, "Activated": <int>, "Completed": <int>, "Archived": <int> }
+  },
+
+  "conflict_tension": {
+    "duplicate_effort_risk": true,
+    "evidence": {
+      "num_active_members": <int>,
+      "num_owners": <int>, 
+      "owners": ["<Owner A>", "<Owner B>"]
+    }
+  },
+
+  "lead_ou_selection": {
+    "policy": "rank_by_urgency_then_recency", 
+    "urgency_formula": "eri_score * rf_score", 
+    "ranking_table": [
+      {
+        "ou_id": "OU-<id>",
+        "source_capsule_id": "SC-<id>",
+        "eri_score": <float>, 
+        "rf_score": <float>,
+        "urgency_score": <float>,
+        "activation_date": "<YYYY-MM-DD>"
+      }
+    ],
+    "selected_lead_ou_id": "OU-<id>"
+  },
+
+  "action_path": {
+    "recommendation": "Execute_PDCA_on_lead_ou",   
+    "lead_ou_id": "OU-<id>",
+    "propagation_instruction": {
+      "apply_to_ou_ids": ["OU-<id>", "OU-<id>"],
+      "tag_key": "csli_group_resolved",
+      "tag_value": "CSLI-GRP-<short-id>"
+    }
+  },
+
+  "retrieval_manifest": {
+    "artifact_ids": ["OU-<id>", "PS-<id>", "SC-<id>", "PDCA-<id>", "OEC-<id>"],
+    "endpoint_templates": {
+      "ou_payload": "/ous/{id}",
+      "problem_statement": "/pdca/plan/{id}",
+      "signal_capsule": "/capsules/{id}",
+      "pdca_lifecycle": "/pdca/full/{id}",
+      "outcome_evaluation": "/outcomes/{id}"
+    }
+  },
+
+  "provenance": {
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1",
+    "guarantees": [
+      "All texts are copied verbatim from OU/PS artifacts.",
+      "All scores are deterministically computed from stored fields.",
+      "No generated narrative; canonical PS is a copied medoid."
+    ]
+  },
+
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "CSLI_GROUP",
+    "evidence_merkle_root": null
+  }
+}
+```
+
+---
+
+## 2) CSLI Commit Snapshot — v1.0 (side-chain block)
+
+```json
+{
+  "schema_version": "csli_commit.v1.0",
+  "block_meta": {
+    "block_type": "CSLI_GROUP",
+    "csli_block_id": "CSLI-BLOCK-<hash12>",
+    "prev_block_hash": "<hash_or_null>",
+    "issued_at": "<ISO-8601 UTC>",
+    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
+  },
+
+  "scan_header": {
+    "run_id": "CSLI-SCAN-<short-id>",
+    "embedding_model": "all-MiniLM-L6-v2",
+    "similarity_fn": "cosine",
+    "similarity_threshold": 0.70,
+    "min_cluster_size": 2
+  },
+
+  "anchors": {
+    "member_ou_anchors": [
+      { "ou_id": "OU-<id>", "ou_block_hash": "<hash_or_null>", "ps_id": "PS-<id>", "ps_block_hash": "<hash_or_null>" }
+    ]
+  },
+
+  "cluster_core": {
+    "csli_group_id": "CSLI-GRP-<short-id>",
+    "member_count": <int>,
+    "pairwise_mean_strength": <float>,
+    "canonical_problem_statement": {
+      "selection_rule": "medoid_problem_statement",
+      "source_ps_id": "PS-<id>",
+      "sha256_of_text": "<hex>"
+    },
+    "span": {
+      "experience_drivers": <int>,
+      "opportunity_streams": <int>,
+      "emotion_groups": <int>
+    },
+    "conflict_flags": { "duplicate_effort_risk": true }
+  },
+
+  "lead_path": {
+    "selection_policy": "rank_by_urgency_then_recency",
+    "selected_lead_ou_id": "OU-<id>",
+    "urgency_score": <float>
+  },
+
+  "propagation_intent": {
+    "apply_tag": { "key": "csli_group_resolved", "value": "CSLI-GRP-<short-id>" },
+    "target_ou_ids": ["OU-<id>", "OU-<id>"]
+  },
+
+  "lineage": [
+    { "field": "member_set", "derivation": { "fn": "csli_cluster_thresholded_pairwise", "version": "1.0.0" } },
+    { "field": "canonical_problem_statement", "derivation": { "fn": "medoid_selector", "version": "1.0.0" } },
+    { "field": "lead_path.urgency_score", "derivation": { "formula": "eri_score * rf_score", "source": "XDI.SignalCapsule" } }
+  ],
+
+  "evidence_merkle_root": "<hex>",
+  "ready_for_block": true
+}
+```
