@@ -1,0 +1,422 @@
+
+# ✅ Prompt (copy-paste for the model/annotator)
+
+**Task:** From the customer review, produce **one record per Experience Driver (ED)**.
+Keep everything extractable from the text; if you infer, include a brief justification tied to exact phrases. OU content is **preview-only**.
+
+Return the **JSON** using the template below.
+
+# 🧱 Output JSON template (Raw → CX Data)
+
+```json
+{
+  "schema_version": "cx_dimensions.v1.0",
+  "source": {
+    "system": "reviews|surveys|chat|call|social",
+    "record_id": "",
+    "collected_at": "",
+    "channel": "in-store|app|web|phone|email|social",
+    "locale": "en-GB"
+  },
+  "customer_review": {
+    "text": "",
+    "text_hash": "",
+    "attachments": []
+  },
+  "records": [
+    {
+      "experience_driver": {
+        "theme": "",
+        "category": "",
+        "subcategory": "",
+        "entity_name": ""
+      },
+      "context": "What the customer actually experienced, quoted/paraphrased from the text.",
+      "keywords": ["word1","word2"],
+
+      "feedback_type": "Complaint|Compliment|Suggestion|Request|Question|Product Usage Insight|Emerging Trend",
+
+      "emotion": { "group": "", "specific": "" },
+
+      "journey": {
+        "customer_journey": "",
+        "journey_stage": "",
+        "interaction_moment": ""
+      },
+
+      "opportunity_stream_preview": {
+        "stream": "Fix|Optimize|Innovate|Amplify",
+        "innovation_sub_tier": 1,
+        "justification": "Required if stream=Innovate; else null",
+        "preview_only": true
+      },
+
+      "customer_effort_score": 1,
+
+      "ou_draft_preview": {
+        "ou_name": "[Entity Name] – [Feedback Type] – [Opportunity Stream]",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer provided a [Feedback Type] during [Interaction Moment] … [Context].",
+          "section_2_strategic_response": "We need to [Opportunity Stream] → [Experience Driver] to address [MATTERS]."
+        },
+        "matters": "",
+        "stream_justification": "",
+        "matters_extraction": ["Voice","Context","Keywords","Interaction Moment"],
+        "behavioral_impact": "",
+        "preview_only": true
+      },
+
+      "evidence": {
+        "text_spans": [[start,end]],
+        "field_evidence": {
+          "experience_driver": [[start,end]],
+          "emotion": [[start,end]],
+          "interaction_moment": [[start,end]]
+        }
+      }
+    }
+  ]
+}
+```
+
+# 🔎 Worked example (your sample review → 2 ED records)
+
+**Input review:**
+“I love how your in-store staff always greet me and remember my usual order… Also, it'd be amazing if the app could suggest add-ons…”
+
+```json
+{
+  "schema_version": "cx_dimensions.v1.0",
+  "source": {
+    "system": "reviews",
+    "record_id": "rev_001",
+    "collected_at": "2025-09-02T10:00:00Z",
+    "channel": "in-store+app",
+    "locale": "en-GB"
+  },
+  "customer_review": {
+    "text": "I love how your in-store staff always greet me and remember my usual order. It’s a small thing, but it makes me feel like a regular. Also, it'd be amazing if the app could suggest add-ons based on what I usually buy.",
+    "text_hash": "sha256:…",
+    "attachments": []
+  },
+  "records": [
+    {
+      "experience_driver": {
+        "theme": "Service Distinction",
+        "category": "Customer Service",
+        "subcategory": "Staff Interaction",
+        "entity_name": "Personalized In-Store Greeting"
+      },
+      "context": "Customer is consistently recognized and greeted by in-store staff who remember their regular orders.",
+      "keywords": ["staff","greeting","remember","regular","personal"],
+      "feedback_type": "Compliment",
+      "emotion": { "group": "Adoration", "specific": "Valued" },
+      "journey": {
+        "customer_journey": "In-Store Engagement",
+        "journey_stage": "Entry & Service Initiation",
+        "interaction_moment": "in-store entry"
+      },
+      "opportunity_stream_preview": {
+        "stream": "Amplify",
+        "innovation_sub_tier": null,
+        "justification": null,
+        "preview_only": true
+      },
+      "customer_effort_score": 2,
+      "ou_draft_preview": {
+        "ou_name": "Personalized In-Store Greeting – Compliment – Amplify",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer submitted a Compliment that during in-store entry they are consistently greeted by staff who remember their regular orders.",
+          "section_2_strategic_response": "We need to Amplify → Customer Service → Staff Interaction to address personalized in-store greetings that make loyal customers feel emotionally recognized."
+        },
+        "matters": "personalized in-store greetings that make loyal customers feel emotionally recognized",
+        "stream_justification": "Builds emotional surplus and memorability; strengthens loyalty.",
+        "matters_extraction": ["Voice","Context","Keywords","Interaction Moment"],
+        "behavioral_impact": "Deepen emotional bonds; encourage return visits.",
+        "preview_only": true
+      },
+      "evidence": {
+        "text_spans": [[7,65],[80,146]],
+        "field_evidence": {
+          "emotion": [[0,6]],
+          "interaction_moment": [[7,16]]
+        }
+      }
+    },
+    {
+      "experience_driver": {
+        "theme": "Personalization & Smart Suggestions",
+        "category": "Recommendation Engine",
+        "subcategory": "Smart Add-On Suggestions",
+        "entity_name": "Add-On Prediction via Purchase History"
+      },
+      "context": "Customer wants the app to suggest add-ons based on prior purchase behavior.",
+      "keywords": ["suggest","add-ons","usually buy","app","purchase history"],
+      "feedback_type": "Suggestion",
+      "emotion": { "group": "Appreciation", "specific": "Interested" },
+      "journey": {
+        "customer_journey": "Digital Engagement",
+        "journey_stage": "App Browsing & Cart Enrichment",
+        "interaction_moment": "during app browsing"
+      },
+      "opportunity_stream_preview": {
+        "stream": "Innovate",
+        "innovation_sub_tier": 3,
+        "justification": "Predictive intelligence that increases engagement and upsell.",
+        "preview_only": true
+      },
+      "customer_effort_score": 3,
+      "ou_draft_preview": {
+        "ou_name": "Add-On Prediction via Purchase History – Suggestion – Innovate",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer submitted a Suggestion during app browsing to intelligently suggest add-ons based on purchase history.",
+          "section_2_strategic_response": "We need to Innovate → Recommendation Engine → Smart Add-On Suggestions to address personalized add-on recommendations that simplify and enrich repeat ordering."
+        },
+        "matters": "personalized add-on recommendations that simplify and enrich repeat ordering",
+        "stream_justification": "Forward-facing improvement grounded in repeat behavior.",
+        "matters_extraction": ["Voice","Context","Keywords","Interaction Moment"],
+        "behavioral_impact": "Increase AOV and retention via intelligent engagement.",
+        "preview_only": true
+      },
+      "evidence": {
+        "text_spans": [[149,230],[236,297]],
+        "field_evidence": {
+          "interaction_moment": [[236,252]]
+        }
+      }
+    }
+  ]
+}
+```
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+XDI Payload (Signal Capsule) — Template v1.0
+
+{
+  "label": "Experience Driver Tile",
+  "experience_driver": "<str>",
+
+  "capsule_meta": {
+    "capsule_id": "SC-<short-id>",
+    "generated_at": "<ISO-8601 UTC>",
+    "capsule_type": "ED",
+    "capsule_version": "signal_capsule.v1.0",
+    "engine_version": "XDI.v1"
+  },
+
+  "section_1_emotional_telemetry": {
+    "section_name": "Emotional Telemetry",
+
+    "entity_details": {
+      "entity_type": "<str>",
+      "associated_entity_names": ["<str>", "..."],
+      "priority_class": "P0|P1|P2|P3",
+      "no_of_mentions": <int>,
+      "most_recent_mention": "<YYYY-MM-DD>"
+    },
+
+    "emotion_diagnostics": {
+      "dominant_emotion": "<optional>",
+      "emotion_perception_tier": "<str>",
+      "eri_score": <float>,
+      "rf_urgency_category": "<str>",
+      "eri_rf_urgency_category": "<str>",
+      "quadrant_purpose": "<optional>"
+    },
+
+    "volume_urgency_metrics": {
+      "r_score": <float>,
+      "f_score": <float>,
+      "rf_score": <float>,
+      "rfi_score": <float>
+    },
+
+    "behavioral_signal_dynamics": {
+      "trend": "<↑|→|↓>",
+      "trend_pct": <float>,
+      "momentum": "<↑↑|↑|→|↓|↓↓>",
+      "momentum_delta": <float>,
+      "volatility": "<✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating>",
+      "volatility_score": <float>
+    },
+
+    "signal_strength_index": {
+      "velocity_score": <int>,
+      "saturation_score": <int>,
+      "qssi_score": <int>,
+      "qssi_tier": "<💥 Critical Signal|🔥 Strong Signal|🌱 Emerging Signal|🔁 Weak Signal|❌ No Signal>",
+      "emotional_alert_level": <float>,
+      "qssi_description": "<str>",
+      "qssi_interpretation": "<str>",
+      "components": {
+        "velocity_score": <int>,
+        "velocity_explanation": "<str>",
+        "saturation_modifier": <int>,
+        "saturation_band": "<str>",
+        "saturation_interpretation": "<str>"
+      },
+      "inputs": {
+        "trend_symbol": "<↑|→|↓>",
+        "momentum_symbol": "<↑↑|↑|→|↓|↓↓>",
+        "saturation_index": <float>
+      }
+    },
+
+    "modules": {
+      "trend_block": { "symbol": "<↑|→|↓>", "trend_pct": <float>, "trend_snr": <float> },
+      "momentum_block": {
+        "symbol": "<↑↑|↑|→|↓|↓↓>",
+        "delta": <float>, "label": "<str>", "description": "<str>",
+        "snr": <float>, "n_days": <int>, "emoji_full": "<str|null>",
+        "strength": <float|null>, "polarity": <int|null>,
+        "thresholds_used": {
+          "rise_mod": <float>, "rise_strong": <float>,
+          "fall_mod": <float>, "fall_strong": <float>,
+          "snr_mod": <float>, "snr_strong": <float>
+        }
+      },
+      "volatility_block": {
+        "tier": "<✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating>",
+        "score": <float>, "score_adj": <float>,
+        "n_days": <int>, "method": "std|mad_sigma", "detrended": <bool>
+      },
+      "pattern_block": {
+        "has_pattern": <bool>,
+        "pattern_type": "Weekly|Monthly|Quarterly|None|null",
+        "pattern_strength": <float|null>,
+        "pattern_confidence": "Strong|Moderate|Weak|Candidate|None|null",
+        "pain_day": "Monday..Sunday|null",
+        "data_coverage_days": <int>,
+        "min_required_days": <int|null>,
+        "eri_by_day": {"Monday": <float|null>},
+        "acf": {"lag_days": <int>, "score": <float>, "sig": <float>, "gate": <float>}
+      }
+    }
+  },
+
+  "section_2_state_of_play": {
+    "section_name": "State of Play (Real-Time Interpretation)",
+    "momentum_saturation_insight": {
+      "signal_classification": {
+        "momentum_tier": "<str>",
+        "saturation_tier": "<str>",
+        "saturation_index": <float>,
+        "loyalty_tier": "<str>",
+        "combined_quadrant": "<str>",
+        "combined_quadrant_key": "<emoji×emoji>"
+      },
+      "quadrant_interpretation": {
+        "quadrant_label": "<str>",
+        "urgency_level": "<str>",
+        "interpretation": "<str>"
+      },
+      "meta": {
+        "quadrant_confidence": <float>,
+        "borderline": <bool>,
+        "saturation_bin": {"lower": <float>, "upper": <float>}
+      }
+    },
+    "momentum_saturation_story": "<descriptive sentence only>"
+  },
+
+  "section_3_predictive_emotional_modeling": {
+    "section_name": "Predictive Emotional Modeling (PEM)",
+    "predictive_emotion_forecast": {
+      "forecast": {
+        "summary": "<str>",
+        "basis": "<str>",
+        "confidence_level": "High|Moderate|Low|None"
+      },
+      "watch": {
+        "focus": ["<str>"],
+        "windows": ["Weekly|Monthly|Quarterly"],
+        "notes": ["<str>"],
+        "horizon_days": <int>
+      },
+      "signal_synthesis": {
+        "trend": "<↑|→|↓>",
+        "momentum": "<↑↑|↑|→|↓|↓↓>",
+        "volatility": "Stable|Fluctuating|Highly Fluctuating",
+        "volatility_score_pct": <float>,
+        "qssi": <int>,
+        "pattern": {
+          "detected": <bool>,
+          "type": "Weekly|Monthly|Quarterly|null",
+          "confidence": "Strong|Moderate|Weak|null",
+          "pain_day": "Monday..Sunday|null"
+        }
+      },
+      "meta": { "quadrant": "<str>", "confidence_score": <float> }
+    }
+  },
+
+  "section_4_ou_summary_preview": {
+    "section_name": "OU Summary Preview (Generated from this ED)",
+    "preview_only": true,
+    "ed_anchor": { "capsule_id": "SC-<short-id>" },
+    "sample_size": <int>,  // number of verbatims/rows underpinning the distributions
+    "summaries": [
+      {
+        "ou_name": "Proactive Refund Experience – Agitation – Innovate",
+        "details": {
+          "experience_driver": "Refund Status & Delays",
+          "emotion": "Agitation",
+          "opportunity_stream": "Innovate",
+          "root_cause_snippet": "Proactive communication on refund delays"
+        },
+        "distribution_statistics": {
+          "emotion_distribution": { "Agitation": 64.7, "Ambivalence": 21.2, "Anger": 14.1 },
+          "stream_distribution": { "Fix": 47.3, "Innovate": 38.6, "Optimize": 14.1 },
+          "root_cause_snippet_distribution": {
+            "Proactive communication on refund delays": 51.4,
+            "Lack of timeline visibility": 33.2,
+            "No apology or empathy expressed": 15.4
+          }
+        }
+      },
+      {
+        "ou_name": "Refund Visibility Breakdown – Anger – Fix",
+        "details": {
+          "experience_driver": "Refund Status & Delays",
+          "emotion": "Anger",
+          "opportunity_stream": "Fix",
+          "root_cause_snippet": "No real-time visibility on refund progress"
+        },
+        "distribution_statistics": {
+          "emotion_distribution": { "Anger": 78.2, "Agitation": 19.6, "Ambivalence": 2.2 },
+          "stream_distribution": { "Fix": 82.4, "Optimize": 17.6 },
+          "root_cause_snippet_distribution": {
+            "No real-time visibility on refund progress": 62.8,
+            "Broken refund tracking link": 23.7,
+            "Confusing email updates": 13.5
+          }
+        }
+      }
+    ],
+    "generation_meta": {
+      "fn_name": "ou_generator_from_ed",
+      "fn_version": "v1.0.0",
+      "inputs": ["experience_driver", "trend_block", "momentum_block", "volatility_block", "pattern_block", "momentum_saturation_insight", "signal_strength_index"],
+      "generated_at": "<ISO-8601 UTC>"
+    }
+  },
+
+  "provenance": {
+    "analysis_window_days": <int>,
+    "observed_days_with_signal": <int>,
+    "signal_presence_pct": <float>,
+    "trend_analysis_days": <int>,
+    "momentum_analysis_days": <int>,
+    "series_data_complete": <bool>,
+    "missing_days_pct": <float>,
+    "window_start_date": "<YYYY-MM-DD>",
+    "window_end_date": "<YYYY-MM-DD>"
+  }
+}
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
