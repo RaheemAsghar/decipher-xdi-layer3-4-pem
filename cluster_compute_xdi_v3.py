@@ -2675,17 +2675,9 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
                 # L3 MODULES (the 7 diagnostics)
                 # =========================
 
-                trend = self._compute_trend_series(
-                    daily_eri,
-                    signal_presence_pct=pct_days_with_signal,
-                    min_presence_gate=0.05,   # honor doctrine presence gate
-                    min_n=2                   # aligned with ≥2 days rule
-                )
+                trend = self._compute_trend_series(daily_eri)
 
-                momentum = self._compute_momentum_series(
-                    daily_eri,
-                    signal_presence_pct=pct_days_with_signal
-                )
+                momentum = self._compute_momentum_series(daily_eri)
 
                 volatility = self._compute_volatility_series(
                     daily_eri,
@@ -3437,4 +3429,5 @@ pem_vol_pct = vol_for_norm_pct  # disciplined input to PEM
                     pattern_confidence=pattern_block.get("pattern_confidence")
                 )
         
+
 """
