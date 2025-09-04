@@ -1306,6 +1306,195 @@ def get_quadrant_matrix():
             "Saturation_Context","Trajectory_Story"]
     return pd.DataFrame(data, columns=cols)
 
+def get_trend_momentum_grid():
+    """
+    9-cell Trend × Momentum matrix with full narratives.
+    Columns:
+      Trend_Tier, Momentum_Tier, Diagnostic_Label, Strategic_Narrative,
+      Action_Guidance
+    """
+    data = [
+        # Trend ↑ Improving
+        ["Trend ↑ (Improving)","Momentum ↑ (Improving)",
+         "Momentum Building 🚀",
+         "Both long-term and recent signals positive.",
+         "Amplify programs, celebrate advocacy, invest in scale."],
+
+        ["Trend ↑ (Improving)","Momentum → (Stable)",
+         "Plateau Watch ⚖️",
+         "Long-term gains, but short-term flattening.",
+         "Refresh engagement to prevent stagnation."],
+
+        ["Trend ↑ (Improving)","Momentum ↓ (Worsening)",
+         "Micro-Shock (Rare)",
+         "Long-term gains but short-term deterioration.",
+         "Watch for micro-shocks, validate if anomaly or early erosion."],
+
+        # Trend → Stable
+        ["Trend → (Stable)","Momentum ↑ (Improving)",
+         "Recovery Signal 🌱",
+         "Flat overall, but recent upward push.",
+         "Support and accelerate the bounce."],
+
+        ["Trend → (Stable)","Momentum → (Stable)",
+         "True Stability 🟢",
+         "Flat long-term and short-term.",
+         "Monitor quietly, no major action."],
+
+        ["Trend → (Stable)","Momentum ↓ (Worsening)",
+         "Early Erosion ⚠️",
+         "Flat long-term, but recent dip.",
+         "Early-warning: intervene before decline becomes entrenched."],
+
+        # Trend ↓ Declining
+        ["Trend ↓ (Declining)","Momentum ↑ (Improving)",
+         "Emerging Recovery 🔄",
+         "Overall decline, but short-term improvement.",
+         "Double down to reverse the slide."],
+
+        ["Trend ↓ (Declining)","Momentum → (Stable)",
+         "Structural Decline 🔻",
+         "Steady long-term fall, no shift.",
+         "Root-cause deep dive and corrective initiatives."],
+
+        ["Trend ↓ (Declining)","Momentum ↓ (Worsening)",
+         "Accelerating Collapse 💥",
+         "Both long-term and recent negative.",
+         "Crisis response: urgent retention and loyalty fixes."]
+    ]
+    cols = ["Trend_Tier","Momentum_Tier","Diagnostic_Label",
+            "Strategic_Narrative","Action_Guidance"]
+    return pd.DataFrame(data, columns=cols)
+
+
+def get_trend_momentum_volatility_grid():
+    """
+    15-cell Trend × Momentum × Volatility matrix.
+    Columns:
+      Trend_Tier, Momentum_Tier, Volatility_Tier, Interpretation, CX_Instruction
+    """
+    data = [
+        # Trend ↑ Improving, Momentum → Stable
+        ["↑ (Improving)","→ (Stable)","✅ Stable",
+         "Long-term gains holding steady and reliable",
+         "Keep reinforcing; stable trust is compounding"],
+
+        ["↑ (Improving)","→ (Stable)","⚠ Fluctuating",
+         "Gains are real but customer mood wobbles",
+         "Monitor; ensure uplift isn’t fragile"],
+
+        ["↑ (Improving)","→ (Stable)","🔴 Highly Fluctuating",
+         "Signals point upward, but chaos under the surface",
+         "Don’t over-celebrate; stabilize before scaling"],
+
+        # Trend ↑ Improving, Momentum ↑ Recent rise
+        ["↑ (Improving)","↑ (Recent rise)","✅ Stable",
+         "Clear acceleration with consistent base",
+         "Amplify — perfect moment to scale advocacy"],
+
+        ["↑ (Improving)","↑ (Recent rise)","⚠ Fluctuating",
+         "Surge is happening, but customers uneven",
+         "Seize positives, but reinforce weak spots"],
+
+        ["↑ (Improving)","↑ (Recent rise)","🔴 Highly Fluctuating",
+         "“Spike effect” — surge may collapse",
+         "Treat as hype-cycle; confirm if sustainable"],
+
+        # Trend → Flat, Momentum ↓ Recent dip
+        ["→ (Flat)","↓ (Recent dip)","✅ Stable",
+         "Plateau with emerging warning",
+         "Investigate small cracks before they widen"],
+
+        ["→ (Flat)","↓ (Recent dip)","⚠ Fluctuating",
+         "Customers unsettled, mixed signals",
+         "Early intervention; sentiment at tipping point"],
+
+        ["→ (Flat)","↓ (Recent dip)","🔴 Highly Fluctuating",
+         "Volatility + downturn = fragile loyalty",
+         "Treat as high-risk; prepare crisis workflows"],
+
+        # Trend ↓ Declining, Momentum ↑ Recent rise
+        ["↓ (Declining)","↑ (Recent rise)","✅ Stable",
+         "Recovery starting; reliable turnaround",
+         "Support rebound with targeted initiatives"],
+
+        ["↓ (Declining)","↑ (Recent rise)","⚠ Fluctuating",
+         "Customers showing rebound but unstable",
+         "Encourage positives, shore up weaknesses"],
+
+        ["↓ (Declining)","↑ (Recent rise)","🔴 Highly Fluctuating",
+         "Recovery attempt is noisy and fragile",
+         "Monitor tightly; avoid premature bets"],
+
+        # Trend ↓ Declining, Momentum ↓ Recent fall
+        ["↓ (Declining)","↓ (Recent fall)","✅ Stable",
+         "Clear deterioration, stable pattern",
+         "Act decisively — loyalists are slipping away"],
+
+        ["↓ (Declining)","↓ (Recent fall)","⚠ Fluctuating",
+         "Decline underway, customers uneven",
+         "Contain damage, look for segment splits"],
+
+        ["↓ (Declining)","↓ (Recent fall)","🔴 Highly Fluctuating",
+         "Emotional free-fall with chaos",
+         "Crisis protocol — stabilize or lose trust"],
+    ]
+
+    cols = ["Trend_Tier","Momentum_Tier","Volatility_Tier","Interpretation","CX_Instruction"]
+    return pd.DataFrame(data, columns=cols)
+
+
+def get_temporal_pattern_grid():
+    """
+    Temporal Pattern Action Grid
+    Rows capture Pattern Type × Confidence with interpretation and CX instruction.
+    Columns:
+      Pattern_Type, Confidence_Level, Interpretation, CX_Instruction
+    """
+    data = [
+        # Pain Day
+        ["Pain Day", "✅ Strong",
+         "Consistent spike in negative emotion on a specific day",
+         "Proactively staff / resource to handle known pain-day load"],
+
+        ["Pain Day", "⚠ Moderate",
+         "Recurring issue but not always reliable",
+         "Monitor closely, validate before committing resources"],
+
+        ["Pain Day", "🔴 Weak / Candidate",
+         "Emerging but unconfirmed spike",
+         "Treat as early signal; don’t overfit; collect more cycles"],
+
+        # Seasonal Cycle
+        ["Seasonal Cycle", "✅ Strong",
+         "Clear quarterly / monthly / weekly recurrence",
+         "Plan capacity and customer comms in advance (e.g. holiday delivery surges)"],
+
+        ["Seasonal Cycle", "⚠ Moderate",
+         "Some recurrence, but irregular",
+         "Hedge plans: prep but don’t over-invest"],
+
+        ["Seasonal Cycle", "🔴 Weak / Candidate",
+         "Hints of a cycle, not yet statistically reliable",
+         "Flag as watchlist; continue data collection"],
+
+        # Operational Timing
+        ["Operational Timing", "✅ Strong",
+         "Predictable spikes tied to process (e.g. refund backlog after weekend)",
+         "Reconfigure operations to smooth flow, pre-empt customer frustration"],
+
+        ["Operational Timing", "⚠ Moderate",
+         "Timing link is visible but with exceptions",
+         "Use targeted fixes; validate across more periods"],
+
+        ["Operational Timing", "🔴 Weak / Candidate",
+         "Possible operational link but noisy",
+         "Tag for analyst review; don’t trigger enterprise-wide action yet"],
+    ]
+
+    cols = ["Pattern_Type", "Confidence_Level", "Interpretation", "CX_Instruction"]
+    return pd.DataFrame(data, columns=cols)
+
 
 class Layer3Computer:
     def __init__(self, layer2_df, raw_df, timeframe_days, today_anchor, verbose=False):
@@ -1613,7 +1802,7 @@ class Layer3Computer:
 
     """
 
-## **Trend × Momentum Grid**
+## **Trend x Momentum Grid**
 
 | **Trend** ↓ / **Momentum** → | **Momentum ↑ (Improving)**                                                                                                           | **Momentum → (Stable)**                                                                                              | **Momentum ↓ (Worsening)**                                                                                                     |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
@@ -2268,7 +2457,6 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
     That's why Saturation x Momentum is the **execution grammar of customer emotion** — 
     the **battlefield map** that no other CX system has.
 
-
     """
 
     # === Layer 4: Signal Strength (QSSI) — simple, non-directive ===
@@ -2372,7 +2560,7 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
             "urgency_answer": f"Urgency Level: {qssi_score}/10 - {description}",  # informational, not prescriptive
         }
 
-
+   
     """
 
     ### **Business Question Alignment**
@@ -3429,5 +3617,4 @@ pem_vol_pct = vol_for_norm_pct  # disciplined input to PEM
                     pattern_confidence=pattern_block.get("pattern_confidence")
                 )
         
-
 """
