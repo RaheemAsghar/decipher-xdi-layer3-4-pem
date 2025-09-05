@@ -2604,186 +2604,509 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
 
     """
 
-   # === PEM (Predictive Emotional Modeling) — lean & intuitive ===
+# === PEM (Predictive Emotional Modeling) ===
+# Assumes you already have:
+# - get_trend_momentum_grid()
+# - get_trend_momentum_volatility_grid()
+# - get_temporal_pattern_grid()
+# - momentum_saturation_quadrant (from your MS 25-cell insight)
+# - sat_from_si(si)  # optional if you want saturation headroom context here
 
-    def _normalize_vol_tier(self, volatility_tier: str) -> str:
-        """
-        Normalize volatility tier into one of:
-        'Stable' | 'Fluctuating' | 'Highly Fluctuating'
-        """
-        vt = (volatility_tier or "").strip().lower()
-        if "high" in vt:
+# ---------- helpers: symbol → grid key mapping ----------
+
+    # ---------- canonical label maps (no deductions) ----------
+    _TM_TREND = {
+        "↑": "Trend ↑ (Improving)",
+        "→": "Trend → (Stable)",
+        "↓": "Trend ↓ (Declining)",
+    }
+    _TM_MOMENTUM = {
+        "↑↑": "Momentum ↑ (Improving)",
+        "↑":  "Momentum ↑ (Improving)",
+        "→":  "Momentum → (Stable)",
+        "↓":  "Momentum ↓ (Worsening)",
+        "↓↓": "Momentum ↓ (Worsening)",
+    }
+
+    _TMV_TREND = {
+        "↑": "↑ (Improving)",
+        "→": "→ (Flat)",
+        "↓": "↓ (Declining)",
+    }
+    _TMV_MOMENTUM = {
+        "↑↑": "↑ (Recent rise)",
+        "↑":  "↑ (Recent rise)",
+        "→":  "→ (Stable)",
+        "↓":  "↓ (Recent dip)",
+        "↓↓": "↓ (Recent dip)",
+    }
+
+    # ---------- normalization helpers ----------
+    def _norm_vol_to_tmv(self, vol_tier: str) -> str:
+        vt = (vol_tier or "").lower()
+        if "high" in vt or "🔴" in vt:
+            return "🔴 Highly Fluctuating"
+        if "stable" in vt or "✅" in vt:
+            return "✅ Stable"
+        return "⚠ Fluctuating"
+
+    def _norm_vol_simple(self, vol_tier: str) -> str:
+        vt = (vol_tier or "").lower()
+        if "high" in vt or "🔴" in vt:
             return "Highly Fluctuating"
-        if "stable" in vt or "✅" in (volatility_tier or ""):
+        if "stable" in vt or "✅" in vt:
             return "Stable"
-        if "fluctuat" in vt:
-            return "Fluctuating"
         return "Fluctuating"
 
+    # ---------- QSSI tiering (display only) ----------
+    def _qssi_tier(self, qssi: int) -> tuple[str, str]:
+        q = int(max(0, min(10, qssi)))
+        if q >= 9:  return ("💥 Critical", "critical")
+        if q >= 6:  return ("🔥 Strong", "strong")
+        if q >= 4:  return ("🌱 Emerging", "emerging")
+        if q >= 1:  return ("🔁 Weak", "weak")
+        return ("❌ No Signal", "none")
 
-    def _pem_confidence(self, *, qssi: int, vol_tier: str, pattern_confidence: str | None) -> tuple[str, float]:
+    # ---------- confidence (STRICT: no grid bonus, no heuristics) ----------
+    def _pem_confidence(self, qssi: int, vol_tier: str, pattern_confidence: str | None) -> tuple[str, float]:
         """
-        Simple, transparent confidence (Low/Moderate/High) with a 0–1 score.
-        - QSSI gives the base.
-        - Pattern confidence nudges up.
-        - Volatility nudges down.
+        Confidence derives ONLY from:
+        - QSSI band
+        - Pattern confidence
+        - Volatility penalty
+        No grid-alignment bumps; no extra heuristics.
         """
-        base = 0.30  # neutral base
-        # QSSI contribution
+        base = 0.30
+        # QSSI base
         if qssi >= 8:   base += 0.35
         elif qssi >= 6: base += 0.25
         elif qssi >= 4: base += 0.15
         else:           base += 0.05
-
-        # Pattern contribution
+        # pattern uplift
         pc = (pattern_confidence or "").strip().lower()
         if   pc == "strong":   base += 0.20
         elif pc == "moderate": base += 0.12
         elif pc == "weak":     base += 0.05
-
-        # Volatility penalty
-        vt = self._normalize_vol_tier(vol_tier)
+        # volatility penalty
+        vt = self._norm_vol_simple(vol_tier)
         if   vt == "Highly Fluctuating": base -= 0.20
         elif vt == "Fluctuating":        base -= 0.10
-
         score = max(0.10, min(0.95, round(base, 2)))
         level = "High" if score >= 0.70 else "Moderate" if score >= 0.50 else "Low"
         return level, score
 
+    # ---------- horizon (STRICT: pattern windows only; else use provided fallback) ----------
+    def _horizon_days(self, pattern_type: str | None, fallback_days: int) -> tuple[int, int]:
+        """
+        If a pattern exists, return fixed windows.
+        Otherwise, DO NOT invent horizon — use the provided fallback.
+        """
+        pt = (pattern_type or "").lower()
+        if pt == "weekly":    return (7, 14)
+        if pt == "monthly":   return (21, 35)
+        if pt == "quarterly": return (60, 100)
+        return (fallback_days, fallback_days)
 
-    def _pem_direction_label(self, trend_symbol: str, momentum_symbol: str) -> str:
-        """
-        Compact, intuitive direction descriptor combining trend & momentum.
-        """
-        tr, mo = trend_symbol, momentum_symbol
+    # ---------- grid lookups (direct table reads; no deductions) ----------
+    def _lookup_tm(self, trend_symbol: str, momentum_symbol: str) -> dict | None:
+        df = get_trend_momentum_grid()
+        t = self._TM_TREND.get(trend_symbol, self._TM_TREND["→"])
+        m = self._TM_MOMENTUM.get(momentum_symbol, self._TM_MOMENTUM["→"])
+        row = df[(df["Trend_Tier"] == t) & (df["Momentum_Tier"] == m)]
+        if row.empty:
+            return None
+        r = row.iloc[0]
+        return {
+            "label": r["Diagnostic_Label"],
+            "narrative": r["Strategic_Narrative"],
+            "guidance": r["Action_Guidance"],
+        }
+
+    def _lookup_tmv(self, trend_symbol: str, momentum_symbol: str, vol_tier: str) -> dict | None:
+        df = get_trend_momentum_volatility_grid()
+        t = self._TMV_TREND.get(trend_symbol, self._TMV_TREND["→"])
+        m = self._TMV_MOMENTUM.get(momentum_symbol, self._TMV_MOMENTUM["→"])
+        v = self._norm_vol_to_tmv(vol_tier)
+        row = df[(df["Trend_Tier"] == t) & (df["Momentum_Tier"] == m) & (df["Volatility_Tier"] == v)]
+        if row.empty:
+            return None
+        r = row.iloc[0]
+        return {
+            "interpretation": r["Interpretation"],
+            "instruction": r["CX_Instruction"],
+        }
+
+    def _lookup_pattern(self, pattern_type: str | None, pattern_confidence: str | None) -> dict | None:
+        if not pattern_type or not pattern_confidence:
+            return None
+        df = get_temporal_pattern_grid()
+        pc = (pattern_confidence or "").strip().lower()
+        if "strong" in pc:
+            conf = "✅ Strong"
+        elif "moderate" in pc:
+            conf = "⚠ Moderate"
+        else:
+            conf = "🔴 Weak / Candidate"
+        pt = (pattern_type or "").strip().title()
+        row = df[(df["Pattern_Type"] == pt) & (df["Confidence_Level"] == conf)]
+        if row.empty:
+            return None
+        r = row.iloc[0]
+        return {
+            "interpretation": r["Interpretation"],
+            "instruction": r["CX_Instruction"],
+            "conf_level": conf,
+            "type": pt,
+        }
+
+    # ---------- plain direction label (exactly from symbols) ----------
+    def _direction_label(self, tr: str, mo: str) -> str:
         if tr == "↑" and mo in ("↑↑", "↑"): return "improving"
         if tr == "↓" and mo in ("↓↓", "↓"): return "declining"
-        if tr == "↑" and mo in ("→",):      return "improving (recent plateau)"
-        if tr == "↓" and mo in ("→",):      return "declining (recent plateau)"
-        if tr == "→" and mo in ("↑↑","↑"):  return "stabilizing upward"
-        if tr == "→" and mo in ("↓↓","↓"):  return "stabilizing downward"
-        if tr == "↓" and mo in ("↑↑","↑"):  return "recovering"
-        if tr == "↑" and mo in ("↓↓","↓"):  return "cooling"
+        if tr == "↑" and mo == "→":        return "improving (recent plateau)"
+        if tr == "↓" and mo == "→":        return "declining (recent plateau)"
+        if tr == "→" and mo in ("↑↑", "↑"): return "stabilizing upward"
+        if tr == "→" and mo in ("↓↓", "↓"): return "stabilizing downward"
+        if tr == "↓" and mo in ("↑↑", "↑"): return "recovering"
+        if tr == "↑" and mo in ("↓↓", "↓"): return "cooling"
         return "stable"
 
-
+    # ---------- PEM builder (STRICT) ----------
     def build_predictive_emotional_modeling(
         self,
         *,
-        trend_symbol: str,           # "↑", "→", "↓"
-        momentum_symbol: str,        # "↑↑", "↑", "→", "↓", "↓↓"
-        volatility_tier: str,        # "Stable" | "Fluctuating" | "Highly Fluctuating" (emojis allowed)
-        volatility_score: float,     # adjusted volatility % (0..100) — for display only
+        trend_symbol: str,                 # "↑","→","↓"
+        momentum_symbol: str,              # "↑↑","↑","→","↓","↓↓"
+        volatility_tier: str,              # freeform; normalized
+        volatility_score: float,           # pct (0..100) display
         pattern_detected: bool,
-        pattern_type: str | None,    # "Weekly" | "Monthly" | "Quarterly" | None
-        pattern_confidence: str | None,   # "Strong" | "Moderate" | "Weak" | None
-        pain_day: str | None,        # weekday if weekly pattern
-        qssi_score: int,             # 0–10 from QSSI
-        momentum_saturation_quadrant: dict | None,  # from _compute_momentum_saturation_insight
-        horizon_days: int = 30
+        pattern_type: str | None,          # "Weekly" | "Monthly" | "Quarterly" | "Operational Timing" | None
+        pattern_confidence: str | None,    # "Strong" | "Moderate" | "Weak" | "Candidate" | None
+        pain_day: str | None,              # weekday if weekly
+        qssi_score: int,                   # 0..10
+        momentum_saturation_quadrant: dict | None,  # from MS 25-cell (optional)
+        saturation_index: float | None = None,      # optional (display only)
+        horizon_days: int = 30                         # explicit fallback window
     ) -> dict:
-        """
-        PEM — forward-looking *pointer*, not prescription.
-        Rules (simple):
-        1) If signal is weak (QSSI < 4): no forecast; keep monitoring.
-        2) If a pattern is detected (Strong/Moderate), report *when* it tends to recur.
-        3) Else, describe likely trajectory qualitatively from Trend×Momentum.
-        4) Always expose confidence and basis. Avoid deterministic dates.
-        """
-        # sanitize
-        tr = trend_symbol if trend_symbol in ("↑","→","↓") else "→"
-        mo = momentum_symbol if momentum_symbol in ("↑↑","↑","→","↓","↓↓") else "→"
-        vt = self._normalize_vol_tier(volatility_tier)
+
+        tr = trend_symbol if trend_symbol in ("↑", "→", "↓") else "→"
+        mo = momentum_symbol if momentum_symbol in ("↑↑", "↑", "→", "↓", "↓↓") else "→"
+        vt = self._norm_vol_simple(volatility_tier)
         qssi = int(max(0, min(10, int(qssi_score or 0))))
 
+        # lookups (direct; no inference)
+        tm  = self._lookup_tm(tr, mo) or {}
+        tmv = self._lookup_tmv(tr, mo, volatility_tier) or {}
         msq = momentum_saturation_quadrant or {}
-        quad = (msq.get("quadrant_interpretation") or {}).get("quadrant_label", "Unknown")
+        msq_label = (msq.get("quadrant_interpretation") or {}).get("quadrant_label")
+        pat = self._lookup_pattern(pattern_type if pattern_detected else None, pattern_confidence)
 
-        # Confidence (informational)
-        conf_level, conf_score = self._pem_confidence(qssi=qssi, vol_tier=vt, pattern_confidence=pattern_confidence)
+        # confidence (strict)
+        conf_level, conf_score = self._pem_confidence(qssi, vt, pattern_confidence)
+        qssi_tier_emoji, _ = self._qssi_tier(qssi)
+        h_min, h_max = self._horizon_days((pattern_type if pattern_detected else None), horizon_days)
 
-        # 1) Not enough signal for forecasting
+        # weak signal → no forecast
         if qssi < 4:
             return {
                 "forecast": {
                     "summary": "Insufficient signal for a forward pointer — keep monitoring.",
-                    "basis": "Low signal strength",
+                    "basis": "Low signal strength (QSSI < 4)",
                     "confidence_level": "None",
+                    "horizon_days": h_max
                 },
                 "watch": {
                     "focus": ["Trend direction", "Momentum shifts", "Volatility changes"],
-                    "horizon_days": horizon_days
+                    "horizon_days": h_max
                 },
                 "signal_synthesis": {
                     "trend": tr, "momentum": mo, "volatility": vt,
-                    "qssi": qssi, "pattern": {"detected": False}
+                    "qssi": qssi, "qssi_tier": qssi_tier_emoji,
+                    "pattern": {"detected": False}
                 },
-                "meta": {"quadrant": quad, "confidence_score": conf_score}
+                "meta": {
+                    "quadrant_TM": tm.get("label"),
+                    "quadrant_TMV": tmv.get("interpretation"),
+                    "quadrant_MS": msq_label,
+                    "confidence_score": conf_score
+                }
             }
 
-        # 2) Pattern-led pointer
-        if pattern_detected and (pattern_type or "").strip():
-            pt = pattern_type.strip().capitalize()
-            if pt == "Weekly":
-                when_txt = f"on {pain_day}" if pain_day else "on its typical weekday"
-                window_txt = "next week"
-            elif pt == "Monthly":
-                when_txt = "around the same month point"
-                window_txt = "in the next month"
-            elif pt == "Quarterly":
-                when_txt = "around the same quarter phase"
-                window_txt = "in the next quarter"
-            else:
-                when_txt, window_txt = "around its usual interval", "soon"
+        # pattern-led forecast (when available)
+        if pat:
+            dir_lbl = self._direction_label(tr, mo)
+            when_txt = ""
+            pt = (pat["type"] or "").lower()
+            if pt == "weekly":
+                when_txt = f" (likely on {pain_day})" if pain_day else " (weekly window)"
+            elif pt == "monthly":
+                when_txt = " (around the same month point)"
+            elif pt == "quarterly":
+                when_txt = " (around the same quarter phase)"
+            elif pt == "operational timing":
+                when_txt = " (operational timing window)"
 
             summary = (
-                f"Recurring pattern expected {window_txt} ({when_txt}); "
-                f"current trajectory looks {self._pem_direction_label(tr, mo)}."
+                f"{pat['interpretation']}{when_txt}. "
+                f"Current trajectory is {dir_lbl}"
+                + ("" if vt == "Stable" else f" and {vt.lower()}.")
             )
+            basis = f"Pattern-led forecast: {pat['type']} / {pat['conf_level']}"
+            if tm.get("label"): basis += f"; TM grid → {tm['label']}"
+            if tmv.get("interpretation"): basis += f"; TMV grid → {tmv['interpretation']}"
+            if msq_label: basis += f"; MS quadrant → {msq_label}"
 
             return {
                 "forecast": {
                     "summary": summary,
-                    "basis": f"{pt} pattern ({pattern_confidence or 'Unknown'} confidence)",
-                    "confidence_level": conf_level
+                    "basis": basis,
+                    "confidence_level": conf_level,
+                    "horizon_days": f"{h_min}-{h_max}"
                 },
                 "watch": {
-                    "windows": [pt],
-                    "notes": ["Use pattern window as an early lookout; avoid over-committing to exact dates."],
-                    "horizon_days": horizon_days
+                    "windows": [pat["type"]],
+                    "notes": [pat["instruction"]],
+                    "horizon_days": h_max
                 },
                 "signal_synthesis": {
-                    "trend": tr, "momentum": mo, "volatility": vt,
-                    "qssi": qssi,
-                    "pattern": {"detected": True, "type": pt, "confidence": pattern_confidence, "pain_day": pain_day}
+                    "trend": tr, "momentum": mo,
+                    "volatility": vt, "volatility_score_pct": round(float(volatility_score or 0.0), 2),
+                    "qssi": qssi, "qssi_tier": qssi_tier_emoji,
+                    "saturation_index": None if saturation_index is None else round(float(saturation_index), 3),
+                    "pattern": {
+                        "detected": True, "type": pat["type"],
+                        "confidence": pat["conf_level"], "pain_day": pain_day
+                    }
                 },
-                "meta": {"quadrant": quad, "confidence_score": conf_score}
+                "meta": {
+                    "quadrant_TM": tm.get("label"),
+                    "quadrant_TMV": tmv.get("interpretation"),
+                    "quadrant_MS": msq_label,
+                    "confidence_score": conf_score
+                }
             }
 
-        # 3) Trajectory pointer (no strong pattern)
-        direction = self._pem_direction_label(tr, mo)
-        basis = "Directional trajectory from Trend × Momentum"
-        if vt == "Highly Fluctuating":
-            direction += " (unstable)"
+        # trajectory-led forecast (no strong pattern)
+        dir_lbl = self._direction_label(tr, mo)
+        basis_parts = []
+        if tm.get("label"):
+            basis_parts.append(f"TM grid → {tm['label']}: {tm.get('narrative','')}".strip())
+        if tmv.get("interpretation"):
+            basis_parts.append(f"TMV grid → {tmv['interpretation']}")
+        if msq_label:
+            basis_parts.append(f"MS quadrant → {msq_label}")
+        basis = "; ".join([p for p in basis_parts if p]) or "Directional synthesis from Trend×Momentum and Volatility tiering"
+
+        summary = (
+            f"Over the next {h_min}-{h_max} days the signal is likely {dir_lbl}"
+            + ("" if vt == "Stable" else f" with {vt.lower()}")
+            + "."
+        )
 
         return {
             "forecast": {
-                "summary": f"Over the next {horizon_days} days the signal is likely {direction}.",
+                "summary": summary,
                 "basis": basis,
-                "confidence_level": conf_level
+                "confidence_level": conf_level,
+                "horizon_days": f"{h_min}-{h_max}"
             },
             "watch": {
                 "focus": ["Momentum flips", "Volatility spikes", "Quadrant changes"],
-                "horizon_days": horizon_days
+                "horizon_days": h_max
             },
             "signal_synthesis": {
                 "trend": tr, "momentum": mo,
                 "volatility": vt, "volatility_score_pct": round(float(volatility_score or 0.0), 2),
-                "qssi": qssi,
+                "qssi": qssi, "qssi_tier": qssi_tier_emoji,
+                "saturation_index": None if saturation_index is None else round(float(saturation_index), 3),
                 "pattern": {"detected": False}
             },
-            "meta": {"quadrant": quad, "confidence_score": conf_score}
+            "meta": {
+                "quadrant_TM": tm.get("label"),
+                "quadrant_TMV": tmv.get("interpretation"),
+                "quadrant_MS": msq_label,
+                "confidence_score": conf_score
+            }
         }
+
+    # def _normalize_vol_tier(self, volatility_tier: str) -> str:
+    #     """
+    #     Normalize volatility tier into one of:
+    #     'Stable' | 'Fluctuating' | 'Highly Fluctuating'
+    #     """
+    #     vt = (volatility_tier or "").strip().lower()
+    #     if "high" in vt:
+    #         return "Highly Fluctuating"
+    #     if "stable" in vt or "✅" in (volatility_tier or ""):
+    #         return "Stable"
+    #     if "fluctuat" in vt:
+    #         return "Fluctuating"
+    #     return "Fluctuating"
+
+
+    # def _pem_confidence(self, *, qssi: int, vol_tier: str, pattern_confidence: str | None) -> tuple[str, float]:
+    #     """
+    #     Simple, transparent confidence (Low/Moderate/High) with a 0–1 score.
+    #     - QSSI gives the base.
+    #     - Pattern confidence nudges up.
+    #     - Volatility nudges down.
+    #     """
+    #     base = 0.30  # neutral base
+    #     # QSSI contribution
+    #     if qssi >= 8:   base += 0.35
+    #     elif qssi >= 6: base += 0.25
+    #     elif qssi >= 4: base += 0.15
+    #     else:           base += 0.05
+
+    #     # Pattern contribution
+    #     pc = (pattern_confidence or "").strip().lower()
+    #     if   pc == "strong":   base += 0.20
+    #     elif pc == "moderate": base += 0.12
+    #     elif pc == "weak":     base += 0.05
+
+    #     # Volatility penalty
+    #     vt = self._normalize_vol_tier(vol_tier)
+    #     if   vt == "Highly Fluctuating": base -= 0.20
+    #     elif vt == "Fluctuating":        base -= 0.10
+
+    #     score = max(0.10, min(0.95, round(base, 2)))
+    #     level = "High" if score >= 0.70 else "Moderate" if score >= 0.50 else "Low"
+    #     return level, score
+
+
+    # def _pem_direction_label(self, trend_symbol: str, momentum_symbol: str) -> str:
+    #     """
+    #     Compact, intuitive direction descriptor combining trend & momentum.
+    #     """
+    #     tr, mo = trend_symbol, momentum_symbol
+    #     if tr == "↑" and mo in ("↑↑", "↑"): return "improving"
+    #     if tr == "↓" and mo in ("↓↓", "↓"): return "declining"
+    #     if tr == "↑" and mo in ("→",):      return "improving (recent plateau)"
+    #     if tr == "↓" and mo in ("→",):      return "declining (recent plateau)"
+    #     if tr == "→" and mo in ("↑↑","↑"):  return "stabilizing upward"
+    #     if tr == "→" and mo in ("↓↓","↓"):  return "stabilizing downward"
+    #     if tr == "↓" and mo in ("↑↑","↑"):  return "recovering"
+    #     if tr == "↑" and mo in ("↓↓","↓"):  return "cooling"
+    #     return "stable"
+
+
+    # def build_predictive_emotional_modeling(
+    #     self,
+    #     *,
+    #     trend_symbol: str,           # "↑", "→", "↓"
+    #     momentum_symbol: str,        # "↑↑", "↑", "→", "↓", "↓↓"
+    #     volatility_tier: str,        # "Stable" | "Fluctuating" | "Highly Fluctuating" (emojis allowed)
+    #     volatility_score: float,     # adjusted volatility % (0..100) — for display only
+    #     pattern_detected: bool,
+    #     pattern_type: str | None,    # "Weekly" | "Monthly" | "Quarterly" | None
+    #     pattern_confidence: str | None,   # "Strong" | "Moderate" | "Weak" | None
+    #     pain_day: str | None,        # weekday if weekly pattern
+    #     qssi_score: int,             # 0–10 from QSSI
+    #     momentum_saturation_quadrant: dict | None,  # from _compute_momentum_saturation_insight
+    #     horizon_days: int = 30
+    # ) -> dict:
+    #     """
+    #     PEM — forward-looking *pointer*, not prescription.
+    #     Rules (simple):
+    #     1) If signal is weak (QSSI < 4): no forecast; keep monitoring.
+    #     2) If a pattern is detected (Strong/Moderate), report *when* it tends to recur.
+    #     3) Else, describe likely trajectory qualitatively from Trend×Momentum.
+    #     4) Always expose confidence and basis. Avoid deterministic dates.
+    #     """
+    #     # sanitize
+    #     tr = trend_symbol if trend_symbol in ("↑","→","↓") else "→"
+    #     mo = momentum_symbol if momentum_symbol in ("↑↑","↑","→","↓","↓↓") else "→"
+    #     vt = self._normalize_vol_tier(volatility_tier)
+    #     qssi = int(max(0, min(10, int(qssi_score or 0))))
+
+    #     msq = momentum_saturation_quadrant or {}
+    #     quad = (msq.get("quadrant_interpretation") or {}).get("quadrant_label", "Unknown")
+
+    #     # Confidence (informational)
+    #     conf_level, conf_score = self._pem_confidence(qssi=qssi, vol_tier=vt, pattern_confidence=pattern_confidence)
+
+    #     # 1) Not enough signal for forecasting
+    #     if qssi < 4:
+    #         return {
+    #             "forecast": {
+    #                 "summary": "Insufficient signal for a forward pointer — keep monitoring.",
+    #                 "basis": "Low signal strength",
+    #                 "confidence_level": "None",
+    #             },
+    #             "watch": {
+    #                 "focus": ["Trend direction", "Momentum shifts", "Volatility changes"],
+    #                 "horizon_days": horizon_days
+    #             },
+    #             "signal_synthesis": {
+    #                 "trend": tr, "momentum": mo, "volatility": vt,
+    #                 "qssi": qssi, "pattern": {"detected": False}
+    #             },
+    #             "meta": {"quadrant": quad, "confidence_score": conf_score}
+    #         }
+
+    #     # 2) Pattern-led pointer
+    #     if pattern_detected and (pattern_type or "").strip():
+    #         pt = pattern_type.strip().capitalize()
+    #         if pt == "Weekly":
+    #             when_txt = f"on {pain_day}" if pain_day else "on its typical weekday"
+    #             window_txt = "next week"
+    #         elif pt == "Monthly":
+    #             when_txt = "around the same month point"
+    #             window_txt = "in the next month"
+    #         elif pt == "Quarterly":
+    #             when_txt = "around the same quarter phase"
+    #             window_txt = "in the next quarter"
+    #         else:
+    #             when_txt, window_txt = "around its usual interval", "soon"
+
+    #         summary = (
+    #             f"Recurring pattern expected {window_txt} ({when_txt}); "
+    #             f"current trajectory looks {self._pem_direction_label(tr, mo)}."
+    #         )
+
+    #         return {
+    #             "forecast": {
+    #                 "summary": summary,
+    #                 "basis": f"{pt} pattern ({pattern_confidence or 'Unknown'} confidence)",
+    #                 "confidence_level": conf_level
+    #             },
+    #             "watch": {
+    #                 "windows": [pt],
+    #                 "notes": ["Use pattern window as an early lookout; avoid over-committing to exact dates."],
+    #                 "horizon_days": horizon_days
+    #             },
+    #             "signal_synthesis": {
+    #                 "trend": tr, "momentum": mo, "volatility": vt,
+    #                 "qssi": qssi,
+    #                 "pattern": {"detected": True, "type": pt, "confidence": pattern_confidence, "pain_day": pain_day}
+    #             },
+    #             "meta": {"quadrant": quad, "confidence_score": conf_score}
+    #         }
+
+    #     # 3) Trajectory pointer (no strong pattern)
+    #     direction = self._pem_direction_label(tr, mo)
+    #     basis = "Directional trajectory from Trend × Momentum"
+    #     if vt == "Highly Fluctuating":
+    #         direction += " (unstable)"
+
+    #     return {
+    #         "forecast": {
+    #             "summary": f"Over the next {horizon_days} days the signal is likely {direction}.",
+    #             "basis": basis,
+    #             "confidence_level": conf_level
+    #         },
+    #         "watch": {
+    #             "focus": ["Momentum flips", "Volatility spikes", "Quadrant changes"],
+    #             "horizon_days": horizon_days
+    #         },
+    #         "signal_synthesis": {
+    #             "trend": tr, "momentum": mo,
+    #             "volatility": vt, "volatility_score_pct": round(float(volatility_score or 0.0), 2),
+    #             "qssi": qssi,
+    #             "pattern": {"detected": False}
+    #         },
+    #         "meta": {"quadrant": quad, "confidence_score": conf_score}
+    #     }
 
 
     def compute(self):
