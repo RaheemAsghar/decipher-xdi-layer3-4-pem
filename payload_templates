@@ -330,35 +330,40 @@ XDI - Signal Capsule
   },
 
   "section_3_predictive_emotional_modeling": {
-    "section_name": "Predictive Emotional Modeling (PEM)",
-    "predictive_emotion_forecast": {
-      "forecast": {
-        "summary": "<str>",
-        "basis": "<str>",
-        "confidence_level": "High|Moderate|Low|None"
-      },
-      "watch": {
-        "focus": ["<str>"],
-        "windows": ["Weekly|Monthly|Quarterly"],
-        "notes": ["<str>"],
-        "horizon_days": <int>
-      },
-      "signal_synthesis": {
-        "trend": "<↑|→|↓>",
-        "momentum": "<↑↑|↑|→|↓|↓↓>",
-        "volatility": "Stable|Fluctuating|Highly Fluctuating",
-        "volatility_score_pct": <float>,
-        "qssi": <int>,
-        "pattern": {
-          "detected": <bool>,
-          "type": "Weekly|Monthly|Quarterly|null",
-          "confidence": "Strong|Moderate|Weak|null",
-          "pain_day": "Monday..Sunday|null"
-        }
-      },
-      "meta": { "quadrant": "<str>", "confidence_score": <float> }
+  "section_name": "Predictive Emotional Modeling (PEM)",
+  "predictive_emotion_forecast": {
+    "forecast": {
+      "summary": "<str>",
+      "basis": "<str>",
+      "horizon_days": "<int-int>"
+    },
+    "watch": {
+      "windows": ["<Weekly|Monthly|Quarterly>"],
+      "notes": ["<str>"],
+      "horizon_days": <int>
+    },
+    "signal_synthesis": {
+      "trend": "<↑|→|↓>",
+      "momentum": "<↑↑|↑|→|↓|↓↓>",
+      "volatility": "Stable|Fluctuating|Highly Fluctuating",
+      "volatility_score_pct": <float>,
+      "qssi": <int>,
+      "qssi_tier": "<emoji-tier>",
+      "saturation_index": <float|null>,
+      "pattern": {
+        "detected": true,
+        "type": "<Weekly|Monthly|Quarterly>",
+        "confidence": "Strong|Moderate|Weak",
+        "pain_day": "<Monday..Sunday|null>"
+      }
+    },
+    "meta": {
+      "quadrant_TM": "<str>",
+      "quadrant_TMV": "<str>",
+      "quadrant_MS": "<str>"
     }
-  },
+  }
+}
 
   "section_4_ou_summary_preview": {
     "section_name": "OU Summary Preview (Generated from this ED)",
