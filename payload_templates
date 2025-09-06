@@ -1659,3 +1659,112 @@ PDCA Execution Memory — Sectioned, ED/OU-anchored (view) v1.0
   "ready_for_block": true
 }
 ```
+
+-------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
+
+SCE final payload
+
+{
+  "schema_version": "sce_view.v1.0",
+  "payload_meta": {
+    "payload_id": "SCE-<short-id>",
+    "payload_type": "silence_cognition_view",
+    "payload_version": "SCE.v1",
+    "generated_at": "<ISO-8601>"
+  },
+
+  "anchors": {
+    "ed_anchor":  { "source_signal_capsule_id": "SC-<id>", "experience_driver": "<str>" },
+    "ou_anchor":  { "ou_id": "<OU-id>", "ou_name": "<OU Name>", "ou_stream": "Fix|Optimize|Innovate|Amplify" },
+    "ps_anchor":  { "problem_statement_id": "<PS-id>" },
+    "pdca_anchor":{ "pdca_id": "<PDCA-id>" },
+    "oec_anchor": { "outcome_evaluation_id": "<OEC-id>" }
+  },
+
+  "detection_inputs": {
+    "scan_window_days": 90,
+    "window_start": "<YYYY-MM-DD>",
+    "window_end": "<YYYY-MM-DD>",
+    "mention_count_in_window": <int>,
+    "last_mention_date": "<YYYY-MM-DD|null>",
+    "thresholds_used": { "silence_if_mentions_at_most": 0 }
+  },
+
+  "detection_summary": {
+    "experience_driver": "Card Freeze Failure",
+    "ed_id": "ED-00087",
+    "silence_detected": true,
+    "silence_duration_days": 112,
+    "silence_trigger_date": "2025-04-12",
+    "silence_scan_window": "90-day post-activation",
+    "last_known_ou_id": "OU-00087-FIX",
+    "activation_count": <int>,
+    "activation_history": [
+      { "ou_id": "<id>", "activation_date": "<YYYY-MM-DD>", "disposition": "Archive|Extend|Re-run|null", "delta_eri": <float|null> }
+    ]
+  },
+
+  "last_ou_activation_summary": {
+    "ou_id": "OU-00087-FIX",
+    "ou_name": "Card Freeze Failure – Complaint – Fix",
+    "ou_stream": "Fix",
+    "ou_semantic_action": "<str>",
+    "activation_date": "2025-04-12",
+    "owner": "Payments Ops",
+    "comparison_block": {
+      "eri_score": { "before": -75, "after": 22 },
+      "dominant_emotion": { "before": "Agitation", "after": "Appreciation" },
+      "emotion_perception_tier": { "before": "Very Negative", "after": "Slightly Positive" },
+      "trend": { "before": "↓", "after": "→" },
+      "momentum": { "before": "↓↓", "after": "→" },
+      "volatility": { "before": "⚠ Fluctuating", "after": "✅ Stable" },
+      "has_pattern": { "before": true, "after": false },
+      "quadrant_purpose": { "before": "Fix Priority – Escalation Zone", "after": "Watch Zone" },
+      "emotional_alert_level": { "before": 8.7, "after": 3.2 },
+      "qssi_tier": { "before": "🔥 Strong", "after": "⚠ Moderate" },
+      "priority_class": { "before": "P1", "after": "P4" }
+    },
+    "elasticity_impact": {
+      "elasticity_rating": "High",
+      "signal_shift_validated": true,
+      "root_cause_recurrence": false
+    },
+    "mission_footprint": {
+      "emotion_distribution_before": { "<emotion>": <float> },
+      "emotion_distribution_after":  { "<emotion>": <float> }
+    },
+    "disposition": "Archive"
+  },
+
+  "silence_classification": {
+    "condition": "OU triggered → now silence",
+    "diagnosis": "Resolution|Dormancy|Seasonality|Migration|Data_Gap|Unclassified",
+    "suggested_action": "Amplify|Monitor|Re-route|Re-ingest|N/A",
+    "rule_hits": ["<explicit_rule_1>", "<explicit_rule_2>"],
+    "confidence": "High|Medium|Low"
+  },
+
+  "deep_memory_links": {
+    "signal_capsule_id": "SC-8743AC0298B1",
+    "ou_payload_id": "OU-00087",
+    "problem_statement_id": "PS-00087",
+    "pdca_lifecycle_id": "PDCA-00087",
+    "outcome_evaluation_id": "OE-00087"
+  },
+
+  "provenance": {
+    "created_by": "xdi-engine",
+    "model_version": "XDI.v1",
+    "guarantees": [
+      "All non-ID values are copied from artifacts or deterministically computed.",
+      "Classification is rule-based with explicit rule hits."
+    ]
+  },
+
+  "ledger_hooks": {
+    "ready_for_commit": false,
+    "intended_block_type": "SILENCE_COGNITION",
+    "evidence_merkle_root": null
+  }
+}
