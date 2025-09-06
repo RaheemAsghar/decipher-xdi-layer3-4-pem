@@ -1,8 +1,7 @@
 
-# ✅ Prompt (copy-paste for the model/annotator)
-
 **Task:** From the customer review, produce **one record per Experience Driver (ED)**.
-Keep everything extractable from the text; if you infer, include a brief justification tied to exact phrases. OU content is **preview-only**.
+Keep everything extractable from the text; if you infer, include a brief justification tied to exact phrases. 
+OU content is **preview-only**.
 
 Return the **JSON** using the template below.
 
@@ -417,67 +416,144 @@ XDI - Signal Capsule
 
 ```
 
-### Notes on fidelity
-
-* All your original fields are preserved (sometimes renamed) and placed in sections that match how we’ll 
-**anchor → commit → replay**.
-* Sections `selection_enablement` and `fragmentation_atoms` are explicitly `preview_only: true` 
-(UI/view facets, not committed facts).
-
----
+-------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------
 
 2) OU Activation Commit Snapshot (when you’re ready to write the side-chain block)
 
+# 1) OU Activation Payload — **ALL FIELDS CAPTURED**
+
+```json
 {
-  "schema_version": "ou_commit.v1.1",
+  "schema_version": "ou_activation.v1.0",
+  "ou_meta": {
+    "ou_id": "OU-<stable-id>",
+    "generated_at": "<ISO-8601 UTC>",
+    "capsule_link": { "source_signal_capsule_id": "SC-<id>" }
+  },
+
+  "experience_driver": "Card Management → Card Freeze Functionality",
+  "entity_name": "Card Freeze Feature",
+  "theme": "Security & Fraud Prevention",
+
+  "context": "Customer attempted to use the app's card freeze feature after misplacing their card, but the feature failed to confirm the freeze, resulting in two unauthorized transactions. Support indicated no action could be taken until an investigation was complete, leaving the customer feeling unprotected.",
+  "keywords": ["card freeze", "unauthorized transactions", "support", "investigation", "unprotected", "feature failure"],
+
+  "feedback_type": "Complaint",
+
+  "emotion": "Anger – Betrayed",
+
+  "customer_journey": "Security & Fraud Management",
+  "journey_stage": "Card Freeze Attempt",
+  "interaction_moment": "while attempting to freeze the card",
+
+  "opportunity_maximisation_stream": "Fix",
+
+  "customer_effort_score": 7,
+
+  "ou_name": "Card Freeze Failure – Complaint – Fix",
+  "ou_block": {
+    "feedback_type": "Complaint",
+    "opportunity_maximisation_stream": "Fix",
+    "interaction_moment": "while attempting to freeze the card",
+    "context": "Customer attempted to use the app's card freeze feature after misplacing their card, but the feature failed to confirm the freeze, resulting in two unauthorized transactions. Support indicated no action could be taken until an investigation was complete, leaving the customer feeling unprotected.",
+    "matters": "Card freeze feature failure during a critical security moment allows unauthorized transactions, undermining trust and leaving users exposed to financial risk.",
+    "semantic_action_statement": {
+      "section_1_customer_reality": "The customer submitted a Complaint about the card freeze feature failing to activate during a critical security moment, allowing unauthorized transactions and leaving them feeling unprotected.",
+      "section_2_strategic_response": "We need to Fix → Card Management → Card Freeze Functionality to ensure immediate and reliable activation during security threats, preventing unauthorized access and restoring user trust."
+    },
+    "stream_justification": "The card freeze feature is a critical security tool that must function flawlessly to prevent unauthorized transactions and protect user assets. Its failure at a crucial moment erodes trust and exposes users to financial risk, necessitating immediate resolution.",
+    "matters_extraction": "Raw Customer Voice, Context, Keywords",
+    "behavioral_impact": "Enhance reliability of security features, prevent unauthorized transactions, and restore user confidence in app-based financial controls."
+  },
+
+  "distribution_statistics": {
+    "emotion_distribution": {
+      "Anger": 61.9,
+      "Agitation": 26.4,
+      "Ambivalence": 11.7
+    },
+    "stream_distribution": {
+      "Fix": 78.6,
+      "Optimize": 14.3,
+      "Innovate": 7.1
+    },
+    "matters_distribution": {
+      "Card freeze feature failure during a critical security moment": 53.2,
+      "No confirmation of freeze status in-app": 28.4,
+      "Delayed support response in security cases": 18.4
+    }
+  }
+}
+```
+
+# 2) OU_COMMIT (ledger wrapper) — **Snapshots OU verbatim**
+
+```json
+{
+  "schema_version": "ou_commit.v1.2",
   "block_meta": {
     "block_type": "OU_COMMIT",
-    "ou_block_id": "OU-BLOCK-<hash12>",            // deterministic hash of this commit payload
-    "prev_block_hash": null,                        // omit or set to last OU_COMMIT for this ou_id
+    "commit_type": "CREATE",
+    "ou_block_id": "OU-BLOCK-<hash12>",
+    "prev_block_hash": null,
     "issued_at": "<ISO-8601 UTC>",
     "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
   },
 
   "ed_anchor": {
     "source_signal_capsule_id": "SC-<id>",
-    "ed_block_hash": "<hash_of_ED_block_or_omit>"   // omit-if-unknown (anchor to SC alone is OK)
+    "ed_block_hash": null
   },
 
   "ou_identity": {
-    "ou_id": "OU-<stable-id>",                      // minted on commit
-    "ou_name": "Staff Interaction Quality – Agitation – Optimize",
-    "experience_driver": "Customer Service → Staff Interaction",
-    "emotion": "Agitation – Disappointed",
-    "opportunity_stream": "Optimize",
-    "feedback_type": "Complaint"
+    "ou_id": "OU-<stable-id>",
+    "ou_name": "Card Freeze Failure – Complaint – Fix",
+    "experience_driver": "Card Management → Card Freeze Functionality",
+    "theme": "Security & Fraud Prevention",
+    "entity_name": "Card Freeze Feature",
+    "emotion": "Anger – Betrayed",
+    "opportunity_stream": "Fix",
+    "feedback_type": "Complaint",
+    "stream_locked": true
   },
 
   "problem_statement_seed": {
-    "matters": "unfriendly and unprofessional staff interactions that degrade customer experience",
-    "context": "Other employees at the Metro store are not friendly or professional.",
-    "interaction_moment": "during interactions with other store employees"
+    "matters": "Card freeze feature failure during a critical security moment allows unauthorized transactions, undermining trust and leaving users exposed to financial risk.",
+    "context": "Customer attempted to use the app's card freeze feature after misplacing their card, but the feature failed to confirm the freeze, resulting in two unauthorized transactions. Support indicated no action could be taken until an investigation was complete, leaving the customer feeling unprotected.",
+    "interaction_moment": "while attempting to freeze the card"
   },
 
   "journey_context": {
-    "customer_journey": "In-Store Experience",
-    "customer_journey_stage": "Service Interaction",
-    "customer_effort_score": 5                      // omit-if-unknown
+    "customer_journey": "Security & Fraud Management",
+    "customer_journey_stage": "Card Freeze Attempt",
+    "customer_effort_score": 7
   },
 
   "cluster_signature": {
-    "cluster_group_id": "customer_agi_opt_d81eb2d0",
+    "cluster_group_id": "card_freeze_fix_<hash8>",
     "cluster_size": 1,
     "cluster_cohesion": 1.0
   },
 
   "lineage": [
-    { "field": "ou_name",  "derivation": { "fn_name": "ou_name_rule",     "fn_version": "v1.0.0" } },
-    { "field": "matters",  "derivation": { "fn_name": "matters_extract",  "fn_version": "v2.0.0" } }
+    { "field": "ou_name",  "derivation": { "fn_name": "ou_name_rule",    "fn_version": "v1.0.0" } },
+    { "field": "matters",  "derivation": { "fn_name": "matters_extract", "fn_version": "v2.0.0" } }
   ],
 
-  "evidence_merkle_root": "<hex>",                  // omit-if-ledger-computes
+  "ou_snapshot": {
+    "schema_version": "ou_activation.v1.0",
+    "payload": { * paste the ENTIRE OU Activation Payload from block 1 here, 1:1 * }
+  },
+
+  "evidence": {
+    "verbatim_refs": ["V-000123","V-000124","V-000125"],
+    "merkle_root": "<hex>"
+  },
+
   "ready_for_block": true
 }
+```
 
 -------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------
@@ -970,10 +1046,6 @@ PDCA Execution Memory — Sectioned, ED/OU-anchored (view) v1.0
 -------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------
 
-perfect — here’s the **tightened, SG-compatible Outcome Evaluation** pair. It stays copy-or-compute only, no imagination, and anchors cleanly for SG linking.
-
----
-
 # Outcome Evaluation Checkpoint — View (Layer 3) v1.1
 
 ```json
@@ -1115,162 +1187,6 @@ perfect — here’s the **tightened, SG-compatible Outcome Evaluation** pair. I
 
 --------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------
-
-# Silent Guidance — View (SG v1.1, minimal)
-
-```json
-{
-  "schema_version": "sg_view.v1.1",
-  "payload_meta": {
-    "guidance_id": "SG-<auto>",
-    "generated_at": "<ISO-8601>",
-    "version": "IME.SG.v2-STRICT",
-    "lifecycle_stage": "derivative_silent_guidance",
-    "strict_policy": true
-  },
-
-  "anchors": {
-    "ed_anchor": { "source_signal_capsule_id": "SC-<id>" },
-    "ou_anchor": { "ou_id": "OU-<id_or_temp>" },
-    "ps_anchor": { "problem_statement_id": null },
-    "pdca_anchor": { "pdca_id": null }
-  },
-
-  "trigger_context": {
-    "provisional_ou_id": "OU-<temp>",
-    "experience_driver": "<Theme→Category→Subcategory→Entity>",
-    "ed_id": "ED-<id>",
-    "emotion_group": "<…>",
-    "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
-    "interaction_moment": "<…>"
-  },
-
-  "match_criteria": {
-    "strategy": "exact_equality",
-    "by_experience_driver": true,
-    "by_emotion_group": true,
-    "by_opportunity_stream": true,
-    "by_interaction_moment": true,
-    "window_days": 540
-  },
-
-  "match_summary": {
-    "total_precedents_found": 0,
-    "first_seen_at": "<YYYY-MM-DD>",
-    "last_activation_at": "<YYYY-MM-DD>"
-  },
-
-  "precedent_matches": [
-    {
-      "artifacts": {
-        "signal_capsule_id": "SC-<id>",
-        "ou_payload_id": "OU-<id>",
-        "problem_statement_id": "PS-<id>",
-        "pdca_lifecycle_id": "PDCA-<id>",
-        "outcome_evaluation_id": "OEC-<id>"
-      },
-      "snapshot": {
-        "ou_core": {
-          "ou_id": "<from:OU.id>",
-          "activation_date": "<from:OU.activation_date>",
-          "owner": "<from:OU.owner>",
-          "experience_driver": "<from:OU.experience_driver>",
-          "emotion_group": "<from:OU.emotion_group>",
-          "opportunity_stream": "<from:OU.opportunity_stream>",
-          "interaction_moment": "<from:OU.interaction_moment>"
-        },
-        "outcome_evaluation": {
-          "disposition": "<from:OEC.verdict_and_disposition.disposition>",
-          "verdict": "<from:OEC.verdict_and_disposition.verdict>",
-          "mission_tagline": "<from:OEC.verdict_and_disposition.mission_tagline>",
-          "eri_shift": {
-            "before": "<from:OEC.comparison_block.eri_score.before>",
-            "after": "<from:OEC.comparison_block.eri_score.after>",
-            "delta": "<calc: after - before>"
-          }
-        }
-      },
-      "quick_nav": {
-        "signal_capsule_uri": "/capsules/{signal_capsule_id}",
-        "ou_payload_uri": "/ous/{ou_payload_id}",
-        "problem_statement_uri": "/pdca/plan/{problem_statement_id}",
-        "pdca_lifecycle_uri": "/pdca/full/{pdca_lifecycle_id}",
-        "outcome_evaluation_uri": "/outcomes/{outcome_evaluation_id}"
-      }
-    }
-  ],
-
-  "retrieval_manifest": {
-    "artifact_ids": ["SC-<id>", "OU-<id>", "PS-<id>", "PDCA-<id>", "OEC-<id>"],
-    "endpoint_templates": {
-      "signal_capsule": "/capsules/{id}",
-      "ou_payload": "/ous/{id}",
-      "problem_statement": "/pdca/plan/{id}",
-      "pdca_lifecycle": "/pdca/full/{id}",
-      "outcome_evaluation": "/outcomes/{id}"
-    }
-  },
-
-  "provenance": {
-    "algorithm_version": "SG-recall.min.v1",
-    "guarantees": [
-      "All values are copied from artifacts or simple arithmetic deltas.",
-      "No free-text invention; missing fields are omitted."
-    ]
-  }
-}
-```
-
----
-
-# Silent Guidance — Commit Snapshot (minimal)
-
-```json
-{
-  "schema_version": "sg_commit.v1.1",
-  "block_meta": {
-    "block_type": "SILENT_GUIDANCE",
-    "sg_block_id": "SG-BLOCK-<hash12>",
-    "prev_block_hash": "<hash_or_null>",
-    "issued_at": "<ISO-8601>",
-    "actor": { "type": "system|human", "id": "xdi-engine|<user-id>" }
-  },
-  "anchors": {
-    "ed_anchor": { "source_signal_capsule_id": "SC-<id>" },
-    "ou_anchor": { "ou_id": "OU-<id_or_temp>" }
-  },
-  "trigger_context_core": {
-    "experience_driver": "<…>",
-    "emotion_group": "<…>",
-    "opportunity_stream": "Fix|Optimize|Innovate|Amplify",
-    "interaction_moment": "<…>"
-  },
-  "match_header": {
-    "strategy": "exact_equality",
-    "window_days": 540,
-    "total_precedents_found": <int>,
-    "first_seen_at": "<YYYY-MM-DD>",
-    "last_activation_at": "<YYYY-MM-DD>"
-  },
-  "precedents": [
-    {
-      "ou_id": "OU-<id>",
-      "pdca_id": "PDCA-<id>",
-      "oec_id": "OEC-<id>",
-      "links": {
-        "xdi": "/capsules/SC-<id>",
-        "ou": "/ous/OU-<id>",
-        "pdca": "/pdca/full/PDCA-<id>",
-        "oec": "/outcomes/OEC-<id>"
-      }
-    }
-  ],
-  "ready_for_block": true
-}
-```
-
------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------
 
 # Silent Cognition Engine — View (Phase 4) v1.0
 
