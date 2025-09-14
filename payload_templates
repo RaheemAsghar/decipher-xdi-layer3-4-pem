@@ -191,19 +191,10 @@ Return the **JSON** using the template below.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
-XDI - Signal Capsule
-
+XDI Signal Capsule
 {
   "label": "Experience Driver Tile",
   "experience_driver": "<str>",
-
-  "capsule_meta": {
-    "capsule_id": "SC-<short-id>",
-    "generated_at": "<ISO-8601 UTC>",
-    "capsule_type": "ED",
-    "capsule_version": "signal_capsule.v1.1",
-    "engine_version": "XDI.v1"
-  },
 
   "section_1_emotional_telemetry": {
     "section_name": "Emotional Telemetry",
@@ -233,22 +224,22 @@ XDI - Signal Capsule
 
     "behavioral_signal_dynamics": {
       "trend": "<↑|→|↓>",
-      "trend_pct": <float>,
+      "trend_pct": <float>,                // % change over window (from Trend block)
       "momentum": "<↑↑|↑|→|↓|↓↓>",
-      "momentum_delta": <float>,
+      "momentum_delta": <float>,           // % of 200-pt band (from Momentum block)
       "volatility": "<✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating>",
-      "volatility_score": <float>
+      "volatility_score": <float>          // std dev
     },
 
     "signal_strength_index": {
-      "qssi_score": <int>,
+      "qssi_score": <int>,                 // 0–10
       "qssi_tier": "<💥 Critical Signal|🔥 Strong Signal|🌱 Emerging Signal|🔁 Weak Signal|❌ No Signal>",
       "qssi_description": "<str>",
       "qssi_interpretation": "<str>",
       "components": {
-        "velocity_score": <int>,
+        "velocity_score": <int>,           // 0–6 (Trend×Momentum table)
         "velocity_explanation": "<str>",
-        "saturation_modifier": <int>,
+        "saturation_modifier": <int>,      // 0–4 (SI bands)
         "saturation_band": "<str>",
         "saturation_interpretation": "<str>"
       },
@@ -261,44 +252,50 @@ XDI - Signal Capsule
     },
 
     "modules": {
-      "trend_block": { "symbol": "<↑|→|↓>", "trend_pct": <float>, "trend_snr": <float> },
-      "momentum_block": {
-        "symbol": "<↑↑|↑|→|↓|↓↓>",
-        "delta": <float>,
+      "trend_block": {
+        "symbol": "<↑|→|↓>",
+        "pct_change": <float>,
         "label": "<str>",
         "description": "<str>",
-        "snr": <float>,
+        "n_days": <int>,
+        "method": "endpoint_delta",
+        "thresholds_used": { "up_pct": 5.0, "down_pct": -5.0 }
+      },
+      "momentum_block": {
+        "symbol": "<↑↑|↑|→|↓|↓↓>",
+        "delta": <float>,                  // % of 200-pt band
+        "label": "<str>",
+        "description": "<str>",
+        "snr": null,                       // not used in whitepaper-simple
         "n_days": <int>,
         "emoji_full": "<str|null>",
         "strength": <float|null>,
         "polarity": <int|null>,
         "thresholds_used": {
-          "rise_mod": <float>,
-          "rise_strong": <float>,
-          "fall_mod": <float>,
-          "fall_strong": <float>,
-          "snr_mod": <float>,
-          "snr_strong": <float>
+          "rise_mod": 5.0,
+          "rise_strong": 20.0,
+          "fall_mod": -5.0,
+          "fall_strong": -20.0
         }
       },
       "volatility_block": {
         "tier": "<✅ Stable|⚠ Fluctuating|🔴 Highly Fluctuating>",
         "score": <float>,
-        "score_adj": <float>,
+        "score_adj": <float>,              // = score (no adjustments)
         "n_days": <int>,
-        "method": "std|mad_sigma",
-        "detrended": <bool>
+        "method": "std",
+        "detrended": false
       },
       "pattern_block": {
         "has_pattern": <bool>,
-        "pattern_type": "Weekly|Monthly|Quarterly|None|null",
-        "pattern_strength": <float|null>,
-        "pattern_confidence": "Strong|Moderate|Weak|Candidate|None|null",
+        "pattern_type": "Weekly|Monthly|Quarterly|None",
+        "pattern_strength": <float>,       // 0..1
+        "confidence": "High|Medium|Low",
         "pain_day": "Monday..Sunday|null",
         "data_coverage_days": <int>,
-        "min_required_days": <int|null>,
-        "eri_by_day": { "Monday": <float|null> },
-        "acf": { "lag_days": <int>, "score": <float>, "sig": <float>, "gate": <float> }
+        "min_required_days": <int>,
+        "eri_by_day": { "Monday": <float|null>, "...": null },
+        "acf": { "lag_days": <int>, "score": <float> }
       }
     }
   },
@@ -319,50 +316,60 @@ XDI - Signal Capsule
         "urgency_level": "<str>",
         "interpretation": "<str>"
       },
+      "tactical_insight": { "...": "<str>" },
+      "actionable_strategy": { "...": "<str>" },
+      "headroom_alignment": { "...": "<str>" },
       "meta": {
         "quadrant_confidence": <float>,
         "borderline": <bool>,
-        "saturation_bin": { "lower": <float>, "upper": <float> }
+        "saturation_bin": { "lower": <float>, "upper": <float> },
+        "momentum_contract": { "label": "<str>", "strength": <float>, "polarity": <int>, "emoji_full": "<str>" },
+        "components": {
+          "sat_centrality": <float>,
+          "stability_factor": <float|null>,
+          "presence_factor": <float|null>,
+          "snr_factor": <float|null>
+        }
       }
     },
     "momentum_saturation_story": "<descriptive sentence only>"
   },
 
   "section_3_predictive_emotional_modeling": {
-  "section_name": "Predictive Emotional Modeling (PEM)",
-  "predictive_emotion_forecast": {
-    "forecast": {
-      "summary": "<str>",
-      "basis": "<str>",
-      "horizon_days": "<int-int>"
-    },
-    "watch": {
-      "windows": ["<Weekly|Monthly|Quarterly>"],
-      "notes": ["<str>"],
-      "horizon_days": <int>
-    },
-    "signal_synthesis": {
-      "trend": "<↑|→|↓>",
-      "momentum": "<↑↑|↑|→|↓|↓↓>",
-      "volatility": "Stable|Fluctuating|Highly Fluctuating",
-      "volatility_score_pct": <float>,
-      "qssi": <int>,
-      "qssi_tier": "<emoji-tier>",
-      "saturation_index": <float|null>,
-      "pattern": {
-        "detected": true,
-        "type": "<Weekly|Monthly|Quarterly>",
-        "confidence": "Strong|Moderate|Weak",
-        "pain_day": "<Monday..Sunday|null>"
+    "section_name": "Predictive Emotional Modeling (PEM)",
+    "predictive_emotion_forecast": {
+      "forecast": {
+        "summary": "<str>",
+        "basis": "<str>",
+        "horizon_days": "<int-int>"
+      },
+      "watch": {
+        "windows": ["<Pain Day|Seasonal Cycle|Operational Timing>"],
+        "notes": ["<str>"],
+        "horizon_days": <int>
+      },
+      "signal_synthesis": {
+        "trend": "<↑|→|↓>",
+        "momentum": "<↑↑|↑|→|↓|↓↓>",
+        "volatility": "Stable|Fluctuating|Highly Fluctuating",
+        "volatility_score_pct": <float>,
+        "qssi": <int>,
+        "qssi_tier": "<emoji-tier>",
+        "saturation_index": <float|null>,
+        "pattern": {
+          "detected": <bool>,
+          "type": "<Pain Day|Seasonal Cycle|Operational Timing|null>",
+          "confidence": "<✅ Strong|⚠ Moderate|🔴 Weak / Candidate|null>",
+          "pain_day": "<Monday..Sunday|null>"
+        }
+      },
+      "meta": {
+        "quadrant_TM": "<str|null>",
+        "quadrant_TMV": "<str|null>",
+        "quadrant_MS": "<str|null>"
       }
-    },
-    "meta": {
-      "quadrant_TM": "<str>",
-      "quadrant_TMV": "<str>",
-      "quadrant_MS": "<str>"
     }
-  }
-}
+  },
 
   "section_4_ou_summary_preview": {
     "section_name": "OU Summary Preview (Generated from this ED)",
@@ -380,7 +387,7 @@ XDI - Signal Capsule
         },
         "distribution_statistics": {
           "emotion_distribution": { "<Emotion>": <float> },
-          "stream_distribution": { "<Fix|Optimize|Innovate|Optimize>": <float> },
+          "stream_distribution": { "<Fix|Optimize|Innovate|Amplify>": <float> },
           "root_cause_snippet_distribution": { "<snippet>": <float> }
         }
       }
@@ -410,11 +417,14 @@ XDI - Signal Capsule
     "series_data_complete": <bool>,
     "missing_days_pct": <float>,
     "window_start_date": "<YYYY-MM-DD>",
-    "window_end_date": "<YYYY-MM-DD>"
+    "window_end_date": "<YYYY-MM-DD>",
+    "capsule_id": "SC-<short-id>",
+    "generated_at": "<ISO-8601 UTC>",
+    "capsule_type": "ED",
+    "capsule_version": "signal_capsule.v1.0",
+    "engine_version": "XDI.v1"
   }
 }
-
-```
 
 -------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------
