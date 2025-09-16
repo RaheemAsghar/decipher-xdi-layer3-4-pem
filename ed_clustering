@@ -1,0 +1,200 @@
+import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.cluster import DBSCAN
+import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
+from collections import defaultdict
+
+# --- 1. Sample Data (from your provided example) ---
+data = [
+    {
+        "Experience_Driver": "Emergency Services → Triage Efficiency",
+        "Keywords": ["ED wait", "triage delay", "assessment wait time", "elderly fall", "access to care"],
+        "Context": "After arriving at the ED for an elderly fall, the family waited nearly two hours before initial assessment, indicating a triage/priority assessment delay.",
+        "Matters": "Delayed triage assessment in the ED slows urgent evaluation for an elderly fall and increases risk of deterioration."
+    },
+    {
+        "Experience_Driver": "Support Quality → Communication Style",
+        "Keywords": ["no updates", "lack of communication", "waiting anxiety", "ED staff", "status explanation"],
+        "Context": "During the prolonged ED wait, no staff provided updates or explained delays, leaving the elderly patient and family uncertain about next steps.",
+        "Matters": "Absence of ED status updates during extended waits increases anxiety and leaves patients uninformed about their care timeline."
+    },
+    {
+        "Experience_Driver": "Consultation Experience → Provider Communication",
+        "Keywords": ["rushed consult", "shared decision-making", "admission decision", "elderly patient", "provider communication"],
+        "Context": "During the evaluation, the physician appeared rushed and did not involve the patient/family in the decision regarding admission.",
+        "Matters": "Excluding patient/family from admission decisions diminishes trust and may lead to inappropriate or poorly understood care plans."
+    },
+    {
+        "Experience_Driver": "Risk Assessment → Operational Risk",
+        "Keywords": ["call bell failure", "patient safety", "equipment failure", "overnight risk", "ward"],
+        "Context": "In the assigned ward, the nurse call bell was nonfunctional overnight, preventing the patient from summoning help and creating a safety risk.",
+        "Matters": "Nonfunctional nurse call system prevents timely assistance and exposes patients to avoidable harm."
+    },
+    # Adding a few more samples to demonstrate clustering better, assuming some semantic overlap
+    {
+        "Experience_Driver": "Patient Flow → Waiting Time Delays",
+        "Keywords": ["long wait", "clinic delay", "appointment wait", "check-in queue"],
+        "Context": "The patient experienced significant delays during check-in at the clinic, extending their overall visit time considerably.",
+        "Matters": "Excessive waiting times at check-in reduce patient satisfaction and can disrupt daily schedules."
+    },
+    {
+        "Experience_Driver": "Patient Communication → Information Gaps",
+        "Keywords": ["unclear instructions", "lack of detail", "confusing information", "post-discharge info"],
+        "Context": "After discharge, the patient found the provided instructions unclear, leading to confusion about follow-up care.",
+        "Matters": "Poor post-discharge communication can lead to non-adherence to treatment plans and readmissions."
+    },
+    {
+        "Experience_Driver": "Emergency Services → Admission Delays",
+        "Keywords": ["ER hold", "bed unavailability", "admission process slow", "long observation"],
+        "Context": "Despite assessment, the patient was held in the ER for over 12 hours due to lack of available inpatient beds.",
+        "Matters": "Prolonged ER stays for admitted patients impact patient flow and can worsen patient conditions."
+    },
+    {
+        "Experience_Driver": "Provider Interaction → Bedside Manner",
+        "Keywords": ["rude doctor", "impersonal care", "felt ignored", "doctor dismissive"],
+        "Context": "The physician's bedside manner was perceived as rude and dismissive, making the patient feel unheard during the consultation.",
+        "Matters": "Negative provider interactions erode trust and significantly impact the patient's emotional well-being."
+    },
+    {
+        "Experience_Driver": "Patient Safety → Equipment Malfunction",
+        "Keywords": ["machine breakdown", "faulty device", "IV pump error", "equipment not working"],
+        "Context": "An essential piece of monitoring equipment in the ICU malfunctioned, requiring immediate replacement and causing concern.",
+        "Matters": "Equipment malfunctions pose direct threats to patient safety and operational continuity in critical care settings."
+    }
+]
+
+# Convert to DataFrame for easier handling
+df = pd.DataFrame(data)
+
+# --- 2. Combine fields for embedding (Robust Combined Text) ---
+# Emphasize Experience_Driver and Keywords by putting them first and joining Keywords
+def combine_fields_for_embedding(row):
+    keywords_str = " ".join(row["Keywords"]) if isinstance(row["Keywords"], list) else str(row["Keywords"])
+    # Using f-string to combine, ensuring all parts are present
+    combined_text = f"{row['Experience_Driver']} {keywords_str} {row['Context']} {row['Matters']}"
+    return combined_text.strip() # Remove extra spaces at ends
+
+df["Combined_Text"] = df.apply(combine_fields_for_embedding, axis=1)
+
+# --- 3. Load pre-trained sentence transformer model ---
+# Using a good all-around model for semantic similarity
+model = SentenceTransformer('all-MiniLM-L6-v2') 
+
+# --- 4. Generate embeddings ---
+print("Generating embeddings for combined text...")
+embeddings = model.encode(df["Combined_Text"].tolist(), show_progress_bar=True)
+print("Embeddings generation complete.")
+
+# --- 5. Cluster using DBSCAN with refined parameters ---
+# To achieve "no fake clustering" (high similarity), we need a low 'eps'.
+# Target cosine similarity >= 0.85 means eps <= 1 - 0.85 = 0.15
+# min_samples=2: A cluster must have at least 2 points to form.
+# This ensures that genuine "groups" are formed, not just isolated points.
+print("\nPerforming DBSCAN clustering...")
+DBSCAN_EPS = 0.15 # Max cosine distance (min 0.85 cosine similarity)
+DBSCAN_MIN_SAMPLES = 2 # Minimum points to form a cluster
+db = DBSCAN(eps=DBSCAN_EPS, min_samples=DBSCAN_MIN_SAMPLES, metric="cosine").fit(embeddings)
+df["Cluster_ID"] = db.labels_
+print(f"DBSCAN clustering complete. Found {len(set(df['Cluster_ID'])) - (1 if -1 in df['Cluster_ID'].unique() else 0)} clusters (excluding noise).")
+print(f"Number of noise points (Cluster ID -1): {np.sum(df['Cluster_ID'] == -1)}")
+
+# --- 6. Generate Representative Driver Names (Human-in-the-Loop Prep) ---
+# Instead of just the first, we'll suggest a canonical name based on the most frequent
+# Experience_Driver, or the one closest to the cluster centroid.
+# For simplicity here, we'll still use the first, but highlight the need for review.
+# A more advanced approach would involve:
+#   a) Finding the most central embedding in the cluster
+#   b) Using a pre-defined taxonomy (if available) to classify the cluster
+#   c) Human review and assignment
+canonical_drivers = {}
+for cluster_id in sorted(df["Cluster_ID"].unique()):
+    if cluster_id == -1: # Noise points
+        canonical_drivers[-1] = "Noise/Unclustered"
+        continue
+    
+    group = df[df["Cluster_ID"] == cluster_id]
+    
+    if not group.empty:
+        # Option 1: Most frequent Experience Driver in the cluster
+        # most_frequent_driver = group["Experience_Driver"].mode()[0]
+        # canonical_drivers[cluster_id] = most_frequent_driver
+
+        # Option 2: Driver closest to the cluster's centroid (more robust for larger clusters)
+        cluster_embeddings = embeddings[group.index]
+        centroid = np.mean(cluster_embeddings, axis=0)
+        similarities_to_centroid = cosine_similarity([centroid], cluster_embeddings)[0]
+        most_representative_idx_in_cluster = np.argmax(similarities_to_centroid)
+        most_representative_driver = group["Experience_Driver"].iloc[most_representative_idx_in_cluster]
+        
+        canonical_drivers[cluster_id] = most_representative_driver
+    else:
+        canonical_drivers[cluster_id] = "Unnamed Cluster" # Should not happen with current logic
+
+df["Suggested_Canonical_Driver"] = df["Cluster_ID"].map(canonical_drivers)
+
+# --- 7. Compute Cluster Cohesion (Confidence) ---
+def compute_cluster_cohesion(cluster_id, embeddings_array, cluster_labels):
+    if cluster_id == -1:  # Noise points have no cluster to cohere to
+        return np.nan # Use NaN for noise, indicating not applicable
+    
+    cluster_indices = np.where(cluster_labels == cluster_id)[0]
+    if len(cluster_indices) <= 1:
+        # Single-item "clusters" (if min_samples=1 was used) have perfect cohesion by definition,
+        # but for min_samples >= 2, this path implies an error or very small cluster.
+        # For simplicity, if only one point, its cohesion is undefined in a 'group' sense.
+        return np.nan 
+
+    cluster_embeddings = embeddings_array[cluster_indices]
+    
+    # Calculate pairwise cosine similarities within the cluster
+    pairwise_similarities = cosine_similarity(cluster_embeddings)
+    
+    # Exclude self-similarity (diagonal elements)
+    np.fill_diagonal(pairwise_similarities, np.nan) 
+    
+    # Calculate the mean of upper triangle (to avoid duplicate pairs and self)
+    # Filter out NaNs before calculating mean
+    avg_similarity = np.nanmean(pairwise_similarities[np.triu_indices(len(cluster_indices), k=1)])
+    
+    return avg_similarity
+
+df["Cluster_Cohesion"] = df["Cluster_ID"].apply(
+    lambda x: compute_cluster_cohesion(x, embeddings, db.labels_)
+)
+
+# --- 8. Output Results ---
+print("\n--- Clustered Experience Drivers Summary ---")
+for cluster_id in sorted(df["Cluster_ID"].unique()):
+    cluster_rows = df[df["Cluster_ID"] == cluster_id]
+    
+    if cluster_id == -1:
+        print(f"\nCluster -1 (Noise/Unclustered - {len(cluster_rows)} items):")
+        for idx, row in cluster_rows.iterrows():
+            print(f"- Driver: {row['Experience_Driver']}")
+            print(f"  Keywords: {row['Keywords']}")
+            print(f"  Context: {row['Context'][:75]}...")
+        continue # Skip to next cluster
+
+    canonical_name = canonical_drivers.get(cluster_id, "N/A")
+    cohesion = cluster_rows["Cluster_Cohesion"].iloc[0] # All rows in cluster have same cohesion
+    
+    print(f"\n--- Cluster {cluster_id} ---")
+    print(f"Suggested Canonical Name: \"{canonical_name}\"")
+    print(f"Number of items: {len(cluster_rows)}")
+    print(f"Average Cohesion (Similarity) within cluster: {cohesion:.3f}")
+    
+    print("\n  Items in this Cluster:")
+    for idx, row in cluster_rows.iterrows():
+        print(f"  - Driver: {row['Experience_Driver']}")
+        print(f"    Keywords: {row['Keywords']}")
+        print(f"    Context: {row['Context'][:75]}...")
+        print(f"    Matters: {row['Matters'][:75]}...")
+    print("-" * 30)
+
+# --- 9. Optionally, save to CSV for further analysis ---
+output_filename = "clustered_experience_drivers_refined.csv"
+df.to_csv(output_filename, index=False)
+print(f"\nResults saved to {output_filename}")
+
+# --- End of Code ---
