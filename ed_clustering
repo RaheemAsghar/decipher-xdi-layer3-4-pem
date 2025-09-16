@@ -198,3 +198,81 @@ df.to_csv(output_filename, index=False)
 print(f"\nResults saved to {output_filename}")
 
 # --- End of Code ---
+
+
+VERSION 2:
+
+import numpy as np
+from sentence_transformers import SentenceTransformer
+from sklearn.cluster import DBSCAN
+import pandas as pd
+
+# Load the dataset
+df = pd.read_csv("decipher_retail_grocery_analytics_flattened.csv")
+
+# Combine fields for embedding (Driver + Keywords + Context + Matters)
+def combine_fields(row):
+    keywords_str = " ".join(eval(row["keywords"]) if isinstance(row["keywords"], str) else row["keywords"])
+    return f"{row['experience_driver']} {keywords_str} {row['context']} {row['matters']}"
+
+# Create combined text for embedding
+df["Combined_Text"] = df.apply(combine_fields, axis=1)
+
+# Load pre-trained sentence transformer model
+model = SentenceTransformer('all-MiniLM-L6-v2')
+
+# Generate embeddings
+embeddings = model.encode(df["Combined_Text"].tolist(), show_progress_bar=True)
+
+# Cluster using DBSCAN (cosine distance, eps=0.25 for ~0.85 similarity)
+db = DBSCAN(eps=0.25, min_samples=2, metric="cosine").fit(embeddings)
+
+# Add cluster labels to DataFrame
+df["Cluster_ID"] = db.labels_
+
+# Generate canonical driver names (use most frequent driver per cluster)
+clusters = df.groupby("Cluster_ID")
+canonical_drivers = {}
+for cluster_id, group in clusters:
+    if cluster_id != -1:  # Exclude noise points
+        canonical_drivers[cluster_id] = group["experience_driver"].mode().iloc[0]
+    else:
+        canonical_drivers[cluster_id] = "Noise"
+
+# Assign canonical driver to each row
+df["Canonical_Driver"] = df["Cluster_ID"].map(canonical_drivers)
+
+# Add cluster confidence (average similarity within cluster)
+def compute_cluster_confidence(cluster_id, embeddings, cluster_labels):
+    if cluster_id == -1:  # Noise points
+        return 0.0
+    cluster_indices = np.where(cluster_labels == cluster_id)[0]
+    if len(cluster_indices) <= 1:
+        return 1.0
+    cluster_embeddings = embeddings[cluster_indices]
+    similarities = np.dot(cluster_embeddings, cluster_embeddings.T)
+    np.fill_diagonal(similarities, 0)
+    avg_similarity = similarities[np.triu_indices(len(cluster_indices), k=1)].mean()
+    return avg_similarity
+
+df["Cluster_Confidence"] = df["Cluster_ID"].apply(
+    lambda x: compute_cluster_confidence(x, embeddings, db.labels_)
+)
+
+# Output summary of clusters
+print("\nCluster Summary (eps=0.25, ~0.85 similarity):")
+for cluster_id in sorted(df["Cluster_ID"].unique()):
+    cluster_rows = df[df["Cluster_ID"] == cluster_id]
+    print(f"\nCluster {cluster_id} (Canonical: {canonical_drivers.get(cluster_id)}):")
+    print(f"Size: {len(cluster_rows)}")
+    print(f"Average Confidence: {cluster_rows['Cluster_Confidence'].mean():.2f}")
+    print("Sample Drivers:")
+    for _, row in cluster_rows.head(3).iterrows():
+        print(f"- {row['experience_driver']} (Confidence: {row['Cluster_Confidence']:.2f})")
+
+# Save results to CSV
+df.to_csv("strict_clustered_grocery_experience_drivers.csv", index=False)
+
+# Generate a sample output artifact with cluster assignments
+sample_output = df[["review_id", "experience_driver", "Canonical_Driver", "Cluster_ID", "Cluster_Confidence"]]
+sample_output.to_csv("strict_clustered_grocery_summary.csv", index=False)
