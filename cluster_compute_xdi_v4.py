@@ -114,7 +114,7 @@ class FlexibleTimeframeAnalyzer:
         # Signature weights + ordered fields
         self.OU_CFG.setdefault("signature_weights", {
             "matters": 6, "context": 4, "interaction_moment": 3,
-            "customer_journey_stage": 1, "customer_journey": 1,
+            "customer_journey_stage": 2, "customer_journey": 1,
         })
         self.SIGNATURE_FIELDS = list(self.OU_CFG["signature_weights"].items())
 
@@ -3312,3 +3312,4 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
+
