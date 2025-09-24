@@ -110,6 +110,7 @@ class FlexibleTimeframeAnalyzer:
             "stream_threshold": 0.80,
             "skip_singletons": False,
             "preview_location_style": "short",
+            "bcs_distance_threshold": 0.3
         }
         # Signature weights + ordered fields
         self.OU_CFG.setdefault("signature_weights", {
@@ -3284,4 +3285,5 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
+
 
