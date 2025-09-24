@@ -110,7 +110,7 @@ class FlexibleTimeframeAnalyzer:
             "stream_threshold": 0.80,
             "skip_singletons": False,
             "preview_location_style": "short",
-            "bcs_distance_threshold": 0.3
+            "bcs_distance_threshold": 0.3  # vary between 0.25 - 0.35 to find sweet spot
         }
 
         # Signature weights + ordered fields
@@ -3299,3 +3299,4 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
+
