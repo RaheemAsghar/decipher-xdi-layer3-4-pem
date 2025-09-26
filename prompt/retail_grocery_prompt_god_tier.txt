@@ -1,4 +1,4 @@
-Agentic_AI_Prompt_Retail = """
+Agentic_AI_Prompt_Retail_v2 = """
 
 ### 🧠 **Prompt Context**
 
@@ -16,7 +16,7 @@ Only extract Experience Drivers that meet strict strategic relevance criteria. Y
 
 ---
 
-## 🔧 **CEM Relevance Check Filtering Protocol – Retail Grocery (Omnichannel Precision Edition)**
+## 🔧 **CEM Relevance Check Filtering Protocol – Retail Grocery**
 
 > ### 🧠 Purpose:
 
@@ -124,16 +124,15 @@ downstream diagnostics.
 ---
 
 ### 6️⃣ Distinctiveness of Purpose
-Extract multiple drivers **only if each contributes a separate, non-redundant insight.**
+Extract **every Experience Driver separately** if the feedback contains more than one **independent trigger**.
 
-#### 🟢 Include separately:
+* A trigger is independent if it belongs to a different driver family (Availability, Accuracy, Communication, Service, Pricing, etc.) **or** if it can stand alone as a valid issue or opportunity.
+* Do **not merge triggers** into a single Experience Driver, even if they occur in the same review or feel related.
+* Each trigger must yield its own complete Experience Driver block.
 
-* “Store was clean.” → Amplify: Hygiene
-* “Billing counter was slow.” → Fix: Checkout Delay
-
-#### 🔴 Exclude:
-
-* “Clean store. Always clean.” → Repetition
+🟢 Include separately:
+- “App shows out-of-stock items.” → Product Availability → Real-Time Stock Visibility
+- “My order was missing bread.” → Order Accuracy → Missing Items
 
 ---
 
@@ -323,19 +322,22 @@ Experience Driver Taxonomy**.
 ---
 
 ## 5️⃣ Multi-Segment Feedback Handling
+✅ **Rule**: Treat each independent trigger as its own Experience Driver block.
 
-✅ **Rule**: Extract separate Experience Drivers only when each segment contains a **distinct, actionable insight**.
+✔ Independence is defined by:
+- Belonging to a different driver family (e.g., Availability ≠ Accuracy ≠ Communication ≠ Pricing, etc.)
+- Representing a valid action path on its own, even if related to another issue in the same review
 
-✔ Evaluate each actionable segment independently
-✔ Exclude neutral observations or generic compliments
+❌ Collapsing multiple triggers into one Experience Driver is an error.
 
 🔹 **Examples:**
+- “Some items were missing, and I wasn’t notified.”  
+  - ✅ Order Accuracy → Missing Items  
+  - ✅ Order Accuracy → Missing Item Notification  
 
-- *"Store layout is confusing, but staff were helpful."*
-  - ✅ Fix (Navigation Friction)
-  - ✅ Amplify (Staff Helpfulness)
-
-- *"Shelves were stocked and lighting was fine."* → ❌ Exclude (neutral)
+- “Delivery was late and the rider was rude.”  
+  - ✅ Delivery Experience → Timing  
+  - ✅ Delivery Experience → Delivery Personnel
 
 ---
 
@@ -455,9 +457,9 @@ Entity Name: Express Delivery
 ---
 
 ### 🛒 **Retail & Grocery Customer Feedback Taxonomy**
-The following taxonomy examples are provided for your learning and understanding, enabling you to output 
-similar structured Experience Drivers that follow the established format: Theme → Experience Driver → Sample Entity 
-Names. 
+The following taxonomy examples are provided for your learning and understanding, enabling you to output
+similar structured Experience Drivers that follow the established format: Theme → Experience Driver → Sample Entity
+Names.
 Use these patterns to generate consistent, comprehensive customer experience frameworks.
 
 ## Product & Selection
@@ -620,8 +622,6 @@ Use these patterns to generate consistent, comprehensive customer experience fra
 | Sustainability & Ethics | Environmental Impact → Waste Reduction | Food Waste Programs, Donation Initiatives |
 | Sustainability & Ethics | Ethical Sourcing → Fair Trade | Ethical Coffee, Sustainable Seafood |
 | Sustainability & Ethics | Ethical Sourcing → Local Partnerships | Community Farmers, Regional Suppliers |
-
-**Total: 91 Experience Drivers**
 
 ---
 
@@ -1952,7 +1952,7 @@ This section answers:
 ---
 
 ## 🎯 **Section 2 – Action Stream × Experience Driver × Behavioral Justification**
-This section defines the **strategic response** the organization should take — grounded directly in what the 
+This section defines the **strategic response** the organization should take — grounded directly in what the
 customer expressed.
 
 ---
@@ -2070,7 +2070,7 @@ Together, they guarantee:
 
 ## 🔁 **Flexible, Not Loose – Phrasing Guidelines**
 
-You may adjust **surface phrasing** for clarity — but you must preserve **semantic integrity** and 
+You may adjust **surface phrasing** for clarity — but you must preserve **semantic integrity** and
 **structural fidelity**.
 
 ---
@@ -2132,7 +2132,7 @@ You may adjust **surface phrasing** for clarity — but you must preserve **sema
 | Using abstract labels like "UX issue"  | Not behavioral — no direct routing possible                  |
 | General terms like “bad experience”    | Too vague — can’t be acted on                                |
 | Omitting any required payload field    | Incomplete orchestration unit                                |
-| Using "concerning \[Matters]" phrasing | Deprecated — now replaced by direct behavioral justification |
+| Using "concerning [Matters]" phrasing | Deprecated — now replaced by direct behavioral justification |
 
 ---
 
@@ -2155,7 +2155,7 @@ The customer submitted a Complaint that when their order arrived, there was no p
 of items that were missing from the order
 
 SECTION 2: THE STRATEGIC RESPONSE
-We need to Fix → Order Accuracy → Missing Item Notification to address missing items that weren’t 
+We need to Fix → Order Accuracy → Missing Item Notification to address missing items that weren’t
 flagged before delivery
 
 ---
@@ -2194,92 +2194,92 @@ We need to Innovate → Product Variety → Inventory Expansion to address emerg
 ---
 
 ### Decipher RCA Framework Example
-These examples show how Decipher replaces generic RCA tags with precision behavioral payloads via 
+These examples show how Decipher replaces generic RCA tags with precision behavioral payloads via
 the 'Matters' clause — turning emotion into execution.
 
 ### ✅ **Example 1 — FIX STREAM**
 
-- **OU Name**: `Delivery Experience – Complaint – Fix`
-- **Feedback Type**: `Complaint`
-- **Opportunity Maximisation Stream**: `Fix`
-- **Experience Driver**: `Delivery Experience → Timing`
-- **Interaction Moment**: `when their premium delivery arrived late`
-- **Context**: `Customer’s premium delivery arrived late, resulting in frozen items becoming unusable`
-- **Matters**: `late deliveries that breach premium service expectations and directly cause perishable product loss`
+- **OU Name**: "Delivery Experience – Complaint – Fix"
+- **Opportunity Maximisation Stream**: Fix
+- **Experience Driver**: "Delivery Experience → Timing"
+- **Feedback Type**: "Complaint"
+- **Interaction Moment**: "when their premium delivery arrived late"
+- **Context**: "because their frozen items were ruined"
+- **Matters**: "late premium deliveries that lead to product spoilage"
 - **Semantic Action Statement**:
+  SECTION 1: THE CUSTOMER REALITY
+  The customer submitted a Complaint about their frozen items being ruined when their premium delivery arrived late
 
-  SECTION 1: THE CUSTOMER REALITY**
-  The customer submitted a Complaint about their frozen items being ruined due to a late premium delivery, breaching a paid service promise.
-
-  SECTION 2: THE STRATEGIC RESPONSE**
-  We need to Fix → Delivery Experience → Timing to address late deliveries that breach premium service expectations and directly cause perishable product loss.
-- **Stream Justification**: `This failure broke a paid fulfillment commitment and caused irreversible product spoilage. It erodes trust in premium services and warrants immediate operational remediation.`
-- **Matters Extraction**: `Raw Customer Voice, Context, Interaction Moment`
-- **Behavioral Impact**: `Reinforce time-slot reliability for premium deliveries, prevent spoilage incidents, and protect high-value customer trust.`
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Fix → Delivery Experience → Timing to address late premium deliveries that lead to product spoilage
+- **Stream Justification: A premium time slot was missed, directly causing product loss. This breaks a paid service promise and demands urgent remediation.
+- **Matters Extraction: "Raw Customer Voice, Context"
+- **Behavioral Impact: Restore reliability of paid delivery services, reduce risk of perishable spoilage, and protect customer loyalty.
 
 ---
 
 ### ✅ **Example 2 — OPTIMIZE STREAM | Ambivalence | Website Navigation**
 
-- **OU Name**: `Product Discovery – Complaint – Optimize`
-- **Feedback Type**: `Complaint`
-- **Opportunity Maximisation Stream**: `Optimize`
-- **Experience Driver**: `Product Discovery → Navigation Experience`
-- **Interaction Moment**: `when trying to find items on the site`
-- **Context**: `Customer struggled to find items due to an unstable and constantly shifting site layout`
-- **Matters**: `unpredictable site layouts that confuse and delay product discovery`
+- **OU Name**: "Product Discovery – Complaint – Optimize"
+- **Opportunity Maximisation Stream**: Optimize
+- **Experience Driver**: "Product Discovery → Navigation Experience"
+- **Feedback Type**: "Complaint"
+- **Interaction Moment**: "when trying to find items on the site"
+- **Context**: "because the layout keeps changing and is unpredictable"
+- **Matters**: "unpredictable layouts that make item search confusing"
 - **Semantic Action Statement**:
-  SECTION 1: THE CUSTOMER REALITY**
-  The customer submitted a Complaint about struggling to find products due to unpredictable changes in site layout when trying to navigate the platform.
+  SECTION 1: THE CUSTOMER REALITY
+  The customer submitted a Complaint about the site layout changing unpredictably when trying to find items
 
-  SECTION 2: THE STRATEGIC RESPONSE**
-  We need to Optimize → Product Discovery → Navigation Experience to address unpredictable site layouts that confuse and delay product discovery.
-- **Stream Justification**: `This is a case of functional presence but UX inconsistency. The system works, but erratic layout behavior increases cognitive friction, causing hesitation and reducing browsing confidence — a textbook Optimize case.`
-- **Matters Extraction**: `Raw Customer Voice, Context, Keywords`
-- **Behavioral Impact**: `Lower cognitive load during browsing, improve product findability, and stabilize customer confidence in layout predictability.`
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Optimize → Product Discovery → Navigation Experience to address unpredictable layouts that make item search confusing
+- **Stream Justification: The core function works, but erratic layout behavior introduces friction that undermines browsing confidence.This creates hesitation — not total failure — making it an Optimize case.
+- **Matters Extraction: "Raw Customer Voice, Keywords"
+- **Behavioral Impact: Reduce cognitive load, increase findability, and improve first-attempt product discovery.
 
 ---
 
 ### ✅ **Example 3 — AMPLIFY STREAM | Adoration | Staff Interaction**
 
-- **OU Name**: `Customer Service – Compliment – Amplify`
-- **Feedback Type**: `Compliment`
-- **Opportunity Maximisation Stream**: `Amplify`
-- **Experience Driver**: `Customer Service → Staff Interaction`
-- **Interaction Moment**: `during their home delivery`
-- **Context**: `Customer shared that the delivery staff noticed an injury and carried the bags inside without being asked`
-- **Matters**: `unprompted, empathetic gestures that elevate the human dimension of service`
+- **OU Name**: "Customer Service – Compliment – Amplify"
+- **Opportunity Maximisation Stream**: Amplify
+- **Experience Driver**: "Customer Service → Staff Interaction"
+- **Feedback Type**: "Compliment"
+- **Interaction Moment**: "during their home delivery"
+- **Context**: "because the delivery person noticed their injury and brought the bags inside without being asked"
+- **Matters**: "unprompted, proactive gestures that show human care"
 - **Semantic Action Statement**:
+  SECTION 1: THE CUSTOMER REALITY
+  The customer gave a Compliment about the delivery person noticing their injury and bringing the bags
+  inside without being asked during their home delivery
 
-  SECTION 1: THE CUSTOMER REALITY**
-  The customer gave a Compliment about the delivery person noticing their injury and voluntarily carrying their bags inside during home delivery.
-
-  SECTION 2: THE STRATEGIC RESPONSE**
-  We need to Amplify → Customer Service → Staff Interaction to address unprompted, empathetic gestures that elevate the human dimension of service.
-- **Stream Justification**: `This is an emotionally rich moment of human care delivered without prompt. It reflects frontline initiative, strengthens brand sentiment, and represents an amplifiable micro-story that can shape institutional culture and training.`
-- **Matters Extraction**: `Raw Customer Voice, Context, Interaction Moment`
-- **Behavioral Impact**: `Strengthen emotional loyalty, elevate brand humanity, and inspire service replication through cultural storytelling.`
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Amplify → Customer Service → Staff Interaction to address unprompted, proactive gestures that show human care
+- **Stream Justification: A spontaneous act of empathy created a memorable human moment. It represents emotional surplus, worthy of institutional memory and amplification.
+- **Matters Extraction: "Raw Customer Voice, Context"
+- **Behavioral Impact: Deepen emotional loyalty, reinforce service reputation, and create brand stories worth sharing.
 
 ---
 
 ### ✅ **Example 4 — INNOVATE STREAM | Appreciation | Checkout Features**
 
-- **OU Name**: `Checkout Experience – Suggestion – Innovate`
-- **Feedback Type**: `Suggestion`
-- **Opportunity Maximisation Stream**: `Innovate`
-- **Experience Driver**: `Checkout Experience → Reorder Flow`
-- **Interaction Moment**: `when thinking about reordering items`
-- **Context**: `Customer expressed a desire for a one-tap way to reorder their previous basket`
-- **Matters**: `frictionless reorder flows that simplify recurring purchases for loyal customers`
+- **OU Name**: "Checkout Experience – Suggestion – Innovate"
+- **Opportunity Maximisation Stream**: Innovate
+- **Experience Driver**: "Checkout Experience → Reorder Flow"
+- **Feedback Type**: "Suggestion"
+- **Interaction Moment**: "when thinking about reordering items"
+- **Context: "because they want a simpler way to repeat past purchases with a single tap"
+- **Matters**: "one-tap basket reordering that simplifies repeat purchase journeys"
 - **Semantic Action Statement**:
-  SECTION 1: THE CUSTOMER REALITY**
-  The customer made a Suggestion about wanting a one-tap method to reorder their usual basket when considering repeat purchases.
+  SECTION 1: THE CUSTOMER REALITY
+  The customer made a Suggestion about wanting a simpler way to repeat past purchases with a single tap
+  when reordering items
 
-  SECTION 2: THE STRATEGIC RESPONSE**
-  We need to Innovate → Checkout Experience → Reorder Flow to address frictionless reorder flows that simplify recurring purchases for loyal customers.
-- **Stream Justification**: `This is a forward-looking idea driven by habitual purchase behavior. It surfaces a latent UX opportunity that, if built, could elevate repeat convenience and deepen platform attachment.`
-- **Matters Extraction**: `Raw Customer Voice, Context, Keywords`
-- **Behavioral Impact**: `Increase reordering conversion, enhance speed for routine buyers, and promote app stickiness by reducing task fatigue.`
+  SECTION 2: THE STRATEGIC RESPONSE
+  We need to Innovate → Checkout Experience → Reorder Flow to address one-tap basket reordering that simplifies repeat purchase journeys
+- **Stream Justification**: The customer expresses a desire for a new convenience feature that does not currently exist — making it a clear innovation opportunity.
+- **Matters Extraction**: "Raw Customer Voice, Keywords, Context"
+- **Behavioral Impact**: Increase reordering conversion, reduce friction for habitual buyers, and strengthen app loyalty.
 
 ---
 
@@ -2304,12 +2304,12 @@ the 'Matters' clause — turning emotion into execution.
 - **Feedback Type**: "[Complaint / Compliment / Suggestion / Request / Question / Product Usage Insight / Emerging Trend]"
 
 ### **4. Emotion**
-* **Emotion**: "[Core Emotion Group] – [Specific Emotion]"
+- **Emotion**: "[Core Emotion Group] – [Specific Emotion]"
 
 ### **5. Customer Journey Stage**
-* **Customer Journey**: "[High-Level Journey Phase]"
-* **Customer Journey Stage**: "[Specific Operational Step]"
-* **Interaction Moment**: "[Exact Trigger or Micro-Moment]"
+- **Customer Journey**: "[High-Level Journey Phase]"
+- **Customer Journey Stage**: "[Specific Operational Step]"
+- **Interaction Moment**: "[Exact Trigger or Micro-Moment]"
 
 ### **6. Opportunity Maximisation Stream**
 - **Opportunity Maximisation Stream**: "[Fix / Optimize / Innovate / Amplify]"
@@ -2368,11 +2368,14 @@ the 'Matters' clause — turning emotion into execution.
 
    * When customer feedback yields more than one ED, show each as its own structured block, exactly as in the reference examples.
    * **Do not add commentary, preambles, or free text** between blocks.
+   * The only separator allowed between multiple ED blocks is the line:
+     `---`
 
 5. **Zero Tolerance Policy**
 
    * Any deviation from the schema, headings, or separators will invalidate the output.
    * Treat this as a **strict parsing contract**.
+
 ---
 
 ### ✅ EXAMPLES TO FOLLOW
@@ -2384,12 +2387,12 @@ the 'Matters' clause — turning emotion into execution.
 you don’t actually have it?"
 
 ### **1. Experience Driver**
-* **Experience Driver**: "Product Availability → Real-Time Stock Visibility"
+- **Experience Driver**: "Product Availability → Real-Time Stock Visibility"
 - **Entity Name**: "Organic Yogurt"
 - **Theme**: "Inventory Integrity"
 
 ### **2. Context**
-- **Context**: "Customer was able to add a product to their cart that was later revealed to be out of stock at checkout."
+- **Context**: "Customer was able to add a product to cart, only to discover it was unavailable at checkout."
 - **Keywords**: ["out of stock", "real-time availability", "cart", "checkout", "frustration"]
 
 ### **3. Feedback Type**
@@ -2415,14 +2418,15 @@ you don’t actually have it?"
 - **Opportunity Maximisation Stream**: "Fix"
 - **Experience Driver**: "Product Availability → Real-Time Stock Visibility"
 - **Interaction Moment**: "during the Cart-to-Checkout transition"
-- **Context**: "Customer was able to add a product to their cart that was later revealed to be out of stock at checkout."
-- **Matters**: "The expectation of real-time accuracy was violated when an unavailable item appeared purchasable, creating frustration and abandonment risk"
+- **Context**: "Customer was able to add an item to their cart that turned out to be out of stock at checkout"
+- **Matters**: "misleading add-to-cart flows that show unavailable items as purchasable"
 - **Semantic Action Statement**:
   SECTION 1: THE CUSTOMER REALITY
-  The customer submitted a Complaint about being permitted to add an out-of-stock item to their cart during the Cart-to-Checkout transition.
+  The customer submitted a Complaint about being permitted to add an out-of-stock item to their cart
+  during the Cart-to-Checkout transition
 
   SECTION 2: THE STRATEGIC RESPONSE
-  We need to Fix → Product Availability → Real-Time Stock Visibility to address the violation of real-time inventory expectations that led to frustration and increased cart abandonment risk.
+  We need to Fix → Product Availability → Real-Time Stock Visibility to address misleading add-to-cart flows that show unavailable items as purchasable
 - **Stream Justification**: This is a direct failure of inventory integrity at a critical purchase moment, introducing friction, confusion, and emotional erosion. Fixing this restores purchase reliability and trust.
 - **Matters Extraction**: "Raw Customer Voice, Context, Keywords"
 - **Behavioral Impact**: Reinstate confidence in real-time stock accuracy, reduce failed purchase attempts, and lower cart abandonment at the conversion point.
@@ -2441,7 +2445,7 @@ the filter options were a mess — I couldn’t narrow by brand or dietary needs
 - **Theme**: "Technical Reliability"
 
 ### **2. Context**
-- **Context**: "Customer experienced multiple app crashes while trying to build their cart, disrupting the path to purchase."
+- **Context**: "Customer experienced repeated app crashes while attempting to build a shopping cart."
 - **Keywords**: ["crash", "app freeze", "cart", "technical error", "frustration"]
 
 ### **3. Feedback Type**
@@ -2467,16 +2471,16 @@ the filter options were a mess — I couldn’t narrow by brand or dietary needs
 - **Opportunity Maximisation Stream**: "Fix"
 - **Experience Driver**: "Mobile App → Performance Stability"
 - **Interaction Moment**: "during repeated app crashes while building the cart"
-- **Context**: "Customer experienced multiple app crashes while trying to build their cart, disrupting the path to purchase."
-- **Matters**: "This creates a complete breakdown in transactional confidence — when customers can't even build their cart due to crashing, the journey becomes emotionally and functionally impossible"
+- **Context**: "Customer experienced repeated app crashes while attempting to build a shopping cart"
+- **Matters**: "repeated app crashes that block customers from building their cart"
 - **Semantic Action Statement**:
   SECTION 1: THE CUSTOMER REALITY
-  The customer submitted a Complaint about repeated app crashes that blocked them from building their shopping cart during a critical purchase interaction.
+  The customer submitted a Complaint about the app crashing multiple times as they tried to add items to their
+  cart during the cart-building process
 
   SECTION 2: THE STRATEGIC RESPONSE
-  We need to Fix → Mobile App → Performance Stability to resolve transaction-blocking crashes that break core purchase behavior and damage trust in platform stability.
-  
-- **Stream Justification**: This is not a minor bug but a catastrophic failure in the cart-build flow. Emotional intensity is high, technical failure is systemic, and purchase ability is completely blocked. Fixing this is critical for operational continuity.
+  We need to Fix → Mobile App → Performance Stability to address repeated app crashes that block customers from building their cart
+- **Stream Justification**: This represents a system-level breakdown of a core purchase flow. Customers are emotionally strained and technically blocked, warranting immediate resolution to restore trust and app viability.
 - **Matters Extraction**: "Raw Customer Voice, Context, Interaction Moment"
 - **Behavioral Impact**: Reinforce reliability of the mobile shopping journey, reduce critical friction in the cart build phase, and protect downstream conversion rates.
 
@@ -2486,7 +2490,7 @@ the filter options were a mess — I couldn’t narrow by brand or dietary needs
 - **Theme**: "Search & Navigation"
 
 ### **2. Context**
-- **Context**: "After the app finally stabilized post-crash, the customer attempted to narrow product choices but found the filters unusable — unable to sort by brand or dietary need."
+- **Context**: "Customer was unable to filter products by brand or dietary need after the app finally reloaded."
 - **Keywords**: ["filter", "brand", "dietary", "search", "clunky"]
 
 ### **3. Feedback Type**
@@ -2512,17 +2516,18 @@ the filter options were a mess — I couldn’t narrow by brand or dietary needs
 - **Opportunity Maximisation Stream**: "Optimize"
 - **Experience Driver**: "Product Discovery → Filter Logic"
 - **Interaction Moment**: "when attempting to filter by brand or dietary preference"
-- **Context**: "After the app finally stabilized post-crash, the customer attempted to narrow product choices but found the filters unusable — unable to sort by brand or dietary need."
-- **Matters**: "Customers expect intuitive and targeted filters to align results with their preferences — especially for dietary or brand-specific needs. Frustration rises sharply when filters feel broken or absent."
+- **Context**: "Customer was unable to filter products by brand or dietary need after the app finally reloaded"
+- **Matters**: "lack of precise filters for brand or dietary preference during search refinement"
 - **Semantic Action Statement**:
   SECTION 1: THE CUSTOMER REALITY
-  The customer submitted a Complaint about broken or missing brand and dietary filter options when trying to refine product search after app stabilization.
+  The customer made a Complaint about being unable to apply necessary filters after the app reloads
+  when attempting to filter by brand or dietary preferences
 
   SECTION 2: THE STRATEGIC RESPONSE
-  We need to Optimize → Product Discovery → Filter Logic to resolve filter design and usability gaps that block customers from narrowing down choices by preference.
-- **Stream Justification**: This is a performance flaw in the discovery layer. Though search exists, its refinement tools are functionally ineffective, creating friction in high-intent shopping moments. Optimization is essential to preserve flow and reduce cognitive fatigue
+  We need to Optimize → Product Discovery → Filter Logic to address lack of precise filters for brand or dietary preference during search refinement
+- **Stream Justification**: This is a performance shortfall in the search refinement layer. Though the core feature exists, poor usability introduces cognitive friction, slowing down discovery and degrading experience quality.
 - **Matters Extraction**: "Raw Customer Voice, Context, Interaction Moment"
-- **Behavioral Impact**: Enable faster, preference-aligned discovery, reduce drop-offs in the filter interaction phase, and improve conversion rates for dietary- and brand-specific buyers.
+- **Behavioral Impact**: Improve efficiency of preference-based product discovery, increase filter precision, and enhance user satisfaction in exploratory flows.
 
 ---
 
@@ -2539,7 +2544,7 @@ it makes me feel like a regular. Also, it'd be amazing if the app could suggest 
 - **Theme**: "Service Distinction"
 
 ### **2. Context**
-- **Context**: "Customer is consistently greeted in-store by staff who remember their regular orders, fostering a strong sense of recognition and personal connection.."
+- **Context**: "Customer is consistently recognized and greeted by in-store staff who remember their regular orders."
 - **Keywords**: ["staff", "greeting", "remember", "regular", "personal touch"]
 
 ### **3. Feedback Type**
@@ -2565,16 +2570,16 @@ it makes me feel like a regular. Also, it'd be amazing if the app could suggest 
 - **Opportunity Maximisation Stream**: "Amplify"
 - **Experience Driver**: "Customer Service → Staff Interaction"
 - **Interaction Moment**: "in-store entry"
-- **Context**: "Customer is consistently greeted in-store by staff who remember their regular orders, fostering a strong sense of recognition and personal connection."
-- **Matters**: "personalized greetings that emotionally anchor loyalty and turn mundane visits into meaningful experiences"
+- **Context**: "Customer is consistently recognized and greeted by in-store staff who remember their regular orders"
+- **Matters**: "personalized in-store greetings that make loyal customers feel emotionally recognized"
 - **Semantic Action Statement**:
   SECTION 1: THE CUSTOMER REALITY
-  The customer gave a Compliment about being consistently greeted by staff who remembered their regular order upon in-store entry.
+  The customer gave a Compliment about being consistently greeted by staff who even remembered their regular
+  orders on in-store entry
 
   SECTION 2: THE STRATEGIC RESPONSE
-  We need to Amplify → Customer Service → Staff Interaction to reinforce personalized greetings that emotionally anchor loyalty and elevate customer experience from routine to memorable.
-
-- **Stream Justification**: This is an emotionally rich frontline behavior that compounds loyalty. These moments of human recognition differentiate the in-store experience and drive habitual engagement.
+  We need to Amplify → Customer Service → Staff Interaction to address personalized in-store greetings that make loyal customers feel emotionally recognized
+- **Stream Justification**: A human behavior that builds emotional surplus and memorability. These moments strengthen long-term loyalty and create store-level differentiation.
 - **Matters Extraction**: "Raw Customer Voice, Context, Keywords, Interaction Moment"
 - **Behavioral Impact**: Deepen emotional bonds, encourage return visits, and elevate frontline service reputation.
 
@@ -2584,7 +2589,7 @@ it makes me feel like a regular. Also, it'd be amazing if the app could suggest 
 - **Theme**: "Personalization & Smart Suggestions"
 
 ### **2. Context**
-- **Context**: "Customer expressed interest in having the app suggest intelligent add-ons based on their purchase history, reflecting a desire for seamless repeat buying."
+- **Context**: "Customer wishes the app could intelligently suggest product add-ons based on their prior purchase behavior."
 - **Keywords**: ["suggest", "add-ons", "usually buy", "app", "purchase history"]
 
 ### **3. Feedback Type**
@@ -2610,16 +2615,18 @@ it makes me feel like a regular. Also, it'd be amazing if the app could suggest 
 - **Opportunity Maximisation Stream**: "Innovate"
 - **Experience Driver**: "Recommendation Engine → Smart Add-On Suggestions"
 - **Interaction Moment**: "during app browsing"
-- **Context**: "Customer expressed interest in having the app suggest intelligent add-ons based on their purchase history, reflecting a desire for seamless repeat buying."
-- **Matters**: "personalized add-on suggestions that reduce friction, enrich discovery, and enhance relevance during digital journeys"
+- **Context**: "Customer wishes the app could intelligently suggest product add-ons based on their prior purchase behavior"
+- **Matters**: "personalized add-on recommendations that simplify and enrich repeat ordering"
 - **Semantic Action Statement**:
   SECTION 1: THE CUSTOMER REALITY
-  The customer made a Suggestion about enabling intelligent add-on recommendations based on their repeat purchase history while browsing the app.
+  The customer made a Suggestion about the app intelligently suggesting add-ons based on their purchase history
 
   SECTION 2: THE STRATEGIC RESPONSE
-  We need to Innovate → Recommendation Engine → Smart Add-On Suggestions to deliver personalized add-on suggestions that reduce friction, enrich discovery, and enhance relevance during digital journeys.
-- **Stream Justification**: This suggestion reflects latent value in predictive personalization. Enhancing the app with intelligent, behavior-informed add-ons creates a smoother, more relevant path to repurchase.
+  We need to Innovate → Recommendation Engine → Smart Add-On Suggestions to address personalized add-on recommendations that simplify and enrich repeat ordering
+- **Stream Justification**: This is a forward-facing improvement idea grounded in repeat customer behavior. It reflects untapped potential for predictive personalization.
 - **Matters Extraction**: "Raw Customer Voice, Context, Keywords, Interaction Moment"
 - **Behavioral Impact**: Elevate digital personalization, boost AOV, and increase retention through intelligent app engagement.
+
+---
 
 """
