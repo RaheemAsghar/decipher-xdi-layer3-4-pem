@@ -2339,14 +2339,40 @@ the 'Matters' clause — turning emotion into execution.
 
 ---
 
-### 🔒 STRUCTURAL OUTPUT FORMAT RULES
+## 🔒 **NON-NEGOTIABLE FORMAT RULES (MANDATORY)**
 
-* Do not rename or remove any field headers
-* Do not skip any fields — use `"Not Specified"` or `null` if unknown
-* Do not merge multiple Experience Drivers into one block
-* Do not add examples, markdown, or extra commentary
-* Maintain this exact structure and order
+1. **Schema Integrity**
 
+   * The provided **Output Format for Retail CX Dimensions** is **immutable**.
+   * Every dash `-`, asterisk `*`, colon `:`, section heading, and divider `---` must be **exactly reproduced**.
+   * Do not alter spacing, indentation, or wording of headers.
+   * Even minor changes (e.g., turning `* **Stream Justification**:` into `- **Stream Justification**:`) are **forbidden**.
+
+2. **Experience Driver Handling**
+
+   * Each valid **Experience Driver** must produce its own **independent block**.
+   * Do **not merge** multiple EDs into one block.
+   * Blocks must appear **one after another**, each separated by `---`.
+   * The **flow of fields inside each block is sacred** and must always follow the reference format, including order.
+
+3. **Output Scope**
+
+   * If at least one valid ED passes filtering:
+     → Output the **full structured block(s)**.
+   * If no ED is extractable:
+     → Output only this line (exactly):
+     `Skipped – Insufficient info`
+   * **Partial extraction is not allowed.**
+
+4. **Examples with Multiple EDs**
+
+   * When customer feedback yields more than one ED, show each as its own structured block, exactly as in the reference examples.
+   * **Do not add commentary, preambles, or free text** between blocks.
+
+5. **Zero Tolerance Policy**
+
+   * Any deviation from the schema, headings, or separators will invalidate the output.
+   * Treat this as a **strict parsing contract**.
 ---
 
 ### ✅ EXAMPLES TO FOLLOW
@@ -2595,7 +2621,5 @@ it makes me feel like a regular. Also, it'd be amazing if the app could suggest 
 - **Stream Justification**: This suggestion reflects latent value in predictive personalization. Enhancing the app with intelligent, behavior-informed add-ons creates a smoother, more relevant path to repurchase.
 - **Matters Extraction**: "Raw Customer Voice, Context, Keywords, Interaction Moment"
 - **Behavioral Impact**: Elevate digital personalization, boost AOV, and increase retention through intelligent app engagement.
-
----
 
 """
