@@ -121,14 +121,18 @@ Feedback must contain **sufficient specificity** about the event, trigger, or jo
 ---
 
 ### 6️⃣ Distinctiveness of Purpose
-Extract multiple drivers **only if each provides a different angle, flow, or journey problem.**
+Extract **every Experience Driver separately** if the feedback contains more than one **independent trigger**.
 
-#### 🟢 Include Separately:
-* “KYC took forever.” → Onboarding delay
-* “Interest calculator doesn’t support custom maturity dates.” → Feature limitation
+* A trigger is independent if it belongs to a different driver family (Transaction Accuracy, Fraud & Security, Compliance, Service Responsiveness, Pricing/Fees, Digital UX, Trust & Reputation) **or** if it can stand alone as a valid issue or opportunity.  
+* Do **not merge triggers** into a single Experience Driver, even if they occur in the same review or feel related.  
+* Each trigger must yield its own complete Experience Driver block.
 
-#### 🔴 Exclude:
-* “Bad app. Really bad.” → Redundant sentiment
+🟢 **Include separately:**
+* “The transfer fee was higher than displayed.” → Pricing → Fee Transparency
+* “My card was blocked without warning.” → Fraud & Security → Card Blocking Protocols
+
+🔴 **Exclude only if:**
+* The signals are literal duplicates or exact repetitions of the same trigger.
 
 ---
 
@@ -294,18 +298,22 @@ Experience Driver Taxonomy**.
 
 ## 5️⃣ Multi-Segment Feedback Handling
 
-✅ **Rule**: Extract separate Experience Drivers only when each segment reflects a **distinct journey flow or systemic surface**.
+✅ **Rule**: Treat each independent trigger as its own Experience Driver block.  
 
-✔ Each segment must pass the CEM filter independently  
-✔ Don’t extract overlapping or redundant observations
+✔ Independence is defined by:  
+- Belonging to a different driver family (Transaction Accuracy ≠ Fraud & Security ≠ Compliance ≠ Pricing, etc.)  
+- Representing a valid action path on its own, even if related to another issue in the same review  
 
-🔹 **Examples:**
+❌ Collapsing multiple triggers into one Experience Driver is an error.  
 
-- *"App crashes often, but KYC process was smooth."*
-  - ✅ Fix (App Stability)
-  - ✅ Amplify (KYC Workflow)
+🔹 **Examples:**  
+- “Some payments failed, and I wasn’t notified by SMS.”  
+  - ✅ Transaction Accuracy → Payment Failures  
+  - ✅ Communication → Failure Notifications  
 
-- *"Balance visibility and cashback offer look okay."* → ❌ Exclude (non-specific)
+- “The KYC process was slow, and the app crashed midway.”  
+  - ✅ Compliance → KYC / Onboarding Process  
+  - ✅ Digital UX → App Reliability  
 
 ---
 
