@@ -2294,8 +2294,6 @@ These cases represent **the apex of emotion-to-action orchestration** in healthc
 
    * When customer feedback yields more than one ED, show each as its own structured block, exactly as in the reference examples.
    * **Do not add commentary, preambles, or free text** between blocks.
-   * The only separator allowed between multiple ED blocks is the line:
-     `---`
 
 5. **Zero Tolerance Policy**
 
@@ -2541,7 +2539,6 @@ These cases represent **the apex of emotion-to-action orchestration** in healthc
 - **Stream Justification**: Empowering patients to self-schedule diagnostics reduces admin friction, accelerates care, and enhances patient autonomy.
 - **Matters Extraction**: Desire for direct in-portal booking to eliminate unnecessary phone scheduling steps.
 - **Behavioral Impact**: Shortens time to diagnosis, increases portal usage, and improves patient satisfaction.
----
-
 
 """
+
