@@ -10,6 +10,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 # from rfi_policy import RFIPolicy, RFIPolicyConfig
     
 import numpy as np
+import math
 import sqlite3
 import json
 import os
@@ -115,14 +116,14 @@ class FlexibleTimeframeAnalyzer:
             "stream_threshold": 0.80,
             "skip_singletons": False,
             "preview_location_style": "short",
-            "bcs_distance_threshold": 0.30  # tune within 0.25–0.35
+            "bcs_distance_threshold": 0.25  # tune within 0.25–0.35
         }
 
-        # Signature weights + ordered fields
+        # Signature weights + ordered fields [context vs. semantic_action_statement]
         self.OU_CFG.setdefault("signature_weights", {
-            "matters": 6, "context": 4, "interaction_moment": 2,
+            "matters": 6, "semantic_customer_reality": 2, "interaction_moment": 3,
             "customer_journey_stage": 1, "customer_journey": 1,
-        })
+        }) 
         self.SIGNATURE_FIELDS = list(self.OU_CFG["signature_weights"].items())
 
         # ✅ Do NOT instantiate a second model here.
@@ -2004,21 +2005,30 @@ class Layer3Computer:
     
     def _compute_trend_series(self, series, eps=1e-6):
         """
-        Direction-only TREND over window + audit percentages.
-        - Gates (whitepaper): ↑ ≥ +5%, ↓ ≤ −5%, else →
-        - dir_pct: direction-safe % = (now - prev) / max(|prev|, ε) * 100
-        - pct_change: raw whitepaper % = (now - prev) / prev * 100, with band fallback when prev≈0
+        Direction-only TREND over window + coherent percentages.
+
+        - Gates: ↑ ≥ +5%, ↓ ≤ −5%, else →
+        - We align BOTH dir_pct and pct_change to the same denominator:
+            denom = |prev| (or 200.0 when |prev|≈0 for ERI [-100..+100])
+        so the sign matches the arrow (improvement is +, deterioration is −).
         """
         import numpy as np, pandas as pd
 
-        s = pd.Series(series).astype(float).dropna()
+        s = pd.Series(series).astype(float)
+
+        # ensure chronological order before endpoints
+        try:
+            s.index = pd.to_datetime(s.index)
+            s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        s = s.dropna()
         n = len(s)
 
-        # thresholds (pull from contract if present)
         th = self.trend_thresholds() if hasattr(self, "trend_thresholds") else {"up_pct": 5.0, "down_pct": -5.0}
         up_pct, down_pct = float(th["up_pct"]), float(th["down_pct"])
 
-        # not enough data → stable
         if n < 2 or not np.isfinite(s.iloc[0]) or not np.isfinite(s.iloc[-1]):
             return {
                 "symbol": "→",
@@ -2033,50 +2043,56 @@ class Layer3Computer:
         prev, now = float(s.iloc[0]), float(s.iloc[-1])
         delta = now - prev
 
-        # raw whitepaper % (audit)
-        if abs(prev) >= eps:
-            raw_pct = (delta / prev) * 100.0
-        else:
-            raw_pct = (delta / 200.0) * 100.0  # ERI band fallback (−100..+100)
-
-        # direction-safe % (classification)
+        # unified denominator: magnitude of prev; fall back to ERI band (200) when near zero
         denom = abs(prev) if abs(prev) >= eps else 200.0
-        dir_pct = (delta / denom) * 100.0
 
-        # clamp & round
-        pct_change = float(np.clip(round(raw_pct, 2), -100.0, 100.0))
-        dir_pct_r  = float(np.clip(round(dir_pct, 2), -100.0, 100.0))
+        change_pct = (delta / denom) * 100.0  # sign always matches delta/arrow
+        change_pct = float(np.clip(round(change_pct, 2), -100.0, 100.0))
 
-        # map to symbol using direction-safe %
-        sym = "↑" if dir_pct_r >= up_pct else ("↓" if dir_pct_r <= down_pct else "→")
+        sym = "↑" if change_pct >= up_pct else ("↓" if change_pct <= down_pct else "→")
         tier = {"↑": "Trend ↑ (Improving)", "→": "Trend → (Stable)", "↓": "Trend ↓ (Declining)"}[sym]
 
         return {
             "symbol": sym,
             "tier": tier,
-            "dir_pct": dir_pct_r,          # used for gating (direction-safe)
-            "pct_change": pct_change,      # raw whitepaper % (audit)
+            "dir_pct": change_pct,        # for gating
+            "pct_change": change_pct,     # audit value now coherent with arrow
             "n_days": n,
             "method": "endpoint_delta",
             "thresholds_used": {"up_pct": up_pct, "down_pct": down_pct},
+            # optional: include endpoints for transparency
+            "start_value": round(prev, 2),
+            "end_value": round(now, 2),
+            "delta": round(delta, 2),
         }
 
     def _compute_momentum_series(self, series, k=None) -> dict:
         """
         Momentum (whitepaper-simple, CX-friendly)
-        - Compares mean(Last k days) vs mean(First k days).
+        - Compares mean(Last k days) vs mean(First k days) on a date-sorted series.
         - If k is None: uses equal halves (k = floor(n/2)); ensures equal-length arcs.
-        - Delta is scaled as % of the ERI band (200 pts).
+        - Delta is scaled as % using a unified denominator:
+            denom = |mean(first half)|  (fallback 200.0 for ERI band ±100)
+        so the sign always matches the arrow (improvement = +, deterioration = −).
         - Tiers (inclusive at the stable band edges):
-            ↑↑  >= +20%
-            ↑    >  +5% and < +20%
-            →    between -5% and +5%  (inclusive)
-            ↓    <  -5% and > -20%
-            ↓↓  <= -20%
+            ↑↑ >= +20%
+            ↑   >  +5% and < +20%
+            →   between -5% and +5%  (inclusive)
+            ↓   <  -5% and > -20%
+            ↓↓ <= -20%
         """
         import numpy as np, pandas as pd
 
         s = pd.Series(series).astype(float)
+
+        # ensure chronological order before splitting halves
+        try:
+            s.index = pd.to_datetime(s.index)
+            s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        s = s.dropna()
         n = int(len(s))
         meta_neutral = self.mom_details("→")
 
@@ -2118,10 +2134,12 @@ class Layer3Computer:
                 "thresholds_used": self.momentum_thresholds(),
             }
 
-        # scale to % of the 200-pt ERI band
+        # unified denominator: |first-half mean|; fallback to ERI band width (200)
+        denom = abs(avg1) if abs(avg1) >= 1e-6 else 200.0
+
         delta_raw   = avg2 - avg1
-        delta_pct   = (delta_raw / 200.0) * 100.0
-        delta_pct_r = float(np.clip(round(delta_pct, 2), -100.0, 100.0))
+        change_pct  = (delta_raw / denom) * 100.0
+        change_pct  = float(np.clip(round(change_pct, 2), -100.0, 100.0))
 
         t = self.momentum_thresholds()
         flat = float(t.get("flat_band", 5.0))
@@ -2129,15 +2147,15 @@ class Layer3Computer:
         f_mod, f_str = float(t["fall_mod"]), float(t["fall_strong"])
 
         # inclusive stable band per table (±5%)
-        if -flat <= delta_pct_r <= flat:
+        if -flat <= change_pct <= flat:
             sym = "→"
-        elif delta_pct_r >= r_str:
+        elif change_pct >= r_str:
             sym = "↑↑"
-        elif delta_pct_r > r_mod:
+        elif change_pct > r_mod:
             sym = "↑"
-        elif delta_pct_r <= f_str:
+        elif change_pct <= f_str:
             sym = "↓↓"
-        elif delta_pct_r < f_mod:
+        elif change_pct < f_mod:
             sym = "↓"
         else:
             sym = "→"
@@ -2145,7 +2163,7 @@ class Layer3Computer:
         meta = self.mom_details(sym)
         return {
             "symbol": sym,
-            "delta": delta_pct_r,       # % of band
+            "delta": change_pct,       # % with sign aligned to arrow
             "label": meta["label"],
             "description": meta["description"],
             "snr": None,                # reserved; whitepaper-simple
@@ -2162,7 +2180,6 @@ class Layer3Computer:
 
 
     """
-
 ## **Trend x Momentum Grid**
 
 | **Trend** ↓ / **Momentum** → | **Momentum ↑ (Improving)**                                                                                                           | **Momentum → (Stable)**                                                                                              | **Momentum ↓ (Worsening)**                                                                                                     |
@@ -2202,6 +2219,7 @@ class Layer3Computer:
         # Coerce to float array and drop non-finite values
         arr = np.asarray(list(series), dtype=float)
         arr = arr[np.isfinite(arr)]
+        arr = np.clip(arr, -100.0, 100.0)  # optional: enforce ERI domain
         n = int(arr.size)
 
         if n < 2:
@@ -2274,14 +2292,22 @@ if it's real, recent, and reliable.
 
     def _compute_pattern_series(self, series) -> dict:
         """
-        Pattern Recognition (whitepaper) — always returns a full payload.
-        If no cycle ≥ 0.30, we report 'No Pattern' with ACF scores filled.
+        Pattern Recognition (days-only, Weekly/Monthly).
+        Binary rule: a pattern exists only if an eligible lag has |ACF| ≥ 0.40.
         """
         import numpy as np
         import pandas as pd
 
-        WEEKLY_MIN, MONTHLY_MIN, QUARTERLY_MIN = 8, 31, 91
+        WEEKLY_MIN, MONTHLY_MIN = 8, 31  # days
         s = pd.Series(series).astype(float)
+
+        # ensure chronological order (important for ACF)
+        try:
+            s.index = pd.to_datetime(s.index)
+            s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
         n = int(len(s))
 
         def _analysis_period():
@@ -2290,7 +2316,6 @@ if it's real, recent, and reliable.
             return None
 
         def _eri_by_day_weekly():
-            # Provide weekly breakdown if we have dates; else return a null-filled dict
             names = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
             if isinstance(s.index, pd.DatetimeIndex) and n >= WEEKLY_MIN:
                 by_dow = s.groupby(s.index.dayofweek).mean(numeric_only=True)
@@ -2307,7 +2332,7 @@ if it's real, recent, and reliable.
             val = (num / den) if den > 0 else np.nan
             return float(np.clip(val, -1.0, 1.0))
 
-        # If we can't even test the smallest official cycle, still return a filled payload
+        # Not enough data for even weekly test
         if n < WEEKLY_MIN:
             return {
                 "has_pattern": False,
@@ -2318,11 +2343,10 @@ if it's real, recent, and reliable.
                 "pain_day": None,
                 "eri_by_day": _eri_by_day_weekly(),
                 "data_coverage_days": n,
-                "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN, "Quarterly": QUARTERLY_MIN},
+                "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
                 "acf": {
                     "weekly":   {"lag_days": 7,  "score": None},
                     "monthly":  {"lag_days": 30, "score": None},
-                    "quarterly":{"lag_days": 90, "score": None},
                     "chosen":   {"lag_days": None, "score": None}
                 },
                 "analysis_period": _analysis_period(),
@@ -2330,39 +2354,37 @@ if it's real, recent, and reliable.
                 "reason": f"Need ≥{WEEKLY_MIN}d for Weekly tests."
             }
 
-        # Compute ACFs (we have enough data for at least weekly)
-        acf_w = _acf_at_lag(s.values, 7)   if n >= WEEKLY_MIN    else np.nan
-        acf_m = _acf_at_lag(s.values, 30)  if n >= MONTHLY_MIN   else np.nan
-        acf_q = _acf_at_lag(s.values, 90)  if n >= QUARTERLY_MIN else np.nan
+        # Compute ACFs for eligible cycles (Weekly/Monthly only)
+        acf_w = _acf_at_lag(s.values, 7)  if n >= WEEKLY_MIN  else np.nan
+        acf_m = _acf_at_lag(s.values, 30) if n >= MONTHLY_MIN else np.nan
 
         candidates = []
-        if np.isfinite(acf_w): candidates.append(("Weekly",    abs(acf_w), 7,  acf_w))
-        if np.isfinite(acf_m): candidates.append(("Monthly",   abs(acf_m), 30, acf_m))
-        if np.isfinite(acf_q): candidates.append(("Quarterly", abs(acf_q), 90, acf_q))
+        if np.isfinite(acf_w): candidates.append(("Weekly",  abs(acf_w), 7,  acf_w))
+        if np.isfinite(acf_m): candidates.append(("Monthly", abs(acf_m), 30, acf_m))
 
-        # If nothing is computable (e.g., all NaN), still return a filled 'No Pattern'
         if not candidates:
             best = ("None", 0.0, None, 0.0)
         else:
-            # choose best |ACF|; tie-break prefers shorter cycle Weekly>Monthly>Quarterly
-            rank = {"Weekly": 3, "Monthly": 2, "Quarterly": 1}
+            # choose highest |ACF|; tie → prefer Weekly
+            rank = {"Weekly": 2, "Monthly": 1}
             candidates.sort(key=lambda t: (t[1], rank.get(t[0], 0)), reverse=True)
             best = candidates[0]
 
         pattern_type, strength_abs, lag_days, signed_acf = best
         strength = round(float(strength_abs), 3)
 
-        # confidence per whitepaper thresholds
+        # Binary threshold for pattern existence
+        HAS_THRESHOLD = 0.40
         if strength_abs >= 0.60:
             confidence, confidence_tier = "High", "✅ Strong"
-        elif strength_abs >= 0.30:
+        elif strength_abs >= HAS_THRESHOLD:
             confidence, confidence_tier = "Medium", "⚠ Moderate"
         else:
             confidence, confidence_tier = "Low", "🔴 Weak / Candidate"
 
-        has_pattern = bool(strength_abs >= 0.30)
+        has_pattern = bool(strength_abs >= HAS_THRESHOLD)
 
-        # only compute pain_day if we actually have a Weekly *and* a pattern; otherwise None
+        # pain day only for confirmed Weekly
         pain_day = None
         if has_pattern and pattern_type == "Weekly" and isinstance(s.index, pd.DatetimeIndex):
             by_dow = s.groupby(s.index.dayofweek).mean(numeric_only=True)
@@ -2371,28 +2393,27 @@ if it's real, recent, and reliable.
                 pain_day = names[int(by_dow.idxmin())]
 
         return {
-            "has_pattern": has_pattern,                            # False when no discernible pattern
+            "has_pattern": has_pattern,
             "pattern_type": pattern_type if has_pattern else "None",
-            "pattern_strength": strength if has_pattern else 0.0,  # keep 0.0 for 'No Pattern'
+            "pattern_strength": strength if has_pattern else 0.0,
             "confidence": confidence if has_pattern else "Low",
             "confidence_tier": confidence_tier if has_pattern else "🔴 Weak / Candidate",
             "pain_day": pain_day if has_pattern else None,
-            "eri_by_day": _eri_by_day_weekly(),                    # filled dict, even if 'None'
+            "eri_by_day": _eri_by_day_weekly(),
             "data_coverage_days": n,
-            "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN, "Quarterly": QUARTERLY_MIN},
+            "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
             "acf": {
                 "weekly":   {"lag_days": 7,  "score": None if not np.isfinite(acf_w) else round(float(acf_w), 3)},
                 "monthly":  {"lag_days": 30, "score": None if not np.isfinite(acf_m) else round(float(acf_m), 3)},
-                "quarterly":{"lag_days": 90, "score": None if not np.isfinite(acf_q) else round(float(acf_q), 3)},
-                # even if no pattern, show which cycle had the highest |ACF| (for transparency)
-                "chosen":   {"lag_days": int(lag_days) if lag_days is not None else None,
-                            "score": round(float(signed_acf), 3) if lag_days is not None else None}
+                "chosen":   {
+                    "lag_days": int(lag_days) if lag_days is not None else None,
+                    "score": round(float(signed_acf), 3) if lag_days is not None else None
+                }
             },
             "analysis_period": _analysis_period(),
-            "status": "No Pattern" if not has_pattern else "OK",
-            "reason": None if has_pattern else "All cycle scores below 0.30 (no discernible recurring pattern)."
+            "status": "OK" if has_pattern else "No Pattern",
+            "reason": None if has_pattern else "All eligible cycle scores below 0.40 (no discernible recurring pattern)."
         }
-
 
 
     """
