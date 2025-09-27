@@ -2993,7 +2993,7 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         volatility_tier: str,              # freeform; normalized
         volatility_score: float,           # pct (0..100) display
         pattern_detected: bool,
-        pattern_type: str | None,          # "Weekly" | "Monthly" | "Quarterly" | "Operational Timing" | None
+        pattern_type: str | None,          # "Weekly" | "Monthly" | "Quarterly" | None
         pattern_confidence: str | None,    # "Strong" | "Moderate" | "Weak" | "Candidate" | None
         pain_day: str | None,              # weekday if weekly
         qssi_score: int,                   # 0..10 (gate + tier label only)
@@ -3009,7 +3009,7 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
 
         # lookups (direct; no inference)
         tm  = self._lookup_tm(tr, mo) or {}
-        tmv = self._lookup_tmv(tr, mo, volatility_tier) or {}
+        tmv = self._lookup_tmv(tr, mo, vt) or {}  # use normalized volatility tier
         msq = momentum_saturation_quadrant or {}
         msq_label = (msq.get("quadrant_interpretation") or {}).get("quadrant_label")
 
@@ -3023,9 +3023,10 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
                 grid_pattern_type = "Pain Day"
 
         pat = self._lookup_pattern(grid_pattern_type if pattern_detected else None, pattern_confidence)
-       
+
         qssi_tier_emoji, _ = self._qssi_tier(qssi)
         h_min, h_max = self._horizon_days((pattern_type if pattern_detected else None), horizon_days)
+        horizon_str = str(h_min) if h_min == h_max else f"{h_min}-{h_max}"
 
         # weak signal → no forecast (gate by QSSI)
         if qssi < 4:
@@ -3033,11 +3034,11 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
                 "forecast": {
                     "summary": "Insufficient signal for a forward pointer — keep monitoring.",
                     "basis": "Low signal strength (QSSI < 4)",
-                    "horizon_days": h_max
+                    "horizon_days": horizon_str
                 },
                 "watch": {
                     "focus": ["Trend direction", "Momentum shifts", "Volatility changes"],
-                    "horizon_days": h_max
+                    "horizon_days": horizon_str
                 },
                 "signal_synthesis": {
                     "trend": tr, "momentum": mo, "volatility": vt,
@@ -3069,10 +3070,12 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
             elif gt == "operational timing":
                 when_txt = " (operational timing window)"
 
+            # prefer "but" when volatility is not stable
+            vt_phrase = "" if vt == "Stable" else f" but {vt.lower()}"
+
             summary = (
                 f"{pat['interpretation']}{when_txt}. "
-                f"Current trajectory is {dir_lbl}"
-                + ("" if vt == "Stable" else f" and {vt.lower()}.")
+                f"Current trajectory is {dir_lbl}{vt_phrase}."
             )
             basis = f"Pattern-led forecast: {pat['type']} / {pat['conf_level']}"
             if tm.get("label"): basis += f"; TM grid → {tm['label']}"
@@ -3083,12 +3086,12 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
                 "forecast": {
                     "summary": summary,
                     "basis": basis,
-                    "horizon_days": f"{h_min}-{h_max}"
+                    "horizon_days": horizon_str
                 },
                 "watch": {
                     "windows": [pat["type"]],
                     "notes": [pat["instruction"]],
-                    "horizon_days": h_max
+                    "horizon_days": horizon_str
                 },
                 "signal_synthesis": {
                     "trend": tr,
@@ -3123,20 +3126,18 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
             basis_parts.append(f"MS quadrant → {msq_label}")
         basis = "; ".join([p for p in basis_parts if p]) or "Directional synthesis from Trend×Momentum and Volatility tiering"
 
-        horizon_str = str(h_min) if h_min == h_max else f"{h_min}-{h_max}"
-        vt_phrase   = "" if vt == "Stable" else f" but {vt.lower()}"
-
+        vt_phrase = "" if vt == "Stable" else f" but {vt.lower()}"
         summary = f"Over the next {horizon_str} days the signal is likely {dir_lbl}{vt_phrase}."
 
         return {
             "forecast": {
                 "summary": summary,
                 "basis": basis,
-                "horizon_days": horizon_str
+                "horizon_days": horizon_str,
             },
             "watch": {
                 "focus": ["Momentum flips", "Volatility spikes", "Quadrant changes"],
-                "horizon_days": h_max
+                "horizon_days": horizon_str
             },
             "signal_synthesis": {
                 "trend": tr, "momentum": mo,
@@ -3151,6 +3152,7 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
                 "quadrant_MS": msq_label,
             }
         }
+
    
     def compute(self):
         results, skipped = [], []
@@ -3352,4 +3354,3 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
-
