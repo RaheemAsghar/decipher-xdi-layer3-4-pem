@@ -2902,10 +2902,10 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
     # ---------- QSSI tiering (display only) ----------
     def _qssi_tier(self, qssi: int) -> tuple[str, str]:
         q = int(max(0, min(10, qssi)))
-        if q >= 9:  return ("💥 Critical", "critical")
-        if q >= 6:  return ("🔥 Strong", "strong")
-        if q >= 4:  return ("🌱 Emerging", "emerging")
-        if q >= 1:  return ("🔁 Weak", "weak")
+        if q >= 9:  return ("💥 Critical Signal", "critical")
+        if q >= 6:  return ("🔥 Strong Signal",   "strong")
+        if q >= 4:  return ("🌱 Emerging Signal", "emerging")
+        if q >= 1:  return ("🔁 Weak Signal",     "weak")
         return ("❌ No Signal", "none")
 
     # ---------- horizon (pattern windows only; else use provided fallback) ----------
@@ -3354,3 +3354,4 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
+
