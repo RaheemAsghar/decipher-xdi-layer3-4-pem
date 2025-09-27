@@ -3123,17 +3123,16 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
             basis_parts.append(f"MS quadrant → {msq_label}")
         basis = "; ".join([p for p in basis_parts if p]) or "Directional synthesis from Trend×Momentum and Volatility tiering"
 
-        summary = (
-            f"Over the next {h_min}-{h_max} days the signal is likely {dir_lbl}"
-            + ("" if vt == "Stable" else f" with {vt.lower()}")
-            + "."
-        )
+        horizon_str = str(h_min) if h_min == h_max else f"{h_min}-{h_max}"
+        vt_phrase   = "" if vt == "Stable" else f" but {vt.lower()}"
+
+        summary = f"Over the next {horizon_str} days the signal is likely {dir_lbl}{vt_phrase}."
 
         return {
             "forecast": {
                 "summary": summary,
                 "basis": basis,
-                "horizon_days": f"{h_min}-{h_max}"
+                "horizon_days": horizon_str
             },
             "watch": {
                 "focus": ["Momentum flips", "Volatility spikes", "Quadrant changes"],
@@ -3353,3 +3352,4 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
+
