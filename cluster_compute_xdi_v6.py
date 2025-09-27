@@ -1445,156 +1445,220 @@ class Layer2Computer:
         self.priority_matrix = self._define_priority_matrix()
         self.quadrant_purpose = self._define_quadrant_purpose()
 
-
+    # -----------------------------
+    # LAYER 2: Priority governance (pure ERI + RF)
+    # -----------------------------
     def _define_priority_matrix(self):
+        """
+        ERI tier x RF Activity tier -> Priority tier (P0..P5).
+        RF tiers: Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant
+        """
         return {
-            ("Very Negative", "Emergency"): "P0",
-            ("Very Negative", "Escalate"): "P1",
-            ("Negative", "Emergency"): "P1",
-            ("Very Negative", "Watch"): "P2",
-            ("Negative", "Escalate"): "P2",
-            ("Neutral", "Emergency"): "P2",
-            ("Neutral", "Escalate"): "P2",
-            ("Positive", "Emergency"): "P2",
-            ("Positive", "Escalate"): "P2",
-            ("Very Positive", "Emergency"): "P2",
-            ("Negative", "Watch"): "P3",
-            ("Neutral", "Watch"): "P3",
-            ("Positive", "Watch"): "P3",
-            ("Very Positive", "Escalate"): "P3",
-            ("Very Positive", "Watch"): "P3",
-            ("Negative", "Weak"): "P4",
-            ("Very Negative", "Weak"): "P5",
-            ("Very Negative", "Dormant"): "P5",
-            ("Negative", "Dormant"): "P5",
-            ("Neutral", "Weak"): "P5",
-            ("Neutral", "Dormant"): "P5",
-            ("Positive", "Weak"): "P5",
-            ("Positive", "Dormant"): "P5",
-            ("Very Positive", "Weak"): "P5",
-            ("Very Positive", "Dormant"): "P5",
+            ("Very Negative", "Very High Activity"): "P0",
+            ("Very Negative", "High Activity"):      "P1",
+            ("Negative",      "Very High Activity"): "P1",
+
+            ("Very Negative", "Moderate Activity"):  "P2",
+            ("Negative",      "High Activity"):      "P2",
+            ("Neutral",       "Very High Activity"): "P2",
+            ("Neutral",       "High Activity"):      "P2",
+            ("Positive",      "Very High Activity"): "P2",
+            ("Positive",      "High Activity"):      "P2",
+            ("Very Positive", "Very High Activity"): "P2",
+
+            ("Negative",      "Moderate Activity"):  "P3",
+            ("Neutral",       "Moderate Activity"):  "P3",
+            ("Positive",      "Moderate Activity"):  "P3",
+            ("Very Positive", "High Activity"):      "P3",
+            ("Very Positive", "Moderate Activity"):  "P3",
+
+            ("Negative",      "Low Activity"):       "P4",
+
+            ("Very Negative", "Low Activity"):       "P5",
+            ("Very Negative", "Activity Dormant"):   "P5",
+            ("Negative",      "Activity Dormant"):   "P5",
+            ("Neutral",       "Low Activity"):       "P5",
+            ("Neutral",       "Activity Dormant"):   "P5",
+            ("Positive",      "Low Activity"):       "P5",
+            ("Positive",      "Activity Dormant"):   "P5",
+            ("Very Positive", "Low Activity"):       "P5",
+            ("Very Positive", "Activity Dormant"):   "P5",
         }
 
     def _define_quadrant_purpose(self):
+        """
+        Momentum-ready concise phrasing for each ERI x RF Activity cell.
+        RF tiers: Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant
+        """
         return {
-            ("Very Negative", "Emergency"): "Critical Crisis Response",
-            ("Very Negative", "Escalate"): "Prevent Active Loyalty Churn",
-            ("Very Negative", "Watch"): "Erosion Risk Early Watch",
-            ("Very Negative", "Weak"): "Flag for Vulnerability",
-            ("Very Negative", "Dormant"): "Archive for Pattern Watch",
-            ("Negative", "Emergency"): "Urgent Loyalty Recovery",
-            ("Negative", "Escalate"): "Contain Friction Emergence",
-            ("Negative", "Watch"): "Tactical Corrections",
-            ("Negative", "Weak"): "Investigate Minor Recurrence",
-            ("Negative", "Dormant"): "Low Risk Monitoring",
-            ("Neutral", "Emergency"): "Early Warning Activation",
-            ("Neutral", "Escalate"): "Investigate Attrition Risks",
-            ("Neutral", "Watch"): "Monitor Behavioral Shifts",
-            ("Neutral", "Weak"): "Background Observation",
-            ("Neutral", "Dormant"): "No Immediate Action",
-            ("Positive", "Emergency"): "Expand Loyalty Influence",
-            ("Positive", "Escalate"): "Loyalty Accelerant",
-            ("Positive", "Watch"): "Deepen Retention Programs",
-            ("Positive", "Weak"): "Gradual Improvements",
-            ("Positive", "Dormant"): "Pulse Monitoring",
-            ("Very Positive", "Emergency"): "Maximize Advocacy Surge",
-            ("Very Positive", "Escalate"): "Scale Advocacy Programs",
-            ("Very Positive", "Watch"): "Reignite Advocates",
-            ("Very Positive", "Weak"): "Recognize Quiet Strength",
-            ("Very Positive", "Dormant"): "Passive Monitoring"
+            ("Very Negative", "Very High Activity"): "Critical crisis",
+            ("Very Negative", "High Activity"):      "Churn prevention",
+            ("Very Negative", "Moderate Activity"):  "Erosion watch",
+            ("Very Negative", "Low Activity"):       "Vulnerability flag",
+            ("Very Negative", "Activity Dormant"):   "Pattern archive",
+
+            ("Negative",      "Very High Activity"): "Urgent recovery",
+            ("Negative",      "High Activity"):      "Friction containment",
+            ("Negative",      "Moderate Activity"):  "Tactical fixes",
+            ("Negative",      "Low Activity"):       "Recurrence check",
+            ("Negative",      "Activity Dormant"):   "Low-risk watch",
+
+            ("Neutral",       "Very High Activity"): "Early warning",
+            ("Neutral",       "High Activity"):      "Attrition check",
+            ("Neutral",       "Moderate Activity"):  "Shift monitoring",
+            ("Neutral",       "Low Activity"):       "Background watch",
+            ("Neutral",       "Activity Dormant"):   "No immediate action",
+
+            ("Positive",      "Very High Activity"): "Loyalty expansion",
+            ("Positive",      "High Activity"):      "Loyalty accelerant",
+            ("Positive",      "Moderate Activity"):  "Retention deepening",
+            ("Positive",      "Low Activity"):       "Gradual improvement",
+            ("Positive",      "Activity Dormant"):   "Pulse watch",
+
+            ("Very Positive", "Very High Activity"): "Advocacy surge",
+            ("Very Positive", "High Activity"):      "Scale advocacy",
+            ("Very Positive", "Moderate Activity"):  "Reignite advocates",
+            ("Very Positive", "Low Activity"):       "Quiet strength",
+            ("Very Positive", "Activity Dormant"):   "Passive watch",
         }
+
+    def _priority_score_map(self):
+        """Numeric helper for sorting; semantics remain with P-tier."""
+        return {"P0": 5, "P1": 4, "P2": 3, "P3": 2, "P4": 1, "P5": 0}
 
     def compute(self):
-        grouped = self.df.groupby("experience_driver")
-        results = []
+        """
+        Layer 2 (pure ERI + RF) …
+        """
+        import os, numpy as np, pandas as pd
 
+        # Ensure maps exist (safe init if not set in __init__)
+        self.priority_matrix = getattr(self, "priority_matrix", self._define_priority_matrix())
+        self.quadrant_purpose = getattr(self, "quadrant_purpose", self._define_quadrant_purpose())
+
+        # ✅ Normalize date column once; coerce bad values to NaT
+        self.df["date"] = pd.to_datetime(self.df["date"], errors="coerce")
+
+        # ✅ Normalize 'today' to pandas Timestamp for safe subtraction
+        today_ts = pd.Timestamp(self.today)
+
+        grouped = self.df.groupby("experience_driver", dropna=False)
+        total_rows = len(self.df)
         entity_counts = self.df["experience_driver"].value_counts()
-        max_mentions = entity_counts.max()
+        max_mentions = max(1, entity_counts.max())
 
-        # Impact weights per priority tier
-        impact_weights = {
-            "P0": 1.00,
-            "P1": 0.85,
-            "P2": 0.70,
-            "P3": 0.55,
-            "P4": 0.40,
-            "P5": 0.20
-        }
+        p_score = self._priority_score_map()
+
+        results = []
 
         for entity, group in grouped:
             entry = {"experience_driver": entity}
-            total_mentions = len(group)
-            emotion_counts = group["emotion_primary"].value_counts().to_dict()
 
-            eri_raw = sum(self.emotion_scores.get(emotion, 0) * count for emotion, count in emotion_counts.items())
-            eri = eri_raw / total_mentions if total_mentions else 0
-            eri_normalized = ((eri + 3) / 6) * 200 - 100
+            # --- counts & dates ---------------------------------------------------
+            total_mentions = int(len(group))
+            dates = group["date"]
+            first_seen = dates.min() if total_mentions else None
+            most_recent = dates.max() if total_mentions else None
 
-            loyalty_tier = self._map_loyalty_tier(eri_normalized)
-            most_recent_date = group["date"].max()
-            age_days = (self.today - most_recent_date).days
-            R = 100 * np.exp(-age_days / self.timeframe_days)
+            # ✅ Safe age calc across types/NaT
+            if most_recent is None or pd.isna(most_recent):
+                age_days = None
+            else:
+                td = today_ts - most_recent
+                age_days = int(td.days)
+                if age_days < 0:
+                    age_days = 0
 
-            F = min(100, (np.log(total_mentions + 1) / np.log(max_mentions + 1)) * 100)
-            RF = 0.6 * R + 0.4 * F
+            # --- ERI --------------------------------------------------------------
+            emotion_counts = group["emotion_primary"].value_counts(dropna=False).to_dict()
+            eri_raw = sum(float(self.emotion_scores.get(em, 0.0)) * int(ct) for em, ct in emotion_counts.items())
+            eri_mean = (eri_raw / total_mentions) if total_mentions else 0.0
+            eri_norm = ((float(eri_mean) + 3.0) / 6.0) * 200.0 - 100.0
+            eri_norm = float(np.clip(eri_norm, -100.0, 100.0))
+            eri_tier = self._map_loyalty_tier(eri_norm)
 
+            # --- RF (Recency & Frequency) ----------------------------------------
+            R = 0.0 if age_days is None else 100.0 * np.exp(-age_days / max(1.0, float(self.timeframe_days)))
+            F = min(100.0, (np.log1p(total_mentions) / np.log1p(max_mentions)) * 100.0)
+
+            rf_r_abs = 0.6 * float(R)
+            rf_f_abs = 0.4 * float(F)
+            RF = rf_r_abs + rf_f_abs
             rf_tier = self._map_rf_tier(RF)
-            associated_names = sorted(group["entity_name"].dropna().unique().tolist())
 
-            priority_status = self.priority_matrix.get((loyalty_tier, rf_tier), "Unmapped")
-            impact_score = impact_weights.get(priority_status, 0)
-            RFI = RF * impact_score
+            # % contribution (guard against divide-by-zero)
+            if RF > 0:
+                rf_r_pct = round(100.0 * rf_r_abs / RF, 1)
+                rf_f_pct = round(100.0 - rf_r_pct, 1)
+            else:
+                rf_r_pct = 0.0
+                rf_f_pct = 0.0
 
+            # --- Priority via ERI×RF ---------------------------------------------
+            key = (eri_tier, rf_tier)
+            priority_status = self.priority_matrix.get(key, "Unmapped")
+            purpose = self.quadrant_purpose.get(key, "Unmapped")
+            priority_score = p_score.get(priority_status, 0)
+
+            # --- Entities & coverage ---------------------------------------------
+            associated_names = (
+                sorted(group["entity_name"].dropna().unique().tolist())
+                if "entity_name" in group.columns else []
+            )
+            mention_share_pct = round((total_mentions / max(1, total_rows)) * 100.0, 2)
+
+            # --- record -----------------------------------------------------------
             entry.update({
-                "ERI": round(eri_normalized, 2),
-                "Loyalty_State": loyalty_tier,
-                "Associated_Entity_Names": associated_names,
-                "R": round(R, 2),
-                "Most_Recent_Date": most_recent_date.strftime('%Y-%m-%d'),
-                "F": round(F, 2),
-                "No_of_Mentions": total_mentions,
-                "RF": round(RF, 2),
+                "ERI": round(eri_norm, 2),
+                "ERI_Tier": eri_tier,
+                "Loyalty_State": eri_tier,
+
+                "R": round(float(R), 2),
+                "F": round(float(F), 2),
+                "RF": round(float(RF), 2),
+                "RF_R_Component": round(rf_r_abs, 2),
+                "RF_R_ContributionPct": rf_r_pct,
+                "RF_F_Component": round(rf_f_abs, 2),
+                "RF_F_ContributionPct": rf_f_pct,
+
                 "RF_Urgency_Category": rf_tier,
-                "ERI_RF_Quadrant": f"{loyalty_tier} x {rf_tier}",
-                "Quadrant_Purpose": self.quadrant_purpose.get((loyalty_tier, rf_tier), "Unmapped Quadrant"),
+
+                "ERI_RF_Quadrant": f"{eri_tier} x {rf_tier}",
+                "Quadrant_Purpose": purpose,
                 "Priority_Status": priority_status,
-                "Impact_Score": round(impact_score, 2),
-                "RFI": round(RFI, 2)
+                "Priority_Score": priority_score,
+
+                "Associated_Entity_Names": associated_names,
+                "No_of_Mentions": total_mentions,
+                "Mention_Share_%": mention_share_pct,
+                "First_Seen_Date": first_seen.strftime("%Y-%m-%d") if first_seen is not None and not pd.isna(first_seen) else None,
+                "Most_Recent_Date": most_recent.strftime("%Y-%m-%d") if most_recent is not None and not pd.isna(most_recent) else None,
+                "Age_Days": age_days,
+
+                "Quadrant_Key": f"{eri_tier}|{rf_tier}",
+                "Debug_ERI_Raw": round(float(eri_mean), 4),
+                "Debug_Emotion_Counts": emotion_counts,
             })
+
             results.append(entry)
 
-        self.layer2_df = pd.DataFrame(results)
+        # Build DF once
+        layer2_df = pd.DataFrame(results)
 
-         # 🔽 NEW: Save output to CSV for inspection
-        output_path = "outputs/layer2_output_debug.csv"
+        # Assign dynamic tiers for R and F (5 bins each) and persist them
+        layer2_df = self._compute_dynamic_component_tiers(layer2_df)
+
+        # Save + bind
         os.makedirs("outputs", exist_ok=True)
-        self.layer2_df.to_csv(output_path, index=False, encoding="utf-8")
+        output_path = "outputs/layer2_output_debug.csv"
+        layer2_df.to_csv(output_path, index=False, encoding="utf-8")
+        self.layer2_df = layer2_df  # ensure returned DF includes dynamic tiers
         print(f"✅ Layer 2 output saved to: {output_path}")
-        
-        
-        # 🔽 NEW: Optional RFI Policy Integration (AFTER layer2_df is fully built)
-        # # Initialize RFI Policy with conservative defaults
-        # rfi_config = RFIPolicyConfig(
-        #     enable_rfi_tiebreak=True,   # Safe: only affects order when RF ties
-        #     enable_rf_blend=False,      # Safe: keeps current RF behavior 
-        #     alpha=0.80,
-        #     tau=0.15
-        # )
-        # rfi_policy = RFIPolicy(rfi_config)
 
-        # # Enrich with RFI features (adds RF_prime, OrderHint columns)
-        # self.layer2_df = rfi_policy.enrich_with_rfp(self.layer2_df)
-
-        # Optional: Get execution-ranked version (doesn't change original)
-        # ranked_df = rfi_policy.rank_for_execution(self.layer2_df)
-        # Save ranked version if needed
-        # ranked_output_path = "outputs/layer2_ranked_debug.csv"
-        # ranked_df.to_csv(ranked_output_path, index=False, encoding="utf-8")
-        # print(f"✅ Layer 2 ranked output saved to: {ranked_output_path}")
-     
-        
         return self.layer2_df
 
+
+    # --- Tier mappers (unchanged thresholds) -------------------------------------
     def _map_loyalty_tier(self, eri_normalized):
         if eri_normalized >= 80:
             return "Very Positive"
@@ -1609,20 +1673,75 @@ class Layer2Computer:
 
     def _map_rf_tier(self, RF):
         if RF >= 80:
-            return "Emergency"
+            return "Very High Activity"
         elif RF >= 60:
-            return "Escalate"
+            return "High Activity"
         elif RF >= 40:
-            return "Watch"
+            return "Moderate Activity"
         elif RF >= 20:
-            return "Weak"
+            return "Low Activity"
         else:
-            return "Dormant"
+            return "Activity Dormant"
+
+    def _compute_dynamic_component_tiers(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Post-Layer2: assign 5-tier labels to R and F using distribution-aware quantiles.
+        Returns df with: R_Tier, R_Tier_Rank, F_Tier, F_Tier_Rank
+        Also stores the cutpoints on self for transparency/debug.
+        """
+        df = df.copy()
+
+        # Labels + ranks (descending = higher is 'stronger')
+        r_labels = ["No Recent Activity", "Low Recency", "Moderate Recency", "High Recency", "Very High Recency"]
+        f_labels = ["Sparse Mentions", "Low Frequency", "Moderate Frequency", "High Frequency", "Very High Frequency"]
+        ranks   = [1, 2, 3, 4, 5]
+
+        # Work only on valid values
+        r_valid = df["R"].dropna().astype(float)
+        f_valid = df["F"].dropna().astype(float)
+
+        def _safe_qcut(series, labels):
+            # If too few unique values for qcut, fall back to rank-based percentiles
+            try:
+                return pd.qcut(series, q=5, labels=labels, duplicates="drop")
+            except ValueError:
+                # rank to [0,1], then bucket
+                pct = series.rank(method="average", pct=True)
+                bins = pd.cut(pct, bins=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], labels=labels, include_lowest=True)
+                return bins
+
+        # Compute tiers
+        r_tier = _safe_qcut(r_valid, r_labels)
+        f_tier = _safe_qcut(f_valid, f_labels)
+
+        # Write back to df
+        df.loc[r_tier.index, "R_Tier"] = r_tier.astype(str)
+        df.loc[f_tier.index, "F_Tier"] = f_tier.astype(str)
+
+        # Numeric ranks aligned with labels (map label->rank)
+        r_map = dict(zip(r_labels, ranks))
+        f_map = dict(zip(f_labels, ranks))
+        df["R_Tier_Rank"] = df["R_Tier"].map(r_map).fillna(0).astype(int)
+        df["F_Tier_Rank"] = df["F_Tier"].map(f_map).fillna(0).astype(int)
+
+        # Keep the actual cutpoints for transparency
+        # (best-effort: if qcut succeeded, retrieve bin edges via quantiles)
+        try:
+            self.meta_r_quantiles = r_valid.quantile([0.0, .2, .4, .6, .8, 1.0]).round(2).to_dict()
+        except Exception:
+            self.meta_r_quantiles = {}
+        try:
+            self.meta_f_quantiles = f_valid.quantile([0.0, .2, .4, .6, .8, 1.0]).round(2).to_dict()
+        except Exception:
+            self.meta_f_quantiles = {}
+
+        return df
+
 
 # === Quadrant Matrix Loader ===
 def get_quadrant_matrix():
     """
-    25-cell Saturation × Momentum matrix with full narratives.
+    25-cell Saturation x Momentum matrix with full narratives.
     Columns:
       Saturation_Tier, Momentum_Tier, Diagnostic_Label, Strategic_Narrative,
       Urgency_Code, Recommended_Owner, Action_Guidance, Momentum_Context,
@@ -1664,6 +1783,58 @@ def get_quadrant_matrix():
             "Urgency_Code","Recommended_Owner","Action_Guidance","Momentum_Context",
             "Saturation_Context","Trajectory_Story"]
     return pd.DataFrame(data, columns=cols)
+
+"""
+
+# The Two-Grid Narrative
+
+### 1️⃣ **ERI x RF Matrix → Permission & Urgency**
+
+* **Role:** Gatekeeper.
+* **Purpose:** Decide *whether we act, and how urgently*.
+* **Logic:**
+
+  * ERI (emotion polarity & resonance) + RF (recency & frequency urgency).
+  * Output = Priority Tier (P0-P5).
+* **Interpretation:**
+
+  * Negative x Escalate → “🚨 Act now — containment required.”
+  * Positive x Weak → “🛑 Don't rush — background monitoring only.”
+* **Analogy:** Like a **traffic light** — green = go, red = stop, amber = act with caution.
+
+---
+
+### 2️⃣ **Saturation x Momentum Matrix → Texture & Direction**
+
+* **Role:** Navigator.
+* **Purpose:** Once you've decided to act, define *the nature of the battlefield*.
+* **Logic:**
+
+  * Saturation (headroom / ceiling) + Momentum (velocity of change).
+  * Output = Diagnostic Label + Action Style (Friction, Collapse, Breakthrough, etc.).
+* **Interpretation:**
+
+  * Low x Stable → “⚠ Friction State — stuck in a low-trust equilibrium.”
+  * High x Falling → “Cooling Off — loyal base losing steam.”
+  * Very High x Rising → “Overload Alert — risk of burnout.”
+* **Analogy:** Like **road conditions** — is it slippery, uphill, stable, or collapsing?
+
+---
+
+### 🎯 Combined Narrative
+
+* **Grid 1 (ERI x RF)** → tells you *“Do something, yes or no, and how fast.”*
+* **Grid 2 (Sat x Mom)** → tells you *“Now that you're acting, here's what kind of problem it really is, and how to approach it.”*
+
+👉 **First grid = fire alarm.**
+👉 **Second grid = fire inspector's report.**
+
+Together, they make sure you:
+
+1. **Don't ignore the wrong things** (urgency filter).
+2. **Don't mis-handle the right things** (guidance filter).
+
+"""
 
 def get_trend_momentum_grid():
     """
@@ -2178,7 +2349,6 @@ class Layer3Computer:
             },
         }
 
-
     """
 ## **Trend x Momentum Grid**
 
@@ -2205,7 +2375,6 @@ class Layer3Computer:
         Volatility (Whitepaper 3-Level Version)
 
         - Input: iterable/Series of ERI values in [-100, +100]; may contain None/NaN/±inf.
-        - Uses ONLY observed points (drops NaN/None/±inf). No imputation. No detrending.
         - Requires n >= 2 to compute std. dev. (ddof=1).
         - Score = standard deviation of ERI over the window.
         - Tiers:
@@ -2253,7 +2422,6 @@ class Layer3Computer:
             "detrended": False
         }
 
-
     """
 
 ## 🔹 Trend x Momentum x Volatility Grid
@@ -2294,6 +2462,7 @@ if it's real, recent, and reliable.
         """
         Pattern Recognition (days-only, Weekly/Monthly).
         Binary rule: a pattern exists only if an eligible lag has |ACF| ≥ 0.40.
+        Uses the full-window track passed in (same as Trend/Momentum/Volatility).
         """
         import numpy as np
         import pandas as pd
@@ -2303,11 +2472,12 @@ if it's real, recent, and reliable.
 
         # ensure chronological order (important for ACF)
         try:
-            s.index = pd.to_datetime(s.index)
-            s = s.sort_index()
+            s.index = pd.to_datetime(s.index); s = s.sort_index()
         except Exception:
             s = s.reset_index(drop=True)
 
+        # guard: ensure finite track and detect constant series
+        s = s.replace([np.inf, -np.inf], np.nan).interpolate(limit_direction="both")
         n = int(len(s))
 
         def _analysis_period():
@@ -2315,12 +2485,7 @@ if it's real, recent, and reliable.
                 return [str(s.index.min().date()), str(s.index.max().date())]
             return None
 
-        def _eri_by_day_weekly():
-            names = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
-            if isinstance(s.index, pd.DatetimeIndex) and n >= WEEKLY_MIN:
-                by_dow = s.groupby(s.index.dayofweek).mean(numeric_only=True)
-                return {names[i]: (float(by_dow.get(i)) if i in by_dow.index else None) for i in range(7)}
-            return {d: None for d in names}
+        NAMES_DOW = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
 
         def _acf_at_lag(x: np.ndarray, lag: int) -> float:
             if x.size == 0 or lag >= x.size:
@@ -2332,7 +2497,29 @@ if it's real, recent, and reliable.
             val = (num / den) if den > 0 else np.nan
             return float(np.clip(val, -1.0, 1.0))
 
-        # Not enough data for even weekly test
+        # early exit: constant track → no cyclical structure (keeps other modules consistent)
+        if float(np.nanstd(s.values)) < 1e-9:
+            return {
+                "has_pattern": False,
+                "pattern_type": "None",
+                "pattern_strength": 0.0,
+                "confidence": "Low",
+                "confidence_tier": "🔴 Weak / Candidate",
+                "pain_day": None,
+                "eri_by_day": {d: None for d in NAMES_DOW},
+                "data_coverage_days": n,
+                "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
+                "acf": {
+                    "weekly":   {"lag_days": 7,  "score": None},
+                    "monthly":  {"lag_days": 30, "score": None},
+                    "chosen":   {"lag_days": None, "score": None}
+                },
+                "analysis_period": _analysis_period(),
+                "status": "No Pattern",
+                "reason": "Series is effectively constant across the window (no cyclical structure)."
+            }
+
+        # Not enough data for even weekly test (by full-window length)
         if n < WEEKLY_MIN:
             return {
                 "has_pattern": False,
@@ -2341,7 +2528,7 @@ if it's real, recent, and reliable.
                 "confidence": "Low",
                 "confidence_tier": "🔴 Weak / Candidate",
                 "pain_day": None,
-                "eri_by_day": _eri_by_day_weekly(),
+                "eri_by_day": {d: None for d in NAMES_DOW},
                 "data_coverage_days": n,
                 "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
                 "acf": {
@@ -2354,7 +2541,7 @@ if it's real, recent, and reliable.
                 "reason": f"Need ≥{WEEKLY_MIN}d for Weekly tests."
             }
 
-        # Compute ACFs for eligible cycles (Weekly/Monthly only)
+        # Compute ACFs for eligible cycles (Weekly/Monthly only) on the same full-window track
         acf_w = _acf_at_lag(s.values, 7)  if n >= WEEKLY_MIN  else np.nan
         acf_m = _acf_at_lag(s.values, 30) if n >= MONTHLY_MIN else np.nan
 
@@ -2365,15 +2552,13 @@ if it's real, recent, and reliable.
         if not candidates:
             best = ("None", 0.0, None, 0.0)
         else:
-            # choose highest |ACF|; tie → prefer Weekly
-            rank = {"Weekly": 2, "Monthly": 1}
+            rank = {"Weekly": 2, "Monthly": 1}  # prefer Weekly on ties
             candidates.sort(key=lambda t: (t[1], rank.get(t[0], 0)), reverse=True)
             best = candidates[0]
 
         pattern_type, strength_abs, lag_days, signed_acf = best
         strength = round(float(strength_abs), 3)
 
-        # Binary threshold for pattern existence
         HAS_THRESHOLD = 0.40
         if strength_abs >= 0.60:
             confidence, confidence_tier = "High", "✅ Strong"
@@ -2384,13 +2569,15 @@ if it's real, recent, and reliable.
 
         has_pattern = bool(strength_abs >= HAS_THRESHOLD)
 
-        # pain day only for confirmed Weekly
+        # pain day & weekday table only if Weekly is confirmed
         pain_day = None
         if has_pattern and pattern_type == "Weekly" and isinstance(s.index, pd.DatetimeIndex):
             by_dow = s.groupby(s.index.dayofweek).mean(numeric_only=True)
             if by_dow.size > 0:
-                names = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
-                pain_day = names[int(by_dow.idxmin())]
+                pain_day = NAMES_DOW[int(by_dow.idxmin())]
+            eri_by_day = {NAMES_DOW[i]: (float(by_dow.get(i)) if i in by_dow.index else None) for i in range(7)}
+        else:
+            eri_by_day = {d: None for d in NAMES_DOW}
 
         return {
             "has_pattern": has_pattern,
@@ -2399,7 +2586,7 @@ if it's real, recent, and reliable.
             "confidence": confidence if has_pattern else "Low",
             "confidence_tier": confidence_tier if has_pattern else "🔴 Weak / Candidate",
             "pain_day": pain_day if has_pattern else None,
-            "eri_by_day": _eri_by_day_weekly(),
+            "eri_by_day": eri_by_day,
             "data_coverage_days": n,
             "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
             "acf": {
@@ -2489,175 +2676,175 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
 
     """
 
-    def _compute_momentum_saturation_insight(
-    self,
-    eri_score,
-    momentum_symbol,
-    *,
-    signal_presence_pct: float | None = None,
-    vol_norm: float | None = None,
-    momentum_snr: float | None = None,
-    series_data_complete: bool | None = None,
-    strict_matrix: bool = True   # set True to forbid narrative without a matrix hit
-) -> dict:
-        # --- Contracts & gates ---
-        t = self.momentum_thresholds()
-        presence_full = float(t.get("presence_full_credit", 0.40))
-        snr_strong    = float(t.get("snr_strong", 1.25))
+#     def _compute_momentum_saturation_insight(
+#     self,
+#     eri_score,
+#     momentum_symbol,
+#     *,
+#     signal_presence_pct: float | None = None,
+#     vol_norm: float | None = None,
+#     momentum_snr: float | None = None,
+#     series_data_complete: bool | None = None,
+#     strict_matrix: bool = True   # set True to forbid narrative without a matrix hit
+# ) -> dict:
+#         # --- Contracts & gates ---
+#         t = self.momentum_thresholds()
+#         presence_full = float(t.get("presence_full_credit", 0.40))
+#         snr_strong    = float(t.get("snr_strong", 1.25))
 
-        # --- Input hygiene ---
-        try:
-            eri_score = max(-100.0, min(100.0, float(eri_score)))
-        except Exception:
-            eri_score = 0.0
+#         # --- Input hygiene ---
+#         try:
+#             eri_score = max(-100.0, min(100.0, float(eri_score)))
+#         except Exception:
+#             eri_score = 0.0
 
-        # Accept either a symbol ("↑") or label ("Moderately Rising")
-        m_sym = (momentum_symbol or "→").strip()
-        if len(m_sym) > 2:  # likely a label
-            m_sym = self.mom_symbol_from_label(m_sym)
+#         # Accept either a symbol ("↑") or label ("Moderately Rising")
+#         m_sym = (momentum_symbol or "→").strip()
+#         if len(m_sym) > 2:  # likely a label
+#             m_sym = self.mom_symbol_from_label(m_sym)
 
-        # --- Saturation via contract ---
-        sat  = self.sat_from_eri(eri_score)  # {'emoji','clean','headroom','qssi_score','si'}
-        si   = float(sat["si"])
-        sat_emoji = sat["emoji"]   # e.g., "✅ High"
-        sat_clean = sat["clean"]   # e.g., "High"
+#         # --- Saturation via contract ---
+#         sat  = self.sat_from_eri(eri_score)  # {'emoji','clean','headroom','qssi_score','si'}
+#         si   = float(sat["si"])
+#         sat_emoji = sat["emoji"]   # e.g., "✅ High"
+#         sat_clean = sat["clean"]   # e.g., "High"
 
-        # --- Momentum via contract ---
-        mom_meta       = self.mom_details(m_sym)  # safe default to '→'
-        mom_emoji_full = mom_meta["emoji_full"]   # e.g., "↑ 📈 Moderately Rising"
-        mom_clean      = mom_meta["label"]        # e.g., "Moderately Rising"
-        mom_strength   = float(mom_meta.get("strength", 0.3))
-        mom_polarity   = int(mom_meta.get("polarity", 0))
+#         # --- Momentum via contract ---
+#         mom_meta       = self.mom_details(m_sym)  # safe default to '→'
+#         mom_emoji_full = mom_meta["emoji_full"]   # e.g., "↑ 📈 Moderately Rising"
+#         mom_clean      = mom_meta["label"]        # e.g., "Moderately Rising"
+#         mom_strength   = float(mom_meta.get("strength", 0.3))
+#         mom_polarity   = int(mom_meta.get("polarity", 0))
 
-        # --- Quadrant lookup (matrix source of truth) ---
-        qm = self.quadrant_matrix
-        hit_df = qm[(qm["Saturation_Tier"] == sat_emoji) & (qm["Momentum_Tier"] == mom_emoji_full)]
-        matrix_hit = not hit_df.empty
+#         # --- Quadrant lookup (matrix source of truth) ---
+#         qm = self.quadrant_matrix
+#         hit_df = qm[(qm["Saturation_Tier"] == sat_emoji) & (qm["Momentum_Tier"] == mom_emoji_full)]
+#         matrix_hit = not hit_df.empty
 
-        # --- Saturation centrality / borderline ---
-        bins   = self.saturation_contract()
-        bounds = sorted([th for th, *_ in bins] + [1.0])
-        lower  = max(b for b in bounds if b <= si)
-        upper  = min(b for b in bounds if b >= si)
-        half_w = max((upper - lower) / 2.0, 1e-9)
-        sat_distance   = min(si - lower, upper - si)
-        sat_centrality = float(min(1.0, sat_distance / half_w))  # 0..1, center≈1, edge≈0
-        borderline     = sat_centrality <= 0.05  # within 5% of a tier boundary
+#         # --- Saturation centrality / borderline ---
+#         bins   = self.saturation_contract()
+#         bounds = sorted([th for th, *_ in bins] + [1.0])
+#         lower  = max(b for b in bounds if b <= si)
+#         upper  = min(b for b in bounds if b >= si)
+#         half_w = max((upper - lower) / 2.0, 1e-9)
+#         sat_distance   = min(si - lower, upper - si)
+#         sat_centrality = float(min(1.0, sat_distance / half_w))  # 0..1, center≈1, edge≈0
+#         borderline     = sat_centrality <= 0.05  # within 5% of a tier boundary
 
-        # --- Confidence (simple, auditable) ---
-        presence = None if signal_presence_pct is None else float(signal_presence_pct)
-        presence_factor  = 1.0 if presence is None else max(0.3, min(1.0, presence / presence_full))
-        stability_factor = 1.0 if vol_norm is None else max(0.0, min(1.0, 1.0 - float(vol_norm)))
-        if momentum_snr is None:
-            snr_factor = 1.0
-        else:
-            snr_val    = float(momentum_snr)
-            snr_factor = max(0.5, min(1.0, snr_val / snr_strong))
+#         # --- Confidence (simple, auditable) ---
+#         presence = None if signal_presence_pct is None else float(signal_presence_pct)
+#         presence_factor  = 1.0 if presence is None else max(0.3, min(1.0, presence / presence_full))
+#         stability_factor = 1.0 if vol_norm is None else max(0.0, min(1.0, 1.0 - float(vol_norm)))
+#         if momentum_snr is None:
+#             snr_factor = 1.0
+#         else:
+#             snr_val    = float(momentum_snr)
+#             snr_factor = max(0.5, min(1.0, snr_val / snr_strong))
 
-        base_conf = (0.40 * mom_strength) + (0.35 * sat_centrality) + (0.25 * stability_factor)
-        conf = base_conf * presence_factor * snr_factor
-        if series_data_complete is False:
-            conf *= 0.9
-        quadrant_conf = round(float(max(0.0, min(conf, 1.0))), 2)
+#         base_conf = (0.40 * mom_strength) + (0.35 * sat_centrality) + (0.25 * stability_factor)
+#         conf = base_conf * presence_factor * snr_factor
+#         if series_data_complete is False:
+#             conf *= 0.9
+#         quadrant_conf = round(float(max(0.0, min(conf, 1.0))), 2)
 
-        combined_quadrant_key = f"{sat_emoji} × {mom_emoji_full}"
-        matrix_key_human      = f"{sat_clean}|{mom_clean}"
+#         combined_quadrant_key = f"{sat_emoji} × {mom_emoji_full}"
+#         matrix_key_human      = f"{sat_clean}|{mom_clean}"
 
-        if matrix_hit:
-            q = hit_df.iloc[0]
-            payload = {
-                "signal_classification": {
-                    "saturation_index": round(si, 2),
-                    "saturation_tier": sat_clean,
-                    "loyalty_tier": sat["headroom"]["tier"],
-                    "momentum_tier": mom_clean,
-                    "combined_quadrant": q["Diagnostic_Label"],  # human-friendly anchor
-                    "combined_quadrant_key": combined_quadrant_key
-                },
-                "headroom_alignment": sat["headroom"],
-                "quadrant_interpretation": {
-                    "quadrant_label": q["Diagnostic_Label"],
-                    "urgency_level": q["Urgency_Code"],
-                    "interpretation": q["Strategic_Narrative"],
-                },
-                "tactical_insight": {
-                    "emotional_pulse": f"{q['Diagnostic_Label']}: {q['Momentum_Context']}; {q['Saturation_Context']}",
-                    "battle_status": f"{q['Urgency_Code']} · {q['Diagnostic_Label']}",
-                    "strategic_reality": f"{q['Trajectory_Story']}. Action: {q['Action_Guidance']}",
-                },
-                "actionable_strategy": {
-                    "momentum_context": q["Momentum_Context"],
-                    "saturation_context": q["Saturation_Context"],
-                    "trajectory_story": q["Trajectory_Story"],
-                    "action_guidance": q["Action_Guidance"],
-                    "recommended_owner": q["Recommended_Owner"],
-                    "headroom_guidance": sat["headroom"]["guidance"],
-                },
-            }
-        else:
-            if strict_matrix:
-                return {
-                    "error": "Quadrant matrix miss",
-                    "inputs": {"sat_emoji": sat_emoji, "mom_emoji_full": mom_emoji_full},
-                    "hint": "Check contracts and matrix integrity",
-                }
-            # lenient fallback (never crashes in prod)
-            payload = {
-                "signal_classification": {
-                    "saturation_index": round(si, 2),
-                    "saturation_tier": sat_clean,
-                    "loyalty_tier": sat["headroom"]["tier"],
-                    "momentum_tier": mom_clean,
-                    "combined_quadrant": "Unknown",
-                    "combined_quadrant_key": combined_quadrant_key
-                },
-                "headroom_alignment": sat["headroom"],
-                "quadrant_interpretation": {
-                    "quadrant_label": "Unknown",
-                    "urgency_level": "Unknown",
-                    "interpretation": "No matrix row found for this combination",
-                },
-                "tactical_insight": {
-                    "emotional_pulse": "Unknown",
-                    "battle_status": "⚠️ Risk · Unknown",
-                    "strategic_reality": "Validate inputs or matrix integrity",
-                },
-                "actionable_strategy": {
-                    "momentum_context": "Unknown",
-                    "saturation_context": "Unknown",
-                    "trajectory_story": "Unknown",
-                    "action_guidance": "Validate data sources and retry analysis",
-                    "recommended_owner": "Data Team",
-                    "headroom_guidance": sat["headroom"]["guidance"],
-                },
-            }
+#         if matrix_hit:
+#             q = hit_df.iloc[0]
+#             payload = {
+#                 "signal_classification": {
+#                     "saturation_index": round(si, 2),
+#                     "saturation_tier": sat_clean,
+#                     "loyalty_tier": sat["headroom"]["tier"],
+#                     "momentum_tier": mom_clean,
+#                     "combined_quadrant": q["Diagnostic_Label"],  # human-friendly anchor
+#                     "combined_quadrant_key": combined_quadrant_key
+#                 },
+#                 "headroom_alignment": sat["headroom"],
+#                 "quadrant_interpretation": {
+#                     "quadrant_label": q["Diagnostic_Label"],
+#                     "urgency_level": q["Urgency_Code"],
+#                     "interpretation": q["Strategic_Narrative"],
+#                 },
+#                 "tactical_insight": {
+#                     "emotional_pulse": f"{q['Diagnostic_Label']}: {q['Momentum_Context']}; {q['Saturation_Context']}",
+#                     "battle_status": f"{q['Urgency_Code']} · {q['Diagnostic_Label']}",
+#                     "strategic_reality": f"{q['Trajectory_Story']}. Action: {q['Action_Guidance']}",
+#                 },
+#                 "actionable_strategy": {
+#                     "momentum_context": q["Momentum_Context"],
+#                     "saturation_context": q["Saturation_Context"],
+#                     "trajectory_story": q["Trajectory_Story"],
+#                     "action_guidance": q["Action_Guidance"],
+#                     "recommended_owner": q["Recommended_Owner"],
+#                     "headroom_guidance": sat["headroom"]["guidance"],
+#                 },
+#             }
+#         else:
+#             if strict_matrix:
+#                 return {
+#                     "error": "Quadrant matrix miss",
+#                     "inputs": {"sat_emoji": sat_emoji, "mom_emoji_full": mom_emoji_full},
+#                     "hint": "Check contracts and matrix integrity",
+#                 }
+#             # lenient fallback (never crashes in prod)
+#             payload = {
+#                 "signal_classification": {
+#                     "saturation_index": round(si, 2),
+#                     "saturation_tier": sat_clean,
+#                     "loyalty_tier": sat["headroom"]["tier"],
+#                     "momentum_tier": mom_clean,
+#                     "combined_quadrant": "Unknown",
+#                     "combined_quadrant_key": combined_quadrant_key
+#                 },
+#                 "headroom_alignment": sat["headroom"],
+#                 "quadrant_interpretation": {
+#                     "quadrant_label": "Unknown",
+#                     "urgency_level": "Unknown",
+#                     "interpretation": "No matrix row found for this combination",
+#                 },
+#                 "tactical_insight": {
+#                     "emotional_pulse": "Unknown",
+#                     "battle_status": "⚠️ Risk · Unknown",
+#                     "strategic_reality": "Validate inputs or matrix integrity",
+#                 },
+#                 "actionable_strategy": {
+#                     "momentum_context": "Unknown",
+#                     "saturation_context": "Unknown",
+#                     "trajectory_story": "Unknown",
+#                     "action_guidance": "Validate data sources and retry analysis",
+#                     "recommended_owner": "Data Team",
+#                     "headroom_guidance": sat["headroom"]["guidance"],
+#                 },
+#             }
 
-        payload["meta"] = {
-            "matrix_key": matrix_key_human,
-            "matrix_hit": matrix_hit,
-            "saturation_tier_emoji": sat_emoji,
-            "momentum_tier_emoji": mom_emoji_full,
-            "quadrant_confidence": quadrant_conf,
-            "borderline": bool(borderline),
-            "saturation_bin": {"lower": round(lower, 2), "upper": round(upper, 2)},
-            "momentum_contract": {
-                "label": mom_clean,
-                "strength": round(mom_strength, 3),
-                "polarity": mom_polarity,
-                "emoji_full": mom_emoji_full,
-            },
-            "components": {
-                "sat_centrality": round(sat_centrality, 3),
-                "stability_factor": None if vol_norm is None else round(1.0 - float(vol_norm), 3),
-                "presence_factor": None if presence is None else round(presence_factor, 3),
-                "snr_factor": None if momentum_snr is None else round(snr_factor, 3),
-                "gates_used": {
-                    "presence_full_credit": presence_full,
-                    "snr_strong": snr_strong
-                }
-            }
-        }
-        return payload
+#         payload["meta"] = {
+#             "matrix_key": matrix_key_human,
+#             "matrix_hit": matrix_hit,
+#             "saturation_tier_emoji": sat_emoji,
+#             "momentum_tier_emoji": mom_emoji_full,
+#             "quadrant_confidence": quadrant_conf,
+#             "borderline": bool(borderline),
+#             "saturation_bin": {"lower": round(lower, 2), "upper": round(upper, 2)},
+#             "momentum_contract": {
+#                 "label": mom_clean,
+#                 "strength": round(mom_strength, 3),
+#                 "polarity": mom_polarity,
+#                 "emoji_full": mom_emoji_full,
+#             },
+#             "components": {
+#                 "sat_centrality": round(sat_centrality, 3),
+#                 "stability_factor": None if vol_norm is None else round(1.0 - float(vol_norm), 3),
+#                 "presence_factor": None if presence is None else round(presence_factor, 3),
+#                 "snr_factor": None if momentum_snr is None else round(snr_factor, 3),
+#                 "gates_used": {
+#                     "presence_full_credit": presence_full,
+#                     "snr_strong": snr_strong
+#                 }
+#             }
+#         }
+#         return payload
 
     """
 
@@ -2732,621 +2919,209 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
 
     """
 
-    # === Layer 4: Signal Strength (QSSI) — simple, non-directive ===
-    def _compute_signal_strength(self, trend_symbol: str, momentum_symbol: str, saturation_index: float) -> dict:
-        """
-        QSSI (Quantified Signal Strength Index), whitepaper-exact.
-        QSSI = Velocity(Trend x Momentum, 0-6) + Saturation Modifier (0-4 by SI bands).
-        Tiers:
-        9-10 💥 Critical | 6-8 🔥 Strong | 4-5 🌱 Emerging | 1-3 🔁 Weak | 0 ❌ No Signal
-        """
-        # --- sanitize inputs & accept labels ---
-        trend_in = (trend_symbol or "→").strip()
-        if trend_in in ("↑","→","↓"):
-            trend = trend_in
-        else:
-            tl = trend_in.lower()
-            trend = "↑" if tl.startswith("improv") else ("↓" if tl.startswith("declin") else "→")
+    def _sdm_block_from_values(
+    self, *,
+    ERI, ERI_Tier, RF, RF_Urgency_Category,
+    R, R_Tier, F, F_Tier,
+    RF_R_ContributionPct, RF_F_ContributionPct,
+    momentum: dict | None
+) -> dict:
+        """Return a single SDM dict (not flat columns)."""
 
-        mom_in = (momentum_symbol or "→").strip()
-        if mom_in in ("↑↑","↑","→","↓","↓↓"):
-            momentum = mom_in
-        else:
-            # try label → symbol if provided (e.g., "Moderately Rising")
-            momentum = self.mom_symbol_from_label(mom_in) if hasattr(self, "mom_symbol_from_label") else "→"
+        # Momentum meta: prefer the momentum dict; fallback to contract by symbol
+        contract = self.momentum_contract() if hasattr(self, "momentum_contract") else {}
 
-        try:
-            si = float(saturation_index)
-        except Exception:
-            si = 0.5
-        si = max(0.0, min(1.0, si))
+        sym = (momentum or {}).get("symbol")
+        if not sym:
+            # Try to infer from emoji_full if symbol missing
+            ef = (momentum or {}).get("emoji_full", "") or ""
+            if ef.startswith("↑↑"):   sym = "↑↑"
+            elif ef.startswith("↑"):  sym = "↑"
+            elif ef.startswith("→"):  sym = "→"
+            elif "↓↓" in ef:          sym = "↓↓"
+            elif ef.startswith("↓"):  sym = "↓"
+            else:                      sym = "?"
 
-        # --- Velocity score (0–6) per table ---
-        velocity_lookup = {
-            ("↑", "↑↑"): 5, ("↓", "↑↑"): 5,
-            ("↑", "↓↓"): 6, ("↓", "↓↓"): 6,
-            ("↑", "↑"): 4,  ("↑", "↓"): 4, ("↓", "↑"): 4, ("↓", "↓"): 4,
-            ("↑", "→"): 2,  ("↓", "→"): 2,
-            ("→", "↑↑"): 3, ("→", "↓↓"): 3,
-            ("→", "↑"): 1,  ("→", "↓"): 1,
-            ("→", "→"): 0,
-        }
-        velocity_score = int(velocity_lookup.get((trend, momentum), 0))
+        mm = {**contract.get(sym, {}), **(momentum or {})}  # momentum dict overrides contract
 
-        # --- Saturation modifier (0–4) per QSSI bands (NOT the general saturation bins) ---
-        if   si <= 0.20: saturation_modifier = 4
-        elif si <= 0.40: saturation_modifier = 3
-        elif si <= 0.60: saturation_modifier = 2
-        elif si <= 0.80: saturation_modifier = 1
-        else:            saturation_modifier = 0
+        label      = mm.get("label", "Unknown")
+        desc       = mm.get("description", "Momentum not computed")
+        emoji_full = mm.get("emoji_full", sym if sym != "?" else "?")
+        strength   = mm.get("strength", None)
+        polarity   = mm.get("polarity", None)
 
-        # (optional) pull human-readable tier from your saturation contract, but do not use its qssi_score
-        sat_band = None
-        if hasattr(self, "sat_from_si"):
-            sat_info = self.sat_from_si(si)
-            sat_band = sat_info.get("clean", None)
+        def _pct(x):
+            try:
+                return f"{float(x):.0f}%"
+            except Exception:
+                return "NA%"
 
-        # --- QSSI total & tiering ---
-        qssi_score = int(velocity_score + saturation_modifier)
-        if   qssi_score >= 9:  tier_emoji, tier, desc = "💥", "Critical Signal", "Signal is erupting/collapsing — act immediately"
-        elif qssi_score >= 6:  tier_emoji, tier, desc = "🔥", "Strong Signal",   "Signal gaining strength — prioritize intervention"
-        elif qssi_score >= 4:  tier_emoji, tier, desc = "🌱", "Emerging Signal", "Early signal — monitor or pre-activate"
-        elif qssi_score >= 1:  tier_emoji, tier, desc = "🔁", "Weak Signal",     "Low movement — low urgency"
-        else:                  tier_emoji, tier, desc = "❌", "No Signal",       "No trend, no motion, no headroom"
+        summary = (
+            f"{ERI_Tier} | {RF_Urgency_Category} | "
+            f"{R_Tier}/{F_Tier} (R {_pct(RF_R_ContributionPct)}, F {_pct(RF_F_ContributionPct)}) | {emoji_full}"
+        )
 
         return {
-            "qssi_score": qssi_score,                          # 0–10
-            "qssi_tier": f"{tier_emoji} {tier}",
-            "qssi_description": desc,
-            "components": {
-                "velocity_score": velocity_score,
-                "saturation_modifier": saturation_modifier,
-                "saturation_index": round(si, 3),
-                "saturation_band": sat_band,                   # informational only
+            "eri": float(ERI),
+            "eri_phrase": str(ERI_Tier),
+            "rf": float(RF),
+            "rf_phrase": str(RF_Urgency_Category),
+            "r": float(R),
+            "r_phrase": str(R_Tier or "Unknown"),
+            "f": float(F),
+            "f_phrase": str(F_Tier or "Unknown"),
+            "rf_r_pct": float(RF_R_ContributionPct or 0.0),
+            "rf_f_pct": float(RF_F_ContributionPct or 0.0),
+            "momentum": {
+                "symbol": sym,
+                "label": label,
+                "description": desc,
+                "emoji_full": emoji_full,
+                "strength": strength,
+                "polarity": polarity,
+                # pass-throughs if present
+                "delta": mm.get("delta"),
+                "thresholds_used": mm.get("thresholds_used"),
+                "n_days": mm.get("n_days"),
+                "snr": mm.get("snr"),
             },
-            "inputs": {
-                "trend_symbol": trend,
-                "momentum_symbol": momentum,
-            }
+            "summary": summary,
         }
 
-
-    """
-
-    ### **Business Question Alignment**
-
-    The six modules now work as a **coherent diagnostic suite**, each answering a 
-    **different operational question**. Together, they transform raw Experience Driver 
-    signals into structured, actionable intelligence:
-
-    * **Trend** → *“Are we improving or declining overall?”*
-    Captures the long-arc slope of customer emotion, showing directional progress or erosion.
-
-    * **Momentum** → *“Did something change recently?”*
-    Detects short-term shifts versus baseline, highlighting sudden surges or dips.
-
-    * **Volatility** → *“How predictable is this signal for planning?”*
-    Measures stability versus noise, distinguishing reliable patterns from fragile fluctuations.
-
-    * **Pattern Recognition** → *“When will this happen again?”*
-    Identifies recurring cycles (weekly, monthly, quarterly) and potential “pain days.”
-
-    * **Saturation x Momentum** → *“What's the strategic context?”*
-    Places the signal inside a **25-cell quadrant map**, assigning diagnostic labels, 
-    urgency codes, and strategic narratives that frame the bigger picture.
-
-    * **QSSI (Quantified Signal Pointer)** → *“How strong and urgent is this signal?”*
-    Rolls the diagnostics into a simple **0-10 pointer score** with intuitive tiers — 
-    Critical, Strong, Emerging, Weak, or No Signal.
-
-    
-    ### **Why This Matters**
-
-    Each function is not an isolated calculation but a **lens**:
-
-    * Trend and Momentum describe **direction and movement**.
-    * Volatility and Pattern describe **stability and recurrence**.
-    * Saturation x Momentum adds **strategic context**.
-    * QSSI distills it into a **single strength pointer** for prioritization.
-
-    👉 Together, they let CX teams move from *“What happened?”* → *“Why it matters?”* → 
-    *“How strongly should we respond?”*
-
-    """
-
-    # === PEM (Predictive Emotional Modeling) — STRICT (no confidence scoring) ===
-    # ---------- canonical label maps (no deductions) ----------
-    _TM_TREND = {
-        "↑": "Trend ↑ (Improving)",
-        "→": "Trend → (Stable)",
-        "↓": "Trend ↓ (Declining)",
-    }
-    _TM_MOMENTUM = {
-        "↑↑": "Momentum ↑ (Improving)",
-        "↑":  "Momentum ↑ (Improving)",
-        "→":  "Momentum → (Stable)",
-        "↓":  "Momentum ↓ (Worsening)",
-        "↓↓": "Momentum ↓ (Worsening)",
-    }
-
-    _TMV_TREND = {
-        "↑": "↑ (Improving)",
-        "→": "→ (Flat)",
-        "↓": "↓ (Declining)",
-    }
-    _TMV_MOMENTUM = {
-        "↑↑": "↑ (Recent rise)",
-        "↑":  "↑ (Recent rise)",
-        "→":  "→ (Stable)",
-        "↓":  "↓ (Recent dip)",
-        "↓↓": "↓ (Recent dip)",
-    }
-
-    # ---------- normalization helpers ----------
-    def _norm_vol_to_tmv(self, vol_tier: str) -> str:
-        vt = (vol_tier or "").lower()
-        if "high" in vt or "🔴" in vt:
-            return "🔴 Highly Fluctuating"
-        if "stable" in vt or "✅" in vt:
-            return "✅ Stable"
-        return "⚠ Fluctuating"
-
-    def _norm_vol_simple(self, vol_tier: str) -> str:
-        vt = (vol_tier or "").lower()
-        if "high" in vt or "🔴" in vt:
-            return "Highly Fluctuating"
-        if "stable" in vt or "✅" in vt:
-            return "Stable"
-        return "Fluctuating"
-
-    # ---------- QSSI tiering (display only) ----------
-    def _qssi_tier(self, qssi: int) -> tuple[str, str]:
-        q = int(max(0, min(10, qssi)))
-        if q >= 9:  return ("💥 Critical Signal", "critical")
-        if q >= 6:  return ("🔥 Strong Signal",   "strong")
-        if q >= 4:  return ("🌱 Emerging Signal", "emerging")
-        if q >= 1:  return ("🔁 Weak Signal",     "weak")
-        return ("❌ No Signal", "none")
-
-    # ---------- horizon (pattern windows only; else use provided fallback) ----------
-    def _horizon_days(self, pattern_type: str | None, fallback_days: int) -> tuple[int, int]:
-        """
-        If a pattern exists, return fixed windows.
-        Otherwise, DO NOT invent horizon — use the provided fallback.
-        """
-        pt = (pattern_type or "").lower()
-        if pt == "weekly":    return (7, 14)
-        if pt == "monthly":   return (21, 35)
-        if pt == "quarterly": return (60, 100)
-        return (fallback_days, fallback_days)
-
-    # ---------- grid lookups (direct table reads; no deductions) ----------
-    def _lookup_tm(self, trend_symbol: str, momentum_symbol: str) -> dict | None:
-        df = get_trend_momentum_grid()
-        t = self._TM_TREND.get(trend_symbol, self._TM_TREND["→"])
-        m = self._TM_MOMENTUM.get(momentum_symbol, self._TM_MOMENTUM["→"])
-        row = df[(df["Trend_Tier"] == t) & (df["Momentum_Tier"] == m)]
-        if row.empty:
-            return None
-        r = row.iloc[0]
-        return {
-            "label": r["Diagnostic_Label"],
-            "narrative": r["Strategic_Narrative"],
-            "guidance": r["Action_Guidance"],
-        }
-
-    def _lookup_tmv(self, trend_symbol: str, momentum_symbol: str, vol_tier: str) -> dict | None:
-        df = get_trend_momentum_volatility_grid()
-        t = self._TMV_TREND.get(trend_symbol, self._TMV_TREND["→"])
-        m = self._TMV_MOMENTUM.get(momentum_symbol, self._TMV_MOMENTUM["→"])
-        v = self._norm_vol_to_tmv(vol_tier)
-        row = df[(df["Trend_Tier"] == t) & (df["Momentum_Tier"] == m) & (df["Volatility_Tier"] == v)]
-        if row.empty:
-            return None
-        r = row.iloc[0]
-        return {
-            "interpretation": r["Interpretation"],
-            "instruction": r["CX_Instruction"],
-        }
-
-    def _lookup_pattern(self, pattern_type: str | None, pattern_confidence: str | None) -> dict | None:
-        if not pattern_type or not pattern_confidence:
-            return None
-        df = get_temporal_pattern_grid()
-        pc = (pattern_confidence or "").strip().lower()
-        if "strong" in pc:
-            conf = "✅ Strong"
-        elif "moderate" in pc:
-            conf = "⚠ Moderate"
-        else:
-            conf = "🔴 Weak / Candidate"
-        pt = (pattern_type or "").strip().title()
-        row = df[(df["Pattern_Type"] == pt) & (df["Confidence_Level"] == conf)]
-        if row.empty:
-            return None
-        r = row.iloc[0]
-        return {
-            "interpretation": r["Interpretation"],
-            "instruction": r["CX_Instruction"],
-            "conf_level": conf,
-            "type": pt,
-        }
-
-    # ---------- plain direction label (exactly from symbols) ----------
-    def _direction_label(self, tr: str, mo: str) -> str:
-        if tr == "↑" and mo in ("↑↑", "↑"): return "improving"
-        if tr == "↓" and mo in ("↓↓", "↓"): return "declining"
-        if tr == "↑" and mo == "→":        return "improving (recent plateau)"
-        if tr == "↓" and mo == "→":        return "declining (recent plateau)"
-        if tr == "→" and mo in ("↑↑", "↑"): return "stabilizing upward"
-        if tr == "→" and mo in ("↓↓", "↓"): return "stabilizing downward"
-        if tr == "↓" and mo in ("↑↑", "↑"): return "recovering"
-        if tr == "↑" and mo in ("↓↓", "↓"): return "cooling"
-        return "stable"
-
-    # ---------- PEM builder (STRICT — no confidence fields) ----------
-    def build_predictive_emotional_modeling(
-        self,
-        *,
-        trend_symbol: str,                 # "↑","→","↓"
-        momentum_symbol: str,              # "↑↑","↑","→","↓","↓↓"
-        volatility_tier: str,              # freeform; normalized
-        volatility_score: float,           # pct (0..100) display
-        pattern_detected: bool,
-        pattern_type: str | None,          # "Weekly" | "Monthly" | "Quarterly" | None
-        pattern_confidence: str | None,    # "Strong" | "Moderate" | "Weak" | "Candidate" | None
-        pain_day: str | None,              # weekday if weekly
-        qssi_score: int,                   # 0..10 (gate + tier label only)
-        momentum_saturation_quadrant: dict | None,  # from MS 25-cell (optional)
-        saturation_index: float | None = None,      # optional (display only)
-        horizon_days: int = 30                         # explicit fallback window
-    ) -> dict:
-
-        tr = trend_symbol if trend_symbol in ("↑", "→", "↓") else "→"
-        mo = momentum_symbol if momentum_symbol in ("↑↑", "↑", "→", "↓", "↓↓") else "→"
-        vt = self._norm_vol_simple(volatility_tier)
-        qssi = int(max(0, min(10, int(qssi_score or 0))))
-
-        # lookups (direct; no inference)
-        tm  = self._lookup_tm(tr, mo) or {}
-        tmv = self._lookup_tmv(tr, mo, vt) or {}  # use normalized volatility tier
-        msq = momentum_saturation_quadrant or {}
-        msq_label = (msq.get("quadrant_interpretation") or {}).get("quadrant_label")
-
-        grid_pattern_type = pattern_type
-        if pattern_detected:
-            # seasonal cycles in your grid are labeled "Seasonal Cycle"
-            if (pattern_type or "").lower() in {"weekly", "monthly", "quarterly"}:
-                grid_pattern_type = "Seasonal Cycle"
-            # if it's weekly and we have a pain day, prefer "Pain Day"
-            if (pattern_type or "").lower() == "weekly" and pain_day:
-                grid_pattern_type = "Pain Day"
-
-        pat = self._lookup_pattern(grid_pattern_type if pattern_detected else None, pattern_confidence)
-
-        qssi_tier_emoji, _ = self._qssi_tier(qssi)
-        h_min, h_max = self._horizon_days((pattern_type if pattern_detected else None), horizon_days)
-        horizon_str = str(h_min) if h_min == h_max else f"{h_min}-{h_max}"
-
-        # weak signal → no forecast (gate by QSSI)
-        if qssi < 4:
-            return {
-                "forecast": {
-                    "summary": "Insufficient signal for a forward pointer — keep monitoring.",
-                    "basis": "Low signal strength (QSSI < 4)",
-                    "horizon_days": horizon_str
-                },
-                "watch": {
-                    "focus": ["Trend direction", "Momentum shifts", "Volatility changes"],
-                    "horizon_days": horizon_str
-                },
-                "signal_synthesis": {
-                    "trend": tr, "momentum": mo, "volatility": vt,
-                    "qssi": qssi, "qssi_tier": qssi_tier_emoji,
-                    "pattern": {"detected": False}
-                },
-                "meta": {
-                    "quadrant_TM": tm.get("label"),
-                    "quadrant_TMV": tmv.get("interpretation"),
-                    "quadrant_MS": msq_label,
-                }
-            }
-
-        # pattern-led forecast (when available)
-        if pat:
-            dir_lbl = self._direction_label(tr, mo)
-
-            # grid type from the Temporal Pattern Action Grid
-            gt   = (pat.get("type") or "").strip().lower()      # "pain day" | "seasonal cycle" | "operational timing"
-            # original detection type from the pattern module (for extra color)
-            orig = (pattern_type or "").strip().lower()         # "weekly" | "monthly" | "quarterly" | "operational timing"
-
-            when_txt = ""
-            if gt == "pain day":
-                when_txt = f" (likely on {pain_day})" if pain_day else " (recurring weekly pain day)"
-            elif gt == "seasonal cycle":
-                cyc = {"weekly": "weekly", "monthly": "monthly", "quarterly": "quarterly"}.get(orig)
-                when_txt = f" ({cyc} recurrence)" if cyc else " (seasonal recurrence)"
-            elif gt == "operational timing":
-                when_txt = " (operational timing window)"
-
-            # prefer "but" when volatility is not stable
-            vt_phrase = "" if vt == "Stable" else f" but {vt.lower()}"
-
-            summary = (
-                f"{pat['interpretation']}{when_txt}. "
-                f"Current trajectory is {dir_lbl}{vt_phrase}."
-            )
-            basis = f"Pattern-led forecast: {pat['type']} / {pat['conf_level']}"
-            if tm.get("label"): basis += f"; TM grid → {tm['label']}"
-            if tmv.get("interpretation"): basis += f"; TMV grid → {tmv['interpretation']}"
-            if msq_label: basis += f"; MS quadrant → {msq_label}"
-
-            return {
-                "forecast": {
-                    "summary": summary,
-                    "basis": basis,
-                    "horizon_days": horizon_str
-                },
-                "watch": {
-                    "windows": [pat["type"]],
-                    "notes": [pat["instruction"]],
-                    "horizon_days": horizon_str
-                },
-                "signal_synthesis": {
-                    "trend": tr,
-                    "momentum": mo,
-                    "volatility": vt,
-                    "volatility_score_pct": round(float(volatility_score or 0.0), 2),
-                    "qssi": qssi,
-                    "qssi_tier": qssi_tier_emoji,
-                    "saturation_index": None if saturation_index is None else round(float(saturation_index), 3),
-                    "pattern": {
-                        "detected": True,
-                        "type": pat["type"],
-                        "confidence": pat["conf_level"],
-                        "pain_day": pain_day
-                    }
-                },
-                "meta": {
-                    "quadrant_TM": tm.get("label"),
-                    "quadrant_TMV": tmv.get("interpretation"),
-                    "quadrant_MS": msq_label,
-                }
-            }
-
-        # trajectory-led forecast (no strong pattern)
-        dir_lbl = self._direction_label(tr, mo)
-        basis_parts = []
-        if tm.get("label"):
-            basis_parts.append(f"TM grid → {tm['label']}: {tm.get('narrative','')}".strip())
-        if tmv.get("interpretation"):
-            basis_parts.append(f"TMV grid → {tmv['interpretation']}")
-        if msq_label:
-            basis_parts.append(f"MS quadrant → {msq_label}")
-        basis = "; ".join([p for p in basis_parts if p]) or "Directional synthesis from Trend×Momentum and Volatility tiering"
-
-        vt_phrase = "" if vt == "Stable" else f" but {vt.lower()}"
-        summary = f"Over the next {horizon_str} days the signal is likely {dir_lbl}{vt_phrase}."
-
-        return {
-            "forecast": {
-                "summary": summary,
-                "basis": basis,
-                "horizon_days": horizon_str,
-            },
-            "watch": {
-                "focus": ["Momentum flips", "Volatility spikes", "Quadrant changes"],
-                "horizon_days": horizon_str
-            },
-            "signal_synthesis": {
-                "trend": tr, "momentum": mo,
-                "volatility": vt, "volatility_score_pct": round(float(volatility_score or 0.0), 2),
-                "qssi": qssi, "qssi_tier": qssi_tier_emoji,
-                "saturation_index": None if saturation_index is None else round(float(saturation_index), 3),
-                "pattern": {"detected": False}
-            },
-            "meta": {
-                "quadrant_TM": tm.get("label"),
-                "quadrant_TMV": tmv.get("interpretation"),
-                "quadrant_MS": msq_label,
-            }
-        }
-
-   
     def compute(self):
+        """
+        Layer 3 (mapped to your original flow):
+        - Build daily ERI per ED
+        - Reindex to [cutoff_date .. today-1] (Python date) window
+        - bfill() then ffill() to get a dense series
+        - Run 4 longitudinal modules on that dense series
+        - Attach SDM as a dict block from explicit Layer-2 values + momentum dict
+        """
+    
         results, skipped = [], []
 
-        # Normalize ED keys
+        # --- normalize keys (dates already coerced to Python date in __init__)
         self.raw_df["experience_driver"] = (
             self.raw_df["experience_driver"].astype(str).str.strip()
         )
 
-        # L2-to-L3 eligibility
+        # --- eligible entities (P0..P3)
         entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(["P0","P1","P2","P3"])]
 
-        # ---- Build exact analysis window [start, end=today-1], length = timeframe_days ----
-        end_date = self.today - timedelta(days=1)            # inclusive end
-        start_date = self.cutoff_date                        # intended start
-        expected_span = int(self.timeframe_days)
-        actual_span = (end_date - start_date).days + 1
-        if actual_span != expected_span:
-            start_date = end_date - timedelta(days=expected_span - 1)
-
-        # Keep as DatetimeIndex so weekly pain-day works downstream
-        full_idx = pd.date_range(start=start_date, end=end_date, freq="D")
+        # --- established window (inclusive): [cutoff_date .. today-1]
+        start_date = self.cutoff_date
+        end_date   = self.today - timedelta(days=1)
+        full_idx   = pd.Index(pd.date_range(start=start_date, end=end_date, freq="D").date)  # Index[date]
         analysis_window_days = len(full_idx)
 
         for _, row in entities.iterrows():
             try:
                 ed = str(row["experience_driver"]).strip()
 
-                # ---- Gate A: mentions (doctrine) ----
-                if int(row.get("No_of_Mentions", 0)) < 2:
-                    if self.verbose: print(f"⏭️ DROP [{ed}] → <2 mentions")
-                    skipped.append((ed, "<2 mentions"))
-                    continue
-
-                # Subset raw windowed rows for this ED
+                # subset raw rows for this ED (window start already applied in __init__)
                 data = self.raw_df[self.raw_df["experience_driver"] == ed]
                 if data.empty:
-                    if self.verbose: print(f"❌ DROP [{ed}] → no raw data")
+                    if getattr(self, "verbose", False):
+                        print(f"❌ DROP [{ed}] → no raw data")
                     skipped.append((ed, "No raw data"))
                     continue
 
-                # ---- Daily ERI per observed date (pure pre-fill) ----
-                daily_eri_obs = (
+                # --- observed daily ERI (index = Python date)
+                daily_eri = (
                     data.groupby("date")
-                        .apply(self.compute_normalized_eri)   # scalar per day
+                        .apply(self.compute_normalized_eri)  # scalar per day
                         .sort_index()
                 )
-                # ensure DatetimeIndex
-                daily_eri_obs.index = pd.to_datetime(daily_eri_obs.index)
 
-                # Align to full window BEFORE any fill → true coverage metrics
-                daily_eri = daily_eri_obs.reindex(full_idx)
-
-                # Coverage metrics (PRE-FILL)
+                # --- align to full window BEFORE fill (to measure coverage)
+                daily_eri = daily_eri.reindex(full_idx)
                 missing_days_pct = float(daily_eri.isna().mean())
-                series_data_complete = not daily_eri.isna().any()   # pre-fill completeness flag
+                series_data_complete_prefill = not daily_eri.isna().any()
                 observed_days = int(daily_eri.dropna().shape[0])
 
-                # ---- Gate B: days (doctrine) ----
-                if observed_days < 2:
-                    if self.verbose: print(f"⏭️ DROP [{ed}] → insufficient days ({observed_days})")
+                # gate: need at least 2 observed days (per original)
+                if observed_days <= 1:
+                    if getattr(self, "verbose", False):
+                        print(f"⏭️ DROP [{ed}] → insufficient days ({observed_days})")
                     skipped.append((ed, f"Insufficient days: {observed_days}"))
                     continue
 
-                # Presence: % of days with ≥1 mention in-window (based on raw counts)
+                # presence: % of days with any signal (using raw counts)
                 ds = data.groupby("date").size()
-                ds.index = pd.to_datetime(ds.index)
                 ds = ds.reindex(full_idx, fill_value=0)
-                pct_days_with_signal = round(float((ds > 0).sum()) / analysis_window_days, 3)
+                signal_presence_pct = round(float((ds > 0).sum()) / analysis_window_days, 3)
 
-                # ---- Interpolate for continuity (analysis track only) ----
-                daily_eri = daily_eri.interpolate(method="linear", limit_direction="both")
+                # --- build dense analysis series for modules (bfill → ffill ONLY)
+                analysis_track = daily_eri.bfill().ffill()
 
-                # =========================
-                # L3 MODULES (the 7 diagnostics)
-                # =========================
+                # === longitudinal modules (all consume the SAME analysis_track) ===
+                trend_block      = self._compute_trend_series(analysis_track)
+                momentum_block   = self._compute_momentum_series(analysis_track)  # returns dict (symbol/label/emoji_full/…)
+                volatility_block = self._compute_volatility_series(analysis_track)
+                pattern_block    = self._compute_pattern_series(analysis_track)
 
-                # 1) Trend (whitepaper)
-                trend = self._compute_trend_series(daily_eri)
-
-                # 2) Momentum (whitepaper)
-                momentum = self._compute_momentum_series(daily_eri)
-
-                # 3) Volatility (whitepaper: std dev tiers)
-                volatility = self._compute_volatility_series(daily_eri)
-                vol_score = float(volatility.get("score_adj", volatility.get("score", 0.0)))
-
-                # 4) Pattern Recognition (whitepaper: ACF 7/30/90; full payload even for "No Pattern")
-                pattern_block = self._compute_pattern_series(daily_eri)
-
-                # Current ERI (for SI/quadrant)
-                eri_now = float(daily_eri.iloc[-1]) if np.isfinite(daily_eri.iloc[-1]) else 0.0
-
-                # 5) Momentum × Saturation quadrant (matrix is source of truth)
-                momentum_symbol = momentum.get("symbol", "→")
-                quadrant_block = self._compute_momentum_saturation_insight(
-                    eri_score=eri_now,
-                    momentum_symbol=momentum_symbol,
-                    # meta-only modifiers (do not affect matrix selection)
-                    signal_presence_pct=pct_days_with_signal,
-                    vol_norm=min(max(vol_score / 20.0, 0.0), 1.0),
-                    momentum_snr=momentum.get("snr"),
-                    series_data_complete=series_data_complete
+                # --- SDM dict block (built from L2 values + fresh momentum dict)
+                sdm_block = self._sdm_block_from_values(
+                    ERI=row.get("ERI", 0.0),
+                    ERI_Tier=row.get("ERI_Tier", row.get("Loyalty_State", "Neutral")),
+                    RF=row.get("RF", 0.0),
+                    RF_Urgency_Category=row.get("RF_Urgency_Category", "Activity Dormant"),
+                    R=row.get("R", 0.0),
+                    R_Tier=row.get("R_Tier", "Unknown"),
+                    F=row.get("F", 0.0),
+                    F_Tier=row.get("F_Tier", "Unknown"),
+                    RF_R_ContributionPct=row.get("RF_R_ContributionPct", 0.0),
+                    RF_F_ContributionPct=row.get("RF_F_ContributionPct", 0.0),
+                    momentum=momentum_block,
                 )
 
-                # 6) QSSI (velocity + saturation modifier; 0–10)
-                qssi_block = self._compute_signal_strength(
-                    trend_symbol=trend.get("symbol", "→"),
-                    momentum_symbol=momentum_symbol,
-                    saturation_index=quadrant_block["signal_classification"]["saturation_index"],
-                )
-
-                # 7) PEM (STRICT; pattern grid mapping handled inside)
-                pem_block = self.build_predictive_emotional_modeling(
-                    trend_symbol=trend.get("symbol", "→"),
-                    momentum_symbol=momentum_symbol,
-                    volatility_tier=volatility.get("tier", "✅ Stable"),
-                    volatility_score=vol_score,
-                    pattern_detected=bool(pattern_block.get("has_pattern")),
-                    pattern_type=pattern_block.get("pattern_type"),
-                    pattern_confidence=pattern_block.get("confidence_tier"),
-                    pain_day=pattern_block.get("pain_day"),
-                    qssi_score=int(qssi_block["qssi_score"]),
-                    momentum_saturation_quadrant=quadrant_block,
-                    saturation_index=quadrant_block["signal_classification"]["saturation_index"],
-                    horizon_days=30
-                )
-
-                # ---- Storyline (diagnostic-only; safe access) ----
-                qi = quadrant_block.get("quadrant_interpretation", {}) or {}
-                sc = quadrant_block.get("signal_classification", {}) or {}
-                storyline = (
-                    f"{ed} is in {qi.get('quadrant_label', 'Unknown')} with "
-                    f"{sc.get('momentum_tier', '?')} momentum and "
-                    f"{sc.get('saturation_tier', '?')} saturation. "
-                    f"{qi.get('interpretation', '')}"
-                ).strip()
-
-                # Capsule meta for provenance
+                # --- provenance/meta
                 capsule_meta = {
                     "capsule_id": f"SC-{uuid4().hex[:12]}",
-                    "generated_at": pd.Timestamp.utcnow().isoformat(),
-                    "capsule_type": "ED",
-                    "capsule_version": "signal_capsule.v1.0",
-                    "engine_version": "XDI.v1",
                     "window_start_date": str(start_date),
-                    "window_end_date": str(end_date)
+                    "window_end_date": str(end_date),
+                    "analysis_window_days": int(self.timeframe_days),
+                    "observed_days_with_signal": observed_days,
+                    "signal_presence_pct": signal_presence_pct,
+                    "series_data_complete_prefill": bool(series_data_complete_prefill),
+                    "missing_days_pct_prefill": missing_days_pct,
+                    "trend_analysis_days": analysis_window_days,
+                    "momentum_analysis_days": analysis_window_days // 2,
                 }
 
-                # ---- Assemble ED-centric Signal Capsule (7 modules + provenance) ----
+                # --- assemble row
                 results.append({
                     "experience_driver": ed,
-                    "priority_class": row["Priority_Status"],
+                    "priority_class": row.get("Priority_Status"),
                     "associated_entity_names": row.get("Associated_Entity_Names"),
                     "most_recent_mention": row.get("Most_Recent_Date"),
                     "no_of_mentions": row.get("No_of_Mentions"),
-                    "eri_score": round(float(row["ERI"]), 2),
-                    "r_score": round(float(row["R"]), 2),
-                    "f_score": round(float(row["F"]), 2),
-                    "rf_score": round(float(row["RF"]), 2),
-                    "rfi_score": round(float(row["RFI"]), 2),
+
+                    # L2 convenience fields
+                    "eri_score": float(row.get("ERI", 0.0)),
+                    "r_score":  float(row.get("R", 0.0)),
+                    "f_score":  float(row.get("F", 0.0)),
+                    "rf_score": float(row.get("RF", 0.0)),
                     "emotion_perception_tier": row.get("Loyalty_State"),
                     "rf_urgency_category": row.get("RF_Urgency_Category"),
                     "eri_rf_urgency_category": row.get("ERI_RF_Quadrant"),
+                    "quadrant_purpose": row.get("Quadrant_Purpose"),
 
-                    # === L3 modules (the 7) ===
-                    "trend_block": trend,
-                    "momentum_block": momentum,
-                    "volatility_block": volatility,
+                    # Longitudinal modules
+                    "trend_block": trend_block,
+                    "momentum_block": momentum_block,
+                    "volatility_block": volatility_block,
                     "pattern_block": pattern_block,
-                    "momentum_saturation_insight": quadrant_block,     # (includes saturation/quadrant)
-                    "signal_strength_index": qssi_block,               # QSSI
-                    "predictive_emotion_forecast": pem_block,          # PEM
 
-                    # Descriptive narrative + native module confidences
-                    "momentum_saturation_story": storyline,
-                    "momentum_saturation_confidence": quadrant_block.get("meta", {}).get("quadrant_confidence"),
-                    "momentum_saturation_borderline_flag": quadrant_block.get("meta", {}).get("borderline"),
+                    # SDM
+                    "sdm_block": sdm_block,
 
                     # Provenance
-                    "provenance": {
-                        "analysis_window_days": int(self.timeframe_days),
-                        "observed_days_with_signal": observed_days,
-                        "signal_presence_pct": pct_days_with_signal,
-                        "trend_analysis_days": analysis_window_days,
-                        "momentum_analysis_days": analysis_window_days // 2,
-                        "series_data_complete": series_data_complete,
-                        "missing_days_pct": missing_days_pct,
-                        **capsule_meta
-                    }
+                    "provenance": capsule_meta,
                 })
 
             except Exception as e:
-                if self.verbose:
+                if getattr(self, "verbose", False):
                     print(f"💥 FAIL [{ed}] → {e}")
                 skipped.append((ed, str(e)))
                 continue
@@ -3355,3 +3130,4 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.skipped_entities = skipped
         return self.layer3_df
 
+ 
