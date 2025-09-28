@@ -1425,10 +1425,32 @@ class FlexibleTimeframeAnalyzer:
   
 # === Layer 2 Logic ===
 class Layer2Computer:
-    def __init__(self, df, window_days=None, today_anchor=None, verbose=False):
+    def __init__(
+        self,
+        df,
+        window_days=None,
+        today_anchor=None,
+        verbose=False,
+        tau_days: float = 30.0,
+        rf_weight_r: float = 0.6,
+        rf_weight_f: float = 0.4,
+    ):
         self.df = df.copy()
-        self.df["date"] = pd.to_datetime(self.df["date"]).dt.date
-        self.today = today_anchor if today_anchor else datetime.now().date()
+
+        # ✅ Require and use only the plain 'date' column (YYYY-MM-DD)
+        if "date" not in self.df.columns:
+            raise ValueError("Layer2 requires a 'date' column in YYYY-MM-DD format.")
+        self.df["date"] = pd.to_datetime(self.df["date"], errors="coerce").dt.normalize()
+        if self.df["date"].isna().all():
+            raise ValueError("All values in 'date' are invalid/NaT.")
+
+        # ✅ Store 'today' as a normalized pandas Timestamp (no tz)
+        self.today = (
+            pd.to_datetime(today_anchor).normalize()
+            if today_anchor is not None
+            else pd.Timestamp.today().normalize()
+        )
+
         self.layer2_df = None
         self.verbose = verbose
         self.window_days = window_days
@@ -1439,8 +1461,20 @@ class Layer2Computer:
             "Appreciation": 1,
             "Ambivalence": 0,
             "Agitation": -1,
-            "Anger": -3
+            "Anger": -3,
         }
+
+        # Recency decay constant (τ)
+        self.tau_days = float(tau_days)
+        assert self.tau_days > 0
+
+        # RF weights (normalize to sum = 1)
+        total = float(rf_weight_r) + float(rf_weight_f)
+        if total <= 0:
+            self.rf_weight_r, self.rf_weight_f = 0.5, 0.5
+        else:
+            self.rf_weight_r = float(rf_weight_r) / total
+            self.rf_weight_f = float(rf_weight_f) / total
 
         self.priority_matrix = self._define_priority_matrix()
         self.quadrant_purpose = self._define_quadrant_purpose()
@@ -1522,10 +1556,6 @@ class Layer2Computer:
             ("Very Positive", "Activity Dormant"):   "Passive watch",
         }
 
-    def _priority_score_map(self):
-        """Numeric helper for sorting; semantics remain with P-tier."""
-        return {"P0": 5, "P1": 4, "P2": 3, "P3": 2, "P4": 1, "P5": 0}
-
     def compute(self):
         """
         Layer 2 (pure ERI + RF) …
@@ -1536,11 +1566,12 @@ class Layer2Computer:
         self.priority_matrix = getattr(self, "priority_matrix", self._define_priority_matrix())
         self.quadrant_purpose = getattr(self, "quadrant_purpose", self._define_quadrant_purpose())
 
-        # ✅ Normalize date column once; coerce bad values to NaT
-        self.df["date"] = pd.to_datetime(self.df["date"], errors="coerce")
+        # Use ONLY the 'date' column (YYYY-MM-DD) — normalized
+        ts_col = "date"
+        self.df[ts_col] = pd.to_datetime(self.df[ts_col], errors="coerce").dt.normalize()
 
-        # ✅ Normalize 'today' to pandas Timestamp for safe subtraction
-        today_ts = pd.Timestamp(self.today)
+        # 'today' is already normalized in __init__; keep as-is
+        today_ts = self.today
 
         grouped = self.df.groupby("experience_driver", dropna=False)
         total_rows = len(self.df)
@@ -1548,7 +1579,6 @@ class Layer2Computer:
         max_mentions = max(1, entity_counts.max())
 
         p_score = self._priority_score_map()
-
         results = []
 
         for entity, group in grouped:
@@ -1556,18 +1586,15 @@ class Layer2Computer:
 
             # --- counts & dates ---------------------------------------------------
             total_mentions = int(len(group))
-            dates = group["date"]
-            first_seen = dates.min() if total_mentions else None
-            most_recent = dates.max() if total_mentions else None
+            times = group[ts_col]
+            first_seen = times.min() if total_mentions else None
+            most_recent = times.max() if total_mentions else None
 
-            # ✅ Safe age calc across types/NaT
+            # Age in days from MOST RECENT date
             if most_recent is None or pd.isna(most_recent):
                 age_days = None
             else:
-                td = today_ts - most_recent
-                age_days = int(td.days)
-                if age_days < 0:
-                    age_days = 0
+                age_days = int(max(0, (today_ts - most_recent).days))
 
             # --- ERI --------------------------------------------------------------
             emotion_counts = group["emotion_primary"].value_counts(dropna=False).to_dict()
@@ -1578,11 +1605,11 @@ class Layer2Computer:
             eri_tier = self._map_loyalty_tier(eri_norm)
 
             # --- RF (Recency & Frequency) ----------------------------------------
-            R = 0.0 if age_days is None else 100.0 * np.exp(-age_days / max(1.0, float(self.timeframe_days)))
+            R = 0.0 if age_days is None else 100.0 * np.exp(-float(age_days) / self.tau_days)
             F = min(100.0, (np.log1p(total_mentions) / np.log1p(max_mentions)) * 100.0)
 
-            rf_r_abs = 0.6 * float(R)
-            rf_f_abs = 0.4 * float(F)
+            rf_r_abs = self.rf_weight_r * float(R)
+            rf_f_abs = self.rf_weight_f * float(F)
             RF = rf_r_abs + rf_f_abs
             rf_tier = self._map_rf_tier(RF)
 
@@ -1626,7 +1653,6 @@ class Layer2Computer:
                 "ERI_RF_Quadrant": f"{eri_tier} x {rf_tier}",
                 "Quadrant_Purpose": purpose,
                 "Priority_Status": priority_status,
-                "Priority_Score": priority_score,
 
                 "Associated_Entity_Names": associated_names,
                 "No_of_Mentions": total_mentions,
@@ -1652,11 +1678,10 @@ class Layer2Computer:
         os.makedirs("outputs", exist_ok=True)
         output_path = "outputs/layer2_output_debug.csv"
         layer2_df.to_csv(output_path, index=False, encoding="utf-8")
-        self.layer2_df = layer2_df  # ensure returned DF includes dynamic tiers
+        self.layer2_df = layer2_df
         print(f"✅ Layer 2 output saved to: {output_path}")
 
         return self.layer2_df
-
 
     # --- Tier mappers (unchanged thresholds) -------------------------------------
     def _map_loyalty_tier(self, eri_normalized):
@@ -3129,5 +3154,3 @@ Together: **Direction + Change + Reliability + Timing = Predictive Emotional Inf
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
-
- 
