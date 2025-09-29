@@ -1,0 +1,338 @@
+# === Layer 2 Logic ===
+class Layer2Computer:
+    def __init__(
+        self,
+        df,
+        window_days=None,
+        today_anchor=None,
+        verbose=False,
+        tau_days: float = 30.0,
+        rf_weight_r: float = 0.6,
+        rf_weight_f: float = 0.4,
+    ):
+        self.df = df.copy()
+
+        # ✅ Require and use only the plain 'date' column (YYYY-MM-DD)
+        if "date" not in self.df.columns:
+            raise ValueError("Layer2 requires a 'date' column in YYYY-MM-DD format.")
+        self.df["date"] = pd.to_datetime(self.df["date"], errors="coerce").dt.normalize()
+        if self.df["date"].isna().all():
+            raise ValueError("All values in 'date' are invalid/NaT.")
+
+        # ✅ Store 'today' as a normalized pandas Timestamp (no tz)
+        self.today = (
+            pd.to_datetime(today_anchor).normalize()
+            if today_anchor is not None
+            else pd.Timestamp.today().normalize()
+        )
+
+        self.layer2_df = None
+        self.verbose = verbose
+        self.window_days = window_days
+        self.timeframe_days = window_days
+
+        self.emotion_scores = {
+            "Adoration": 3,
+            "Appreciation": 1,
+            "Ambivalence": 0,
+            "Agitation": -1,
+            "Anger": -3,
+        }
+
+        # Recency decay constant (τ)
+        self.tau_days = float(tau_days)
+        assert self.tau_days > 0
+
+        # RF weights (normalize to sum = 1)
+        total = float(rf_weight_r) + float(rf_weight_f)
+        if total <= 0:
+            self.rf_weight_r, self.rf_weight_f = 0.5, 0.5
+        else:
+            self.rf_weight_r = float(rf_weight_r) / total
+            self.rf_weight_f = float(rf_weight_f) / total
+
+        self.priority_matrix = self._define_priority_matrix()
+        self.quadrant_purpose = self._define_quadrant_purpose()
+
+    # -----------------------------
+    # LAYER 2: Priority governance (pure ERI + RF)
+    # -----------------------------
+    def _define_priority_matrix(self):
+        """
+        ERI tier x RF Activity tier -> Priority tier (P0..P5).
+        RF tiers: Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant
+        """
+        return {
+            ("Very Negative", "Very High Activity"): "P0",
+            ("Very Negative", "High Activity"):      "P1",
+            ("Negative",      "Very High Activity"): "P1",
+
+            ("Very Negative", "Moderate Activity"):  "P2",
+            ("Negative",      "High Activity"):      "P2",
+            ("Neutral",       "Very High Activity"): "P2",
+            ("Neutral",       "High Activity"):      "P2",
+            ("Positive",      "Very High Activity"): "P2",
+            ("Positive",      "High Activity"):      "P2",
+            ("Very Positive", "Very High Activity"): "P2",
+
+            ("Negative",      "Moderate Activity"):  "P3",
+            ("Neutral",       "Moderate Activity"):  "P3",
+            ("Positive",      "Moderate Activity"):  "P3",
+            ("Very Positive", "High Activity"):      "P3",
+            ("Very Positive", "Moderate Activity"):  "P3",
+
+            ("Negative",      "Low Activity"):       "P4",
+
+            ("Very Negative", "Low Activity"):       "P5",
+            ("Very Negative", "Activity Dormant"):   "P5",
+            ("Negative",      "Activity Dormant"):   "P5",
+            ("Neutral",       "Low Activity"):       "P5",
+            ("Neutral",       "Activity Dormant"):   "P5",
+            ("Positive",      "Low Activity"):       "P5",
+            ("Positive",      "Activity Dormant"):   "P5",
+            ("Very Positive", "Low Activity"):       "P5",
+            ("Very Positive", "Activity Dormant"):   "P5",
+        }
+
+    def _define_quadrant_purpose(self):
+        """
+        Momentum-ready concise phrasing for each ERI x RF Activity cell.
+        RF tiers: Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant
+        """
+        return {
+            ("Very Negative", "Very High Activity"): "Critical crisis",
+            ("Very Negative", "High Activity"):      "Churn prevention",
+            ("Very Negative", "Moderate Activity"):  "Erosion watch",
+            ("Very Negative", "Low Activity"):       "Vulnerability flag",
+            ("Very Negative", "Activity Dormant"):   "Pattern archive",
+
+            ("Negative",      "Very High Activity"): "Urgent recovery",
+            ("Negative",      "High Activity"):      "Friction containment",
+            ("Negative",      "Moderate Activity"):  "Tactical fixes",
+            ("Negative",      "Low Activity"):       "Recurrence check",
+            ("Negative",      "Activity Dormant"):   "Low-risk watch",
+
+            ("Neutral",       "Very High Activity"): "Early warning",
+            ("Neutral",       "High Activity"):      "Attrition check",
+            ("Neutral",       "Moderate Activity"):  "Shift monitoring",
+            ("Neutral",       "Low Activity"):       "Background watch",
+            ("Neutral",       "Activity Dormant"):   "No immediate action",
+
+            ("Positive",      "Very High Activity"): "Loyalty expansion",
+            ("Positive",      "High Activity"):      "Loyalty accelerant",
+            ("Positive",      "Moderate Activity"):  "Retention deepening",
+            ("Positive",      "Low Activity"):       "Gradual improvement",
+            ("Positive",      "Activity Dormant"):   "Pulse watch",
+
+            ("Very Positive", "Very High Activity"): "Advocacy surge",
+            ("Very Positive", "High Activity"):      "Scale advocacy",
+            ("Very Positive", "Moderate Activity"):  "Reignite advocates",
+            ("Very Positive", "Low Activity"):       "Quiet strength",
+            ("Very Positive", "Activity Dormant"):   "Passive watch",
+        }
+
+    def compute(self):
+        """
+        Layer 2 (pure ERI + RF) …
+        """
+        import os, numpy as np, pandas as pd
+
+        # Ensure maps exist (safe init if not set in __init__)
+        self.priority_matrix = getattr(self, "priority_matrix", self._define_priority_matrix())
+        self.quadrant_purpose = getattr(self, "quadrant_purpose", self._define_quadrant_purpose())
+
+        # Use ONLY the 'date' column (YYYY-MM-DD) — normalized
+        ts_col = "date"
+        self.df[ts_col] = pd.to_datetime(self.df[ts_col], errors="coerce").dt.normalize()
+
+        # 'today' is already normalized in __init__; keep as-is
+        today_ts = self.today
+
+        grouped = self.df.groupby("experience_driver", dropna=False)
+        total_rows = len(self.df)
+        entity_counts = self.df["experience_driver"].value_counts()
+        max_mentions = max(1, entity_counts.max())
+
+        p_score = self._priority_score_map()
+        results = []
+
+        for entity, group in grouped:
+            entry = {"experience_driver": entity}
+
+            # --- counts & dates ---------------------------------------------------
+            total_mentions = int(len(group))
+            times = group[ts_col]
+            first_seen = times.min() if total_mentions else None
+            most_recent = times.max() if total_mentions else None
+
+            # Age in days from MOST RECENT date
+            if most_recent is None or pd.isna(most_recent):
+                age_days = None
+            else:
+                age_days = int(max(0, (today_ts - most_recent).days))
+
+            # --- ERI --------------------------------------------------------------
+            emotion_counts = group["emotion_primary"].value_counts(dropna=False).to_dict()
+            eri_raw = sum(float(self.emotion_scores.get(em, 0.0)) * int(ct) for em, ct in emotion_counts.items())
+            eri_mean = (eri_raw / total_mentions) if total_mentions else 0.0
+            eri_norm = ((float(eri_mean) + 3.0) / 6.0) * 200.0 - 100.0
+            eri_norm = float(np.clip(eri_norm, -100.0, 100.0))
+            eri_tier = self._map_loyalty_tier(eri_norm)
+
+            # --- RF (Recency & Frequency) ----------------------------------------
+            R = 0.0 if age_days is None else 100.0 * np.exp(-float(age_days) / self.tau_days)
+            F = min(100.0, (np.log1p(total_mentions) / np.log1p(max_mentions)) * 100.0)
+
+            rf_r_abs = self.rf_weight_r * float(R)
+            rf_f_abs = self.rf_weight_f * float(F)
+            RF = rf_r_abs + rf_f_abs
+            rf_tier = self._map_rf_tier(RF)
+
+            # % contribution (guard against divide-by-zero)
+            if RF > 0:
+                rf_r_pct = round(100.0 * rf_r_abs / RF, 1)
+                rf_f_pct = round(100.0 - rf_r_pct, 1)
+            else:
+                rf_r_pct = 0.0
+                rf_f_pct = 0.0
+
+            # --- Priority via ERI×RF ---------------------------------------------
+            key = (eri_tier, rf_tier)
+            priority_status = self.priority_matrix.get(key, "Unmapped")
+            purpose = self.quadrant_purpose.get(key, "Unmapped")
+            priority_score = p_score.get(priority_status, 0)
+
+            # --- Entities & coverage ---------------------------------------------
+            associated_names = (
+                sorted(group["entity_name"].dropna().unique().tolist())
+                if "entity_name" in group.columns else []
+            )
+            mention_share_pct = round((total_mentions / max(1, total_rows)) * 100.0, 2)
+
+            # --- record -----------------------------------------------------------
+            entry.update({
+                "ERI": round(eri_norm, 2),
+                "ERI_Tier": eri_tier,
+                "Loyalty_State": eri_tier,
+
+                "R": round(float(R), 2),
+                "F": round(float(F), 2),
+                "RF": round(float(RF), 2),
+                "RF_R_Component": round(rf_r_abs, 2),
+                "RF_R_ContributionPct": rf_r_pct,
+                "RF_F_Component": round(rf_f_abs, 2),
+                "RF_F_ContributionPct": rf_f_pct,
+
+                "RF_Urgency_Category": rf_tier,
+
+                "ERI_RF_Quadrant": f"{eri_tier} x {rf_tier}",
+                "Quadrant_Purpose": purpose,
+                "Priority_Status": priority_status,
+
+                "Associated_Entity_Names": associated_names,
+                "No_of_Mentions": total_mentions,
+                "Mention_Share_%": mention_share_pct,
+                "First_Seen_Date": first_seen.strftime("%Y-%m-%d") if first_seen is not None and not pd.isna(first_seen) else None,
+                "Most_Recent_Date": most_recent.strftime("%Y-%m-%d") if most_recent is not None and not pd.isna(most_recent) else None,
+                "Age_Days": age_days,
+
+                "Quadrant_Key": f"{eri_tier}|{rf_tier}",
+                "Debug_ERI_Raw": round(float(eri_mean), 4),
+                "Debug_Emotion_Counts": emotion_counts,
+            })
+
+            results.append(entry)
+
+        # Build DF once
+        layer2_df = pd.DataFrame(results)
+
+        # Assign dynamic tiers for R and F (5 bins each) and persist them
+        layer2_df = self._compute_dynamic_component_tiers(layer2_df)
+
+        # Save + bind
+        os.makedirs("outputs", exist_ok=True)
+        output_path = "outputs/layer2_output_debug.csv"
+        layer2_df.to_csv(output_path, index=False, encoding="utf-8")
+        self.layer2_df = layer2_df
+        print(f"✅ Layer 2 output saved to: {output_path}")
+
+        return self.layer2_df
+
+    # --- Tier mappers (unchanged thresholds) -------------------------------------
+    def _map_loyalty_tier(self, eri_normalized):
+        if eri_normalized >= 80:
+            return "Very Positive"
+        elif eri_normalized >= 30:
+            return "Positive"
+        elif eri_normalized >= -10:
+            return "Neutral"
+        elif eri_normalized >= -50:
+            return "Negative"
+        else:
+            return "Very Negative"
+
+    def _map_rf_tier(self, RF):
+        if RF >= 80:
+            return "Very High Activity"
+        elif RF >= 60:
+            return "High Activity"
+        elif RF >= 40:
+            return "Moderate Activity"
+        elif RF >= 20:
+            return "Low Activity"
+        else:
+            return "Activity Dormant"
+
+    def _compute_dynamic_component_tiers(self, df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Post-Layer2: assign 5-tier labels to R and F using distribution-aware quantiles.
+        Returns df with: R_Tier, R_Tier_Rank, F_Tier, F_Tier_Rank
+        Also stores the cutpoints on self for transparency/debug.
+        """
+        df = df.copy()
+
+        # Labels + ranks (descending = higher is 'stronger')
+        r_labels = ["No Recent Activity", "Low Recency", "Moderate Recency", "High Recency", "Very High Recency"]
+        f_labels = ["Sparse Mentions", "Low Frequency", "Moderate Frequency", "High Frequency", "Very High Frequency"]
+        ranks   = [1, 2, 3, 4, 5]
+
+        # Work only on valid values
+        r_valid = df["R"].dropna().astype(float)
+        f_valid = df["F"].dropna().astype(float)
+
+        def _safe_qcut(series, labels):
+            # If too few unique values for qcut, fall back to rank-based percentiles
+            try:
+                return pd.qcut(series, q=5, labels=labels, duplicates="drop")
+            except ValueError:
+                # rank to [0,1], then bucket
+                pct = series.rank(method="average", pct=True)
+                bins = pd.cut(pct, bins=[0.0, 0.2, 0.4, 0.6, 0.8, 1.0], labels=labels, include_lowest=True)
+                return bins
+
+        # Compute tiers
+        r_tier = _safe_qcut(r_valid, r_labels)
+        f_tier = _safe_qcut(f_valid, f_labels)
+
+        # Write back to df
+        df.loc[r_tier.index, "R_Tier"] = r_tier.astype(str)
+        df.loc[f_tier.index, "F_Tier"] = f_tier.astype(str)
+
+        # Numeric ranks aligned with labels (map label->rank)
+        r_map = dict(zip(r_labels, ranks))
+        f_map = dict(zip(f_labels, ranks))
+        df["R_Tier_Rank"] = df["R_Tier"].map(r_map).fillna(0).astype(int)
+        df["F_Tier_Rank"] = df["F_Tier"].map(f_map).fillna(0).astype(int)
+
+        # Keep the actual cutpoints for transparency
+        # (best-effort: if qcut succeeded, retrieve bin edges via quantiles)
+        try:
+            self.meta_r_quantiles = r_valid.quantile([0.0, .2, .4, .6, .8, 1.0]).round(2).to_dict()
+        except Exception:
+            self.meta_r_quantiles = {}
+        try:
+            self.meta_f_quantiles = f_valid.quantile([0.0, .2, .4, .6, .8, 1.0]).round(2).to_dict()
+        except Exception:
+            self.meta_f_quantiles = {}
+
+        return df
