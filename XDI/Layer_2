@@ -59,14 +59,19 @@ class Layer2Computer:
     # -----------------------------
     def _define_priority_matrix(self):
         """
-        ERI tier x RF Activity tier -> Priority tier (P0..P5).
-        RF tiers: Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant
+        ERI Tier x RF Activity Tier (new names) -> Priority tier (P0..P5).
+        ERI: Very Positive, Positive, Neutral, Negative, Very Negative
+        RF:  Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant
         """
         return {
+            # P0 – Critical Crisis Signal (1 cell)
             ("Very Negative", "Very High Activity"): "P0",
+
+            # P1 – Severe Emotional Loyalty Threat (2 cells)
             ("Very Negative", "High Activity"):      "P1",
             ("Negative",      "Very High Activity"): "P1",
 
+            # P2 – High Emotional Urgency / Opportunity Surge (7 cells)
             ("Very Negative", "Moderate Activity"):  "P2",
             ("Negative",      "High Activity"):      "P2",
             ("Neutral",       "Very High Activity"): "P2",
@@ -75,16 +80,19 @@ class Layer2Computer:
             ("Positive",      "High Activity"):      "P2",
             ("Very Positive", "Very High Activity"): "P2",
 
+            # P3 – Moderate Emotional Signals / Optimization (5 cells)
             ("Negative",      "Moderate Activity"):  "P3",
             ("Neutral",       "Moderate Activity"):  "P3",
             ("Positive",      "Moderate Activity"):  "P3",
             ("Very Positive", "High Activity"):      "P3",
             ("Very Positive", "Moderate Activity"):  "P3",
 
+            # P4 – Low Emotional Activity / Passive Signals (1 cell)
             ("Negative",      "Low Activity"):       "P4",
 
-            ("Very Negative", "Low Activity"):       "P5",
+            # P5 – Dormant / Background Monitoring (9 cells)
             ("Very Negative", "Activity Dormant"):   "P5",
+            ("Very Negative", "Low Activity"):       "P5",
             ("Negative",      "Activity Dormant"):   "P5",
             ("Neutral",       "Low Activity"):       "P5",
             ("Neutral",       "Activity Dormant"):   "P5",
@@ -96,39 +104,46 @@ class Layer2Computer:
 
     def _define_quadrant_purpose(self):
         """
-        Momentum-ready concise phrasing for each ERI x RF Activity cell.
-        RF tiers: Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant
+        Purpose text per ERI x RF cell (whitepaper wording),
+        keyed with the new RF tier names only.
         """
         return {
-            ("Very Negative", "Very High Activity"): "Critical crisis",
-            ("Very Negative", "High Activity"):      "Churn prevention",
-            ("Very Negative", "Moderate Activity"):  "Erosion watch",
-            ("Very Negative", "Low Activity"):       "Vulnerability flag",
-            ("Very Negative", "Activity Dormant"):   "Pattern archive",
+            # P0
+            ("Very Negative", "Very High Activity"): "Critical Crisis Response",
 
-            ("Negative",      "Very High Activity"): "Urgent recovery",
-            ("Negative",      "High Activity"):      "Friction containment",
-            ("Negative",      "Moderate Activity"):  "Tactical fixes",
-            ("Negative",      "Low Activity"):       "Recurrence check",
-            ("Negative",      "Activity Dormant"):   "Low-risk watch",
+            # P1
+            ("Very Negative", "High Activity"):      "Prevent Active Loyalty Churn",
+            ("Negative",      "Very High Activity"): "Urgent Loyalty Recovery",
 
-            ("Neutral",       "Very High Activity"): "Early warning",
-            ("Neutral",       "High Activity"):      "Attrition check",
-            ("Neutral",       "Moderate Activity"):  "Shift monitoring",
-            ("Neutral",       "Low Activity"):       "Background watch",
-            ("Neutral",       "Activity Dormant"):   "No immediate action",
+            # P2
+            ("Very Negative", "Moderate Activity"):  "Erosion Risk Early Watch",
+            ("Negative",      "High Activity"):      "Contain Friction Emergence",
+            ("Neutral",       "Very High Activity"): "Early Warning Activation",
+            ("Neutral",       "High Activity"):      "Investigate Attrition Risks",
+            ("Positive",      "Very High Activity"): "Expand Loyalty Influence",
+            ("Positive",      "High Activity"):      "Loyalty Accelerant",
+            ("Very Positive", "Very High Activity"): "Maximize Advocacy Surge",
 
-            ("Positive",      "Very High Activity"): "Loyalty expansion",
-            ("Positive",      "High Activity"):      "Loyalty accelerant",
-            ("Positive",      "Moderate Activity"):  "Retention deepening",
-            ("Positive",      "Low Activity"):       "Gradual improvement",
-            ("Positive",      "Activity Dormant"):   "Pulse watch",
+            # P3
+            ("Negative",      "Moderate Activity"):  "Tactical Corrections",
+            ("Neutral",       "Moderate Activity"):  "Monitor Behavioral Shifts",
+            ("Positive",      "Moderate Activity"):  "Deepen Retention Programs",
+            ("Very Positive", "High Activity"):      "Scale Advocacy Programs",
+            ("Very Positive", "Moderate Activity"):  "Reignite Advocates",
 
-            ("Very Positive", "Very High Activity"): "Advocacy surge",
-            ("Very Positive", "High Activity"):      "Scale advocacy",
-            ("Very Positive", "Moderate Activity"):  "Reignite advocates",
-            ("Very Positive", "Low Activity"):       "Quiet strength",
-            ("Very Positive", "Activity Dormant"):   "Passive watch",
+            # P4
+            ("Negative",      "Low Activity"):       "Investigate Minor Recurrence",
+
+            # P5
+            ("Very Negative", "Activity Dormant"):   "Archive for Pattern Watch",
+            ("Very Negative", "Low Activity"):       "Flag for Vulnerability",
+            ("Negative",      "Activity Dormant"):   "Low Risk Monitoring",
+            ("Neutral",       "Low Activity"):       "Background Observation",
+            ("Neutral",       "Activity Dormant"):   "No Immediate Action",
+            ("Positive",      "Low Activity"):       "Gradual Improvements",
+            ("Positive",      "Activity Dormant"):   "Pulse Monitoring",
+            ("Very Positive", "Low Activity"):       "Recognize Quiet Strength",
+            ("Very Positive", "Activity Dormant"):   "Passive Monitoring",
         }
 
     def compute(self):
@@ -258,30 +273,44 @@ class Layer2Computer:
 
         return self.layer2_df
 
-    # --- Tier mappers (unchanged thresholds) -------------------------------------
+    # --- Tier mappers (final) -------------------------------------------------
     def _map_loyalty_tier(self, eri_normalized):
-        if eri_normalized >= 80:
-            return "Very Positive"
-        elif eri_normalized >= 30:
-            return "Positive"
-        elif eri_normalized >= -10:
-            return "Neutral"
-        elif eri_normalized >= -50:
-            return "Negative"
-        else:
-            return "Very Negative"
+        """
+        ERI ∈ [-100, 100] → {Very Positive, Positive, Neutral, Negative, Very Negative}
+        Boundaries (inclusive): [80,100], [30,79], [-10,29], [-50,-11], [-100,-51]
+        """
+        try:
+            x = float(eri_normalized)
+        except (TypeError, ValueError):
+            x = float('nan')
+        if not pd.notna(x):
+            return "Neutral"  # safe default
+        x = max(-100.0, min(100.0, x))
+
+        if x >= 80:    return "Very Positive"
+        if x >= 30:    return "Positive"
+        if x >= -10:   return "Neutral"
+        if x >= -50:   return "Negative"
+        return "Very Negative"
 
     def _map_rf_tier(self, RF):
-        if RF >= 80:
-            return "Very High Activity"
-        elif RF >= 60:
-            return "High Activity"
-        elif RF >= 40:
-            return "Moderate Activity"
-        elif RF >= 20:
-            return "Low Activity"
-        else:
-            return "Activity Dormant"
+        """
+        RF ∈ [0, 100] → {Very High Activity, High Activity, Moderate Activity, Low Activity, Activity Dormant}
+        Boundaries (inclusive): [80,100], [60,79], [40,59], [20,39], [0,19]
+        """
+        try:
+            r = float(RF)
+        except (TypeError, ValueError):
+            r = float('nan')
+        if not pd.notna(r):
+            return "Activity Dormant"  # safe default
+        r = max(0.0, min(100.0, r))
+
+        if r >= 80: return "Very High Activity"
+        if r >= 60: return "High Activity"
+        if r >= 40: return "Moderate Activity"
+        if r >= 20: return "Low Activity"
+        return "Activity Dormant"
 
     def _compute_dynamic_component_tiers(self, df: pd.DataFrame) -> pd.DataFrame:
         """
