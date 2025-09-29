@@ -454,11 +454,12 @@ customer emotion behaves over time.
                     "action": "👉 Refresh engagement to prevent stagnation."
                 },
                 "↓": {
-                    "name": "*(Rare)* Long-term gains but short-term deterioration.",
-                    "diagnosis": "Watch for micro-shocks, validate if anomaly or early erosion.",
-                    "action": "👉 Investigate small declines during improving baseline."
+                    "name": "Reversal Warning 🔔",
+                    "diagnosis": "Long-term gains established, but recent momentum turned negative. Early signal that improvements may be stalling or a new issue emerged.",
+                    "action": "👉 Identify recent changes (product, policy, market) that broke the positive trajectory. Act quickly to prevent erosion."
                 },
             },
+
             "→": {  # Trend → (Stable)
                 "↑": {
                     "name": "Recovery Signal 🌱",
@@ -476,6 +477,7 @@ customer emotion behaves over time.
                     "action": "👉 Early-warning: intervene before decline becomes entrenched."
                 },
             },
+            
             "↓": {  # Trend ↓ (Declining)
                 "↑": {
                     "name": "Emerging Recovery 🔄",
@@ -524,8 +526,6 @@ customer emotion behaves over time.
         out["urgency"] = self.MOMENTUM_URGENCY[momentum_symbol]
         return out
 
-
-    # Place these inside your class (e.g., Layer3Computer)
     def _ensure_tmv_artifacts(self):
         # Human-readable headings
         self.TREND_WORD = {
@@ -555,7 +555,7 @@ customer emotion behaves over time.
             "↓↓": "↓",
         }
 
-        # Momentum intensity → urgency modifier (as requested)
+        # Momentum intensity → urgency modifier
         self.MOMENTUM_URGENCY = {
             "↑↑": "Amplify — high urgency",
             "↑":  "Amplify — normal urgency",
@@ -564,96 +564,152 @@ customer emotion behaves over time.
             "↓↓": "Intervene — critical",
         }
 
-    # === Trend × Momentum × Volatility GRID (exact wording preserved) =========
-    # Keys: trend ('↑','→','↓') → momentum_dir ('↑','→','↓') → volatility ('✅','⚠','🔴')
-    self.TMV_GRID = {
-        "↑": {  # Trend ↑ (Improving)
-            "→": {
-                "✅": {
-                    "interpretation": "Long-term gains holding steady and reliable",
-                    "instruction":    "Keep reinforcing; stable trust is compounding",
+        # === Trend × Momentum × Volatility GRID ==================================
+        # Keys: trend ('↑','→','↓') → momentum_dir ('↑','→','↓') → volatility ('✅','⚠','🔴')
+        self.TMV_GRID = {
+            "↑": {  # Trend ↑ (Improving)
+                "↑": {  # Momentum Rising
+                    "✅": {
+                        "interpretation": "Clear acceleration with predictable emotional landscape",
+                        "instruction":    "Amplify — perfect moment to scale advocacy and systematically expand gains",
+                    },
+                    "⚠": {
+                        "interpretation": "Surge is happening, but emerging instability in customer experiences",
+                        "instruction":    "Seize positives, but investigate drivers of fluctuation and stabilize experience",
+                    },
+                    "🔴": {
+                        "interpretation": "“Spike effect” with dangerous instability — surge may collapse",
+                        "instruction":    "Immediate diagnosis needed; treat as hype-cycle until system stability confirms sustainability",
+                    },
                 },
-                "⚠": {
-                    "interpretation": "Gains are real but customer mood wobbles",
-                    "instruction":    "Monitor; ensure uplift isn’t fragile",
+                "→": {  # Momentum Stable
+                    "✅": {
+                        "interpretation": "Long-term gains holding steady with predictable emotional landscape",
+                        "instruction":    "Maintain reinforcement; stable trust is compounding systematically",
+                    },
+                    "⚠": {
+                        "interpretation": "Gains are real but unstable emotional movement emerging",
+                        "instruction":    "Investigate drivers of fluctuation; ensure uplift isn't fragile",
+                    },
+                    "🔴": {
+                        "interpretation": "Upward signals present, but dangerous instability underneath",
+                        "instruction":    "Immediate diagnosis needed; stabilize experience before scaling (likely system/process breakdown)",
+                    },
                 },
-                "🔴": {
-                    "interpretation": "Signals point upward, but chaos under the surface",
-                    "instruction":    "Don’t over-celebrate; stabilize before scaling",
-                },
-            },
-            "↑": {
-                "✅": {
-                    "interpretation": "Clear acceleration with consistent base",
-                    "instruction":    "Amplify — perfect moment to scale advocacy",
-                },
-                "⚠": {
-                    "interpretation": "Surge is happening, but customers uneven",
-                    "instruction":    "Seize positives, but reinforce weak spots",
-                },
-                "🔴": {
-                    "interpretation": "“Spike effect” — surge may collapse",
-                    "instruction":    "Treat as hype-cycle; confirm if sustainable",
-                },
-            },
-        },
-        "→": {  # Trend → (Flat)
-            "↓": {
-                "✅": {
-                    "interpretation": "Plateau with emerging warning",
-                    "instruction":    "Investigate small cracks before they widen",
-                },
-                "⚠": {
-                    "interpretation": "Customers unsettled, mixed signals",
-                    "instruction":    "Early intervention; sentiment at tipping point",
-                },
-                "🔴": {
-                    "interpretation": "Volatility + downturn = fragile loyalty",
-                    "instruction":    "Treat as high-risk; prepare crisis workflows",
-                },
-            },
-        },
-        "↓": {  # Trend ↓ (Declining)
-            "↑": {
-                "✅": {
-                    "interpretation": "Recovery starting; reliable turnaround",
-                    "instruction":    "Support rebound with targeted initiatives",
-                },
-                "⚠": {
-                    "interpretation": "Customers showing rebound but unstable",
-                    "instruction":    "Encourage positives, shore up weaknesses",
-                },
-                "🔴": {
-                    "interpretation": "Recovery attempt is noisy and fragile",
-                    "instruction":    "Monitor tightly; avoid premature bets",
+                "↓": {  # Momentum Falling
+                    "✅": {
+                        "interpretation": "Long-term gains established, but short-term reversal is predictable and measurable",
+                        "instruction":    "Investigate trigger systematically — product change, policy shift, or competitor move; maintain diagnostic clarity",
+                    },
+                    "⚠": {
+                        "interpretation": "Improving baseline eroding with unstable emotional movement",
+                        "instruction":    "Investigate drivers urgently; stabilize experience and identify which segments are reversing",
+                    },
+                    "🔴": {
+                        "interpretation": "Chaotic reversal amid long-term gains — dangerous instability signals breakdown",
+                        "instruction":    "Immediate diagnosis needed; likely system/process breakdown. Stabilize before further erosion",
+                    },
                 },
             },
-            "↓": {
-                "✅": {
-                    "interpretation": "Clear deterioration, stable pattern",
-                    "instruction":    "Act decisively — loyalists are slipping away",
+
+            "→": {  # Trend → (Flat)
+                "↑": {  # Momentum Rising
+                    "✅": {
+                        "interpretation": "Flat baseline with reliable upward push and predictable emotional landscape",
+                        "instruction":    "Systematically improve and accelerate; this is your window to shift long-term trajectory",
+                    },
+                    "⚠": {
+                        "interpretation": "Recovery attempt underway but unstable emotional movement across customers",
+                        "instruction":    "Investigate drivers of fluctuation; stabilize experience to ensure gains aren't isolated",
+                    },
+                    "🔴": {
+                        "interpretation": "Volatile surge from flat baseline with dangerous instability",
+                        "instruction":    "Immediate diagnosis needed; validate if real momentum or system/process breakdown before investing",
+                    },
                 },
-                "⚠": {
-                    "interpretation": "Decline underway, customers uneven",
-                    "instruction":    "Contain damage, look for segment splits",
+                "→": {  # Momentum Stable
+                    "✅": {
+                        "interpretation": "True stability — flat long-term, flat short-term, predictable emotional landscape",
+                        "instruction":    "Maintain current approach; monitor quietly unless strategic goals require movement",
+                    },
+                    "⚠": {
+                        "interpretation": "Stable trend overall but unstable emotional movement in customer experiences",
+                        "instruction":    "Investigate drivers of fluctuation; stabilize experience despite flat averages",
+                    },
+                    "🔴": {
+                        "interpretation": "Flat on average but dangerous instability underneath — hidden breakdown",
+                        "instruction":    "Immediate diagnosis needed; high volatility with no trend suggests system/process breakdown or severe segmentation issues",
+                    },
                 },
-                "🔴": {
-                    "interpretation": "Emotional free-fall with chaos",
-                    "instruction":    "Crisis protocol — stabilize or lose trust",
+                "↓": {  # Momentum Falling
+                    "✅": {
+                        "interpretation": "Plateau with emerging warning but predictable emotional landscape",
+                        "instruction":    "Investigate small cracks systematically before they widen; maintain diagnostic clarity",
+                    },
+                    "⚠": {
+                        "interpretation": "Customers unsettled with unstable emotional movement at tipping point",
+                        "instruction":    "Investigate drivers immediately; stabilize experience before decline becomes entrenched",
+                    },
+                    "🔴": {
+                        "interpretation": "Downturn with dangerous instability — fragile loyalty signal",
+                        "instruction":    "Immediate diagnosis needed; likely system/process breakdown. Prepare crisis workflows",
+                    },
                 },
             },
-        },
-    }
+
+            "↓": {  # Trend ↓ (Declining)
+                "↑": {  # Momentum Rising
+                    "✅": {
+                        "interpretation": "Recovery starting with predictable emotional landscape — reliable turnaround",
+                        "instruction":    "Systematically improve with targeted initiatives; maintain and accelerate stable rebound",
+                    },
+                    "⚠": {
+                        "interpretation": "Customers showing rebound but unstable emotional movement",
+                        "instruction":    "Investigate drivers of fluctuation; stabilize experience while encouraging positives",
+                    },
+                    "🔴": {
+                        "interpretation": "Recovery attempt with dangerous instability — fragile and noisy",
+                        "instruction":    "Immediate diagnosis needed; avoid premature bets until system stability confirms",
+                    },
+                },
+                "→": {  # Momentum Stable
+                    "✅": {
+                        "interpretation": "Structural decline entrenched with predictable emotional landscape — steady deterioration",
+                        "instruction":    "Systematically improve through root-cause analysis; strategic intervention required for entrenched failure",
+                    },
+                    "⚠": {
+                        "interpretation": "Steady decline with unstable emotional movement across customers",
+                        "instruction":    "Investigate drivers through segment-level deep dive; stabilize experience while addressing cohort-specific decay",
+                    },
+                    "🔴": {
+                        "interpretation": "Declining baseline with dangerous instability — worst-case scenario",
+                        "instruction":    "Immediate diagnosis needed; system/process breakdown while losing customers. Emergency stabilization protocols",
+                    },
+                },
+                "↓": {  # Momentum Falling
+                    "✅": {
+                        "interpretation": "Clear deterioration with predictable emotional landscape — stable decline pattern",
+                        "instruction":    "Act decisively through systematic improvement — loyalists are slipping away in measurable way",
+                    },
+                    "⚠": {
+                        "interpretation": "Accelerating decline with unstable emotional movement",
+                        "instruction":    "Investigate drivers urgently; stabilize experience and contain damage through segment analysis",
+                    },
+                    "🔴": {
+                        "interpretation": "Emotional free-fall with dangerous instability — chaotic collapse",
+                        "instruction":    "Immediate diagnosis needed; system/process breakdown. Crisis protocol — stabilize or lose trust",
+                    },
+                },
+            },
+        }
 
     def tmv_commentary(self, trend_symbol: str, momentum_symbol: str, volatility_symbol: str) -> dict:
         """
         Resolve Trend x Momentum x Volatility commentary.
         - trend_symbol: '↑' | '→' | '↓'
-        - momentum_symbol: '↑↑' | '↑' | '→' | '↓' | '↓↓'  (5-state preserved in output)
+        - momentum_symbol: '↑↑' | '↑' | '→' | '↓' | '↓↓'
         - volatility_symbol: '✅' | '⚠' | '🔴'
-        Uses momentum direction (↑/→/↓) for grid lookup, and returns urgency modifier from 5-state.
         """
-        # lazy init
         if not hasattr(self, "TMV_GRID"):
             self._ensure_tmv_artifacts()
 
@@ -661,13 +717,7 @@ customer emotion behaves over time.
         mom_dir = self.MOMENTUM_DIR.get(momentum_symbol)
         vol = volatility_symbol
 
-        cell = (
-            self.TMV_GRID
-            .get(trend_dir, {})
-            .get(mom_dir or "", {})
-            .get(vol, None)
-        )
-
+        cell = self.TMV_GRID.get(trend_dir, {}).get(mom_dir or "", {}).get(vol, None)
         if not cell:
             return {
                 "trend": self.TREND_WORD.get(trend_dir, trend_dir),
@@ -678,16 +728,16 @@ customer emotion behaves over time.
                 "instruction": "Review inputs or extend grid definitions.",
             }
 
-        # Enrich with readable headings + urgency
         return {
             "trend": self.TREND_WORD[trend_dir],
-            "momentum": self.MOMENTUM_WORD[momentum_symbol],   # keep full 5-state label
+            "momentum": self.MOMENTUM_WORD[momentum_symbol],
             "volatility": self.VOL_WORD[vol],
-            "urgency": self.MOMENTUM_URGENCY[momentum_symbol], # intensity modifier
+            "urgency": self.MOMENTUM_URGENCY[momentum_symbol],
             "interpretation": cell["interpretation"],
             "instruction": cell["instruction"],
         }
 
+    
     # Inside your class (e.g., Layer3Computer)
     def _ensure_temporal_grid(self):
         # Axis labels (exact wording preserved)
