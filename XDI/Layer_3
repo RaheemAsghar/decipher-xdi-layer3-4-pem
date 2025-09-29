@@ -1,4 +1,5 @@
 import pandas as pd
+from pandas.tseries.frequencies import to_offset
 
 class Layer3Computer:
     def __init__(
@@ -165,7 +166,6 @@ class Layer3Computer:
             "delta": change_pct,
             "n_points": n,
         }
-
 
     def _compute_volatility_series(self, series) -> dict:
         """
@@ -736,8 +736,7 @@ customer emotion behaves over time.
             "interpretation": cell["interpretation"],
             "instruction": cell["instruction"],
         }
-
-    
+ 
     # Inside your class (e.g., Layer3Computer)
     def _ensure_temporal_grid(self):
         # Axis labels (exact wording preserved)
@@ -911,3 +910,209 @@ customer emotion behaves over time.
         out["temporal_axes"] = temporal_axes
 
         return out
+
+    def compute(self):
+        """
+        Layer 3 (time-agnostic):
+        - Aggregate ERI per period (freq decided by time unit)
+        - Reindex to full period range (window) and bfill→ffill to get a dense series
+        - Run Trend, Momentum, Volatility, Pattern on the SAME dense series
+        - Compose commentary via TM / TMV grids (+ 2×2 tags)
+        """
+
+        results, skipped = [], []
+
+        # ---- decide frequency + which column to use (timestamp for sub-day; date for day+)
+        unit = getattr(self, "timeframe_unit", "day")
+        period_count = int(getattr(self, "timeframe_value", 75))
+
+        freq_map = {
+            "minute": "T", "min": "T",
+            "hour": "H",
+            "day": "D",
+            "week": "W",
+            "month": "M",
+        }
+        freq = freq_map.get(unit, "D")
+
+        use_datetime = freq in {"T", "H"}  # sub-day → timestamp; else date
+        idx_col = "timestamp" if use_datetime else "date"
+
+        # ensure time key is datetime-like
+        self.raw_df[idx_col] = pd.to_datetime(self.raw_df[idx_col], errors="coerce")
+        data_ok = self.raw_df.dropna(subset=[idx_col]).copy()
+
+        # normalize ED key
+        data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
+
+        # figure window [start..end_inclusive] so that end is "one period before now"
+        now_anchor = pd.to_datetime(self.today)
+        if now_anchor is None:
+            now_anchor = pd.to_datetime(getattr(self, "today", pd.Timestamp.today().normalize()))
+        off = to_offset(freq)
+        end_inclusive = now_anchor - off                   # mirror your "today-1" behavior
+        start = end_inclusive - (period_count - 1) * off   # inclusive length = period_count
+
+        full_idx = pd.date_range(start=start, end=end_inclusive, freq=freq)
+        analysis_window_points = len(full_idx)
+
+        # Eligible entities (you used P0..P3)
+        entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(["P0","P1","P2","P3"])]
+
+        for _, row in entities.iterrows():
+            ed = str(row["experience_driver"]).strip()
+            try:
+                sub = data_ok[data_ok["experience_driver"] == ed]
+                if sub.empty:
+                    if getattr(self, "verbose", False):
+                        print(f"❌ DROP [{ed}] → no raw data")
+                    skipped.append((ed, "No raw data"))
+                    continue
+
+                # group to period using Grouper on the chosen time key
+                grouped = (
+                    sub
+                    .groupby(pd.Grouper(key=idx_col, freq=freq))
+                    .apply(self.compute_normalized_eri)  # scalar ERI per period
+                    .sort_index()
+                )
+
+                # align to full period window BEFORE fill
+                grouped = grouped.reindex(full_idx)
+                missing_pct = float(grouped.isna().mean())
+                series_complete_prefill = not grouped.isna().any()
+                observed_points = int(grouped.dropna().shape[0])
+
+                # gate: need ≥2 observed periods before we fill & run modules
+                if observed_points <= 1:
+                    if getattr(self, "verbose", False):
+                        print(f"⏭️ DROP [{ed}] → insufficient points ({observed_points})")
+                    skipped.append((ed, f"Insufficient points: {observed_points}"))
+                    continue
+
+                # presence: % of periods with any feedback mentions
+                counts = (
+                    sub
+                    .groupby(pd.Grouper(key=idx_col, freq=freq))
+                    .size()
+                    .reindex(full_idx, fill_value=0)
+                )
+                signal_presence_pct = round(float((counts > 0).sum()) / analysis_window_points, 3)
+
+                # dense track for modules (bfill then ffill)
+                track = grouped.bfill().ffill()
+
+                # === longitudinal modules (same track) ===
+                trend_block      = self._compute_trend_series(track)
+                momentum_block   = self._compute_momentum_series(track)
+                volatility_block = self._compute_volatility_series(track)
+                pattern_block    = self._compute_pattern_series(track)
+
+                # === commentary (TMV since volatility is present)
+                commentary_block = self.compose_commentary(
+                    trend=trend_block,
+                    momentum=momentum_block,
+                    volatility={
+                        "symbol": volatility_block.get("symbol", "✅"),
+                        "label":  volatility_block.get("label"),
+                        "score":  volatility_block.get("score"),
+                        "n_points": len(track)
+                    },
+                    pattern=pattern_block
+                )
+
+                # provenance/meta
+                capsule_meta = {
+                    "capsule_id": f"SC-{uuid4().hex[:12]}",
+                    "window_start": str(full_idx[0]),
+                    "window_end": str(full_idx[-1]),
+                    "analysis_window_points": analysis_window_points,
+                    "observed_points_with_signal": observed_points,
+                    "signal_presence_pct": signal_presence_pct,
+                    "series_data_complete_prefill": bool(series_complete_prefill),
+                    "missing_points_pct_prefill": missing_pct,
+                    "trend_analysis_points": analysis_window_points,
+                    "momentum_arc_points": analysis_window_points // 2,
+                    "freq": freq,
+                    "time_unit": unit,
+                }
+
+                # assemble record
+                l2_full = {
+                    # === Exact Layer 2 dimensions you shared ===
+                    "ERI": round(float(row.get("ERI", 0.0)), 2),
+                    "ERI_Tier": row.get("ERI_Tier"),
+                    "Loyalty_State": row.get("Loyalty_State", row.get("ERI_Tier")),
+
+                    "R": round(float(row.get("R", 0.0)), 2),
+                    "F": round(float(row.get("F", 0.0)), 2),
+                    "RF": round(float(row.get("RF", 0.0)), 2),
+                    "RF_R_Component": round(float(row.get("RF_R_Component", 0.0)), 2),
+                    "RF_R_ContributionPct": row.get("RF_R_ContributionPct"),
+                    "RF_F_Component": round(float(row.get("RF_F_Component", 0.0)), 2),
+                    "RF_F_ContributionPct": row.get("RF_F_ContributionPct"),
+
+                    "RF_Urgency_Category": row.get("RF_Urgency_Category"),
+
+                    "ERI_RF_Quadrant": row.get("ERI_RF_Quadrant"),
+                    "Quadrant_Purpose": row.get("Quadrant_Purpose"),
+                    "Priority_Status": row.get("Priority_Status"),
+
+                    "Associated_Entity_Names": row.get("Associated_Entity_Names"),
+                    "No_of_Mentions": row.get("No_of_Mentions"),
+                    "Mention_Share_%": row.get("Mention_Share_%"),
+                    "First_Seen_Date": row.get("First_Seen_Date"),
+                    "Most_Recent_Date": row.get("Most_Recent_Date"),
+                    "Age_Days": row.get("Age_Days"),
+
+                    "Quadrant_Key": row.get("Quadrant_Key"),
+                    "Debug_ERI_Raw": round(float(row.get("Debug_ERI_Raw", 0.0)), 4),
+                    "Debug_Emotion_Counts": row.get("Debug_Emotion_Counts"),
+                }
+
+                record = {
+                    "experience_driver": ed,
+
+                    # keep your small convenience snapshot
+                    "priority_class": row.get("Priority_Status"),
+                    "associated_entity_names": row.get("Associated_Entity_Names"),
+                    "most_recent_mention": row.get("Most_Recent_Date"),
+                    "no_of_mentions": row.get("No_of_Mentions"),
+
+                    # convenience metrics (unchanged)
+                    "eri_score": float(row.get("ERI", 0.0)),
+                    "r_score":  float(row.get("R", 0.0)),
+                    "f_score":  float(row.get("F", 0.0)),
+                    "rf_score": float(row.get("RF", 0.0)),
+                    "emotion_perception_tier": row.get("Loyalty_State"),
+                    "rf_urgency_category": row.get("RF_Urgency_Category"),
+                    "eri_rf_urgency_category": row.get("ERI_RF_Quadrant"),
+                    "quadrant_purpose": row.get("Quadrant_Purpose"),
+
+                    # longitudinal outputs
+                    "trend_block": trend_block,
+                    "momentum_block": momentum_block,
+                    "volatility_block": volatility_block,
+                    "pattern_block": pattern_block,
+
+                    # commentary
+                    "commentary": commentary_block,
+
+                    # provenance/meta (unchanged)
+                    "provenance": capsule_meta,
+                }
+
+                # merge full Layer 2 fields flat into the record
+                record.update(l2_full)
+                results.append(record)
+
+
+            except Exception as e:
+                if getattr(self, "verbose", False):
+                    print(f"💥 FAIL [{ed}] → {e}")
+                skipped.append((ed, str(e)))
+                continue
+
+        self.layer3_df = pd.DataFrame(results)
+        self.skipped_entities = skipped
+        return self.layer3_df
