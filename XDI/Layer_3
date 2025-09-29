@@ -1,1 +1,863 @@
-aa
+import pandas as pd
+
+class Layer3Computer:
+    def __init__(
+        self,
+        layer2_df,
+        raw_df,
+        timeframe_value,
+        timeframe_unit="days",   # "days", "weeks", "hours", "minutes"
+        today_anchor=None,
+        verbose=False,
+    ):
+        self.layer2_df = layer2_df.copy()
+        self.raw_df = raw_df.copy()
+        self.verbose = verbose
+        self.timeframe_value = int(timeframe_value)
+        self.timeframe_unit = timeframe_unit
+
+        # ✅ Today as normalized Timestamp (no tz)
+        self.today = pd.to_datetime(today_anchor).normalize() if today_anchor else pd.Timestamp.today().normalize()
+
+        # ✅ Compute cutoff window (agnostic to unit)
+        delta = pd.to_timedelta(self.timeframe_value, unit=self.timeframe_unit)
+        self.cutoff = self.today - delta
+
+        # ✅ Parse all 3 columns (timestamp, date, time)
+        self.raw_df["timestamp"] = pd.to_datetime(self.raw_df["timestamp"], errors="coerce")
+        self.raw_df["date"] = pd.to_datetime(self.raw_df["date"], errors="coerce").dt.date
+        self.raw_df["time"] = pd.to_datetime(self.raw_df["time"], errors="coerce").dt.time
+        self.raw_df = self.raw_df.dropna(subset=["timestamp"])
+
+        # ✅ Window filter (cutoff → today, inclusive)
+        mask = (self.raw_df["timestamp"] >= self.cutoff) & (self.raw_df["timestamp"] <= self.today)
+        self.raw_df = self.raw_df.loc[mask]
+
+        # ✅ Decide time resolution column based on timeframe_unit
+        if self.timeframe_unit in ["days", "weeks", "months"]:
+            self.time_col = "date"
+        else:  # hours, minutes, seconds → need full precision
+            self.time_col = "timestamp"
+
+        # ✅ Emotion scoring
+        emotion_scores = {
+            "Adoration": 3,
+            "Appreciation": 1,
+            "Ambivalence": 0,
+            "Agitation": -1,
+            "Anger": -3,
+        }
+        self.raw_df["emotion_score"] = self.raw_df["emotion_primary"].map(emotion_scores)
+
+        # ✅ Preloaded configs
+        self.quadrant_matrix = get_quadrant_matrix()
+        self.layer3_df = None
+        self.pattern_lags = ["weekly", "monthly", "quarterly"]
+
+        if self.verbose:
+            print(f"📦 Layer 3 @ {self.today} | Window: {self.cutoff} → {self.today}")
+            print(f"🧮 Rows in window: {len(self.raw_df)} | L2 entities: {len(self.layer2_df)}")
+            print(f"⏱️ Using time column: {self.time_col}")
+
+    # === Core helpers ===
+    def compute_normalized_eri(self, group):
+        raw_eri = group["emotion_score"].mean()
+        return ((raw_eri + 3) / 6) * 200 - 100
+
+    def _compute_trend_series(self, series, eps=1e-6):
+        """
+        Direction-only TREND over window with percentage + raw delta.
+
+        - Gates: ↑ ≥ +5%, ↓ ≤ −5%, else →
+        - pct_change uses |prev| as denominator (or 200.0 if prev≈0).
+        """
+        import numpy as np, pandas as pd
+
+        s = pd.Series(series).astype(float)
+
+        # ensure chronological order
+        try:
+            s.index = pd.to_datetime(s.index)
+            s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        s = s.dropna()
+        prev, now = float(s.iloc[0]), float(s.iloc[-1])
+        delta = now - prev
+
+        # denominator
+        denom = abs(prev) if abs(prev) >= eps else 200.0
+        change_pct = (delta / denom) * 100.0
+        change_pct = float(np.clip(round(change_pct, 2), -100.0, 100.0))
+
+        # arrow + tier
+        sym = "↑" if change_pct >= 5 else ("↓" if change_pct <= -5 else "→")
+        tier = {"↑": "Trend ↑ (Improving)", "→": "Trend → (Stable)", "↓": "Trend ↓ (Declining)"}[sym]
+
+        return {
+            "symbol": sym,
+            "tier": tier,
+            "pct_change": change_pct,
+            "delta": round(delta, 2),
+        }
+
+    def _compute_momentum_series(self, series, k=None, eps=1e-6):
+        """
+        Momentum (short-burst emotional velocity)
+        - Splits time-sorted ERI series into equal arcs.
+        - Compares mean(last k) vs mean(first k).
+        - Delta scaled as % of |avg(first_half)| (fallback 200 for ERI band).
+        - Thresholds (inclusive):
+            ↑↑ >= +20%
+            ↑   >  +5% and < +20%
+            →   between -5% and +5%
+            ↓   <  -5% and > -20%
+            ↓↓ <= -20%
+        """
+        import numpy as np, pandas as pd
+
+        s = pd.Series(series).astype(float)
+
+        # enforce chronological order
+        try:
+            s.index = pd.to_datetime(s.index)
+            s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        s = s.dropna()
+        n = int(len(s))
+
+        # choose equal-length arcs
+        if k is None:
+            k = n // 2
+        k = int(max(1, min(k, n // 2)))
+
+        first_half  = s.iloc[:k]
+        second_half = s.iloc[-k:]
+
+        avg1, avg2 = float(np.nanmean(first_half)), float(np.nanmean(second_half))
+        if not np.isfinite(avg1) or not np.isfinite(avg2):
+            return {"symbol": "→", "label": "Stable", "delta": 0.0, "n_points": n}
+
+        # denominator rule
+        denom = abs(avg1) if abs(avg1) >= eps else 200.0
+        delta = avg2 - avg1
+        change_pct = (delta / denom) * 100.0
+        change_pct = float(np.clip(round(change_pct, 2), -100.0, 100.0))
+
+        # thresholds
+        if change_pct >= 20:
+            sym, label = "↑↑", "Strongly Rising"
+        elif change_pct > 5:
+            sym, label = "↑", "Moderately Rising"
+        elif change_pct <= -20:
+            sym, label = "↓↓", "Strongly Falling"
+        elif change_pct < -5:
+            sym, label = "↓", "Moderately Falling"
+        else:
+            sym, label = "→", "Stable"
+
+        return {
+            "symbol": sym,
+            "label": label,
+            "delta": change_pct,
+            "n_points": n,
+        }
+
+
+    def _compute_volatility_series(self, series) -> dict:
+        """
+        Volatility (3-Level CX Version)
+        - Standard deviation of ERI values in [-100, +100].
+        - Tier thresholds (whitepaper aligned):
+            0-15  → Stable
+            16-45 → Fluctuating
+            46+   → Highly Fluctuating
+        Returns minimal CX payload aligned with Trend & Momentum.
+        """
+        import numpy as np
+
+        arr = np.asarray(list(series), dtype=float)
+        arr = arr[np.isfinite(arr)]
+        arr = np.clip(arr, -100.0, 100.0)  # keep within ERI domain
+        n = int(arr.size)
+
+        # plain standard deviation
+        sigma = float(np.std(arr, ddof=1))
+        score = round(sigma, 2)
+
+        # tier classification
+        if score <= 15:
+            sym, label = "✅", "Stable"
+        elif score <= 45:
+            sym, label = "⚠", "Fluctuating"
+        else:
+            sym, label = "🔴", "Highly Fluctuating"
+
+        return {
+            "symbol": sym,
+            "label": label,
+            "score": score,
+            "n_points": n,
+        }
+
+    def _compute_pattern_series(self, series) -> dict:
+        """
+        Pattern Recognition (days-only, Weekly/Monthly).
+        Binary rule: a pattern exists only if an eligible lag has |ACF| ≥ 0.40.
+        Uses the full-window track passed in (same as Trend/Momentum/Volatility).
+        """
+        import numpy as np
+        import pandas as pd
+
+        WEEKLY_MIN, MONTHLY_MIN = 8, 31  # days
+        s = pd.Series(series).astype(float)
+
+        # ensure chronological order (important for ACF)
+        try:
+            s.index = pd.to_datetime(s.index); s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        # guard: ensure finite track and detect constant series
+        s = s.replace([np.inf, -np.inf], np.nan).interpolate(limit_direction="both")
+        n = int(len(s))
+
+        def _analysis_period():
+            if isinstance(s.index, pd.DatetimeIndex) and n > 0:
+                return [str(s.index.min().date()), str(s.index.max().date())]
+            return None
+
+        NAMES_DOW = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+
+        def _acf_at_lag(x: np.ndarray, lag: int) -> float:
+            if x.size == 0 or lag >= x.size:
+                return np.nan
+            x = x.astype(float)
+            x = x - np.nanmean(x)
+            num = np.nansum(x[:-lag] * x[lag:])
+            den = np.nansum(x * x)
+            val = (num / den) if den > 0 else np.nan
+            return float(np.clip(val, -1.0, 1.0))
+
+        # early exit: constant track → no cyclical structure (keeps other modules consistent)
+        if float(np.nanstd(s.values)) < 1e-9:
+            return {
+                "has_pattern": False,
+                "pattern_type": "None",
+                "pattern_strength": 0.0,
+                "confidence": "Low",
+                "confidence_tier": "🔴 Weak / Candidate",
+                "pain_day": None,
+                "eri_by_day": {d: None for d in NAMES_DOW},
+                "data_coverage_days": n,
+                "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
+                "acf": {
+                    "weekly":   {"lag_days": 7,  "score": None},
+                    "monthly":  {"lag_days": 30, "score": None},
+                    "chosen":   {"lag_days": None, "score": None}
+                },
+                "analysis_period": _analysis_period(),
+                "status": "No Pattern",
+                "reason": "Series is effectively constant across the window (no cyclical structure)."
+            }
+
+        # Not enough data for even weekly test (by full-window length)
+        if n < WEEKLY_MIN:
+            return {
+                "has_pattern": False,
+                "pattern_type": "None",
+                "pattern_strength": 0.0,
+                "confidence": "Low",
+                "confidence_tier": "🔴 Weak / Candidate",
+                "pain_day": None,
+                "eri_by_day": {d: None for d in NAMES_DOW},
+                "data_coverage_days": n,
+                "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
+                "acf": {
+                    "weekly":   {"lag_days": 7,  "score": None},
+                    "monthly":  {"lag_days": 30, "score": None},
+                    "chosen":   {"lag_days": None, "score": None}
+                },
+                "analysis_period": _analysis_period(),
+                "status": "Insufficient Data",
+                "reason": f"Need ≥{WEEKLY_MIN}d for Weekly tests."
+            }
+
+        # Compute ACFs for eligible cycles (Weekly/Monthly only) on the same full-window track
+        acf_w = _acf_at_lag(s.values, 7)  if n >= WEEKLY_MIN  else np.nan
+        acf_m = _acf_at_lag(s.values, 30) if n >= MONTHLY_MIN else np.nan
+
+        candidates = []
+        if np.isfinite(acf_w): candidates.append(("Weekly",  abs(acf_w), 7,  acf_w))
+        if np.isfinite(acf_m): candidates.append(("Monthly", abs(acf_m), 30, acf_m))
+
+        if not candidates:
+            best = ("None", 0.0, None, 0.0)
+        else:
+            rank = {"Weekly": 2, "Monthly": 1}  # prefer Weekly on ties
+            candidates.sort(key=lambda t: (t[1], rank.get(t[0], 0)), reverse=True)
+            best = candidates[0]
+
+        pattern_type, strength_abs, lag_days, signed_acf = best
+        strength = round(float(strength_abs), 3)
+
+        HAS_THRESHOLD = 0.40
+        if strength_abs >= 0.60:
+            confidence, confidence_tier = "High", "✅ Strong"
+        elif strength_abs >= HAS_THRESHOLD:
+            confidence, confidence_tier = "Medium", "⚠ Moderate"
+        else:
+            confidence, confidence_tier = "Low", "🔴 Weak / Candidate"
+
+        has_pattern = bool(strength_abs >= HAS_THRESHOLD)
+
+        # pain day & weekday table only if Weekly is confirmed
+        pain_day = None
+        if has_pattern and pattern_type == "Weekly" and isinstance(s.index, pd.DatetimeIndex):
+            by_dow = s.groupby(s.index.dayofweek).mean(numeric_only=True)
+            if by_dow.size > 0:
+                pain_day = NAMES_DOW[int(by_dow.idxmin())]
+            eri_by_day = {NAMES_DOW[i]: (float(by_dow.get(i)) if i in by_dow.index else None) for i in range(7)}
+        else:
+            eri_by_day = {d: None for d in NAMES_DOW}
+
+        return {
+            "has_pattern": has_pattern,
+            "pattern_type": pattern_type if has_pattern else "None",
+            "pattern_strength": strength if has_pattern else 0.0,
+            "confidence": confidence if has_pattern else "Low",
+            "confidence_tier": confidence_tier if has_pattern else "🔴 Weak / Candidate",
+            "pain_day": pain_day if has_pattern else None,
+            "eri_by_day": eri_by_day,
+            "data_coverage_days": n,
+            "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
+            "acf": {
+                "weekly":   {"lag_days": 7,  "score": None if not np.isfinite(acf_w) else round(float(acf_w), 3)},
+                "monthly":  {"lag_days": 30, "score": None if not np.isfinite(acf_m) else round(float(acf_m), 3)},
+                "chosen":   {
+                    "lag_days": int(lag_days) if lag_days is not None else None,
+                    "score": round(float(signed_acf), 3) if lag_days is not None else None
+                }
+            },
+            "analysis_period": _analysis_period(),
+            "status": "OK" if has_pattern else "No Pattern",
+            "reason": None if has_pattern else "All eligible cycle scores below 0.40 (no discernible recurring pattern)."
+        }
+
+    """
+
+### **Why Pattern Recognition Completes the Quartet**
+
+**The Four Pillars of Temporal Intelligence**
+
+1. **Trend** → *“Which direction are we heading over time?”*
+2. **Momentum** → *“Did something change recently from the baseline?”*
+3. **Volatility** → *“How reliable or unpredictable is the signal?”*
+4. **Pattern Recognition** → *“When does this occur, and can we anticipate it?”*
+
+Together, they move us from **observation** to **prediction**.
+
+
+### **Pattern Recognition's Distinctive Contribution**
+
+**1. Behavioral Prediction Power**
+
+* **Pain Day Detection** → pinpoint recurring weak points (e.g., *“Mondays are consistently worst 
+for refunds”*).
+* **Seasonal Cycles** → detect weekly, monthly, or quarterly loops in customer frustration/delight.
+* **Operational Timing** → tell teams *when* issues will most likely surface, enabling proactive 
+resourcing.
+
+**2. Statistical Sophistication**
+
+* **Adaptive Gates** → thresholds scale with data coverage (avoids false positives).
+* **Harmonic Validation** → weekly patterns double-checked with 14-day harmonics.
+* **STL Fallback** → seasonal decomposition when coverage is sparse.
+* **Candidate Mode** → flags emerging but not yet confirmed patterns.
+
+**3. CX-Native Intelligence**
+
+* **Coverage-aware** → respects real-world survey sparsity.
+* **Detrending** → separates cycles from directional shifts.
+* **Confidence Levels** → Strong / Moderate / Weak / Candidate → ensures clarity, not false certainty.
+
+
+### **Why the Quartet Is Transformative**
+
+* **Trend + Pattern** → *“Customer frustration spikes every Monday, and the overall baseline is 
+deteriorating.”*
+* **Momentum + Volatility** → *“Recent satisfaction surge is genuine and stable, not a random wobble.”*
+* **All Four Together** → *“Every Q4 delivery complaints used to ease off, but this year momentum 
+is rising with high volatility — act immediately.”*
+
+
+### **The Leap for CX**
+
+This quartet turns **Experience Drivers** into **temporal DNA** — a living code of *direction, 
+shift, stability, and recurrence*.
+
+* No longer just *“this happened”*.
+* Now → *“this will happen, when, and with what confidence.”*
+
+👉 That's why Decipher isn't just analytics. It's **CX physics** — codifying the laws of how 
+customer emotion behaves over time.
+
+    """
+
+    def _ensure_tm_artifacts(self):
+        # Canonical labels (kept for readability in outputs)
+        self.TREND_WORD = {
+            "↑": "Trend ↑ (Improving)",
+            "→": "Trend → (Stable)",
+            "↓": "Trend ↓ (Declining)",
+        }
+        self.MOMENTUM_WORD = {
+            "↑↑": "↑↑ Strongly Rising",
+            "↑":  "↑ Moderately Rising",
+            "→":  "→ Stable",
+            "↓":  "↓ Moderately Falling",
+            "↓↓": "↓↓ Strongly Falling",
+        }
+
+        # Collapse 5 momentum states into the grid’s 3 directional columns
+        self.MOMENTUM_DIR = {
+            "↑↑": "↑",
+            "↑":  "↑",
+            "→":  "→",
+            "↓":  "↓",
+            "↓↓": "↓",
+        }
+
+        # Momentum intensity → urgency modifier (your exact ask)
+        self.MOMENTUM_URGENCY = {
+            "↑↑": "Amplify — high urgency",
+            "↑":  "Amplify — normal urgency",
+            "↓↓": "Intervene — critical",
+            "↓":  "Intervene — elevated",
+            "→":  "Hold — routine monitoring",  # sensible default for stable
+        }
+
+        # --- Trend × Momentum grid (exact wording preserved) ----------------------
+        self.TREND_MOMENTUM_GRID = {
+            "↑": {  # Trend ↑ (Improving)
+                "↑": {
+                    "name": "Momentum Building 🚀",
+                    "diagnosis": "Both long-term and recent signals positive.",
+                    "action": "👉 Amplify programs, celebrate advocacy, invest in scale."
+                },
+                "→": {
+                    "name": "Plateau Watch ⚖️",
+                    "diagnosis": "Long-term gains, but short-term flattening.",
+                    "action": "👉 Refresh engagement to prevent stagnation."
+                },
+                "↓": {
+                    "name": "*(Rare)* Long-term gains but short-term deterioration.",
+                    "diagnosis": "Watch for micro-shocks, validate if anomaly or early erosion.",
+                    "action": "👉 Investigate small declines during improving baseline."
+                },
+            },
+            "→": {  # Trend → (Stable)
+                "↑": {
+                    "name": "Recovery Signal 🌱",
+                    "diagnosis": "Flat overall, but recent upward push.",
+                    "action": "👉 Support and accelerate the bounce."
+                },
+                "→": {
+                    "name": "True Stability 🟢",
+                    "diagnosis": "Flat long-term and short-term.",
+                    "action": "👉 Monitor quietly, no major action."
+                },
+                "↓": {
+                    "name": "Early Erosion ⚠️",
+                    "diagnosis": "Flat long-term, but recent dip.",
+                    "action": "👉 Early-warning: intervene before decline becomes entrenched."
+                },
+            },
+            "↓": {  # Trend ↓ (Declining)
+                "↑": {
+                    "name": "Emerging Recovery 🔄",
+                    "diagnosis": "Overall decline, but short-term improvement.",
+                    "action": "👉 Double down to reverse the slide."
+                },
+                "→": {
+                    "name": "Structural Decline 🔻",
+                    "diagnosis": "Steady long-term fall, no shift.",
+                    "action": "👉 Root-cause deep dive and corrective initiatives."
+                },
+                "↓": {
+                    "name": "Accelerating Collapse 💥",
+                    "diagnosis": "Both long-term and recent negative.",
+                    "action": "👉 Crisis response: urgent retention and loyalty fixes."
+                },
+            },
+        }
+
+    def tm_commentary(self, trend_symbol: str, momentum_symbol: str) -> dict:
+        """
+        Trend × Momentum commentary using class-held artifacts.
+        - trend_symbol: '↑' | '→' | '↓'
+        - momentum_symbol: '↑↑' | '↑' | '→' | '↓' | '↓↓'
+        """
+        if not hasattr(self, "TREND_MOMENTUM_GRID"):
+            self._ensure_tm_artifacts()
+
+        trend_dir = trend_symbol
+        mom_dir = self.MOMENTUM_DIR.get(momentum_symbol)
+        cell = self.TREND_MOMENTUM_GRID.get(trend_dir, {}).get(mom_dir or "", None)
+
+        if not cell:
+            return {
+                "name": "Unmapped",
+                "trend": self.TREND_WORD.get(trend_dir, trend_dir),
+                "momentum": self.MOMENTUM_WORD.get(momentum_symbol, momentum_symbol),
+                "urgency": self.MOMENTUM_URGENCY.get(momentum_symbol, "Review"),
+                "diagnosis": "Combination not recognized.",
+                "action": "Review inputs for correct symbols."
+            }
+
+        out = dict(cell)  # shallow copy
+        out["trend"] = self.TREND_WORD[trend_dir]
+        out["momentum"] = self.MOMENTUM_WORD[momentum_symbol]
+        out["urgency"] = self.MOMENTUM_URGENCY[momentum_symbol]
+        return out
+
+
+    # Place these inside your class (e.g., Layer3Computer)
+    def _ensure_tmv_artifacts(self):
+        # Human-readable headings
+        self.TREND_WORD = {
+            "↑": "Trend ↑ (Improving)",
+            "→": "Trend → (Stable)",
+            "↓": "Trend ↓ (Declining)",
+        }
+        self.MOMENTUM_WORD = {
+            "↑↑": "↑↑ Strongly Rising",
+            "↑":  "↑ Moderately Rising",
+            "→":  "→ Stable",
+            "↓":  "↓ Moderately Falling",
+            "↓↓": "↓↓ Strongly Falling",
+        }
+        self.VOL_WORD = {
+            "✅": "✅ Stable",
+            "⚠":  "⚠ Fluctuating",
+            "🔴": "🔴 Highly Fluctuating",
+        }
+
+        # Collapse 5 momentum states into 3 directional columns for grid lookup
+        self.MOMENTUM_DIR = {
+            "↑↑": "↑",
+            "↑":  "↑",
+            "→":  "→",
+            "↓":  "↓",
+            "↓↓": "↓",
+        }
+
+        # Momentum intensity → urgency modifier (as requested)
+        self.MOMENTUM_URGENCY = {
+            "↑↑": "Amplify — high urgency",
+            "↑":  "Amplify — normal urgency",
+            "→":  "Hold — routine monitoring",
+            "↓":  "Intervene — elevated",
+            "↓↓": "Intervene — critical",
+        }
+
+    # === Trend × Momentum × Volatility GRID (exact wording preserved) =========
+    # Keys: trend ('↑','→','↓') → momentum_dir ('↑','→','↓') → volatility ('✅','⚠','🔴')
+    self.TMV_GRID = {
+        "↑": {  # Trend ↑ (Improving)
+            "→": {
+                "✅": {
+                    "interpretation": "Long-term gains holding steady and reliable",
+                    "instruction":    "Keep reinforcing; stable trust is compounding",
+                },
+                "⚠": {
+                    "interpretation": "Gains are real but customer mood wobbles",
+                    "instruction":    "Monitor; ensure uplift isn’t fragile",
+                },
+                "🔴": {
+                    "interpretation": "Signals point upward, but chaos under the surface",
+                    "instruction":    "Don’t over-celebrate; stabilize before scaling",
+                },
+            },
+            "↑": {
+                "✅": {
+                    "interpretation": "Clear acceleration with consistent base",
+                    "instruction":    "Amplify — perfect moment to scale advocacy",
+                },
+                "⚠": {
+                    "interpretation": "Surge is happening, but customers uneven",
+                    "instruction":    "Seize positives, but reinforce weak spots",
+                },
+                "🔴": {
+                    "interpretation": "“Spike effect” — surge may collapse",
+                    "instruction":    "Treat as hype-cycle; confirm if sustainable",
+                },
+            },
+        },
+        "→": {  # Trend → (Flat)
+            "↓": {
+                "✅": {
+                    "interpretation": "Plateau with emerging warning",
+                    "instruction":    "Investigate small cracks before they widen",
+                },
+                "⚠": {
+                    "interpretation": "Customers unsettled, mixed signals",
+                    "instruction":    "Early intervention; sentiment at tipping point",
+                },
+                "🔴": {
+                    "interpretation": "Volatility + downturn = fragile loyalty",
+                    "instruction":    "Treat as high-risk; prepare crisis workflows",
+                },
+            },
+        },
+        "↓": {  # Trend ↓ (Declining)
+            "↑": {
+                "✅": {
+                    "interpretation": "Recovery starting; reliable turnaround",
+                    "instruction":    "Support rebound with targeted initiatives",
+                },
+                "⚠": {
+                    "interpretation": "Customers showing rebound but unstable",
+                    "instruction":    "Encourage positives, shore up weaknesses",
+                },
+                "🔴": {
+                    "interpretation": "Recovery attempt is noisy and fragile",
+                    "instruction":    "Monitor tightly; avoid premature bets",
+                },
+            },
+            "↓": {
+                "✅": {
+                    "interpretation": "Clear deterioration, stable pattern",
+                    "instruction":    "Act decisively — loyalists are slipping away",
+                },
+                "⚠": {
+                    "interpretation": "Decline underway, customers uneven",
+                    "instruction":    "Contain damage, look for segment splits",
+                },
+                "🔴": {
+                    "interpretation": "Emotional free-fall with chaos",
+                    "instruction":    "Crisis protocol — stabilize or lose trust",
+                },
+            },
+        },
+    }
+
+    def tmv_commentary(self, trend_symbol: str, momentum_symbol: str, volatility_symbol: str) -> dict:
+        """
+        Resolve Trend x Momentum x Volatility commentary.
+        - trend_symbol: '↑' | '→' | '↓'
+        - momentum_symbol: '↑↑' | '↑' | '→' | '↓' | '↓↓'  (5-state preserved in output)
+        - volatility_symbol: '✅' | '⚠' | '🔴'
+        Uses momentum direction (↑/→/↓) for grid lookup, and returns urgency modifier from 5-state.
+        """
+        # lazy init
+        if not hasattr(self, "TMV_GRID"):
+            self._ensure_tmv_artifacts()
+
+        trend_dir = trend_symbol
+        mom_dir = self.MOMENTUM_DIR.get(momentum_symbol)
+        vol = volatility_symbol
+
+        cell = (
+            self.TMV_GRID
+            .get(trend_dir, {})
+            .get(mom_dir or "", {})
+            .get(vol, None)
+        )
+
+        if not cell:
+            return {
+                "trend": self.TREND_WORD.get(trend_dir, trend_dir),
+                "momentum": self.MOMENTUM_WORD.get(momentum_symbol, momentum_symbol),
+                "volatility": self.VOL_WORD.get(vol, vol),
+                "urgency": self.MOMENTUM_URGENCY.get(momentum_symbol, "Review"),
+                "interpretation": "Unmapped combination.",
+                "instruction": "Review inputs or extend grid definitions.",
+            }
+
+        # Enrich with readable headings + urgency
+        return {
+            "trend": self.TREND_WORD[trend_dir],
+            "momentum": self.MOMENTUM_WORD[momentum_symbol],   # keep full 5-state label
+            "volatility": self.VOL_WORD[vol],
+            "urgency": self.MOMENTUM_URGENCY[momentum_symbol], # intensity modifier
+            "interpretation": cell["interpretation"],
+            "instruction": cell["instruction"],
+        }
+
+    # Inside your class (e.g., Layer3Computer)
+    def _ensure_temporal_grid(self):
+        # Axis labels (exact wording preserved)
+        self.TEMPORAL_ROWS = {
+            "Directional": "Directional (Where are we heading?)",
+            "Situational": "Situational (What just happened / when will it repeat?)",
+        }
+        self.TEMPORAL_COLS = {
+            "Event-Oriented": "Event-Oriented (Change & Timing)",
+            "Reliability-Oriented": "Reliability-Oriented (Consistency & Predictability)",
+        }
+
+        # Core 2×2 grid (exact wording preserved)
+        self.TEMPORAL_GRID = {
+            "Directional": {
+                "Event-Oriented": {
+                    "module": "Trend 📈",
+                    "name":   "Trend",
+                    "description": "Long-term slope: Are we improving or declining overall?",
+                },
+                "Reliability-Oriented": {
+                    "module": "Volatility 🌊",
+                    "name":   "Volatility",
+                    "description": "Signal stability: Is this trajectory consistent or erratic?",
+                },
+            },
+            "Situational": {
+                "Event-Oriented": {
+                    "module": "Momentum ⚡",
+                    "name":   "Momentum",
+                    "description": "Recent shift: Has performance changed compared to baseline?",
+                },
+                "Reliability-Oriented": {
+                    "module": "Pattern 🔁",
+                    "name":   "Pattern",
+                    "description": "Recurring cycles: When do issues reliably resurface?",
+                },
+            },
+        }
+
+        # Reverse lookup: module name → (row, col)
+        self.TEMPORAL_SLOT = {
+            "Trend":      ("Directional", "Event-Oriented"),
+            "Volatility": ("Directional", "Reliability-Oriented"),
+            "Momentum":   ("Situational", "Event-Oriented"),
+            "Pattern":    ("Situational", "Reliability-Oriented"),
+        }
+
+    def temporal_cell(self, row_key: str, col_key: str) -> dict:
+        """
+        Fetch a cell from the 2×2 grid.
+        row_key: 'Directional' | 'Situational'
+        col_key: 'Event-Oriented' | 'Reliability-Oriented'
+        """
+        if not hasattr(self, "TEMPORAL_GRID"):
+            self._ensure_temporal_grid()
+
+        row = self.TEMPORAL_ROWS.get(row_key, row_key)
+        col = self.TEMPORAL_COLS.get(col_key, col_key)
+        cell = self.TEMPORAL_GRID.get(row_key, {}).get(col_key, None)
+
+        if not cell:
+            return {
+                "axis_row": row,
+                "axis_col": col,
+                "module": "Unmapped",
+                "name": "Unmapped",
+                "description": "Combination not recognized. Check row/col keys.",
+            }
+
+        return {
+            "axis_row": row,
+            "axis_col": col,
+            **cell,
+        }
+
+    def temporal_slot_for_module(self, module_name: str) -> dict:
+        """
+        Reverse lookup: given 'Trend'/'Momentum'/'Volatility'/'Pattern',
+        return its (row, col) placement and cell metadata.
+        """
+        if not hasattr(self, "TEMPORAL_SLOT"):
+            self._ensure_temporal_grid()
+
+        slot = self.TEMPORAL_SLOT.get(module_name)
+        if not slot:
+            return {
+                "module": module_name,
+                "axis_row": None,
+                "axis_col": None,
+                "description": "Module not in Temporal Intelligence Grid.",
+            }
+
+        row_key, col_key = slot
+        cell = self.temporal_cell(row_key, col_key)
+        return cell
+
+    def compose_commentary(self, trend: dict, momentum: dict, volatility: dict | None = None, pattern: dict | None = None) -> dict:
+        """
+        Synthesize Layer 3 outputs into one CX commentary using your grids + urgency.
+        Inputs:
+        trend     -> {"symbol": "↑|→|↓", "pct_change": float, "delta": float}
+        momentum  -> {"symbol": "↑↑|↑|→|↓|↓↓", "delta": float, "n_points": int}
+        volatility-> {"symbol": "✅|⚠|🔴", "label": str, "score": float, "n_points": int}  (optional)
+        pattern   -> dict from _compute_pattern_series (optional)
+        """
+        # Ensure artifacts exist (lazy)
+        if not hasattr(self, "TREND_MOMENTUM_GRID"): self._ensure_tm_artifacts()
+        if not hasattr(self, "TMV_GRID"):            self._ensure_tmv_artifacts()
+        if not hasattr(self, "TEMPORAL_GRID"):       self._ensure_temporal_grid()
+
+        t_sym = trend.get("symbol")
+        m_sym = momentum.get("symbol")
+        v_sym = volatility.get("symbol") if volatility else None
+
+        # Pick grid: TMV when volatility provided; otherwise TM
+        if volatility:
+            cell = self.tmv_commentary(t_sym, m_sym, v_sym)
+            name_or_cell   = cell.get("interpretation")
+            interpretation = cell.get("interpretation")
+            instruction    = cell.get("instruction")
+            vol_label      = cell.get("volatility")
+        else:
+            cell = self.tm_commentary(t_sym, m_sym)
+            name_or_cell   = cell.get("name")
+            interpretation = cell.get("diagnosis")
+            instruction    = cell.get("action")
+            vol_label      = None
+
+        urgency  = cell.get("urgency")
+        headline = f"{name_or_cell} — {urgency}" if (name_or_cell and urgency) else (name_or_cell or "Unmapped")
+
+        out = {
+            "headline": headline,
+            "trend": cell.get("trend"),          # e.g., "Trend ↑ (Improving)"
+            "momentum": cell.get("momentum"),    # e.g., "↑↑ Strongly Rising"
+            "volatility": vol_label,             # e.g., "✅ Stable" | None
+            "urgency": urgency,                  # e.g., "Amplify — high urgency"
+            "interpretation": interpretation,    # grid text
+            "instruction": instruction,          # grid text
+            "vectors": {
+                "trend_pct_change": trend.get("pct_change"),
+                "trend_delta": trend.get("delta"),
+                "momentum_pct_change": momentum.get("delta"),
+                "volatility_score": (volatility.get("score") if volatility else None),
+            },
+            "pattern": None,
+        }
+
+        # Overlay pattern (optional)
+        if pattern and pattern.get("has_pattern"):
+            pat = {
+                "type": pattern.get("pattern_type"),
+                "strength": pattern.get("pattern_strength"),
+                "confidence": pattern.get("confidence"),
+                "pain_day": pattern.get("pain_day"),
+            }
+            out["pattern"] = pat
+            if pat["type"] == "Weekly" and pat["pain_day"]:
+                out["instruction"] = f"{out['instruction']} | Pre-empt operations for {pat['pain_day']}."
+
+        # Tag Temporal Intelligence 2×2 slots (all three artifacts used)
+        modules_to_tag = ["Trend", "Momentum"]
+        if volatility: modules_to_tag.append("Volatility")
+        if pattern and pattern.get("has_pattern"): modules_to_tag.append("Pattern")
+
+        temporal_axes = {}
+        for mod in modules_to_tag:
+            slot = self.temporal_slot_for_module(mod)
+            temporal_axes[mod] = {"row": slot.get("axis_row"), "col": slot.get("axis_col")}
+        out["temporal_axes"] = temporal_axes
+
+        return out
