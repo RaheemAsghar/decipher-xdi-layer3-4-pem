@@ -911,52 +911,79 @@ customer emotion behaves over time.
 
         return out
 
+    def _make_view_from_daily(self, daily_track, freq_label: str):
+        """
+        Create a weekly or monthly 'view' from the canonical daily ERI track.
+        freq_label: 'week' or 'month'
+        Returns None if too few points after resampling.
+        """
+        import pandas as pd
+
+        freq = "W" if freq_label == "week" else "M"
+        cad = daily_track.resample(freq).mean()
+
+        # need ≥2 observed points to be meaningful
+        if cad.dropna().size <= 1:
+            return None
+
+        # run T/M/V on the cadence series
+        t = self._compute_trend_series(cad)
+        m = self._compute_momentum_series(cad)
+        v = self._compute_volatility_series(cad)
+
+        # compose TMV commentary (Pattern remains daily; don’t mix cadences)
+        commentary = self.compose_commentary(
+            trend=t,
+            momentum=m,
+            volatility={
+                "symbol": v.get("symbol", "✅"),
+                "label":  v.get("label"),
+                "score":  v.get("score"),
+                "n_points": int(len(cad)),
+            },
+            pattern=None  # keep Pattern daily-only
+        )
+
+        return {
+            "freq": freq,                 # 'W' or 'M'
+            "points": int(len(cad)),      # number of weeks/months in window
+            "trend": t,
+            "momentum": m,
+            "volatility": v,
+            "commentary": commentary,
+            # lightweight series for charts/use
+            "series": {
+                "index": [pd.Timestamp(x).strftime("%Y-%m-%d") for x in cad.index],
+                "eri":   [float(x) if x is not None else None for x in cad.values],
+            }
+        }
+
     def compute(self):
         """
-        Layer 3 (time-agnostic):
-        - Aggregate ERI per period (freq decided by time unit)
-        - Reindex to full period range (window) and bfill→ffill to get a dense series
-        - Run Trend, Momentum, Volatility, Pattern on the SAME dense series
-        - Compose commentary via TM / TMV grids (+ 2×2 tags)
+        Layer 3 (canonical daily analytics):
+        - Build a dense DAILY ERI series per ED over the window [cutoff..today-1]
+        - Run Trend, Momentum, Volatility, Pattern on the SAME daily series
+        - Compose commentary via TM / TMV (+ Temporal 2×2 tags inside compose_commentary)
         """
+
+        import pandas as pd
+        import numpy as np
+        from uuid import uuid4
 
         results, skipped = [], []
 
-        # ---- decide frequency + which column to use (timestamp for sub-day; date for day+)
-        unit = getattr(self, "timeframe_unit", "day")
-        period_count = int(getattr(self, "timeframe_value", 75))
-
-        freq_map = {
-            "minute": "T", "min": "T",
-            "hour": "H",
-            "day": "D",
-            "week": "W",
-            "month": "M",
-        }
-        freq = freq_map.get(unit, "D")
-
-        use_datetime = freq in {"T", "H"}  # sub-day → timestamp; else date
-        idx_col = "timestamp" if use_datetime else "date"
-
-        # ensure time key is datetime-like
-        self.raw_df[idx_col] = pd.to_datetime(self.raw_df[idx_col], errors="coerce")
-        data_ok = self.raw_df.dropna(subset=[idx_col]).copy()
-
-        # normalize ED key
-        data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
-
-        # figure window [start..end_inclusive] so that end is "one period before now"
-        now_anchor = pd.to_datetime(self.today)
-        if now_anchor is None:
-            now_anchor = pd.to_datetime(getattr(self, "today", pd.Timestamp.today().normalize()))
-        off = to_offset(freq)
-        end_inclusive = now_anchor - off                   # mirror your "today-1" behavior
-        start = end_inclusive - (period_count - 1) * off   # inclusive length = period_count
-
-        full_idx = pd.date_range(start=start, end=end_inclusive, freq=freq)
+        # --- Canonical daily window (use constructor’s cutoff/today) ---
+        start = pd.to_datetime(self.cutoff).normalize()
+        end_inclusive = pd.to_datetime(self.today).normalize() - pd.Timedelta(days=1)
+        full_idx = pd.date_range(start=start, end=end_inclusive, freq="D")
         analysis_window_points = len(full_idx)
 
-        # Eligible entities (you used P0..P3)
+        # --- Ensure time key + ED present ---
+        self.raw_df["date"] = pd.to_datetime(self.raw_df["date"], errors="coerce").dt.normalize()
+        data_ok = self.raw_df.dropna(subset=["date"]).copy()
+        data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
+
+        # --- Eligible EDs from Layer 2 ---
         entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(["P0","P1","P2","P3"])]
 
         for _, row in entities.iterrows():
@@ -964,51 +991,44 @@ customer emotion behaves over time.
             try:
                 sub = data_ok[data_ok["experience_driver"] == ed]
                 if sub.empty:
-                    if getattr(self, "verbose", False):
-                        print(f"❌ DROP [{ed}] → no raw data")
-                    skipped.append((ed, "No raw data"))
-                    continue
+                    if getattr(self, "verbose", False): print(f"❌ DROP [{ed}] → no raw data")
+                    skipped.append((ed, "No raw data")); continue
 
-                # group to period using Grouper on the chosen time key
+                # --- Aggregate ERI per DAY ---
                 grouped = (
-                    sub
-                    .groupby(pd.Grouper(key=idx_col, freq=freq))
-                    .apply(self.compute_normalized_eri)  # scalar ERI per period
+                    sub.groupby(pd.Grouper(key="date", freq="D"))
+                    .apply(self.compute_normalized_eri)   # scalar ERI/day
                     .sort_index()
                 )
 
-                # align to full period window BEFORE fill
+                # --- Align to daily window BEFORE fill ---
                 grouped = grouped.reindex(full_idx)
                 missing_pct = float(grouped.isna().mean())
                 series_complete_prefill = not grouped.isna().any()
                 observed_points = int(grouped.dropna().shape[0])
 
-                # gate: need ≥2 observed periods before we fill & run modules
+                # --- Gate: need ≥2 observed days pre-fill ---
                 if observed_points <= 1:
-                    if getattr(self, "verbose", False):
-                        print(f"⏭️ DROP [{ed}] → insufficient points ({observed_points})")
-                    skipped.append((ed, f"Insufficient points: {observed_points}"))
-                    continue
+                    if getattr(self, "verbose", False): print(f"⏭️ DROP [{ed}] → insufficient points ({observed_points})")
+                    skipped.append((ed, f"Insufficient points: {observed_points}")); continue
 
-                # presence: % of periods with any feedback mentions
+                # --- Presence: % of days with any mentions (pre-fill) ---
                 counts = (
-                    sub
-                    .groupby(pd.Grouper(key=idx_col, freq=freq))
-                    .size()
-                    .reindex(full_idx, fill_value=0)
+                    sub.groupby(pd.Grouper(key="date", freq="D"))
+                    .size().reindex(full_idx, fill_value=0)
                 )
                 signal_presence_pct = round(float((counts > 0).sum()) / analysis_window_points, 3)
 
-                # dense track for modules (bfill then ffill)
-                track = grouped.bfill().ffill()
+                # --- Dense daily track for ALL modules ---
+                daily_track = grouped.bfill().ffill()
 
-                # === longitudinal modules (same track) ===
-                trend_block      = self._compute_trend_series(track)
-                momentum_block   = self._compute_momentum_series(track)
-                volatility_block = self._compute_volatility_series(track)
-                pattern_block    = self._compute_pattern_series(track)
-
-                # === commentary (TMV since volatility is present)
+                # === Longitudinal modules (same daily track) ===
+                trend_block      = self._compute_trend_series(daily_track)
+                momentum_block   = self._compute_momentum_series(daily_track)
+                volatility_block = self._compute_volatility_series(daily_track)
+                pattern_block    = self._compute_pattern_series(daily_track)  # 7d/30d + pain-day valid
+               
+                # === Commentary (TMV since volatility present) ===
                 commentary_block = self.compose_commentary(
                     trend=trend_block,
                     momentum=momentum_block,
@@ -1016,16 +1036,26 @@ customer emotion behaves over time.
                         "symbol": volatility_block.get("symbol", "✅"),
                         "label":  volatility_block.get("label"),
                         "score":  volatility_block.get("score"),
-                        "n_points": len(track)
+                        "n_points": len(daily_track),
                     },
                     pattern=pattern_block
                 )
 
-                # provenance/meta
+                # >>> Weekly or Monthly Views <<<
+                views = {}
+                week_view  = self._make_view_from_daily(daily_track, "week")
+                month_view = self._make_view_from_daily(daily_track, "month")
+                if week_view:
+                    views["week"] = week_view
+                if month_view:
+                    views["month"] = month_view
+                # <<< END ADD
+                
+                # --- Provenance/meta (daily-aware) ---
                 capsule_meta = {
                     "capsule_id": f"SC-{uuid4().hex[:12]}",
-                    "window_start": str(full_idx[0]),
-                    "window_end": str(full_idx[-1]),
+                    "window_start": str(full_idx[0].date()),
+                    "window_end": str(full_idx[-1].date()),
                     "analysis_window_points": analysis_window_points,
                     "observed_points_with_signal": observed_points,
                     "signal_presence_pct": signal_presence_pct,
@@ -1033,13 +1063,13 @@ customer emotion behaves over time.
                     "missing_points_pct_prefill": missing_pct,
                     "trend_analysis_points": analysis_window_points,
                     "momentum_arc_points": analysis_window_points // 2,
-                    "freq": freq,
-                    "time_unit": unit,
+                    "freq": "D",
+                    "time_unit": "day",   # analysis cadence is daily by design
+                    "window_span_days": int((end_inclusive - start).days + 1),
                 }
 
-                # assemble record
+                # --- Assemble record ---
                 l2_full = {
-                    # === Exact Layer 2 dimensions you shared ===
                     "ERI": round(float(row.get("ERI", 0.0)), 2),
                     "ERI_Tier": row.get("ERI_Tier"),
                     "Loyalty_State": row.get("Loyalty_State", row.get("ERI_Tier")),
@@ -1073,13 +1103,13 @@ customer emotion behaves over time.
                 record = {
                     "experience_driver": ed,
 
-                    # keep your small convenience snapshot
+                    # quick snapshot
                     "priority_class": row.get("Priority_Status"),
                     "associated_entity_names": row.get("Associated_Entity_Names"),
                     "most_recent_mention": row.get("Most_Recent_Date"),
                     "no_of_mentions": row.get("No_of_Mentions"),
 
-                    # convenience metrics (unchanged)
+                    # convenience mirrors
                     "eri_score": float(row.get("ERI", 0.0)),
                     "r_score":  float(row.get("R", 0.0)),
                     "f_score":  float(row.get("F", 0.0)),
@@ -1089,7 +1119,7 @@ customer emotion behaves over time.
                     "eri_rf_urgency_category": row.get("ERI_RF_Quadrant"),
                     "quadrant_purpose": row.get("Quadrant_Purpose"),
 
-                    # longitudinal outputs
+                    # longitudinal outputs (daily)
                     "trend_block": trend_block,
                     "momentum_block": momentum_block,
                     "volatility_block": volatility_block,
@@ -1098,20 +1128,20 @@ customer emotion behaves over time.
                     # commentary
                     "commentary": commentary_block,
 
-                    # provenance/meta (unchanged)
+                    # meta
                     "provenance": capsule_meta,
                 }
 
-                # merge full Layer 2 fields flat into the record
+                # attach views if any
+                if views:
+                    record["views"] = views
+                
                 record.update(l2_full)
                 results.append(record)
 
-
             except Exception as e:
-                if getattr(self, "verbose", False):
-                    print(f"💥 FAIL [{ed}] → {e}")
-                skipped.append((ed, str(e)))
-                continue
+                if getattr(self, "verbose", False): print(f"💥 FAIL [{ed}] → {e}")
+                skipped.append((ed, str(e))); continue
 
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
