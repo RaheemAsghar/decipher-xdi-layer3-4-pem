@@ -834,7 +834,18 @@ customer emotion behaves over time.
         cell = self.temporal_cell(row_key, col_key)
         return cell
 
-    def compose_commentary(self, trend: dict, momentum: dict, volatility: dict | None = None, pattern: dict | None = None) -> dict:
+    def compose_commentary(
+            self,
+            trend: dict,
+            momentum: dict,
+            volatility: dict | None = None,
+            pattern: dict | None = None,
+            eri_score: float | None = None,
+            eri_tier: str | None = None,
+            rf_score: float | None = None,
+            rf_tier: str | None = None,
+        ) -> dict:
+
         """
         Synthesize Layer 3 outputs into one CX commentary using your grids + urgency.
         Inputs:
@@ -885,6 +896,10 @@ customer emotion behaves over time.
             },
             "pattern": None,
         }
+
+        # Attach Layer 2 context cleanly
+        out["eri"] = {"score": eri_score, "tier": eri_tier}
+        out["rf"]  = {"score": rf_score, "tier": rf_tier}
 
         # Overlay pattern (optional)
         if pattern and pattern.get("has_pattern"):
@@ -1030,16 +1045,20 @@ customer emotion behaves over time.
                
                 # === Commentary (TMV since volatility present) ===
                 commentary_block = self.compose_commentary(
-                    trend=trend_block,
-                    momentum=momentum_block,
-                    volatility={
-                        "symbol": volatility_block.get("symbol", "✅"),
-                        "label":  volatility_block.get("label"),
-                        "score":  volatility_block.get("score"),
-                        "n_points": len(daily_track),
-                    },
-                    pattern=pattern_block
-                )
+                trend=trend_block,
+                momentum=momentum_block,
+                volatility={
+                    "symbol": volatility_block.get("symbol", "✅"),
+                    "label":  volatility_block.get("label"),
+                    "score":  volatility_block.get("score"),
+                    "n_points": len(daily_track),
+                },
+                pattern=pattern_block,
+                eri_score=float(row.get("ERI", 0.0)),
+                eri_tier=row.get("Loyalty_State"),
+                rf_score=float(row.get("RF", 0.0)),
+                rf_tier=row.get("RF_Urgency_Category"),
+            )
 
                 # >>> Weekly or Monthly Views <<<
                 views = {}
