@@ -835,94 +835,125 @@ customer emotion behaves over time.
         return cell
 
     def compose_commentary(
-            self,
-            trend: dict,
-            momentum: dict,
-            volatility: dict | None = None,
-            pattern: dict | None = None,
-            eri_score: float | None = None,
-            eri_tier: str | None = None,
-            rf_score: float | None = None,
-            rf_tier: str | None = None,
-        ) -> dict:
+        self,
+        trend: dict,
+        momentum: dict,
+        volatility: dict | None = None,
+        pattern: dict | None = None,
+        eri_score: float | None = None,
+        eri_tier: str | None = None,
+        rf_score: float | None = None,
+        rf_tier: str | None = None,
+        # optional: pass grid anchor from Layer-2 if you want it inside the capsule
+        priority_status: str | None = None,
+        quadrant_purpose: str | None = None,
+    ) -> dict:
+        """
+        Assemble a guidance capsule (raw signals only) for AI commentary.
+        Uses TMV if volatility is provided, otherwise TM. No stitched prose.
+        """
 
-        """
-        Synthesize Layer 3 outputs into one CX commentary using your grids + urgency.
-        Inputs:
-        trend     -> {"symbol": "↑|→|↓", "pct_change": float, "delta": float}
-        momentum  -> {"symbol": "↑↑|↑|→|↓|↓↓", "delta": float, "n_points": int}
-        volatility-> {"symbol": "✅|⚠|🔴", "label": str, "score": float, "n_points": int}  (optional)
-        pattern   -> dict from _compute_pattern_series (optional)
-        """
-        # Ensure artifacts exist (lazy)
+        # Ensure artifacts exist
         if not hasattr(self, "TREND_MOMENTUM_GRID"): self._ensure_tm_artifacts()
         if not hasattr(self, "TMV_GRID"):            self._ensure_tmv_artifacts()
         if not hasattr(self, "TEMPORAL_GRID"):       self._ensure_temporal_grid()
 
+        # Symbols
         t_sym = trend.get("symbol")
         m_sym = momentum.get("symbol")
         v_sym = volatility.get("symbol") if volatility else None
 
-        # Pick grid: TMV when volatility provided; otherwise TM
-        if volatility:
+        # Resolve matrix cell (TMV preferred if vol present)
+        using_tmv = bool(volatility)
+        if using_tmv:
             cell = self.tmv_commentary(t_sym, m_sym, v_sym)
-            name_or_cell   = cell.get("interpretation")
             interpretation = cell.get("interpretation")
             instruction    = cell.get("instruction")
             vol_label      = cell.get("volatility")
         else:
             cell = self.tm_commentary(t_sym, m_sym)
-            name_or_cell   = cell.get("name")
             interpretation = cell.get("diagnosis")
             instruction    = cell.get("action")
             vol_label      = None
 
-        urgency  = cell.get("urgency")
-        headline = f"{name_or_cell} — {urgency}" if (name_or_cell and urgency) else (name_or_cell or "Unmapped")
+        # Build modules block (raw + labels)
+        modules = {
+            "trend": {
+                "symbol": t_sym,
+                "label": cell.get("trend"),                # e.g., "Trend ↓ (Declining)"
+                "pct_change": trend.get("pct_change"),
+                "delta": trend.get("delta"),
+            },
+            "momentum": {
+                "symbol": m_sym,
+                "label": cell.get("momentum"),             # e.g., "↓↓ Strongly Falling"
+                "delta": momentum.get("delta"),
+                "n_points": momentum.get("n_points"),
+            },
+            "volatility": None,
+            "pattern": None,
+        }
+        if volatility:
+            modules["volatility"] = {
+                "symbol": v_sym,                           # "✅" | "⚠" | "🔴"
+                "label": vol_label,                        # e.g., "🔴 Highly Fluctuating"
+                "score": volatility.get("score"),
+                "n_points": volatility.get("n_points"),
+            }
 
+        # Optional pattern overlay (no prose)
+        if pattern and pattern.get("has_pattern"):
+            modules["pattern"] = {
+                "has_pattern": True,
+                "type": pattern.get("pattern_type"),
+                "strength": pattern.get("pattern_strength"),
+                "confidence": pattern.get("confidence"),
+                "pain_day": pattern.get("pain_day"),
+            }
+
+        # Temporal intelligence tags
+        modules_to_tag = ["Trend", "Momentum"]
+        if volatility: modules_to_tag.append("Volatility")
+        if modules["pattern"]: modules_to_tag.append("Pattern")
+        temporal_axes = {}
+        for mod in modules_to_tag:
+            slot = self.temporal_slot_for_module(mod)
+            temporal_axes[mod] = {"row": slot.get("axis_row"), "col": slot.get("axis_col")}
+
+        # Final capsule (raw; AI-ready)
         out = {
-            "headline": headline,
-            "trend": cell.get("trend"),          # e.g., "Trend ↑ (Improving)"
-            "momentum": cell.get("momentum"),    # e.g., "↑↑ Strongly Rising"
-            "volatility": vol_label,             # e.g., "✅ Stable" | None
-            "urgency": urgency,                  # e.g., "Amplify — high urgency"
-            "interpretation": interpretation,    # grid text
-            "instruction": instruction,          # grid text
+            # Optional ERI×RF grid anchor from Layer-2 (immutable, if provided)
+            "grid_anchor": {
+                "priority_status": priority_status,        # e.g., "P0"
+                "quadrant_purpose": quadrant_purpose,      # e.g., "Critical Crisis Response"
+            },
+
+            # Layer-2 baselines (raw + tiers)
+            "eri": {"score": eri_score, "tier": eri_tier},
+            "rf":  {"score": rf_score,  "tier": rf_tier},
+
+            # Layer-3 modules (raw + labels)
+            "modules": modules,
+
+            # Matrix cell payload (keep as raw fields; no headline concatenation)
+            "matrix": {
+                "source": "TMV" if using_tmv else "TM",
+                "urgency": cell.get("urgency"),            # from momentum intensity map
+                "name": cell.get("name"),                  # TM name if available
+                "interpretation": interpretation,          # TMV/TM text (raw)
+                "instruction": instruction,                # TMV/TM text (raw)
+            },
+
+            # Convenience vectors (kept for numeric reasoning)
             "vectors": {
                 "trend_pct_change": trend.get("pct_change"),
                 "trend_delta": trend.get("delta"),
                 "momentum_pct_change": momentum.get("delta"),
                 "volatility_score": (volatility.get("score") if volatility else None),
             },
-            "pattern": None,
+
+            "temporal_axes": temporal_axes,
         }
-
-        # Attach Layer 2 context cleanly
-        out["eri"] = {"score": eri_score, "tier": eri_tier}
-        out["rf"]  = {"score": rf_score, "tier": rf_tier}
-
-        # Overlay pattern (optional)
-        if pattern and pattern.get("has_pattern"):
-            pat = {
-                "type": pattern.get("pattern_type"),
-                "strength": pattern.get("pattern_strength"),
-                "confidence": pattern.get("confidence"),
-                "pain_day": pattern.get("pain_day"),
-            }
-            out["pattern"] = pat
-            if pat["type"] == "Weekly" and pat["pain_day"]:
-                out["instruction"] = f"{out['instruction']} | Pre-empt operations for {pat['pain_day']}."
-
-        # Tag Temporal Intelligence 2×2 slots (all three artifacts used)
-        modules_to_tag = ["Trend", "Momentum"]
-        if volatility: modules_to_tag.append("Volatility")
-        if pattern and pattern.get("has_pattern"): modules_to_tag.append("Pattern")
-
-        temporal_axes = {}
-        for mod in modules_to_tag:
-            slot = self.temporal_slot_for_module(mod)
-            temporal_axes[mod] = {"row": slot.get("axis_row"), "col": slot.get("axis_col")}
-        out["temporal_axes"] = temporal_axes
 
         return out
 
@@ -1045,20 +1076,22 @@ customer emotion behaves over time.
                
                 # === Commentary (TMV since volatility present) ===
                 commentary_block = self.compose_commentary(
-                trend=trend_block,
-                momentum=momentum_block,
-                volatility={
-                    "symbol": volatility_block.get("symbol", "✅"),
-                    "label":  volatility_block.get("label"),
-                    "score":  volatility_block.get("score"),
-                    "n_points": len(daily_track),
-                },
-                pattern=pattern_block,
-                eri_score=float(row.get("ERI", 0.0)),
-                eri_tier=row.get("Loyalty_State"),
-                rf_score=float(row.get("RF", 0.0)),
-                rf_tier=row.get("RF_Urgency_Category"),
-            )
+                    trend=trend_block,
+                    momentum=momentum_block,
+                    volatility={
+                        "symbol":  volatility_block.get("symbol", "✅"),
+                        "label":   volatility_block.get("label"),
+                        "score":   volatility_block.get("score"),
+                        "n_points": len(daily_track),
+                    },
+                    pattern=pattern_block,
+                    eri_score=float(row.get("ERI", 0.0)),
+                    eri_tier=row.get("Loyalty_State"),
+                    rf_score=float(row.get("RF", 0.0)),
+                    rf_tier=row.get("RF_Urgency_Category"),
+                    priority_status=row.get("Priority_Status"),
+                    quadrant_purpose=row.get("Quadrant_Purpose"),
+                )
 
                 # >>> Weekly or Monthly Views <<<
                 views = {}
@@ -1165,3 +1198,4 @@ customer emotion behaves over time.
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
+
