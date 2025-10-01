@@ -1004,6 +1004,148 @@ customer emotion behaves over time.
             }
         }
 
+    def build_outlook_from_capsule(
+    self,
+    capsule: dict,
+    provenance: dict | None = None,
+    min_points: int = 7,
+    horizon_days: int = 7,
+) -> dict:
+        """
+        Minimal, explainable outlook:
+        - Direction from Trend + Momentum agreement
+        - Confidence from Volatility (certainty governor)
+        - Timing cues from Pattern (reliability also gated by Volatility)
+        - Withholds when signals conflict under high noise or data is too thin
+        """
+        modules   = capsule.get("modules", {}) or {}
+        trend     = modules.get("trend") or {}
+        momentum  = modules.get("momentum") or {}
+        volatility= modules.get("volatility") or {}
+        pattern   = modules.get("pattern") or {}
+
+        t = trend.get("symbol")
+        m = momentum.get("symbol")
+        v = volatility.get("symbol")  # "✅" | "⚠" | "🔴" or None
+
+        # --- 0) Data sufficiency gate (keep it very light) ---
+        n_points = momentum.get("n_points") or 0
+        if n_points < min_points:
+            return {
+                "horizon_days": horizon_days,
+                "direction": "Withheld",
+                "confidence": "None",
+                "drivers": [f"Insufficient data (n_points < {min_points})"],
+                "timing_cues": [],
+                "flip_triggers": ["Collect more daily points to establish movement"],
+                "notes": "Outlook withheld due to short series.",
+            }
+
+        # --- 1) Direction from Trend + Momentum (agree or we stay neutral) ---
+        def direction_from_tm(t_sym: str | None, m_sym: str | None) -> str:
+            if t_sym == "↑" and m_sym in {"↑", "↑↑"}:
+                return "Up"
+            if t_sym == "↓" and m_sym in {"↓", "↓↓"}:
+                return "Down"
+            return "Sideways"
+
+        direction = direction_from_tm(t, m)
+
+        # --- 2) Confidence from Volatility (certainty governor) ---
+        base_conf = {"✅": "High", "⚠": "Medium", "🔴": "Low", None: "Medium"}.get(v, "Medium")
+
+        # Conflict guard: if TM disagree (i.e., Sideways) and volatility is 🔴 → withhold
+        if direction == "Sideways" and v == "🔴":
+            return {
+                "horizon_days": horizon_days,
+                "direction": "Withheld",
+                "confidence": "None",
+                "drivers": [
+                    f"Trend {t or '∅'} vs Momentum {m or '∅'} conflict",
+                    "Volatility 🔴 (highly fluctuating)"
+                ],
+                "timing_cues": [],
+                "flip_triggers": [
+                    "Wait for Trend/Momentum alignment",
+                    "Or volatility to calm to ⚠/✅ for ~3–5 days"
+                ],
+                "notes": "High noise + conflicting signals; not forcing a call.",
+            }
+
+        confidence = base_conf
+
+        # --- 3) Timing cues from Pattern; reliability also gated by volatility ---
+        timing_cues = []
+        if pattern and pattern.get("has_pattern"):
+            pain_day = pattern.get("pain_day")
+            ptype    = pattern.get("type")
+            reliability = {"✅": "High", "⚠": "Medium", "🔴": "Low", None: "Medium"}.get(v, "Medium")
+            if pain_day:
+                timing_cues.append(f"Pre-empt on {pain_day} (pattern={ptype}, reliability={reliability})")
+            else:
+                timing_cues.append(f"Pattern={ptype} (reliability={reliability})")
+
+        # --- 4) Drivers (plain, human-readable) ---
+        tm_label = {
+            "↑↑": "Momentum ↑↑ (Strongly Rising)",
+            "↑":  "Momentum ↑ (Moderately Rising)",
+            "→":  "Momentum → (Stable)",
+            "↓":  "Momentum ↓ (Moderately Falling)",
+            "↓↓": "Momentum ↓↓ (Strongly Falling)",
+            None: "Momentum ∅",
+        }.get(m, f"Momentum {m}")
+
+        drivers = [
+            f"Trend {t or '∅'}",
+            tm_label,
+            f"Volatility {v}" if v else "Volatility ∅",
+        ]
+        if pattern and pattern.get("has_pattern"):
+            pd = pattern.get("pain_day")
+            drivers.append(f"Pattern {pattern.get('type')}"+(f" (pain_day={pd})" if pd else ""))
+
+        # --- 5) Flip-triggers (what would change the call) ---
+        if direction == "Up":
+            flip_triggers = [
+                "Momentum falls to →/↓",
+                "Trend flips to →/↓",
+                "Volatility jumps to 🔴",
+            ]
+        elif direction == "Down":
+            flip_triggers = [
+                "Momentum improves to →/↑",
+                "Trend flips to →/↑",
+                "Volatility calms to ⚠/✅",
+            ]
+        else:  # Sideways but not withheld
+            flip_triggers = [
+                "Trend & Momentum align (both ↑ or both ↓)",
+                "Volatility calms to ⚠/✅",
+            ]
+
+        # --- 6) Outlook packet ---
+        outlook = {
+            "horizon_days": horizon_days,
+            "direction": direction,           # "Up" | "Down" | "Sideways"
+            "confidence": confidence,         # "High" | "Medium" | "Low"
+            "drivers": drivers,               # list of short strings
+            "timing_cues": timing_cues,       # list of short strings
+            "flip_triggers": flip_triggers,   # list of short strings
+            # Important: we do NOT touch Priority_Status / Quadrant_Purpose
+            "notes": "Directional outlook; priority remains defined by ERI×RF grid.",
+        }
+
+        # Optional provenance echo (can help downstream QA; keeps it simple)
+        if provenance:
+            outlook["provenance"] = {
+                "capsule_id": provenance.get("capsule_id"),
+                "n_points": n_points,
+                "signal_presence_pct": provenance.get("signal_presence_pct"),
+            }
+
+        return outlook
+
+      
     def compute(self):
         """
         Layer 3 (canonical daily analytics):
@@ -1120,6 +1262,13 @@ customer emotion behaves over time.
                     "window_span_days": int((end_inclusive - start).days + 1),
                 }
 
+                outlook_block = self.build_outlook_from_capsule(
+                    capsule=commentary_block,
+                    provenance=capsule_meta,        # optional; helps QA
+                    min_points=7,
+                    horizon_days=7,
+                )
+                                       
                 # --- Assemble record ---
                 l2_full = {
                     "ERI": round(float(row.get("ERI", 0.0)), 2),
@@ -1182,6 +1331,9 @@ customer emotion behaves over time.
 
                     # meta
                     "provenance": capsule_meta,
+                    
+                    # predictive insight
+                    "outlook": outlook_block
                 }
 
                 # attach views if any
@@ -1198,4 +1350,3 @@ customer emotion behaves over time.
         self.layer3_df = pd.DataFrame(results)
         self.skipped_entities = skipped
         return self.layer3_df
-
