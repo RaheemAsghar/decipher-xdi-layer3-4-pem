@@ -99,6 +99,8 @@ class Layer3Computer:
         return {
             "symbol": sym,
             "tier": tier,
+            "eri_start": None if prev is None else round(prev, 1), 
+            "eri_end" None if prev is None else round(now, 1),
             "pct_change": change_pct,
             "delta": round(delta, 2),
         }
