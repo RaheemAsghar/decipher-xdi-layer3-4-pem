@@ -226,12 +226,20 @@ class Layer2Computer:
 
             # --- record -----------------------------------------------------------
             entry.update({
+                "Today_Anchor": self.today.strftime("%Y-%m-%d"),
+                "Window_Days": int(self.window_days) if self.window_days is not None else None,
+
                 "ERI": round(eri_norm, 2),
                 "ERI_Tier": eri_tier,
                 "Loyalty_State": eri_tier,
 
+                "Recency_Decay_Days": float(self.tau_days),
                 "R": round(float(R), 2),
                 "F": round(float(F), 2),
+
+                "RF_Weight_R": float(self.rf_weight_r),
+                "RF_Weight_F": float(self.rf_weight_f),
+
                 "RF": round(float(RF), 2),
                 "RF_R_Component": round(rf_r_abs, 2),
                 "RF_R_ContributionPct": rf_r_pct,
