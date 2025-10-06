@@ -139,3 +139,58 @@ Summary (why this is minimal and sufficient)
 
 No extra IDs. No speculative fields. Just what’s necessary to keep the pipeline transparent, reproducible, 
 and ready for action.
+
+
+10) OU Lifecycle: Problem Statement (Prompt Output)
+
+Purpose: When an OU is locked into lifecycle, we generate a Problem Statement (PS) bound 1:1 to that 
+OU instance, identified by (ou_id, pipeline_run_id). This section defines the minimal schema and 
+reconciliation flow for PS while keeping full traceability.
+
+10.1 Linkage (LOCKED)
+- OU instance key: ou_id and pipeline_run_id (from xdi_ou_header).
+- Each PS record belongs to exactly one OU instance. The OU header may carry ps_current_id for quick lookup.
+
+10.2 Problem Statement — Minimal Schema
+| Field                  | Type           | Req. | Example                                                            | Notes                                                                         |                                       |                  |              |
+| ---------------------- | -------------- | :--: | ------------------------------------------------------------------ | ----------------------------------------------------------------------------- | ------------------------------------- | ---------------- | ------------ |
+| ou_id                  | string         |   ✓  | `ou:3a9c…`                                                         | Links PS to its OU (deterministic from ED × FT × Stream × cluster signature). |                                       |                  |              |
+| pipeline_run_id        | string         |   ✓  | `run_2025-10-06T07:15:12Z_001`                                     | Identifies the specific OU instance in that run.                              |                                       |                  |              |
+| ps_id                  | string         |   ✓  | `ps:7f12…`                                                         | Deterministic ID for this PS version (e.g., `sha256(ou_id                     | pipeline_run_id                       | ps_signature)`). |              |
+| ps_status              | enum           |   ✓  | `approved`                                                         | `draft                                                                        | approved                              | rejected         | superseded`. |
+| problem_statement_text | string         |   ✓  | “Customers abandon during KYC due to mismatch in ID photo vs OCR…” | Single narrative string.                                                      |                                       |                  |              |
+| what                   | string         |      | `KYC flow abandonment`                                             | Optional structured facet for search/analytics.                               |                                       |                  |              |
+| where                  | string         |      | `Onboarding > Identity Verification`                               |                                                                               |                                       |                  |              |
+| when                   | string         |      | `During step-3 (photo capture)`                                    |                                                                               |                                       |                  |              |
+| why                    | string         |      | `Ambiguous guidance / retry loop`                                  |                                                                               |                                       |                  |              |
+| so_what                | string         |      | `Increased drop-off; SLA slippage`                                 |                                                                               |                                       |                  |              |
+| prompt_template_id     | string         |   ✓  | `ps_prompt.v1`                                                     | Template used to generate the PS.                                             |                                       |                  |              |
+| prompt_version         | string         |   ✓  | `1.2.0`                                                            | Version of the template.                                                      |                                       |                  |              |
+| model_name             | string         |   ✓  | `gpt-x`                                                            | Model used for generation.                                                    |                                       |                  |              |
+| model_params           | json           |      | `{"temperature":0.2}`                                              | Only capture if non-default.                                                  |                                       |                  |              |
+| generation_timestamp   | datetime (UTC) |   ✓  | `2025-10-06T07:22:11Z`                                             | When generation occurred.                                                     |                                       |                  |              |
+| generator_version      | string         |   ✓  | `psgen.v1.0.0`                                                     | Code/build that executed the prompt.                                          |                                       |                  |              |
+| input_snapshot_uri     | string         |   ✓  | `s3://…/ou_header.json`                                            | Pointer to OU header + membership snapshot used as input.                     |                                       |                  |              |
+| authored_by            | enum           |   ✓  | `auto`                                                             | `auto                                                                         | human`. Flip to `human` on edit/save. |                  |              |
+| editor_user_id         | string         |      | `u_42`                                                             | Populated when `authored_by=human`.                                           |                                       |                  |              |
+| edit_timestamp         | datetime (UTC) |      | `2025-10-06T07:45:03Z`                                             | Last human edit time.                                                         |                                       |                  |              |
+
+Keep it minimal: We avoid extra IDs. ps_id is the only new ID; OU link is via ou_id+pipeline_run_id you already have.
+
+10.3 ID Recipe (Deterministic)
+# Canonical text signature for this PS
+ps_signature = sha256( lower(norm(problem_statement_text)) )[:16]
+
+
+# Deterministic ID for this PS version
+ps_id = 'ps:' + sha256( ou_id + '|' + pipeline_run_id + '|' + ps_signature )[:24]
+
+(Use the same norm()/canonicalization as earlier to avoid drift.)
+
+10.4 Reconciliation Flow (Minimal)
+1. Generate PS from OU context (header + membership snapshot). Save as ps_status='draft'.
+2. Optional edit by human. If edited, update problem_statement_text, set authored_by='human', editor_user_id, edit_timestamp. Recompute ps_id (text changed ⇒ new signature) and set ps_status='approved' when accepted.
+3. Bind to OU: Write ps_current_id = <approved ps_id> back to xdi_ou_header for that (ou_id, pipeline_run_id).
+4. Supersede on change: If OU membership or cluster signature changes in a later run, a new OU instance will exist (same ou_id, different pipeline_run_id). A new PS will be generated/approved for that instance.
+
+This keeps OU⇄PS linkage deterministic, traceable, and minimal—no extra instance IDs, no bloat.
