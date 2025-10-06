@@ -1,0 +1,141 @@
+CX Intake → XDI: Minimal Metadata & ID Guide (v1.0)
+Scope: This document locks the minimum viable metadata (MVM) and IDs from raw intake to the XDI-ready flattened 
+ED rows, including when/where each field is attached and how artifacts are merged.
+Out of scope: Post‑XDI PDCA/Outcome/PEM. (We stop at OU creation/clustering readiness.)
+
+1) Canonical Flow (LOCKED)
+A. RAW INTAKE (attach Layer‑0: Intake & Lineage) → one row per source message
+B. UNPACK (operate only on raw_text) → produce unwrapped_cx_block (multi‑ED markdown)
+C. MERGE (join A + B by dedupe_key) → single message-level record with metadata + unwrapped block
+D. PARSE & FLATTEN (atomic unit = Experience Driver) → one row per ED with: ED fields, IDs, time splits; 
+duplicates Layer‑0 metadata onto every ED row → XDI‑ready
+
+2) Layer‑0: Intake & Lineage (LOCKED minimal set)
+Attach at RAW INTAKE. Remains immutable and is duplicated to each ED row during PARSE & FLATTEN.
+
+
+Why only these? They provide provenance, replayability, and idempotency without bloat.
+
+3) Unpack (RAW → unwrapped block)
+Input: raw_text from RAW INTAKE.
+
+Output:
+| Field              | Type           | Req. | Example                          | Notes                                                            |           |                  |                            |        |          |     |        |                       |
+| ------------------ | -------------- | :--: | -------------------------------- | ---------------------------------------------------------------- | --------- | ---------------- | -------------------------- | ------ | -------- | --- | ------ | --------------------- |
+| tenant_id          | string         |   ✓  | `tenant_acme`                    | Multi-tenant traceability (future-proof even for single tenant). |           |                  |                            |        |          |     |        |                       |
+| environment        | enum           |   ✓  | `prod`                           | `prod                                                            | staging   | dev`.            |                            |        |          |     |        |                       |
+| source_system      | string         |   ✓  | `zendesk`                        | System of origin.                                                |           |                  |                            |        |          |     |        |                       |
+| channel            | enum           |   ✓  | `chat`                           | `chat                                                            | call      | email            | survey                     | review | web_form | sms | in_app | social` (extensible). |
+| account_id         | string         |   •  | `acme_corp`                      | B2B context. Either this or `customer_id` (or both).             |           |                  |                            |        |          |     |        |                       |
+| customer_id        | string         |   •  | `c_9f83…`                        | B2C context; anonymized/hashed OK.                               |           |                  |                            |        |          |     |        |                       |
+| segment            | string         |      | `ENT`                            | Cohort/segment label.                                            |           |                  |                            |        |          |     |        |                       |
+| locale             | string         |      | `en_GB`                          | BCP-47.                                                          |           |                  |                            |        |          |     |        |                       |
+| language           | string         |      | `en`                             | ISO-639-1.                                                       |           |                  |                            |        |          |     |        |                       |
+| region             | string         |      | `EMEA`                           | Optional routing label.                                          |           |                  |                            |        |          |     |        |                       |
+| ingest_timestamp   | datetime (UTC) |   ✓  | `2025-10-06T07:15:12Z`           | Pipeline ingest time (UTC ISO-8601).                             |           |                  |                            |        |          |     |        |                       |
+| event_timestamp    | datetime       |      | `2025-10-05T22:03:44+05:00`      | Customer event time, if available. May include offset.           |           |                  |                            |        |          |     |        |                       |
+| event_timezone     | string (IANA)  |      | `Asia/Karachi`                   | Needed if `event_timestamp` lacks offset.                        |           |                  |                            |        |          |     |        |                       |
+| record_id          | string         |   ✓  | `TCK-9812734`                    | Source message/ticket id.                                        |           |                  |                            |        |          |     |        |                       |
+| thread_id          | string         |      | `CONV-5541`                      | Conversation id, if any.                                         |           |                  |                            |        |          |     |        |                       |
+| message_index      | integer        |      | `3`                              | Position within thread; consistent base (0/1) required.          |           |                  |                            |        |          |     |        |                       |
+| pii_status         | enum           |   ✓  | `masked`                         | `raw                                                             | masked    | redacted         | anonymized`.               |        |          |     |        |                       |
+| consent_flag       | enum           |   ✓  | `unknown`                        | `granted                                                         | denied    | unknown`.        |                            |        |          |     |        |                       |
+| schema_version     | string         |   ✓  | `intake.v1.0.0`                  | Intake schema version.                                           |           |                  |                            |        |          |     |        |                       |
+| generator_version  | string         |   ✓  | `parser.v2.3.1`                  | Code/build producing the row.                                    |           |                  |                            |        |          |     |        |                       |
+| pipeline_run_id    | string         |   ✓  | `run_2025-10-06T07:15:12Z_001`   | ETL/ingest job id.                                               |           |                  |                            |        |          |     |        |                       |
+| source_uri         | string         |   ✓  | `s3://bucket/path/file.jsonl:42` | Precise origin pointer (file path+offset / API+cursor).          |           |                  |                            |        |          |     |        |                       |
+| source_fingerprint | string         |   ✓  | `sha256:…`                       | Hash of raw payload for immutability checks.                     |           |                  |                            |        |          |     |        |                       |
+| dedupe_key         | string         |   ✓  | ``sha256(source_system           | record_id                                                        | thread_id | message_index)`` | Message-level idempotency. |        |          |     |        |                       |
+
+- unwrapped_cx_block (multi‑ED markdown block)
+- unpack_generator_version, unpack_timestamp (optionally unpack_confidence)
+
+Rule: Do not mutate or duplicate Layer‑0 metadata here. Keep unpack lineage separate until MERGE.
+
+4) Merge (message‑level)
+Join A + B by dedupe_key to produce one record per message with:
+Layer‑0 metadata + raw_text + unwrapped_cx_block (+ unpack lineage).
+This artifact is the input to PARSE & FLATTEN.
+
+5) Parse & Flatten (ED‑level; XDI‑ready)
+Goal: Produce one row per Experience Driver found in unwrapped_cx_block.
+Carry‑through: Duplicate all Layer‑0 fields to each ED row.
+Add only inevitable ED IDs + time splits.
+
+  5.1 ED Fields (from the current parser)
+- experience_driver, entity_name, theme, context
+- feedback_type (canonical 7), customer_effort_score
+- emotion → derived: emotion_primary, emotion_specific
+- Journey location: customer_journey, customer_journey_stage, interaction_moment 
+- Action lane: opportunity_stream (Fix/Optimize/Amplify/Innovate), ou_name
+- Semantics: semantic_action_statement → derived splits: semantic_customer_reality, semantic_strategic_response
+- matters, stream_justification, behavioral_impact, keywords[]
+
+5.2 IDs (inevitable & minimal)
+ed_id — canonical Experience Driver ID
+ • Provisional at parse time: stable hash of normalized (theme|experience_driver)
+ • Later promotion to registry keeps this field; track: ed_id_origin = provisional|registry, ed_registry_version (optional)
+
+ed_row_id — occurrence ID for this ED row
+ • Deterministic hash of dedupe_key + ED tuple (experience_driver|entity_name|context|feedback_type|opportunity_stream|customer_journey|customer_journey_stage|interaction_moment)
+
+We intentionally avoid extra IDs. No additional keys unless required by registry adoption later 
+(e.g., optional entity_registry_id).
+
+5.3 Time Splits (for XDI rollups)
+- timestamp_utc — from event_timestamp normalized to UTC; fallback ingest_timestamp
+- date_local, time_local — derived using event_timezone (fallback: tenant/site default)
+
+5.4 Idempotency (ED‑level)
+- ed_row_id serves as row‑level idempotency (supersedes any separate row_dedupe_key).
+
+
+6) Join Keys & Duplication Rules
+- Primary join unit: dedupe_key (message level).
+Fallback: (record_id,thread_id,message_index) only when necessary.
+
+- Duplication: All Layer‑0 fields must be duplicated to every ED row. This is what gives ED‑level 
+lineage and auditability.
+
+
+7) Artifact Naming (suggested)
+- intake_raw_messages — RAW INTAKE table/file (immutable)
+- intake_unwrapped — UNPACK outputs keyed by dedupe_key
+- prexdi_messages — MERGE of raw+unwrapped (message‑level)
+- xdi_ready_ed_flat — PARSE & FLATTEN output (ED‑level; compute‑ready)
+
+
+8) Minimal Deterministic Recipes
+# Provisional ED ID (stable across runs pre‑registry)
+ed_id = 'ed:' + sha256( lower(norm(theme)) + '|' + lower(norm(experience_driver)) )[:16]
+
+# ED row occurrence ID (idempotency at ED granularity)
+ed_tuple = join('|', norm(experience_driver), norm(entity_name), norm(context),
+                      norm(feedback_type), norm(opportunity_stream),
+                      norm(customer_journey), norm(customer_journey_stage),
+                      norm(interaction_moment))
+ed_row_id = 'edrow:' + sha256( dedupe_key + '|' + ed_tuple )[:24]
+
+# Time splits
+if event_timestamp has offset -> to UTC
+else -> assume event_timezone (or tenant default) then to UTC
+=> timestamp_utc, plus date_local/time_local via event_timezone
+
+norm() uses your existing text normalization: Unicode NFKC → strip ZWCs → arrow canon → space canon → trim.
+
+9) Validation Checklist (before XDI)
+- Every message has Layer‑0 fields populated (at least required ones).
+- Every ED row duplicates Layer‑0 fields.
+- ed_id present (provisional allowed), ed_row_id present.
+- timestamp_utc present; date_local & time_local derived.
+- No duplicate ED rows for same message (ed_row_id uniqueness holds).
+- Parser output stored as xdi_ready_ed_flat and ready for Layer‑2/3 compute.
+
+Summary (why this is minimal and sufficient)
+- Traceability: tenant/environment + source pointers + fingerprints.
+- Idempotency: message‑level dedupe_key and ED‑level ed_row_id.
+- Determinism: provisional ed_id + normalized hashing.
+- Compute‑ready: time splits and ED fields required for OU selection/clustering.
+
+No extra IDs. No speculative fields. Just what’s necessary to keep the pipeline transparent, reproducible, 
+and ready for action.
