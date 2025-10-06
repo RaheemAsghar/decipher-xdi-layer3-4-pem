@@ -194,3 +194,81 @@ ps_id = 'ps:' + sha256( ou_id + '|' + pipeline_run_id + '|' + ps_signature )[:24
 4. Supersede on change: If OU membership or cluster signature changes in a later run, a new OU instance will exist (same ou_id, different pipeline_run_id). A new PS will be generated/approved for that instance.
 
 This keeps OU⇄PS linkage deterministic, traceable, and minimal—no extra instance IDs, no bloat.
+
+11.0 PDCA
+PDCA — Header (linkage & metadata)
+
+| Field                | Type           | Req. | Example                            | Notes                                                          |                                       |              |
+| -------------------- | -------------- | :--: | ---------------------------------- | -------------------------------------------------------------- | ------------------------------------- | ------------ |
+| ou_id                | string         |   ✓  | `ou:3a9c…`                         | Links PDCA to its OU (same `ou_id` used in header/membership). |                                       |              |
+| pipeline_run_id      | string         |   ✓  | `run_2025-10-06T07:15:12Z_001`     | Identifies the specific OU instance.                           |                                       |              |
+| ps_id                | string         |   ✓  | `ps:7f12…`                         | Approved Problem Statement bound to this OU instance.          |                                       |              |
+| pdca_id              | string         |   ✓  | `pdca:91ab…`                       | Deterministic ID for this PDCA version (see note below).       |                                       |              |
+| pdca_status          | enum           |   ✓  | `approved`                         | `draft                                                         | approved                              | superseded`. |
+| prompt_template_id   | string         |   ✓  | `pdca_prompt.v1`                   | Template used for PDCA generation.                             |                                       |              |
+| prompt_version       | string         |   ✓  | `1.0.0`                            | Version of the template.                                       |                                       |              |
+| model_name           | string         |   ✓  | `gpt-x`                            | Model used.                                                    |                                       |              |
+| model_params         | json           |      | `{"temperature":0.2}`              | Only if non-default.                                           |                                       |              |
+| generation_timestamp | datetime (UTC) |   ✓  | `2025-10-06T09:00:11Z`             | When PDCA was generated.                                       |                                       |              |
+| generator_version    | string         |   ✓  | `pdcagen.v1.0.0`                   | Code/build that executed the prompt.                           |                                       |              |
+| input_snapshot_uri   | string         |   ✓  | `s3://…/ou_header+membership.json` | Snapshot used as input context.                                |                                       |              |
+| authored_by          | enum           |   ✓  | `auto`                             | `auto                                                          | human`. Flip to `human` on edit/save. |              |
+| editor_user_id       | string         |      | `u_42`                             | When `authored_by=human`.                                      |                                       |              |
+| edit_timestamp       | datetime (UTC) |      | `2025-10-06T09:17:03Z`             | Last human edit time.                                          |                                       |              |
+
+pdca_id (deterministic): pdca: + sha256( ou_id | pipeline_run_id | ps_id | canon(plan+do+check+act_text) )[:24]
+
+PLAN — Problem / Root-Cause
+
+| Field                   | Type          | Req. | Example                                    | Notes                                    |
+| ----------------------- | ------------- | :--: | ------------------------------------------ | ---------------------------------------- |
+| problem_statement       | string        |   ✓  | “Locked upstream narrative — do not edit.” | Copied from `ps_id`.                     |
+| five_whys               | array[string] |   ✓  | 5 items                                    | Exactly five entries; 5th = root cause.  |
+| cross_domain_validation | array[object] |      | see sub-table                              | Optional domain checks.                  |
+| systemic_implications   | array[string] |      | `["handoff gaps", "policy drift"]`         | Optional broader patterns.               |
+| diagnostic_epiphany     | string        |   ✓  | “Emotion × root cause synthesis …”         | The decisive narrative that sets action. |
+
+cross_domain_validation item schema
+| Field   | Type   | Req. | Example                                 |
+| ------- | ------ | :--: | --------------------------------------- |
+| domain  | string |   ✓  | `Risk & Compliance`                     |
+| insight | string |   ✓  | “KYC retry loop inflates fraud checks…” |
+
+
+DO — Initiatives (list items)
+| Field                    | Type    | Req. | Example                                   | Notes                            |          |          |                                    |
+| ------------------------ | ------- | :--: | ----------------------------------------- | -------------------------------- | -------- | -------- | ---------------------------------- |
+| name                     | string  |   ✓  | `Guided KYC Capture v2`                   | Must be unique within this PDCA. |          |          |                                    |
+| description              | string  |   ✓  | “Inline tips, real-time validation…”      | What & why.                      |          |          |                                    |
+| stream                   | enum    |   ✓  | `Fix`                                     | `Fix                             | Optimize | Innovate | Amplify` (should equal OU stream). |
+| innovation_score         | integer |   ✓  | `3`                                       | 1–5 scale.                       |          |          |                                    |
+| justification            | string  |   ✓  | “Directly addresses diagnostic_epiphany…” | Tie to Plan.                     |          |          |                                    |
+| pillar_attribution       | string  |      | `RFE, CRE`                                | Your pillar taxonomy.            |          |          |                                    |
+| regulatory_alignment     | string  |      | `KYC/AML`                                 | If applicable.                   |          |          |                                    |
+| risk_mitigation          | string  |      | “Reduces spoofing risk…”                  | If applicable.                   |          |          |                                    |
+| hybrid_value_proposition | string  |      | “Less frustration + fewer retries…”       | Customer + institutional value.  |          |          |                                    |
+
+
+CHECK — Prioritization (per initiative)
+
+| Field         | Type    | Req. | Example                                  | Notes                                      |
+| ------------- | ------- | :--: | ---------------------------------------- | ------------------------------------------ |
+| name          | string  |   ✓  | `Guided KYC Capture v2`                  | Must **exactly match** a DO initiative.    |
+| impact        | integer |   ✓  | `5`                                      | 1–5.                                       |
+| feasibility   | integer |   ✓  | `3`                                      | 1–5.                                       |
+| alignment     | integer |   ✓  | `4`                                      | 1–5 (to OU stream & epiphany).             |
+| risk          | integer |   ✓  | `2`                                      | 1–5 (higher = riskier).                    |
+| total_score   | integer |   ✓  | `10`                                     | `impact + feasibility + alignment - risk`. |
+| justification | string  |   ✓  | “High drop-off relief; moderate effort…” | Why this score.                            |
+
+
+ACT — Outcomes (per selected initiative)
+
+| Field             | Type          | Req. | Example                                                             | Notes                                                       |
+| ----------------- | ------------- | :--: | ------------------------------------------------------------------- | ----------------------------------------------------------- |
+| initiative        | string        |   ✓  | `Guided KYC Capture v2`                                             | Must **exactly match** a DO initiative.                     |
+| strategic_pillars | array[string] |   ✓  | `["Customer-Centricity","Operational Excellence"]`                  | Max 3 total.                                                |
+| outcome           | string        |   ✓  | “Reduce KYC abandonments by resolving photo/OCR mismatch friction.” | One-sentence success statement tied to root cause & stream. |
+| metrics           | array[string] |   ✓  | `["KYC pass-rate +10pp/30d","Retry attempts −30%"]`                 | SMART, observable metrics.                                  |
+| explanation       | string        |   ✓  | “Addresses dominant emotion, fits stream, owned by Onboarding…”     | Anchor in real owner logic.                                 |
+
