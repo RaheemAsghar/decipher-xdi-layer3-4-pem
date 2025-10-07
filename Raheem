@@ -7,7 +7,29 @@ instead of action.
 • So I built a solution-agnostic CX architecture and its first working implementation, Decipher to 
 make emotion as operable as transactions or SKUs.
 
----
+-------------------------------------------------------------------------------------------------------------
+
+As it’s practiced today, CX is in a pretty pitiful state—nowhere near finance, supply chain, or ops as 
+a **discipline**. Why:
+
+* **No unit of progress.** Transactions/SKUs/opportunities exist; CX still ships commentary.
+* **No standards.** No GAAP-like rules, weak ontology, vendor-made “best practices.”
+* **Weak causal proof.** Lots of correlation (NPS/CSAT), little before/after with ownership.
+* **Poor org fit.** Staff function with soft budgets; loses every Monday to capacity/compliance/revenue.
+* **Low barriers/incentives.** Anyone can be a “CX pro”; platforms reward dashboards over outcomes.
+
+Not hopeless, but the bar is clear if CX wants “discipline” status:
+
+1. **Atomic unit** of progress (one precise change, location, emotion preserved).
+2. **Closed loop** (decision → action → proof) with an **elasticity** measure.
+3. **Standards & governance** (field schema, lineage, RBAC, redaction).
+4. **Auditability** (trace from signal → outcome).
+5. **Operating cadence** (owner/date/trade-off math in the plan, not a slide).
+
+Litmus test: if a CX output can’t answer **what changed, where, who owns it, by when, and the proof**, 
+it’s not a discipline—it’s performance art.
+
+-------------------------------------------------------------------------------------------------------------
 
 I ran a €75m B2B business at METRO AG Pakistan and was asked to lead CX too. For two years I could not 
 get information from CX that I could actually run the business on.
