@@ -28,7 +28,11 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s  %(message)s")
 
 # === Flexible Date Range Analyzer ===
 class FlexibleTimeframeAnalyzer:
-    def __init__(self, input_path, output_dir="outputs", timeframe_days=75, compute_granular=True, verbose=True):
+    def __init__(self, input_path, output_dir="outputs", 
+                 timeframe_days=75, 
+                 compute_granular=True, 
+                 verbose=True,
+                 min_priority_tier: str = "P3"):
         """
         Flexible analyzer with plug-and-play timeframe logic and behavioral clustering setup.
         """
@@ -69,6 +73,18 @@ class FlexibleTimeframeAnalyzer:
         self.summary_sqlite_path = os.path.join(self.output_dir, f"sentientsignal_longitudinal_{suffix}.sqlite")
         self.granular_sqlite_path = os.path.join(self.output_dir, f"sentientsignal_granular_{suffix}.sqlite")
 
+        # === Priority Config ===
+        self.PRIORITY_ORDER = ("P0","P1","P2","P3","P4","P5")
+        self.min_priority_tier = min_priority_tier
+
+        # derive eligible tiers once and store
+        self.cut_index = self.PRIORITY_ORDER.index(self.min_priority_tier)
+        self.eligible_tiers = set(self.PRIORITY_ORDER[:self.cut_index + 1])
+
+        if self.verbose:
+            print(f"🎯 Priority threshold set at {self.min_priority_tier}")
+            print(f"✅ Eligible tiers: {', '.join(self.eligible_tiers)}")
+                     
         # 🗺️ Canonical feedback types (concise)
         self.FT_MAP = {
             "compliment": "Compliment",
@@ -1486,5 +1502,6 @@ class FlexibleTimeframeAnalyzer:
                 cluster_store=all_cluster_store,
                 db_path="outputs/clusters.db"
             )
+
 
         return pd.DataFrame(records)
