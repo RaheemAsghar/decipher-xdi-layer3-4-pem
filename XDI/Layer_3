@@ -1324,10 +1324,9 @@ customer emotion behaves over time.
                 }
 
                 # attach views if any
-                if views:
-                    record["views"] = views
-                
-                record.update(l2_full)
+                # if views:
+                #     record["views"] = views
+            
                 results.append(record)
 
             except Exception as e:
