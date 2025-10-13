@@ -1156,10 +1156,6 @@ customer emotion behaves over time.
         - Compose commentary via TM / TMV (+ Temporal 2×2 tags inside compose_commentary)
         """
 
-        import pandas as pd
-        import numpy as np
-        from uuid import uuid4
-
         results, skipped = [], []
 
         # --- Canonical daily window (use constructor’s cutoff/today) ---
@@ -1173,8 +1169,8 @@ customer emotion behaves over time.
         data_ok = self.raw_df.dropna(subset=["date"]).copy()
         data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
 
-        # --- Eligible EDs from Layer 2 ---
-        entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(["P0","P1","P2","P3"])]
+        # --- Eligible EDs from Layer 2 (dynamic priority gating) ---
+        entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(self.eligible_tiers)]
 
         for _, row in entities.iterrows():
             ed = str(row["experience_driver"]).strip()
