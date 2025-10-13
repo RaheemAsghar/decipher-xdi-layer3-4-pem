@@ -1,0 +1,2078 @@
+import pandas as pd
+from pandas.tseries.frequencies import to_offset
+
+class Layer3Computer:
+    def __init__(
+        self,
+        layer2_df,
+        raw_df,
+        timeframe_value,
+        timeframe_unit="days",   # "days", "weeks", "hours", "minutes"
+        today_anchor=None,
+        verbose=False,
+    ):
+        self.layer2_df = layer2_df.copy()
+        self.raw_df = raw_df.copy()
+        self.verbose = verbose
+        self.timeframe_value = int(timeframe_value)
+        self.timeframe_unit = timeframe_unit
+
+        # ✅ Today as normalized Timestamp (no tz)
+        self.today = pd.to_datetime(today_anchor).normalize() if today_anchor else pd.Timestamp.today().normalize()
+
+        # ✅ Compute cutoff window (agnostic to unit)
+        delta = pd.to_timedelta(self.timeframe_value, unit=self.timeframe_unit)
+        self.cutoff = self.today - delta
+
+        # ✅ Parse all 3 columns (timestamp, date, time)
+        self.raw_df["timestamp"] = pd.to_datetime(self.raw_df["timestamp"], errors="coerce")
+        self.raw_df["date"] = pd.to_datetime(self.raw_df["date"], errors="coerce").dt.date
+        self.raw_df["time"] = pd.to_datetime(self.raw_df["time"], errors="coerce").dt.time
+        self.raw_df = self.raw_df.dropna(subset=["timestamp"])
+
+        # ✅ Window filter (cutoff → today, inclusive)
+        mask = (self.raw_df["timestamp"] >= self.cutoff) & (self.raw_df["timestamp"] <= self.today)
+        self.raw_df = self.raw_df.loc[mask]
+
+        # ✅ Decide time resolution column based on timeframe_unit
+        if self.timeframe_unit in ["days", "weeks", "months"]:
+            self.time_col = "date"
+        else:  # hours, minutes, seconds → need full precision
+            self.time_col = "timestamp"
+
+        # ✅ Emotion scoring
+        emotion_scores = {
+            "Adoration": 3,
+            "Appreciation": 1,
+            "Ambivalence": 0,
+            "Agitation": -1,
+            "Anger": -3,
+        }
+        self.raw_df["emotion_score"] = self.raw_df["emotion_primary"].map(emotion_scores)
+
+        # ✅ Preloaded configs
+        self.quadrant_matrix = get_quadrant_matrix()
+        self.layer3_df = None
+        self.pattern_lags = ["weekly", "monthly", "quarterly"]
+
+        if self.verbose:
+            print(f"📦 Layer 3 @ {self.today} | Window: {self.cutoff} → {self.today}")
+            print(f"🧮 Rows in window: {len(self.raw_df)} | L2 entities: {len(self.layer2_df)}")
+            print(f"⏱️ Using time column: {self.time_col}")
+
+    # === Core helpers ===
+    def compute_normalized_eri(self, group):
+        raw_eri = group["emotion_score"].mean()
+        return ((raw_eri + 3) / 6) * 200 - 100
+
+    def _compute_trend_series(self, series, eps=1e-6):
+        """
+        Direction-only TREND over window with percentage + raw delta.
+
+        - Gates: ↑ ≥ +5%, ↓ ≤ −5%, else →
+        - pct_change uses |prev| as denominator (or 200.0 if prev≈0).
+        """
+        import numpy as np, pandas as pd
+
+        s = pd.Series(series).astype(float)
+
+        # ensure chronological order
+        try:
+            s.index = pd.to_datetime(s.index)
+            s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        s = s.dropna()
+        prev, now = float(s.iloc[0]), float(s.iloc[-1])
+        delta = now - prev
+
+        # denominator
+        denom = abs(prev) if abs(prev) >= eps else 200.0
+        change_pct = (delta / denom) * 100.0
+        change_pct = float(np.clip(round(change_pct, 2), -100.0, 100.0))
+
+        # arrow + tier
+        sym = "↑" if change_pct >= 5 else ("↓" if change_pct <= -5 else "→")
+        tier = {"↑": "Trend ↑ (Improving)", "→": "Trend → (Stable)", "↓": "Trend ↓ (Declining)"}[sym]
+
+        return {
+            "symbol": sym,
+            "tier": tier,
+            "eri_start": None if prev is None else round(prev, 1), 
+            "eri_end" None if prev is None else round(now, 1),
+            "pct_change": change_pct,
+            "delta": round(delta, 2),
+        }
+
+    def _compute_momentum_series(self, series, k=None, eps=1e-6):
+        """
+        Momentum (short-burst emotional velocity)
+        - Splits time-sorted ERI series into equal arcs.
+        - Compares mean(last k) vs mean(first k).
+        - Delta scaled as % of |avg(first_half)| (fallback 200 for ERI band).
+        - Thresholds (inclusive):
+            ↑↑ >= +20%
+            ↑   >  +5% and < +20%
+            →   between -5% and +5%
+            ↓   <  -5% and > -20%
+            ↓↓ <= -20%
+        """
+        import numpy as np, pandas as pd
+
+        s = pd.Series(series).astype(float)
+
+        # enforce chronological order
+        try:
+            s.index = pd.to_datetime(s.index)
+            s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        s = s.dropna()
+        n = int(len(s))
+
+        # choose equal-length arcs
+        if k is None:
+            k = n // 2
+        k = int(max(1, min(k, n // 2)))
+
+        first_half  = s.iloc[:k]
+        second_half = s.iloc[-k:]
+
+        avg1, avg2 = float(np.nanmean(first_half)), float(np.nanmean(second_half))
+        if not np.isfinite(avg1) or not np.isfinite(avg2):
+            return {"symbol": "→", "label": "Stable", "delta": 0.0, "n_points": n}
+
+        # denominator rule
+        denom = abs(avg1) if abs(avg1) >= eps else 200.0
+        delta = avg2 - avg1
+        change_pct = (delta / denom) * 100.0
+        change_pct = float(np.clip(round(change_pct, 2), -100.0, 100.0))
+
+        # thresholds
+        if change_pct >= 20:
+            sym, label = "↑↑", "Strongly Rising"
+        elif change_pct > 5:
+            sym, label = "↑", "Moderately Rising"
+        elif change_pct <= -20:
+            sym, label = "↓↓", "Strongly Falling"
+        elif change_pct < -5:
+            sym, label = "↓", "Moderately Falling"
+        else:
+            sym, label = "→", "Stable"
+
+        return {
+            "symbol": sym,
+            "label": label,
+            "delta": change_pct,
+            "n_points": n,
+        }
+
+    def _compute_volatility_series(self, series) -> dict:
+        """
+        Volatility (3-Level CX Version)
+        - Standard deviation of ERI values in [-100, +100].
+        - Tier thresholds (whitepaper aligned):
+            0-15  → Stable
+            16-45 → Fluctuating
+            46+   → Highly Fluctuating
+        Returns minimal CX payload aligned with Trend & Momentum.
+        """
+        import numpy as np
+
+        arr = np.asarray(list(series), dtype=float)
+        arr = arr[np.isfinite(arr)]
+        arr = np.clip(arr, -100.0, 100.0)  # keep within ERI domain
+        n = int(arr.size)
+
+        # plain standard deviation
+        sigma = float(np.std(arr, ddof=1))
+        score = round(sigma, 2)
+
+        # tier classification
+        if score <= 15:
+            sym, label = "✅", "Stable"
+        elif score <= 45:
+            sym, label = "⚠", "Fluctuating"
+        else:
+            sym, label = "🔴", "Highly Fluctuating"
+
+        return {
+            "symbol": sym,
+            "label": label,
+            "score": score,
+            "n_points": n,
+        }
+
+    def _compute_pattern_series(self, series) -> dict:
+        """
+        Pattern Recognition (days-only, Weekly/Monthly).
+        Binary rule: a pattern exists only if an eligible lag has |ACF| ≥ 0.40.
+        Uses the full-window track passed in (same as Trend/Momentum/Volatility).
+        """
+        import numpy as np
+        import pandas as pd
+
+        WEEKLY_MIN, MONTHLY_MIN = 8, 31  # days
+        s = pd.Series(series).astype(float)
+
+        # ensure chronological order (important for ACF)
+        try:
+            s.index = pd.to_datetime(s.index); s = s.sort_index()
+        except Exception:
+            s = s.reset_index(drop=True)
+
+        # guard: ensure finite track and detect constant series
+        s = s.replace([np.inf, -np.inf], np.nan).interpolate(limit_direction="both")
+        n = int(len(s))
+
+        def _analysis_period():
+            if isinstance(s.index, pd.DatetimeIndex) and n > 0:
+                return [str(s.index.min().date()), str(s.index.max().date())]
+            return None
+
+        NAMES_DOW = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
+
+        def _acf_at_lag(x: np.ndarray, lag: int) -> float:
+            if x.size == 0 or lag >= x.size:
+                return np.nan
+            x = x.astype(float)
+            x = x - np.nanmean(x)
+            num = np.nansum(x[:-lag] * x[lag:])
+            den = np.nansum(x * x)
+            val = (num / den) if den > 0 else np.nan
+            return float(np.clip(val, -1.0, 1.0))
+
+        # early exit: constant track → no cyclical structure (keeps other modules consistent)
+        if float(np.nanstd(s.values)) < 1e-9:
+            return {
+                "has_pattern": False,
+                "pattern_type": "None",
+                "pattern_strength": 0.0,
+                "confidence": "Low",
+                "confidence_tier": "🔴 Weak / Candidate",
+                "pain_day": None,
+                "eri_by_day": {d: None for d in NAMES_DOW},
+                "data_coverage_days": n,
+                "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
+                "acf": {
+                    "weekly":   {"lag_days": 7,  "score": None},
+                    "monthly":  {"lag_days": 30, "score": None},
+                    "chosen":   {"lag_days": None, "score": None}
+                },
+                "analysis_period": _analysis_period(),
+                "status": "No Pattern",
+                "reason": "Series is effectively constant across the window (no cyclical structure)."
+            }
+
+        # Not enough data for even weekly test (by full-window length)
+        if n < WEEKLY_MIN:
+            return {
+                "has_pattern": False,
+                "pattern_type": "None",
+                "pattern_strength": 0.0,
+                "confidence": "Low",
+                "confidence_tier": "🔴 Weak / Candidate",
+                "pain_day": None,
+                "eri_by_day": {d: None for d in NAMES_DOW},
+                "data_coverage_days": n,
+                "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
+                "acf": {
+                    "weekly":   {"lag_days": 7,  "score": None},
+                    "monthly":  {"lag_days": 30, "score": None},
+                    "chosen":   {"lag_days": None, "score": None}
+                },
+                "analysis_period": _analysis_period(),
+                "status": "Insufficient Data",
+                "reason": f"Need ≥{WEEKLY_MIN}d for Weekly tests."
+            }
+
+        # Compute ACFs for eligible cycles (Weekly/Monthly only) on the same full-window track
+        acf_w = _acf_at_lag(s.values, 7)  if n >= WEEKLY_MIN  else np.nan
+        acf_m = _acf_at_lag(s.values, 30) if n >= MONTHLY_MIN else np.nan
+
+        candidates = []
+        if np.isfinite(acf_w): candidates.append(("Weekly",  abs(acf_w), 7,  acf_w))
+        if np.isfinite(acf_m): candidates.append(("Monthly", abs(acf_m), 30, acf_m))
+
+        if not candidates:
+            best = ("None", 0.0, None, 0.0)
+        else:
+            rank = {"Weekly": 2, "Monthly": 1}  # prefer Weekly on ties
+            candidates.sort(key=lambda t: (t[1], rank.get(t[0], 0)), reverse=True)
+            best = candidates[0]
+
+        pattern_type, strength_abs, lag_days, signed_acf = best
+        strength = round(float(strength_abs), 3)
+
+        HAS_THRESHOLD = 0.40
+        if strength_abs >= 0.60:
+            confidence, confidence_tier = "High", "✅ Strong"
+        elif strength_abs >= HAS_THRESHOLD:
+            confidence, confidence_tier = "Medium", "⚠ Moderate"
+        else:
+            confidence, confidence_tier = "Low", "🔴 Weak / Candidate"
+
+        has_pattern = bool(strength_abs >= HAS_THRESHOLD)
+
+        # pain day & weekday table only if Weekly is confirmed
+        pain_day = None
+        if has_pattern and pattern_type == "Weekly" and isinstance(s.index, pd.DatetimeIndex):
+            by_dow = s.groupby(s.index.dayofweek).mean(numeric_only=True)
+            if by_dow.size > 0:
+                pain_day = NAMES_DOW[int(by_dow.idxmin())]
+            eri_by_day = {NAMES_DOW[i]: (float(by_dow.get(i)) if i in by_dow.index else None) for i in range(7)}
+        else:
+            eri_by_day = {d: None for d in NAMES_DOW}
+
+        return {
+            "has_pattern": has_pattern,
+            "pattern_type": pattern_type if has_pattern else "None",
+            "pattern_strength": strength if has_pattern else 0.0,
+            "confidence": confidence if has_pattern else "Low",
+            "confidence_tier": confidence_tier if has_pattern else "🔴 Weak / Candidate",
+            "pain_day": pain_day if has_pattern else None,
+            "eri_by_day": eri_by_day,
+            "data_coverage_days": n,
+            "min_required_days": {"Weekly": WEEKLY_MIN, "Monthly": MONTHLY_MIN},
+            "acf": {
+                "weekly":   {"lag_days": 7,  "score": None if not np.isfinite(acf_w) else round(float(acf_w), 3)},
+                "monthly":  {"lag_days": 30, "score": None if not np.isfinite(acf_m) else round(float(acf_m), 3)},
+                "chosen":   {
+                    "lag_days": int(lag_days) if lag_days is not None else None,
+                    "score": round(float(signed_acf), 3) if lag_days is not None else None
+                }
+            },
+            "analysis_period": _analysis_period(),
+            "status": "OK" if has_pattern else "No Pattern",
+            "reason": None if has_pattern else "All eligible cycle scores below 0.40 (no discernible recurring pattern)."
+        }
+
+    """
+
+### **Why Pattern Recognition Completes the Quartet**
+
+**The Four Pillars of Temporal Intelligence**
+
+1. **Trend** → *“Which direction are we heading over time?”*
+2. **Momentum** → *“Did something change recently from the baseline?”*
+3. **Volatility** → *“How reliable or unpredictable is the signal?”*
+4. **Pattern Recognition** → *“When does this occur, and can we anticipate it?”*
+
+Together, they move us from **observation** to **prediction**.
+
+
+### **Pattern Recognition's Distinctive Contribution**
+
+**1. Behavioral Prediction Power**
+
+* **Pain Day Detection** → pinpoint recurring weak points (e.g., *“Mondays are consistently worst 
+for refunds”*).
+* **Seasonal Cycles** → detect weekly, monthly, or quarterly loops in customer frustration/delight.
+* **Operational Timing** → tell teams *when* issues will most likely surface, enabling proactive 
+resourcing.
+
+**2. Statistical Sophistication**
+
+* **Adaptive Gates** → thresholds scale with data coverage (avoids false positives).
+* **Harmonic Validation** → weekly patterns double-checked with 14-day harmonics.
+* **STL Fallback** → seasonal decomposition when coverage is sparse.
+* **Candidate Mode** → flags emerging but not yet confirmed patterns.
+
+**3. CX-Native Intelligence**
+
+* **Coverage-aware** → respects real-world survey sparsity.
+* **Detrending** → separates cycles from directional shifts.
+* **Confidence Levels** → Strong / Moderate / Weak / Candidate → ensures clarity, not false certainty.
+
+
+### **Why the Quartet Is Transformative**
+
+* **Trend + Pattern** → *“Customer frustration spikes every Monday, and the overall baseline is 
+deteriorating.”*
+* **Momentum + Volatility** → *“Recent satisfaction surge is genuine and stable, not a random wobble.”*
+* **All Four Together** → *“Every Q4 delivery complaints used to ease off, but this year momentum 
+is rising with high volatility — act immediately.”*
+
+
+### **The Leap for CX**
+
+This quartet turns **Experience Drivers** into **temporal DNA** — a living code of *direction, 
+shift, stability, and recurrence*.
+
+* No longer just *“this happened”*.
+* Now → *“this will happen, when, and with what confidence.”*
+
+👉 That's why Decipher isn't just analytics. It's **CX physics** — codifying the laws of how 
+customer emotion behaves over time.
+
+    """
+
+    def _ensure_tm_artifacts(self):
+        # Canonical labels (kept for readability in outputs)
+        self.TREND_WORD = {
+            "↑": "Trend ↑ (Improving)",
+            "→": "Trend → (Stable)",
+            "↓": "Trend ↓ (Declining)",
+        }
+        self.MOMENTUM_WORD = {
+            "↑↑": "↑↑ Strongly Rising",
+            "↑":  "↑ Moderately Rising",
+            "→":  "→ Stable",
+            "↓":  "↓ Moderately Falling",
+            "↓↓": "↓↓ Strongly Falling",
+        }
+
+        # Collapse 5 momentum states into the grid’s 3 directional columns
+        self.MOMENTUM_DIR = {
+            "↑↑": "↑",
+            "↑":  "↑",
+            "→":  "→",
+            "↓":  "↓",
+            "↓↓": "↓",
+        }
+
+        # Momentum intensity → urgency modifier (your exact ask)
+        self.MOMENTUM_URGENCY = {
+            "↑↑": "Amplify — high urgency",
+            "↑":  "Amplify — normal urgency",
+            "↓↓": "Intervene — critical",
+            "↓":  "Intervene — elevated",
+            "→":  "Hold — routine monitoring",  # sensible default for stable
+        }
+
+        # --- Trend × Momentum grid (exact wording preserved) ----------------------
+        self.TREND_MOMENTUM_GRID = {
+            "↑": {  # Trend ↑ (Improving)
+                "↑": {
+                    "name": "Momentum Building 🚀",
+                    "diagnosis": "Both long-term and recent signals positive.",
+                    "action": "👉 Amplify programs, celebrate advocacy, invest in scale."
+                },
+                "→": {
+                    "name": "Plateau Watch ⚖️",
+                    "diagnosis": "Long-term gains, but short-term flattening.",
+                    "action": "👉 Refresh engagement to prevent stagnation."
+                },
+                "↓": {
+                    "name": "Reversal Warning 🔔",
+                    "diagnosis": "Long-term gains established, but recent momentum turned negative. Early signal that improvements may be stalling or a new issue emerged.",
+                    "action": "👉 Identify recent changes (product, policy, market) that broke the positive trajectory. Act quickly to prevent erosion."
+                },
+            },
+
+            "→": {  # Trend → (Stable)
+                "↑": {
+                    "name": "Recovery Signal 🌱",
+                    "diagnosis": "Flat overall, but recent upward push.",
+                    "action": "👉 Support and accelerate the bounce."
+                },
+                "→": {
+                    "name": "True Stability 🟢",
+                    "diagnosis": "Flat long-term and short-term.",
+                    "action": "👉 Monitor quietly, no major action."
+                },
+                "↓": {
+                    "name": "Early Erosion ⚠️",
+                    "diagnosis": "Flat long-term, but recent dip.",
+                    "action": "👉 Early-warning: intervene before decline becomes entrenched."
+                },
+            },
+            
+            "↓": {  # Trend ↓ (Declining)
+                "↑": {
+                    "name": "Emerging Recovery 🔄",
+                    "diagnosis": "Overall decline, but short-term improvement.",
+                    "action": "👉 Double down to reverse the slide."
+                },
+                "→": {
+                    "name": "Structural Decline 🔻",
+                    "diagnosis": "Steady long-term fall, no shift.",
+                    "action": "👉 Root-cause deep dive and corrective initiatives."
+                },
+                "↓": {
+                    "name": "Accelerating Collapse 💥",
+                    "diagnosis": "Both long-term and recent negative.",
+                    "action": "👉 Crisis response: urgent retention and loyalty fixes."
+                },
+            },
+        }
+
+    def tm_commentary(self, trend_symbol: str, momentum_symbol: str) -> dict:
+        """
+        Trend × Momentum commentary using class-held artifacts.
+        - trend_symbol: '↑' | '→' | '↓'
+        - momentum_symbol: '↑↑' | '↑' | '→' | '↓' | '↓↓'
+        """
+        if not hasattr(self, "TREND_MOMENTUM_GRID"):
+            self._ensure_tm_artifacts()
+
+        trend_dir = trend_symbol
+        mom_dir = self.MOMENTUM_DIR.get(momentum_symbol)
+        cell = self.TREND_MOMENTUM_GRID.get(trend_dir, {}).get(mom_dir or "", None)
+
+        if not cell:
+            return {
+                "name": "Unmapped",
+                "trend": self.TREND_WORD.get(trend_dir, trend_dir),
+                "momentum": self.MOMENTUM_WORD.get(momentum_symbol, momentum_symbol),
+                "urgency": self.MOMENTUM_URGENCY.get(momentum_symbol, "Review"),
+                "diagnosis": "Combination not recognized.",
+                "action": "Review inputs for correct symbols."
+            }
+
+        out = dict(cell)  # shallow copy
+        out["trend"] = self.TREND_WORD[trend_dir]
+        out["momentum"] = self.MOMENTUM_WORD[momentum_symbol]
+        out["urgency"] = self.MOMENTUM_URGENCY[momentum_symbol]
+        return out
+
+    def _ensure_tmv_artifacts(self):
+        # Human-readable headings
+        self.TREND_WORD = {
+            "↑": "Trend ↑ (Improving)",
+            "→": "Trend → (Stable)",
+            "↓": "Trend ↓ (Declining)",
+        }
+        self.MOMENTUM_WORD = {
+            "↑↑": "↑↑ Strongly Rising",
+            "↑":  "↑ Moderately Rising",
+            "→":  "→ Stable",
+            "↓":  "↓ Moderately Falling",
+            "↓↓": "↓↓ Strongly Falling",
+        }
+        self.VOL_WORD = {
+            "✅": "✅ Stable",
+            "⚠":  "⚠ Fluctuating",
+            "🔴": "🔴 Highly Fluctuating",
+        }
+
+        # Collapse 5 momentum states into 3 directional columns for grid lookup
+        self.MOMENTUM_DIR = {
+            "↑↑": "↑",
+            "↑":  "↑",
+            "→":  "→",
+            "↓":  "↓",
+            "↓↓": "↓",
+        }
+
+        # Momentum intensity → urgency modifier
+        self.MOMENTUM_URGENCY = {
+            "↑↑": "Amplify — high urgency",
+            "↑":  "Amplify — normal urgency",
+            "→":  "Hold — routine monitoring",
+            "↓":  "Intervene — elevated",
+            "↓↓": "Intervene — critical",
+        }
+
+        # === Trend × Momentum × Volatility GRID ==================================
+        # Keys: trend ('↑','→','↓') → momentum_dir ('↑','→','↓') → volatility ('✅','⚠','🔴')
+        self.TMV_GRID = {
+            "↑": {  # Trend ↑ (Improving)
+                "↑": {  # Momentum Rising
+                    "✅": {
+                        "interpretation": "Clear acceleration with predictable emotional landscape",
+                        "instruction":    "Amplify — perfect moment to scale advocacy and systematically expand gains",
+                    },
+                    "⚠": {
+                        "interpretation": "Surge is happening, but emerging instability in customer experiences",
+                        "instruction":    "Seize positives, but investigate drivers of fluctuation and stabilize experience",
+                    },
+                    "🔴": {
+                        "interpretation": "“Spike effect” with dangerous instability — surge may collapse",
+                        "instruction":    "Immediate diagnosis needed; treat as hype-cycle until system stability confirms sustainability",
+                    },
+                },
+                "→": {  # Momentum Stable
+                    "✅": {
+                        "interpretation": "Long-term gains holding steady with predictable emotional landscape",
+                        "instruction":    "Maintain reinforcement; stable trust is compounding systematically",
+                    },
+                    "⚠": {
+                        "interpretation": "Gains are real but unstable emotional movement emerging",
+                        "instruction":    "Investigate drivers of fluctuation; ensure uplift isn't fragile",
+                    },
+                    "🔴": {
+                        "interpretation": "Upward signals present, but dangerous instability underneath",
+                        "instruction":    "Immediate diagnosis needed; stabilize experience before scaling (likely system/process breakdown)",
+                    },
+                },
+                "↓": {  # Momentum Falling
+                    "✅": {
+                        "interpretation": "Long-term gains established, but short-term reversal is predictable and measurable",
+                        "instruction":    "Investigate trigger systematically — product change, policy shift, or competitor move; maintain diagnostic clarity",
+                    },
+                    "⚠": {
+                        "interpretation": "Improving baseline eroding with unstable emotional movement",
+                        "instruction":    "Investigate drivers urgently; stabilize experience and identify which segments are reversing",
+                    },
+                    "🔴": {
+                        "interpretation": "Chaotic reversal amid long-term gains — dangerous instability signals breakdown",
+                        "instruction":    "Immediate diagnosis needed; likely system/process breakdown. Stabilize before further erosion",
+                    },
+                },
+            },
+
+            "→": {  # Trend → (Flat)
+                "↑": {  # Momentum Rising
+                    "✅": {
+                        "interpretation": "Flat baseline with reliable upward push and predictable emotional landscape",
+                        "instruction":    "Systematically improve and accelerate; this is your window to shift long-term trajectory",
+                    },
+                    "⚠": {
+                        "interpretation": "Recovery attempt underway but unstable emotional movement across customers",
+                        "instruction":    "Investigate drivers of fluctuation; stabilize experience to ensure gains aren't isolated",
+                    },
+                    "🔴": {
+                        "interpretation": "Volatile surge from flat baseline with dangerous instability",
+                        "instruction":    "Immediate diagnosis needed; validate if real momentum or system/process breakdown before investing",
+                    },
+                },
+                "→": {  # Momentum Stable
+                    "✅": {
+                        "interpretation": "True stability — flat long-term, flat short-term, predictable emotional landscape",
+                        "instruction":    "Maintain current approach; monitor quietly unless strategic goals require movement",
+                    },
+                    "⚠": {
+                        "interpretation": "Stable trend overall but unstable emotional movement in customer experiences",
+                        "instruction":    "Investigate drivers of fluctuation; stabilize experience despite flat averages",
+                    },
+                    "🔴": {
+                        "interpretation": "Flat on average but dangerous instability underneath — hidden breakdown",
+                        "instruction":    "Immediate diagnosis needed; high volatility with no trend suggests system/process breakdown or severe segmentation issues",
+                    },
+                },
+                "↓": {  # Momentum Falling
+                    "✅": {
+                        "interpretation": "Plateau with emerging warning but predictable emotional landscape",
+                        "instruction":    "Investigate small cracks systematically before they widen; maintain diagnostic clarity",
+                    },
+                    "⚠": {
+                        "interpretation": "Customers unsettled with unstable emotional movement at tipping point",
+                        "instruction":    "Investigate drivers immediately; stabilize experience before decline becomes entrenched",
+                    },
+                    "🔴": {
+                        "interpretation": "Downturn with dangerous instability — fragile loyalty signal",
+                        "instruction":    "Immediate diagnosis needed; likely system/process breakdown. Prepare crisis workflows",
+                    },
+                },
+            },
+
+            "↓": {  # Trend ↓ (Declining)
+                "↑": {  # Momentum Rising
+                    "✅": {
+                        "interpretation": "Recovery starting with predictable emotional landscape — reliable turnaround",
+                        "instruction":    "Systematically improve with targeted initiatives; maintain and accelerate stable rebound",
+                    },
+                    "⚠": {
+                        "interpretation": "Customers showing rebound but unstable emotional movement",
+                        "instruction":    "Investigate drivers of fluctuation; stabilize experience while encouraging positives",
+                    },
+                    "🔴": {
+                        "interpretation": "Recovery attempt with dangerous instability — fragile and noisy",
+                        "instruction":    "Immediate diagnosis needed; avoid premature bets until system stability confirms",
+                    },
+                },
+                "→": {  # Momentum Stable
+                    "✅": {
+                        "interpretation": "Structural decline entrenched with predictable emotional landscape — steady deterioration",
+                        "instruction":    "Systematically improve through root-cause analysis; strategic intervention required for entrenched failure",
+                    },
+                    "⚠": {
+                        "interpretation": "Steady decline with unstable emotional movement across customers",
+                        "instruction":    "Investigate drivers through segment-level deep dive; stabilize experience while addressing cohort-specific decay",
+                    },
+                    "🔴": {
+                        "interpretation": "Declining baseline with dangerous instability — worst-case scenario",
+                        "instruction":    "Immediate diagnosis needed; system/process breakdown while losing customers. Emergency stabilization protocols",
+                    },
+                },
+                "↓": {  # Momentum Falling
+                    "✅": {
+                        "interpretation": "Clear deterioration with predictable emotional landscape — stable decline pattern",
+                        "instruction":    "Act decisively through systematic improvement — loyalists are slipping away in measurable way",
+                    },
+                    "⚠": {
+                        "interpretation": "Accelerating decline with unstable emotional movement",
+                        "instruction":    "Investigate drivers urgently; stabilize experience and contain damage through segment analysis",
+                    },
+                    "🔴": {
+                        "interpretation": "Emotional free-fall with dangerous instability — chaotic collapse",
+                        "instruction":    "Immediate diagnosis needed; system/process breakdown. Crisis protocol — stabilize or lose trust",
+                    },
+                },
+            },
+        }
+
+    def tmv_commentary(self, trend_symbol: str, momentum_symbol: str, volatility_symbol: str) -> dict:
+        """
+        Resolve Trend x Momentum x Volatility commentary.
+        - trend_symbol: '↑' | '→' | '↓'
+        - momentum_symbol: '↑↑' | '↑' | '→' | '↓' | '↓↓'
+        - volatility_symbol: '✅' | '⚠' | '🔴'
+        """
+        if not hasattr(self, "TMV_GRID"):
+            self._ensure_tmv_artifacts()
+
+        trend_dir = trend_symbol
+        mom_dir = self.MOMENTUM_DIR.get(momentum_symbol)
+        vol = volatility_symbol
+
+        cell = self.TMV_GRID.get(trend_dir, {}).get(mom_dir or "", {}).get(vol, None)
+        if not cell:
+            return {
+                "trend": self.TREND_WORD.get(trend_dir, trend_dir),
+                "momentum": self.MOMENTUM_WORD.get(momentum_symbol, momentum_symbol),
+                "volatility": self.VOL_WORD.get(vol, vol),
+                "urgency": self.MOMENTUM_URGENCY.get(momentum_symbol, "Review"),
+                "interpretation": "Unmapped combination.",
+                "instruction": "Review inputs or extend grid definitions.",
+            }
+
+        return {
+            "trend": self.TREND_WORD[trend_dir],
+            "momentum": self.MOMENTUM_WORD[momentum_symbol],
+            "volatility": self.VOL_WORD[vol],
+            "urgency": self.MOMENTUM_URGENCY[momentum_symbol],
+            "interpretation": cell["interpretation"],
+            "instruction": cell["instruction"],
+        }
+ 
+    # Inside your class (e.g., Layer3Computer)
+    def _ensure_temporal_grid(self):
+        # Axis labels (exact wording preserved)
+        self.TEMPORAL_ROWS = {
+            "Directional": "Directional (Where are we heading?)",
+            "Situational": "Situational (What just happened / when will it repeat?)",
+        }
+        self.TEMPORAL_COLS = {
+            "Event-Oriented": "Event-Oriented (Change & Timing)",
+            "Reliability-Oriented": "Reliability-Oriented (Consistency & Predictability)",
+        }
+
+        # Core 2×2 grid (exact wording preserved)
+        self.TEMPORAL_GRID = {
+            "Directional": {
+                "Event-Oriented": {
+                    "module": "Trend 📈",
+                    "name":   "Trend",
+                    "description": "Long-term slope: Are we improving or declining overall?",
+                },
+                "Reliability-Oriented": {
+                    "module": "Volatility 🌊",
+                    "name":   "Volatility",
+                    "description": "Signal stability: Is this trajectory consistent or erratic?",
+                },
+            },
+            "Situational": {
+                "Event-Oriented": {
+                    "module": "Momentum ⚡",
+                    "name":   "Momentum",
+                    "description": "Recent shift: Has performance changed compared to baseline?",
+                },
+                "Reliability-Oriented": {
+                    "module": "Pattern 🔁",
+                    "name":   "Pattern",
+                    "description": "Recurring cycles: When do issues reliably resurface?",
+                },
+            },
+        }
+
+        # Reverse lookup: module name → (row, col)
+        self.TEMPORAL_SLOT = {
+            "Trend":      ("Directional", "Event-Oriented"),
+            "Volatility": ("Directional", "Reliability-Oriented"),
+            "Momentum":   ("Situational", "Event-Oriented"),
+            "Pattern":    ("Situational", "Reliability-Oriented"),
+        }
+
+    def temporal_cell(self, row_key: str, col_key: str) -> dict:
+        """
+        Fetch a cell from the 2×2 grid.
+        row_key: 'Directional' | 'Situational'
+        col_key: 'Event-Oriented' | 'Reliability-Oriented'
+        """
+        if not hasattr(self, "TEMPORAL_GRID"):
+            self._ensure_temporal_grid()
+
+        row = self.TEMPORAL_ROWS.get(row_key, row_key)
+        col = self.TEMPORAL_COLS.get(col_key, col_key)
+        cell = self.TEMPORAL_GRID.get(row_key, {}).get(col_key, None)
+
+        if not cell:
+            return {
+                "axis_row": row,
+                "axis_col": col,
+                "module": "Unmapped",
+                "name": "Unmapped",
+                "description": "Combination not recognized. Check row/col keys.",
+            }
+
+        return {
+            "axis_row": row,
+            "axis_col": col,
+            **cell,
+        }
+
+    def temporal_slot_for_module(self, module_name: str) -> dict:
+        """
+        Reverse lookup: given 'Trend'/'Momentum'/'Volatility'/'Pattern',
+        return its (row, col) placement and cell metadata.
+        """
+        if not hasattr(self, "TEMPORAL_SLOT"):
+            self._ensure_temporal_grid()
+
+        slot = self.TEMPORAL_SLOT.get(module_name)
+        if not slot:
+            return {
+                "module": module_name,
+                "axis_row": None,
+                "axis_col": None,
+                "description": "Module not in Temporal Intelligence Grid.",
+            }
+
+        row_key, col_key = slot
+        cell = self.temporal_cell(row_key, col_key)
+        return cell
+
+    def compose_commentary(
+        self,
+        trend: dict,
+        momentum: dict,
+        volatility: dict | None = None,
+        pattern: dict | None = None,
+        eri_score: float | None = None,
+        eri_tier: str | None = None,
+        rf_score: float | None = None,
+        rf_tier: str | None = None,
+        # optional: pass grid anchor from Layer-2 if you want it inside the capsule
+        priority_status: str | None = None,
+        quadrant_purpose: str | None = None,
+    ) -> dict:
+        """
+        Assemble a guidance capsule (raw signals only) for AI commentary.
+        Uses TMV if volatility is provided, otherwise TM. No stitched prose.
+        """
+
+        # Ensure artifacts exist
+        if not hasattr(self, "TREND_MOMENTUM_GRID"): self._ensure_tm_artifacts()
+        if not hasattr(self, "TMV_GRID"):            self._ensure_tmv_artifacts()
+        if not hasattr(self, "TEMPORAL_GRID"):       self._ensure_temporal_grid()
+
+        # Symbols
+        t_sym = trend.get("symbol")
+        m_sym = momentum.get("symbol")
+        v_sym = volatility.get("symbol") if volatility else None
+
+        # Resolve matrix cell (TMV preferred if vol present)
+        using_tmv = bool(volatility)
+        if using_tmv:
+            cell = self.tmv_commentary(t_sym, m_sym, v_sym)
+            interpretation = cell.get("interpretation")
+            instruction    = cell.get("instruction")
+            vol_label      = cell.get("volatility")
+        else:
+            cell = self.tm_commentary(t_sym, m_sym)
+            interpretation = cell.get("diagnosis")
+            instruction    = cell.get("action")
+            vol_label      = None
+
+        # Build modules block (raw + labels)
+        modules = {
+            "trend": {
+                "symbol": t_sym,
+                "label": cell.get("trend"),                # e.g., "Trend ↓ (Declining)"
+                "pct_change": trend.get("pct_change"),
+                "delta": trend.get("delta"),
+            },
+            "momentum": {
+                "symbol": m_sym,
+                "label": cell.get("momentum"),             # e.g., "↓↓ Strongly Falling"
+                "delta": momentum.get("delta"),
+                "n_points": momentum.get("n_points"),
+            },
+            "volatility": None,
+            "pattern": None,
+        }
+        if volatility:
+            modules["volatility"] = {
+                "symbol": v_sym,                           # "✅" | "⚠" | "🔴"
+                "label": vol_label,                        # e.g., "🔴 Highly Fluctuating"
+                "score": volatility.get("score"),
+                "n_points": volatility.get("n_points"),
+            }
+
+        # Optional pattern overlay (no prose)
+        if pattern and pattern.get("has_pattern"):
+            modules["pattern"] = {
+                "has_pattern": True,
+                "type": pattern.get("pattern_type"),
+                "strength": pattern.get("pattern_strength"),
+                "confidence": pattern.get("confidence"),
+                "pain_day": pattern.get("pain_day"),
+            }
+
+        # Temporal intelligence tags
+        modules_to_tag = ["Trend", "Momentum"]
+        if volatility: modules_to_tag.append("Volatility")
+        if modules["pattern"]: modules_to_tag.append("Pattern")
+        temporal_axes = {}
+        for mod in modules_to_tag:
+            slot = self.temporal_slot_for_module(mod)
+            temporal_axes[mod] = {"row": slot.get("axis_row"), "col": slot.get("axis_col")}
+
+        # Final capsule (raw; AI-ready)
+        out = {
+            # Optional ERI×RF grid anchor from Layer-2 (immutable, if provided)
+            "grid_anchor": {
+                "priority_status": priority_status,        # e.g., "P0"
+                "quadrant_purpose": quadrant_purpose,      # e.g., "Critical Crisis Response"
+            },
+
+            # Layer-2 baselines (raw + tiers)
+            "eri": {"score": eri_score, "tier": eri_tier},
+            "rf":  {"score": rf_score,  "tier": rf_tier},
+
+            # Layer-3 modules (raw + labels)
+            "modules": modules,
+
+            # Matrix cell payload (keep as raw fields; no headline concatenation)
+            "matrix": {
+                "source": "TMV" if using_tmv else "TM",
+                "urgency": cell.get("urgency"),            # from momentum intensity map
+                "name": cell.get("name"),                  # TM name if available
+                "interpretation": interpretation,          # TMV/TM text (raw)
+                "instruction": instruction,                # TMV/TM text (raw)
+            },
+
+            # Convenience vectors (kept for numeric reasoning)
+            "vectors": {
+                "trend_pct_change": trend.get("pct_change"),
+                "trend_delta": trend.get("delta"),
+                "momentum_pct_change": momentum.get("delta"),
+                "volatility_score": (volatility.get("score") if volatility else None),
+            },
+
+            "temporal_axes": temporal_axes,
+        }
+
+        return out
+
+    def _make_view_from_daily(self, daily_track, freq_label: str):
+        """
+        Create a weekly or monthly 'view' from the canonical daily ERI track.
+        freq_label: 'week' or 'month'
+        Returns None if too few points after resampling.
+        """
+        import pandas as pd
+
+        freq = "W" if freq_label == "week" else "M"
+        cad = daily_track.resample(freq).mean()
+
+        # need ≥2 observed points to be meaningful
+        if cad.dropna().size <= 1:
+            return None
+
+        # run T/M/V on the cadence series
+        t = self._compute_trend_series(cad)
+        m = self._compute_momentum_series(cad)
+        v = self._compute_volatility_series(cad)
+
+        # compose TMV commentary (Pattern remains daily; don’t mix cadences)
+        commentary = self.compose_commentary(
+            trend=t,
+            momentum=m,
+            volatility={
+                "symbol": v.get("symbol", "✅"),
+                "label":  v.get("label"),
+                "score":  v.get("score"),
+                "n_points": int(len(cad)),
+            },
+            pattern=None  # keep Pattern daily-only
+        )
+
+        return {
+            "freq": freq,                 # 'W' or 'M'
+            "points": int(len(cad)),      # number of weeks/months in window
+            "trend": t,
+            "momentum": m,
+            "volatility": v,
+            "commentary": commentary,
+            # lightweight series for charts/use
+            "series": {
+                "index": [pd.Timestamp(x).strftime("%Y-%m-%d") for x in cad.index],
+                "eri":   [float(x) if x is not None else None for x in cad.values],
+            }
+        }
+
+    def build_outlook_from_capsule(
+    self,
+    capsule: dict,
+    provenance: dict | None = None,
+    min_points: int = 7,
+    horizon_days: int = 7,
+) -> dict:
+        """
+        Minimal, explainable outlook:
+        - Direction from Trend + Momentum agreement
+        - Confidence from Volatility (certainty governor)
+        - Timing cues from Pattern (reliability also gated by Volatility)
+        - Withholds when signals conflict under high noise or data is too thin
+        """
+        modules   = capsule.get("modules", {}) or {}
+        trend     = modules.get("trend") or {}
+        momentum  = modules.get("momentum") or {}
+        volatility= modules.get("volatility") or {}
+        pattern   = modules.get("pattern") or {}
+
+        t = trend.get("symbol")
+        m = momentum.get("symbol")
+        v = volatility.get("symbol")  # "✅" | "⚠" | "🔴" or None
+
+        # --- 0) Data sufficiency gate (keep it very light) ---
+        n_points = momentum.get("n_points") or 0
+        if n_points < min_points:
+            return {
+                "horizon_days": horizon_days,
+                "direction": "Withheld",
+                "confidence": "None",
+                "drivers": [f"Insufficient data (n_points < {min_points})"],
+                "timing_cues": [],
+                "flip_triggers": ["Collect more daily points to establish movement"],
+                "notes": "Outlook withheld due to short series.",
+            }
+
+        # --- 1) Direction from Trend + Momentum (agree or we stay neutral) ---
+        def direction_from_tm(t_sym: str | None, m_sym: str | None) -> str:
+            if t_sym == "↑" and m_sym in {"↑", "↑↑"}:
+                return "Up"
+            if t_sym == "↓" and m_sym in {"↓", "↓↓"}:
+                return "Down"
+            return "Sideways"
+
+        direction = direction_from_tm(t, m)
+
+        # --- 2) Confidence from Volatility (certainty governor) ---
+        base_conf = {"✅": "High", "⚠": "Medium", "🔴": "Low", None: "Medium"}.get(v, "Medium")
+
+        # Conflict guard: if TM disagree (i.e., Sideways) and volatility is 🔴 → withhold
+        if direction == "Sideways" and v == "🔴":
+            return {
+                "horizon_days": horizon_days,
+                "direction": "Withheld",
+                "confidence": "None",
+                "drivers": [
+                    f"Trend {t or '∅'} vs Momentum {m or '∅'} conflict",
+                    "Volatility 🔴 (highly fluctuating)"
+                ],
+                "timing_cues": [],
+                "flip_triggers": [
+                    "Wait for Trend/Momentum alignment",
+                    "Or volatility to calm to ⚠/✅ for ~3–5 days"
+                ],
+                "notes": "High noise + conflicting signals; not forcing a call.",
+            }
+
+        confidence = base_conf
+
+        # --- 3) Timing cues from Pattern; reliability also gated by volatility ---
+        timing_cues = []
+        if pattern and pattern.get("has_pattern"):
+            pain_day = pattern.get("pain_day")
+            ptype    = pattern.get("type")
+            reliability = {"✅": "High", "⚠": "Medium", "🔴": "Low", None: "Medium"}.get(v, "Medium")
+            if pain_day:
+                timing_cues.append(f"Pre-empt on {pain_day} (pattern={ptype}, reliability={reliability})")
+            else:
+                timing_cues.append(f"Pattern={ptype} (reliability={reliability})")
+
+        # --- 4) Drivers (plain, human-readable) ---
+        tm_label = {
+            "↑↑": "Momentum ↑↑ (Strongly Rising)",
+            "↑":  "Momentum ↑ (Moderately Rising)",
+            "→":  "Momentum → (Stable)",
+            "↓":  "Momentum ↓ (Moderately Falling)",
+            "↓↓": "Momentum ↓↓ (Strongly Falling)",
+            None: "Momentum ∅",
+        }.get(m, f"Momentum {m}")
+
+        drivers = [
+            f"Trend {t or '∅'}",
+            tm_label,
+            f"Volatility {v}" if v else "Volatility ∅",
+        ]
+        if pattern and pattern.get("has_pattern"):
+            pd = pattern.get("pain_day")
+            drivers.append(f"Pattern {pattern.get('type')}"+(f" (pain_day={pd})" if pd else ""))
+
+        # --- 5) Flip-triggers (what would change the call) ---
+        if direction == "Up":
+            flip_triggers = [
+                "Momentum falls to →/↓",
+                "Trend flips to →/↓",
+                "Volatility jumps to 🔴",
+            ]
+        elif direction == "Down":
+            flip_triggers = [
+                "Momentum improves to →/↑",
+                "Trend flips to →/↑",
+                "Volatility calms to ⚠/✅",
+            ]
+        else:  # Sideways but not withheld
+            flip_triggers = [
+                "Trend & Momentum align (both ↑ or both ↓)",
+                "Volatility calms to ⚠/✅",
+            ]
+
+        # --- 6) Outlook packet ---
+        outlook = {
+            "horizon_days": horizon_days,
+            "direction": direction,           # "Up" | "Down" | "Sideways"
+            "confidence": confidence,         # "High" | "Medium" | "Low"
+            "drivers": drivers,               # list of short strings
+            "timing_cues": timing_cues,       # list of short strings
+            "flip_triggers": flip_triggers,   # list of short strings
+            # Important: we do NOT touch Priority_Status / Quadrant_Purpose
+            "notes": "Directional outlook; priority remains defined by ERI×RF grid.",
+        }
+
+        # Optional provenance echo (can help downstream QA; keeps it simple)
+        if provenance:
+            outlook["provenance"] = {
+                "capsule_id": provenance.get("capsule_id"),
+                "n_points": n_points,
+                "signal_presence_pct": provenance.get("signal_presence_pct"),
+            }
+
+        return outlook
+
+      
+    def _build_l2_full_dict(self, row):
+        """Extract L2 metrics into a standardized dictionary."""
+        return {
+            "ERI": round(float(row.get("ERI", 0.0)), 2),
+            "ERI_Tier": row.get("ERI_Tier"),
+            "Loyalty_State": row.get("Loyalty_State", row.get("ERI_Tier")),
+            "R": round(float(row.get("R", 0.0)), 2),
+            "F": round(float(row.get("F", 0.0)), 2),
+            "RF": round(float(row.get("RF", 0.0)), 2),
+            "RF_R_Component": round(float(row.get("RF_R_Component", 0.0)), 2),
+            "RF_R_ContributionPct": row.get("RF_R_ContributionPct"),
+            "RF_F_Component": round(float(row.get("RF_F_Component", 0.0)), 2),
+            "RF_F_ContributionPct": row.get("RF_F_ContributionPct"),
+            "RF_Urgency_Category": row.get("RF_Urgency_Category"),
+            "ERI_RF_Quadrant": row.get("ERI_RF_Quadrant"),
+            "Quadrant_Purpose": row.get("Quadrant_Purpose"),
+            "Priority_Status": row.get("Priority_Status"),
+            "Associated_Entity_Names": row.get("Associated_Entity_Names"),
+            "No_of_Mentions": row.get("No_of_Mentions"),
+            "Mention_Share_%": row.get("Mention_Share_%"),
+            "First_Seen_Date": row.get("First_Seen_Date"),
+            "Most_Recent_Date": row.get("Most_Recent_Date"),
+            "Age_Days": row.get("Age_Days"),
+            "Quadrant_Key": row.get("Quadrant_Key"),
+            "Debug_ERI_Raw": round(float(row.get("Debug_ERI_Raw", 0.0)), 4),
+            "Debug_Emotion_Counts": row.get("Debug_Emotion_Counts"),
+        }
+
+    def _build_provenance_meta(self, full_idx, analysis_window_points, observed_points,
+                               signal_presence_pct, series_complete_prefill, missing_pct,
+                               end_inclusive, start, observed_days, observed_span_days,
+                               coverage_needed, span_needed):
+        """Build standardized provenance metadata with reliability tracking."""
+        return {
+            "capsule_id": f"SC-{uuid4().hex[:12]}",
+            "window_start": str(full_idx[0].date()),
+            "window_end": str(full_idx[-1].date()),
+            "analysis_window_points": analysis_window_points,
+            "observed_points_with_signal": observed_points,
+            "signal_presence_pct": signal_presence_pct,
+            "series_data_complete_prefill": bool(series_complete_prefill),
+            "missing_points_pct_prefill": missing_pct,
+            "trend_analysis_points": analysis_window_points,
+            "momentum_arc_points": analysis_window_points // 2,
+            "freq": "D",
+            "time_unit": "day",
+            "window_span_days": int((end_inclusive - start).days + 1),
+            "observed_days": observed_days,
+            "observed_span_days": observed_span_days,
+            "reliability": {
+                "coverage_needed_days": coverage_needed,
+                "span_needed_days": span_needed,
+                "rule": "OR(coverage>=15% OR span>=max(7,25%))",
+            },
+        }
+
+    def compute(self):
+        """
+        Layer 3 (canonical daily analytics):
+        - Build a dense DAILY ERI series per ED over the window [cutoff..today-1]
+        - Run Trend, Momentum, Volatility, Pattern on the SAME daily series
+        - Compose commentary via TM / TMV (+ Temporal 2x2 tags inside compose_commentary)
+        - NOTE: keeps skip for EDs with <2 observed days; adds L3 reliability tag for others
+        """
+        import math
+
+        results, skipped = [], []
+
+        # --- Canonical daily window (use constructor's cutoff/today) ---
+        start = pd.to_datetime(self.cutoff).normalize()
+        end_inclusive = pd.to_datetime(self.today).normalize() - pd.Timedelta(days=1)
+        full_idx = pd.date_range(start=start, end=end_inclusive, freq="D")
+        analysis_window_points = len(full_idx)
+        window_span_days = int((end_inclusive - start).days + 1)
+
+        # --- Ensure time key + ED present ---
+        self.raw_df["date"] = pd.to_datetime(self.raw_df["date"], errors="coerce").dt.normalize()
+        data_ok = self.raw_df.dropna(subset=["date"]).copy()
+        data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
+
+        # --- Eligible EDs from Layer 2 ---
+        entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(self.eligible_tiers)]
+
+        # --- Thresholds for reliability (OR rule) ---
+        min_coverage_pct = 0.15   # 15% of days active
+        min_span_pct     = 0.25   # 25% of window
+        min_span_days    = 7      # at least a week
+        coverage_needed  = math.ceil(min_coverage_pct * window_span_days)
+        span_needed      = max(min_span_days, round(min_span_pct * window_span_days))
+
+        for _, row in entities.iterrows():
+            ed = str(row["experience_driver"]).strip()
+            try:
+                sub = data_ok[data_ok["experience_driver"] == ed]
+
+                # --- Aggregate ERI per DAY ---
+                grouped = (
+                    sub.groupby(pd.Grouper(key="date", freq="D"))
+                    .apply(self.compute_normalized_eri)   # scalar ERI/day
+                    .sort_index()
+                )
+
+                # --- Align to daily window BEFORE fill ---
+                grouped = grouped.reindex(full_idx)
+                missing_pct = float(grouped.isna().mean())
+                series_complete_prefill = not grouped.isna().any()
+                observed_points = int(grouped.dropna().shape[0])
+
+                # --- Presence: % of days with any mentions (pre-fill) ---
+                counts = (
+                    sub.groupby(pd.Grouper(key="date", freq="D"))
+                    .size().reindex(full_idx, fill_value=0)
+                )
+                observed_days = int((counts > 0).sum())
+                signal_presence_pct = round(float(observed_days) / analysis_window_points, 3)
+
+                # --- Gate: need ≥2 observed days pre-fill ---
+                if observed_points <= 1:
+                    if getattr(self, "verbose", False): 
+                        print(f"⏭️ DROP [{ed}] → insufficient points ({observed_points})")
+                    skipped.append((ed, f"Insufficient points: {observed_points}"))
+                    continue
+
+                # --- Calculate observed span (BEFORE provenance) ---
+                active_idx = counts[counts > 0].index
+                if len(active_idx) >= 2:
+                    observed_span_days = int((active_idx[-1] - active_idx[0]).days) + 1
+                else:
+                    observed_span_days = 0
+
+                # --- Reliability check (either-or rule) ---
+                is_reliable = (observed_days >= coverage_needed) or (observed_span_days >= span_needed)
+                layer3_status = "L3_RELIABLE" if is_reliable else "L3_UNRELIABLE"
+
+                # --- Dense daily track for ALL modules ---
+                daily_track = grouped.bfill().ffill()
+
+                # === Longitudinal modules (same daily track) ===
+                trend_block      = self._compute_trend_series(daily_track)
+                momentum_block   = self._compute_momentum_series(daily_track)
+                volatility_block = self._compute_volatility_series(daily_track)
+                pattern_block    = self._compute_pattern_series(daily_track)  # 7d/30d + pain-day valid
+            
+                # === Commentary (TMV since volatility present) ===
+                commentary_block = self.compose_commentary(
+                    trend=trend_block,
+                    momentum=momentum_block,
+                    volatility={
+                        "symbol":  volatility_block.get("symbol", "✅"),
+                        "label":   volatility_block.get("label"),
+                        "score":   volatility_block.get("score"),
+                        "n_points": len(daily_track),
+                    },
+                    pattern=pattern_block,
+                    eri_score=float(row.get("ERI", 0.0)),
+                    eri_tier=row.get("Loyalty_State"),
+                    rf_score=float(row.get("RF", 0.0)),
+                    rf_tier=row.get("RF_Urgency_Category"),
+                    priority_status=row.get("Priority_Status"),
+                    quadrant_purpose=row.get("Quadrant_Purpose"),
+                )
+
+                # --- Provenance/meta (NOW with all calculated values) ---
+                capsule_meta = self._build_provenance_meta(
+                    full_idx, analysis_window_points, observed_points,
+                    signal_presence_pct, series_complete_prefill, missing_pct,
+                    end_inclusive, start, observed_days, observed_span_days,
+                    coverage_needed, span_needed
+                )
+
+                # --- Build outlook ---
+                outlook_block = self.build_outlook_from_capsule(
+                    capsule=commentary_block,
+                    provenance=capsule_meta,
+                    min_points=7,
+                    horizon_days=7,
+                )
+                                    
+                # --- Assemble record ---
+                l2_full = self._build_l2_full_dict(row)
+
+                record = {
+                    "experience_driver": ed,
+                    **l2_full,                    
+                    "trend_block": trend_block,
+                    "momentum_block": momentum_block,
+                    "volatility_block": volatility_block,
+                    "pattern_block": pattern_block,
+                    "commentary": commentary_block,
+                    "provenance": capsule_meta,
+                    "outlook": outlook_block,
+                    "layer3_status": layer3_status,
+                }
+                results.append(record)
+
+            except Exception as e:
+                if getattr(self, "verbose", False): 
+                    print(f"💥 FAIL [{ed}] → {e}")
+                skipped.append((ed, str(e)))
+                continue
+
+        self.layer3_df = pd.DataFrame(results)
+        self.skipped_entities = skipped
+        return self.layer3_df
+
+
+    # def compute(self):
+    #     """
+    #     Layer 3 (canonical daily analytics):
+    #     - Build a dense DAILY ERI series per ED over the window [cutoff..today-1]
+    #     - Run Trend, Momentum, Volatility, Pattern on the SAME daily series
+    #     - Compose commentary via TM / TMV (+ Temporal 2x2 tags inside compose_commentary)
+    #     """
+
+    #     results, skipped = [], []
+
+    #     # --- Canonical daily window (use constructor’s cutoff/today) ---
+    #     start = pd.to_datetime(self.cutoff).normalize()
+    #     end_inclusive = pd.to_datetime(self.today).normalize() - pd.Timedelta(days=1)
+    #     full_idx = pd.date_range(start=start, end=end_inclusive, freq="D")
+    #     analysis_window_points = len(full_idx)
+
+    #     # --- Ensure time key + ED present ---
+    #     self.raw_df["date"] = pd.to_datetime(self.raw_df["date"], errors="coerce").dt.normalize()
+    #     data_ok = self.raw_df.dropna(subset=["date"]).copy()
+    #     data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
+
+    #     # --- Eligible EDs from Layer 2 ---
+    #     entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(self.eligible_tiers)]
+
+    #     for _, row in entities.iterrows():
+    #         ed = str(row["experience_driver"]).strip()
+    #         sub = data_ok[data_ok["experience_driver"] == ed]
+
+    #             # --- Aggregate ERI per DAY ---
+    #             grouped = (
+    #                 sub.groupby(pd.Grouper(key="date", freq="D"))
+    #                 .apply(self.compute_normalized_eri)   # scalar ERI/day
+    #                 .sort_index()
+    #             )
+
+    #             # --- Align to daily window BEFORE fill ---
+    #             grouped = grouped.reindex(full_idx)
+    #             missing_pct = float(grouped.isna().mean())
+    #             series_complete_prefill = not grouped.isna().any()
+    #             observed_points = int(grouped.dropna().shape[0])
+
+    #             # --- Gate: need ≥2 observed days pre-fill ---
+    #             if observed_points <= 1:
+    #                 if getattr(self, "verbose", False): print(f"⏭️ DROP [{ed}] → insufficient points ({observed_points})")
+    #                 skipped.append((ed, f"Insufficient points: {observed_points}")); continue
+
+    #             # --- Presence: % of days with any mentions (pre-fill) ---
+    #             counts = (
+    #                 sub.groupby(pd.Grouper(key="date", freq="D"))
+    #                 .size().reindex(full_idx, fill_value=0)
+    #             )
+    #             signal_presence_pct = round(float((counts > 0).sum()) / analysis_window_points, 3)
+
+    #             # --- Dense daily track for ALL modules ---
+    #             daily_track = grouped.bfill().ffill()
+
+    #             # === Longitudinal modules (same daily track) ===
+    #             trend_block      = self._compute_trend_series(daily_track)
+    #             momentum_block   = self._compute_momentum_series(daily_track)
+    #             volatility_block = self._compute_volatility_series(daily_track)
+    #             pattern_block    = self._compute_pattern_series(daily_track)  # 7d/30d + pain-day valid
+               
+    #             # === Commentary (TMV since volatility present) ===
+    #             commentary_block = self.compose_commentary(
+    #                 trend=trend_block,
+    #                 momentum=momentum_block,
+    #                 volatility={
+    #                     "symbol":  volatility_block.get("symbol", "✅"),
+    #                     "label":   volatility_block.get("label"),
+    #                     "score":   volatility_block.get("score"),
+    #                     "n_points": len(daily_track),
+    #                 },
+    #                 pattern=pattern_block,
+    #                 eri_score=float(row.get("ERI", 0.0)),
+    #                 eri_tier=row.get("Loyalty_State"),
+    #                 rf_score=float(row.get("RF", 0.0)),
+    #                 rf_tier=row.get("RF_Urgency_Category"),
+    #                 priority_status=row.get("Priority_Status"),
+    #                 quadrant_purpose=row.get("Quadrant_Purpose"),
+    #             )
+
+                
+    #             # --- Provenance/meta (daily-aware) ---
+    #             capsule_meta = {
+    #                 "capsule_id": f"SC-{uuid4().hex[:12]}",
+    #                 "window_start": str(full_idx[0].date()),
+    #                 "window_end": str(full_idx[-1].date()),
+    #                 "analysis_window_points": analysis_window_points,
+    #                 "observed_points_with_signal": observed_points,
+    #                 "signal_presence_pct": signal_presence_pct,
+    #                 "series_data_complete_prefill": bool(series_complete_prefill),
+    #                 "missing_points_pct_prefill": missing_pct,
+    #                 "trend_analysis_points": analysis_window_points,
+    #                 "momentum_arc_points": analysis_window_points // 2,
+    #                 "freq": "D",
+    #                 "time_unit": "day",   # analysis cadence is daily by design
+    #                 "window_span_days": int((end_inclusive - start).days + 1),
+    #             }
+
+    #             outlook_block = self.build_outlook_from_capsule(
+    #                 capsule=commentary_block,
+    #                 provenance=capsule_meta,        # optional; helps QA
+    #                 min_points=7,
+    #                 horizon_days=7,
+    #             )
+                                       
+    #             # --- Assemble record ---
+    #             l2_full = {
+    #                 "ERI": round(float(row.get("ERI", 0.0)), 2),
+    #                 "ERI_Tier": row.get("ERI_Tier"),
+    #                 "Loyalty_State": row.get("Loyalty_State", row.get("ERI_Tier")),
+
+    #                 "R": round(float(row.get("R", 0.0)), 2),
+    #                 "F": round(float(row.get("F", 0.0)), 2),
+    #                 "RF": round(float(row.get("RF", 0.0)), 2),
+    #                 "RF_R_Component": round(float(row.get("RF_R_Component", 0.0)), 2),
+    #                 "RF_R_ContributionPct": row.get("RF_R_ContributionPct"),
+    #                 "RF_F_Component": round(float(row.get("RF_F_Component", 0.0)), 2),
+    #                 "RF_F_ContributionPct": row.get("RF_F_ContributionPct"),
+
+    #                 "RF_Urgency_Category": row.get("RF_Urgency_Category"),
+
+    #                 "ERI_RF_Quadrant": row.get("ERI_RF_Quadrant"),
+    #                 "Quadrant_Purpose": row.get("Quadrant_Purpose"),
+    #                 "Priority_Status": row.get("Priority_Status"),
+
+    #                 "Associated_Entity_Names": row.get("Associated_Entity_Names"),
+    #                 "No_of_Mentions": row.get("No_of_Mentions"),
+    #                 "Mention_Share_%": row.get("Mention_Share_%"),
+    #                 "First_Seen_Date": row.get("First_Seen_Date"),
+    #                 "Most_Recent_Date": row.get("Most_Recent_Date"),
+    #                 "Age_Days": row.get("Age_Days"),
+
+    #                 "Quadrant_Key": row.get("Quadrant_Key"),
+    #                 "Debug_ERI_Raw": round(float(row.get("Debug_ERI_Raw", 0.0)), 4),
+    #                 "Debug_Emotion_Counts": row.get("Debug_Emotion_Counts"),
+    #             }
+
+    #             record = {
+    #                 "experience_driver": ed,
+    #                 **l2_full,                    
+
+    #                 # longitudinal outputs (daily)
+    #                 "trend_block": trend_block,
+    #                 "momentum_block": momentum_block,
+    #                 "volatility_block": volatility_block,
+    #                 "pattern_block": pattern_block,
+
+    #                 # commentary
+    #                 "commentary": commentary_block,
+
+    #                 # meta
+    #                 "provenance": capsule_meta,
+                    
+    #                 # predictive insight
+    #                 "outlook": outlook_block
+    #             }
+                
+    #             results.append(record)
+
+    #         except Exception as e:
+    #             if getattr(self, "verbose", False): print(f"💥 FAIL [{ed}] → {e}")
+    #             skipped.append((ed, str(e))); continue
+
+    #     self.layer3_df = pd.DataFrame(results)
+    #     self.skipped_entities = skipped
+    #     return self.layer3_df
+
+# Compute Version 2 where we include ED's with day mentions <=2 and
+# we distinguish between ED's that qualify for L3 but info is either reliable or unreliable.
+
+    def _build_l2_full_dict(self, row):
+        """Extract L2 metrics into a standardized dictionary."""
+        return {
+            "ERI": round(float(row.get("ERI", 0.0)), 2),
+            "ERI_Tier": row.get("ERI_Tier"),
+            "Loyalty_State": row.get("Loyalty_State", row.get("ERI_Tier")),
+            "R": round(float(row.get("R", 0.0)), 2),
+            "F": round(float(row.get("F", 0.0)), 2),
+            "RF": round(float(row.get("RF", 0.0)), 2),
+            "RF_R_Component": round(float(row.get("RF_R_Component", 0.0)), 2),
+            "RF_R_ContributionPct": row.get("RF_R_ContributionPct"),
+            "RF_F_Component": round(float(row.get("RF_F_Component", 0.0)), 2),
+            "RF_F_ContributionPct": row.get("RF_F_ContributionPct"),
+            "RF_Urgency_Category": row.get("RF_Urgency_Category"),
+            "ERI_RF_Quadrant": row.get("ERI_RF_Quadrant"),
+            "Quadrant_Purpose": row.get("Quadrant_Purpose"),
+            "Priority_Status": row.get("Priority_Status"),
+            "Associated_Entity_Names": row.get("Associated_Entity_Names"),
+            "No_of_Mentions": row.get("No_of_Mentions"),
+            "Mention_Share_%": row.get("Mention_Share_%"),
+            "First_Seen_Date": row.get("First_Seen_Date"),
+            "Most_Recent_Date": row.get("Most_Recent_Date"),
+            "Age_Days": row.get("Age_Days"),
+            "Quadrant_Key": row.get("Quadrant_Key"),
+            "Debug_ERI_Raw": round(float(row.get("Debug_ERI_Raw", 0.0)), 4),
+            "Debug_Emotion_Counts": row.get("Debug_Emotion_Counts"),
+        }
+
+    def _build_l2_only_record(self, ed, l2_full, provenance=None, status="L2_ONLY"):
+        return {
+            "experience_driver": ed,
+            **l2_full,
+            "trend_block": None,
+            "momentum_block": None,
+            "volatility_block": None,
+            "pattern_block": None,
+            "commentary": None,
+            "provenance": provenance,
+            "outlook": None,
+            "layer3_status": status,
+        }
+
+
+    def _build_provenance_meta(
+        self,
+        full_idx,
+        analysis_window_points,
+        observed_points,
+        signal_presence_pct,
+        series_complete_prefill,
+        missing_pct,
+        window_span_days,
+        observed_days,
+        *,
+        evaluated: bool,                 # False for L2_ONLY, True for L3
+        observed_span_days: int = 0,     # 0 for L2_ONLY
+        coverage_needed: int | None = None,
+        span_needed: int | None = None,
+        reason: str | None = None,
+        outlook_params: dict | None = None,
+    ):
+        meta = {
+            "capsule_id": f"SC-{uuid4().hex[:12]}",
+            "window_start": str(full_idx[0].date()),
+            "window_end": str(full_idx[-1].date()),
+            "analysis_window_points": analysis_window_points,
+            "observed_points_with_signal": observed_points,
+            "signal_presence_pct": signal_presence_pct,
+            "series_data_complete_prefill": bool(series_complete_prefill),
+            "missing_points_pct_prefill": missing_pct,
+            "freq": "D",
+            "time_unit": "day",
+            "window_span_days": window_span_days,
+            "observed_days": observed_days,
+            "observed_span_days": int(observed_span_days),
+            "reliability": {
+                "evaluated": bool(evaluated),
+            },
+        }
+
+        if evaluated:
+            # full reliability block only when we actually evaluated L3
+            meta["reliability"].update({
+                "coverage_needed_days": int(coverage_needed),
+                "span_needed_days": int(span_needed),
+                "rule": "OR(coverage>=15% OR span>=max(7,25%))",
+                # optional: thresholds for traceability
+                "thresholds": {"min_coverage_pct": 0.15, "min_span_pct": 0.25, "min_span_days": 7},
+            })
+        else:
+            # L2_ONLY clarity
+            if reason:
+                meta["reason"] = reason
+
+        if outlook_params:
+            meta["outlook_params"] = outlook_params
+
+        return meta
+    
+    def compute(self):
+        """
+        Layer 3 (canonical daily analytics):
+        - Build a dense DAILY ERI series per ED over the window [cutoff..today-1]
+        - Run Trend, Momentum, Volatility, Pattern on the SAME daily series
+        - Compose commentary via TM / TMV (+ Temporal 2x2 tags inside compose_commentary)
+        - Emits ALL EDs with layer3_status in {L2_ONLY, L3_UNRELIABLE, L3_RELIABLE}
+        
+        Requires: self._build_provenance_meta(..., evaluated: bool, observed_span_days=0|int, coverage_needed=None|int, span_needed=None|int, reason=None, outlook_params=None)
+        """
+        results, skipped = [], []
+
+        # --- Canonical daily window (use constructor's cutoff/today) ---
+        start = pd.to_datetime(self.cutoff).normalize()
+        end_inclusive = pd.to_datetime(self.today).normalize() - pd.Timedelta(days=1)
+        full_idx = pd.date_range(start=start, end=end_inclusive, freq="D")
+        analysis_window_points = len(full_idx)
+        window_span_days = int((end_inclusive - start).days + 1)
+
+        # thresholds (simple + tunable)
+        min_coverage_pct = 0.15   # 15% of days active
+        min_span_pct     = 0.25   # 25% of window
+        min_span_days    = 7      # at least a week span
+        coverage_needed  = math.ceil(min_coverage_pct * window_span_days)
+        span_needed      = max(min_span_days, round(min_span_pct * window_span_days))
+
+        # --- Ensure time key + ED present ---
+        self.raw_df["date"] = pd.to_datetime(self.raw_df["date"], errors="coerce").dt.normalize()
+        data_ok = self.raw_df.dropna(subset=["date"]).copy()
+        data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
+
+        # --- Eligible EDs from Layer 2 (dynamic priority gating) ---
+        entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(self.eligible_tiers)]
+
+        for _, row in entities.iterrows():
+            ed = str(row["experience_driver"]).strip()
+
+            try:
+                # --- Build L2 data once ---
+                l2_full = self._build_l2_full_dict(row)
+
+                # Filter data for this ED
+                sub = data_ok[data_ok["experience_driver"] == ed].copy()
+
+                # --- Aggregate ERI per DAY (scalar per day) ---
+                grouped = (
+                    sub.groupby(pd.Grouper(key="date", freq="D"))
+                    .apply(self.compute_normalized_eri)   # must return float per day
+                    .sort_index()
+                )
+
+                # --- Align to daily window BEFORE fill ---
+                grouped = grouped.reindex(full_idx)
+                missing_pct = float(grouped.isna().mean())
+                series_complete_prefill = not grouped.isna().any()
+                observed_points = int(grouped.dropna().shape[0])  # pre-fill ERI days
+
+                # --- Presence: active days & coverage (pre-fill) ---
+                counts = (
+                    sub.groupby(pd.Grouper(key="date", freq="D"))
+                    .size().reindex(full_idx, fill_value=0)
+                )
+                observed_days = int((counts > 0).sum())
+                signal_presence_pct = round(float(observed_days) / analysis_window_points, 3)
+
+                # --- L2_ONLY early gate (no reliability evaluation, minimal provenance) ---
+                if observed_days < 2:
+                    if getattr(self, "verbose", False):
+                        print(f"ℹ️ L2_ONLY [{ed}] → observed_days={observed_days}")
+                    capsule_meta = self._build_provenance_meta(
+                        full_idx=full_idx,
+                        analysis_window_points=analysis_window_points,
+                        observed_points=observed_points,
+                        signal_presence_pct=signal_presence_pct,
+                        series_complete_prefill=series_complete_prefill,
+                        missing_pct=missing_pct,
+                        window_span_days=window_span_days,
+                        observed_days=observed_days,
+                        evaluated=False,                     # <- minimal meta mode
+                        observed_span_days=0,
+                        reason="insufficient_activity",
+                    )
+                    results.append(self._build_l2_only_record(ed, l2_full, capsule_meta))
+                    continue
+
+                # --- Calculate observed span (only for L3 candidates) ---
+                active_idx = counts[counts > 0].index
+                observed_span_days = int((active_idx[-1] - active_idx[0]).days) + 1 if len(active_idx) >= 2 else 0
+
+                # --- Build FULL provenance (includes reliability thresholds & outlook params) ---
+                capsule_meta = self._build_provenance_meta(
+                    full_idx=full_idx,
+                    analysis_window_points=analysis_window_points,
+                    observed_points=observed_points,
+                    signal_presence_pct=signal_presence_pct,
+                    series_complete_prefill=series_complete_prefill,
+                    missing_pct=missing_pct,
+                    window_span_days=window_span_days,
+                    observed_days=observed_days,
+                    evaluated=True,                        # <- full meta mode
+                    observed_span_days=observed_span_days,
+                    coverage_needed=coverage_needed,
+                    span_needed=span_needed,
+                    outlook_params={"min_points": 7, "horizon_days": 7},
+                )
+
+                # --- Dense daily track for ALL modules ---
+                daily_track = grouped.bfill().ffill()
+
+                # === Longitudinal modules (same daily track) ===
+                trend_block      = self._compute_trend_series(daily_track)
+                momentum_block   = self._compute_momentum_series(daily_track)
+                volatility_block = self._compute_volatility_series(daily_track)
+                pattern_block    = self._compute_pattern_series(daily_track)  # 7d/30d + pain-day valid
+
+                # === Commentary (TMV since volatility present) ===
+                commentary_block = self.compose_commentary(
+                    trend=trend_block,
+                    momentum=momentum_block,
+                    volatility={
+                        "symbol":  volatility_block.get("symbol", "✅"),
+                        "label":   volatility_block.get("label"),
+                        "score":   volatility_block.get("score"),
+                        "n_points": len(daily_track),
+                    },
+                    pattern=pattern_block,
+                    eri_score=float(row.get("ERI", 0.0)),
+                    eri_tier=row.get("Loyalty_State"),
+                    rf_score=float(row.get("RF", 0.0)),
+                    rf_tier=row.get("RF_Urgency_Category"),
+                    priority_status=row.get("Priority_Status"),
+                    quadrant_purpose=row.get("Quadrant_Purpose"),
+                )
+
+                # --- Reliability (either-or): coverage OR span ---
+                is_reliable = (observed_days >= coverage_needed) or (observed_span_days >= span_needed)
+                layer3_status = "L3_RELIABLE" if is_reliable else "L3_UNRELIABLE"
+
+                # --- Build outlook ---
+                outlook_block = self.build_outlook_from_capsule(
+                    capsule=commentary_block,
+                    provenance=capsule_meta,
+                    min_points=7,
+                    horizon_days=7,
+                )
+
+                # --- Assemble record (FULL L2 + L3) ---
+                record = {
+                    "experience_driver": ed,
+                    **l2_full,
+                    "trend_block": trend_block,
+                    "momentum_block": momentum_block,
+                    "volatility_block": volatility_block,
+                    "pattern_block": pattern_block,
+                    "commentary": commentary_block,
+                    "provenance": capsule_meta,
+                    "outlook": outlook_block,
+                    "layer3_status": layer3_status,
+                }
+                results.append(record)
+
+            except Exception as e:
+                if getattr(self, "verbose", False):
+                    print(f"💥 FAIL [{ed}] → {e}")
+
+                # Emit L2-only on exception; don't drop the ED
+                try:
+                    l2_full = self._build_l2_full_dict(row)
+                except Exception:
+                    l2_full = {}
+
+                # minimal provenance on error path too
+                capsule_meta = self._build_provenance_meta(
+                    full_idx=full_idx,
+                    analysis_window_points=analysis_window_points,
+                    observed_points=0,
+                    signal_presence_pct=0.0,
+                    series_complete_prefill=False,
+                    missing_pct=1.0,
+                    window_span_days=window_span_days,
+                    observed_days=0,
+                    evaluated=False,
+                    observed_span_days=0,
+                    reason=f"exception:{str(e)}",
+                )
+
+                results.append(self._build_l2_only_record(ed, l2_full, capsule_meta))
+                skipped.append((ed, str(e)))
+                continue
+
+        self.layer3_df = pd.DataFrame(results)
+        self.skipped_entities = skipped
+        return self.layer3_df
+
+
+    # def compute(self):
+    #     """
+    #     Layer 3 (canonical daily analytics):
+    #     - Build a dense DAILY ERI series per ED over the window [cutoff..today-1]
+    #     - Run Trend, Momentum, Volatility, Pattern on the SAME daily series
+    #     - Compose commentary via TM / TMV (+ Temporal 2x2 tags inside compose_commentary)
+    #     - Reimagined: include ALL EDs with layer3_status = L2_ONLY / L3_UNRELIABLE / L3_RELIABLE
+    #     """
+
+    #     results, skipped = [], []
+
+    #     # --- Canonical daily window (use constructor’s cutoff/today) ---
+    #     start = pd.to_datetime(self.cutoff).normalize()
+    #     end_inclusive = pd.to_datetime(self.today).normalize() - pd.Timedelta(days=1)
+    #     full_idx = pd.date_range(start=start, end=end_inclusive, freq="D")
+    #     analysis_window_points = len(full_idx)
+    #     window_span_days = int((end_inclusive - start).days + 1)
+
+    #     # thresholds (simple + tunable)
+    #     min_coverage_pct = 0.15   # 15% of days active
+    #     min_span_pct     = 0.25   # 25% of window
+    #     min_span_days    = 7      # at least a week span
+    #     coverage_needed  = math.ceil(min_coverage_pct * window_span_days)
+    #     span_needed      = max(min_span_days, round(min_span_pct * window_span_days))
+
+    #     # --- Ensure time key + ED present ---
+    #     self.raw_df["date"] = pd.to_datetime(self.raw_df["date"], errors="coerce").dt.normalize()
+    #     data_ok = self.raw_df.dropna(subset=["date"]).copy()
+    #     data_ok["experience_driver"] = data_ok["experience_driver"].astype(str).str.strip()
+
+    #     # --- Eligible EDs from Layer 2 (dynamic priority gating) ---
+    #     entities = self.layer2_df[self.layer2_df["Priority_Status"].isin(self.eligible_tiers)]
+
+    #     for _, row in entities.iterrows():
+    #         ed = str(row["experience_driver"]).strip()
+  
+    #             # --- Build FULL L2 (as-is) ---
+    #             l2_full = {
+    #                 "ERI": round(float(row.get("ERI", 0.0)), 2),
+    #                 "ERI_Tier": row.get("ERI_Tier"),
+    #                 "Loyalty_State": row.get("Loyalty_State", row.get("ERI_Tier")),
+
+    #                 "R": round(float(row.get("R", 0.0)), 2),
+    #                 "F": round(float(row.get("F", 0.0)), 2),
+    #                 "RF": round(float(row.get("RF", 0.0)), 2),
+    #                 "RF_R_Component": round(float(row.get("RF_R_Component", 0.0)), 2),
+    #                 "RF_R_ContributionPct": row.get("RF_R_ContributionPct"),
+    #                 "RF_F_Component": round(float(row.get("RF_F_Component", 0.0)), 2),
+    #                 "RF_F_ContributionPct": row.get("RF_F_ContributionPct"),
+
+    #                 "RF_Urgency_Category": row.get("RF_Urgency_Category"),
+
+    #                 "ERI_RF_Quadrant": row.get("ERI_RF_Quadrant"),
+    #                 "Quadrant_Purpose": row.get("Quadrant_Purpose"),
+    #                 "Priority_Status": row.get("Priority_Status"),
+
+    #                 "Associated_Entity_Names": row.get("Associated_Entity_Names"),
+    #                 "No_of_Mentions": row.get("No_of_Mentions"),
+    #                 "Mention_Share_%": row.get("Mention_Share_%"),
+    #                 "First_Seen_Date": row.get("First_Seen_Date"),
+    #                 "Most_Recent_Date": row.get("Most_Recent_Date"),
+    #                 "Age_Days": row.get("Age_Days"),
+
+    #                 "Quadrant_Key": row.get("Quadrant_Key"),
+    #                 "Debug_ERI_Raw": round(float(row.get("Debug_ERI_Raw", 0.0)), 4),
+    #                 "Debug_Emotion_Counts": row.get("Debug_Emotion_Counts"),
+    #             }
+
+    #             # --- Aggregate ERI per DAY ---
+    #             grouped = (
+    #                 sub.groupby(pd.Grouper(key="date", freq="D"))
+    #                 .apply(self.compute_normalized_eri)   # scalar ERI/day
+    #                 .sort_index()
+    #             )
+
+    #             # --- Align to daily window BEFORE fill ---
+    #             grouped = grouped.reindex(full_idx)
+    #             missing_pct = float(grouped.isna().mean())
+    #             series_complete_prefill = not grouped.isna().any()
+    #             observed_points = int(grouped.dropna().shape[0])  # pre-fill ERI days
+
+    #             # --- Presence: active days & coverage (pre-fill) ---
+    #             counts = (
+    #                 sub.groupby(pd.Grouper(key="date", freq="D"))
+    #                 .size().reindex(full_idx, fill_value=0)
+    #             )
+    #             observed_days = int((counts > 0).sum())
+    #             signal_presence_pct = round(float(observed_days) / analysis_window_points, 3)
+
+    #             # --- If fewer than 2 active days → L2 only
+    #             if observed_days < 2:
+    #                 if getattr(self, "verbose", False): print(f"ℹ️ L2_ONLY [{ed}] → observed_days={observed_days}")
+    #                 results.append({
+    #                     "experience_driver": ed,
+    #                     **l2_full,
+    #                     "trend_block": None,
+    #                     "momentum_block": None,
+    #                     "volatility_block": None,
+    #                     "pattern_block": None,
+    #                     "commentary": None,
+    #                     "provenance": {
+    #                         "capsule_id": f"SC-{uuid4().hex[:12]}",
+    #                         "window_start": str(full_idx[0].date()),
+    #                         "window_end": str(full_idx[-1].date()),
+    #                         "analysis_window_points": analysis_window_points,
+    #                         "observed_points_with_signal": observed_points,
+    #                         "signal_presence_pct": signal_presence_pct,
+    #                         "series_data_complete_prefill": bool(series_complete_prefill),
+    #                         "missing_points_pct_prefill": missing_pct,
+    #                         "trend_analysis_points": analysis_window_points,
+    #                         "momentum_arc_points": analysis_window_points // 2,
+    #                         "freq": "D",
+    #                         "time_unit": "day",
+    #                         "window_span_days": window_span_days,
+    #                         "observed_days": observed_days,
+    #                         "observed_span_days": 0,
+    #                     },
+    #                     "outlook": None,
+    #                     "layer3_status": "L2_ONLY",
+    #                 })
+    #                 continue
+
+    #             # --- Dense daily track for ALL modules ---
+    #             daily_track = grouped.bfill().ffill()
+
+    #             # === Longitudinal modules (same daily track) ===
+    #             trend_block      = self._compute_trend_series(daily_track)
+    #             momentum_block   = self._compute_momentum_series(daily_track)
+    #             volatility_block = self._compute_volatility_series(daily_track)
+    #             pattern_block    = self._compute_pattern_series(daily_track)  # 7d/30d + pain-day valid
+
+    #             # === Commentary (TMV since volatility present) ===
+    #             commentary_block = self.compose_commentary(
+    #                 trend=trend_block,
+    #                 momentum=momentum_block,
+    #                 volatility={
+    #                     "symbol":  volatility_block.get("symbol", "✅"),
+    #                     "label":   volatility_block.get("label"),
+    #                     "score":   volatility_block.get("score"),
+    #                     "n_points": len(daily_track),
+    #                 },
+    #                 pattern=pattern_block,
+    #                 eri_score=float(row.get("ERI", 0.0)),
+    #                 eri_tier=row.get("Loyalty_State"),
+    #                 rf_score=float(row.get("RF", 0.0)),
+    #                 rf_tier=row.get("RF_Urgency_Category"),
+    #                 priority_status=row.get("Priority_Status"),
+    #                 quadrant_purpose=row.get("Quadrant_Purpose"),
+    #             )
+
+    #             # --- Reliability (either-or): coverage OR span ---
+    #             active_idx = counts[counts > 0].index
+    #             if len(active_idx) >= 2:
+    #                 observed_span_days = int((active_idx[-1] - active_idx[0]).days) + 1
+    #             else:
+    #                 observed_span_days = 0
+
+    #             is_reliable = (observed_days >= coverage_needed) or (observed_span_days >= span_needed)
+    #             layer3_status = "L3_RELIABLE" if is_reliable else "L3_UNRELIABLE"
+
+    #             # --- Provenance/meta (daily-aware) ---
+    #             capsule_meta = {
+    #                 "capsule_id": f"SC-{uuid4().hex[:12]}",
+    #                 "window_start": str(full_idx[0].date()),
+    #                 "window_end": str(full_idx[-1].date()),
+    #                 "analysis_window_points": analysis_window_points,
+    #                 "observed_points_with_signal": observed_points,
+    #                 "signal_presence_pct": signal_presence_pct,
+    #                 "series_data_complete_prefill": bool(series_complete_prefill),
+    #                 "missing_points_pct_prefill": missing_pct,
+    #                 "trend_analysis_points": analysis_window_points,
+    #                 "momentum_arc_points": analysis_window_points // 2,
+    #                 "freq": "D",
+    #                 "time_unit": "day",
+    #                 "window_span_days": window_span_days,
+    #                 "observed_days": observed_days,
+    #                 "observed_span_days": observed_span_days,
+    #                 "reliability": {
+    #                     "coverage_needed_days": coverage_needed,
+    #                     "span_needed_days": span_needed,
+    #                     "rule": "OR(coverage>=15% OR span>=max(7,25%))",
+    #                 },
+    #             }
+
+    #             outlook_block = self.build_outlook_from_capsule(
+    #                 capsule=commentary_block,
+    #                 provenance=capsule_meta,        # optional; helps QA
+    #                 min_points=7,
+    #                 horizon_days=7,
+    #             )
+
+    #             # --- Assemble record (FULL L2 + L3) ---
+    #             record = {
+    #                 "experience_driver": ed,
+    #                 **l2_full,
+    #                 "trend_block": trend_block,
+    #                 "momentum_block": momentum_block,
+    #                 "volatility_block": volatility_block,
+    #                 "pattern_block": pattern_block,
+    #                 "commentary": commentary_block,
+    #                 "provenance": capsule_meta,
+    #                 "outlook": outlook_block,
+    #                 "layer3_status": layer3_status,
+    #             }
+    #             results.append(record)
+
+    #         except Exception as e:
+    #             if getattr(self, "verbose", False): print(f"💥 FAIL [{ed}] → {e}")
+    #             # emit L2-only on exception; don’t drop the ED
+    #             try:
+    #                 l2_full = {
+    #                     "ERI": round(float(row.get("ERI", 0.0)), 2),
+    #                     "ERI_Tier": row.get("ERI_Tier"),
+    #                     "Loyalty_State": row.get("Loyalty_State", row.get("ERI_Tier")),
+    #                     "R": round(float(row.get("R", 0.0)), 2),
+    #                     "F": round(float(row.get("F", 0.0)), 2),
+    #                     "RF": round(float(row.get("RF", 0.0)), 2),
+    #                     "RF_R_Component": round(float(row.get("RF_R_Component", 0.0)), 2),
+    #                     "RF_R_ContributionPct": row.get("RF_R_ContributionPct"),
+    #                     "RF_F_Component": round(float(row.get("RF_F_Component", 0.0)), 2),
+    #                     "RF_F_ContributionPct": row.get("RF_F_ContributionPct"),
+    #                     "RF_Urgency_Category": row.get("RF_Urgency_Category"),
+    #                     "ERI_RF_Quadrant": row.get("ERI_RF_Quadrant"),
+    #                     "Quadrant_Purpose": row.get("Quadrant_Purpose"),
+    #                     "Priority_Status": row.get("Priority_Status"),
+    #                     "Associated_Entity_Names": row.get("Associated_Entity_Names"),
+    #                     "No_of_Mentions": row.get("No_of_Mentions"),
+    #                     "Mention_Share_%": row.get("Mention_Share_%"),
+    #                     "First_Seen_Date": row.get("First_Seen_Date"),
+    #                     "Most_Recent_Date": row.get("Most_Recent_Date"),
+    #                     "Age_Days": row.get("Age_Days"),
+    #                     "Quadrant_Key": row.get("Quadrant_Key"),
+    #                     "Debug_ERI_Raw": round(float(row.get("Debug_ERI_Raw", 0.0)), 4),
+    #                     "Debug_Emotion_Counts": row.get("Debug_Emotion_Counts"),
+    #                 }
+                
+    #             except Exception:
+    #                 l2_full = {}
+                
+    #             results.append({
+    #                 "experience_driver": ed,
+    #                 **l2_full,
+    #                 "trend_block": None,
+    #                 "momentum_block": None,
+    #                 "volatility_block": None,
+    #                 "pattern_block": None,
+    #                 "commentary": None,
+    #                 "provenance": None,
+    #                 "outlook": None,
+    #                 "layer3_status": "L2_ONLY",
+    #             })
+    #             skipped.append((ed, str(e)))
+    #             continue
+
+    #     self.layer3_df = pd.DataFrame(results)
+    #     self.skipped_entities = skipped
+    #     return self.layer3_df
