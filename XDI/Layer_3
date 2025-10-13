@@ -1305,22 +1305,7 @@ customer emotion behaves over time.
 
                 record = {
                     "experience_driver": ed,
-
-                    # quick snapshot
-                    "priority_class": row.get("Priority_Status"),
-                    "associated_entity_names": row.get("Associated_Entity_Names"),
-                    "most_recent_mention": row.get("Most_Recent_Date"),
-                    "no_of_mentions": row.get("No_of_Mentions"),
-
-                    # convenience mirrors
-                    "eri_score": float(row.get("ERI", 0.0)),
-                    "r_score":  float(row.get("R", 0.0)),
-                    "f_score":  float(row.get("F", 0.0)),
-                    "rf_score": float(row.get("RF", 0.0)),
-                    "emotion_perception_tier": row.get("Loyalty_State"),
-                    "rf_urgency_category": row.get("RF_Urgency_Category"),
-                    "eri_rf_urgency_category": row.get("ERI_RF_Quadrant"),
-                    "quadrant_purpose": row.get("Quadrant_Purpose"),
+                    **l2_full,   
 
                     # longitudinal outputs (daily)
                     "trend_block": trend_block,
