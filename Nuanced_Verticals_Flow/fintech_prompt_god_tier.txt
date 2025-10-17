@@ -1418,6 +1418,10 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 * Do **not fabricate** interaction moments. If unclear, output `"Unclear"`  
 * Rare but real behavioral triggers are acceptable  
 * All three layers must be **coherent, sequenced, and emotionally valid**  
+* Each **Interaction Moment** must include a clear temporal or transactional trigger  
+  (e.g., “while verifying KYC”, “during payment confirmation”, “after transaction failure”, “on fund transfer completion”)  
+  to anchor the event to a specific financial action or security checkpoint.  
+  This maintains traceability across sensitive transaction flows.
 
 ---
 
