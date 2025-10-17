@@ -1361,6 +1361,9 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 * Do **not fabricate** interaction moments. If unclear, output `"Unclear"`
 * Rare events are acceptable if they reflect real behavioral or emotional triggers
 * The three layers must be **logically consistent and emotionally traceable**
+* Each **Interaction Moment** must include a clear temporal verb or trigger noun  
+  (e.g., “during checkout”, “on entry”, “while browsing”, “after payment”)  
+  to anchor the moment in time or action. This ensures precision without inference.
 
 ---
 
