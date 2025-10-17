@@ -1454,6 +1454,8 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 * Do **not fabricate** interaction moments. If unclear, output `"Unclear"`
 * Rare but real behavioral triggers are acceptable
 * All three layers must be **coherent, sequenced, and emotionally valid**
+* Each **Interaction Moment** must include a clear temporal or clinical trigger  
+  (e.g., “during appointment check-in”, “while awaiting test results”, “after discharge discussion”, “on lab result notification”) to anchor the emotional event to a specific care interaction. This preserves diagnostic fidelity and patient-experience traceability.
 
 ---
 
@@ -2549,5 +2551,6 @@ These cases represent **the apex of emotion-to-action orchestration** in healthc
 - **Behavioral Impact**: Shortens time to diagnosis, increases portal usage, and improves patient satisfaction.
 
 """
+
 
 
