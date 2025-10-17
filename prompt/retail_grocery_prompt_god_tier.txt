@@ -1339,7 +1339,7 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 
 ---
 
-### ✅ **Examples (Perfect Triangulation):**
+### ✅ **Examples (Perfect Triangulation - Retail / Grocery):**
 
 | Layer              | Example                                       |
 | ------------------ | --------------------------------------------- |
@@ -1347,13 +1347,13 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 | Journey Stage      | "Delivery Completion"                         |
 | Interaction Moment | "Rider marked as delivered but never arrived" |
 
-\| Customer Journey   | "Digital Engagement"                                   |
-\| Journey Stage      | "App Browsing & Cart Enrichment"                       |
-\| Interaction Moment | "No add-on suggestions after item added to cart"       |
+| Customer Journey   | "Digital Engagement"                                   |
+| Journey Stage      | "App Browsing & Cart Enrichment"                       |
+| Interaction Moment | "No add-on suggestions after item added to cart"       |
 
-\| Customer Journey   | "In-Store Experience"                                  |
-\| Journey Stage      | "Service Initiation"                                   |
-\| Interaction Moment | "Staff greeted by name and recalled previous order"    |
+| Customer Journey   | "In-Store Experience"                                  |
+| Journey Stage      | "Service Initiation"                                   |
+| Interaction Moment | "Staff greeted by name and recalled previous order"    |
 
 ---
 
