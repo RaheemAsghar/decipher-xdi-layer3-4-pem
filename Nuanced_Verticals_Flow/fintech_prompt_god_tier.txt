@@ -1388,7 +1388,7 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 
 ---
 
-### ✅ **Examples (Perfect Triangulation):**
+### ✅ **Examples (Perfect Triangulation - Fintech):**
 
 | Layer              | Example                                                |
 | ------------------ | ------------------------------------------------------ |
