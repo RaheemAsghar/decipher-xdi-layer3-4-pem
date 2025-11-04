@@ -187,6 +187,8 @@ class Layer2Computer:
                 age_days = int(max(0, (today_ts - most_recent).days))
 
             # --- ERI --------------------------------------------------------------
+            # ERI = weighted mean of emotional polarity, linearly normalized to a standard comparative scale.
+            
             emotion_counts = group["emotion_primary"].value_counts(dropna=False).to_dict()
             eri_raw = sum(float(self.emotion_scores.get(em, 0.0)) * int(ct) for em, ct in emotion_counts.items())
             eri_mean = (eri_raw / total_mentions) if total_mentions else 0.0
