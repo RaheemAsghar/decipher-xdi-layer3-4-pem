@@ -191,6 +191,50 @@ class FlexibleTimeframeAnalyzer:
         self.OU_CFG["semantic_statement_mode"] = "customer_reality_only"
 
 
+        ## alternative signature construct
+        # ✍️ Signature weights (using semantic_customer_reality, NOT full SAS)
+        self.SIGNATURE_LIBRARY = {
+            "default_K1": {
+                "matters": 5,                      # Core consequence
+                "interaction_moment": 5,           # Operational locus (where/when)
+                "customer_journey_stage": 4,       # Journey position
+                "context": 3,                      # Situational detail (keep at 3)
+                "semantic_customer_reality": 2,    # Customer perspective
+                "behavioral_impact": 1,            # Supporting signal
+                "stream_justification": 1,         # Supporting signal
+                "customer_journey": 1,             # High-level anchor
+            },
+            "fallback_K3": {
+                "matters": 5,                      # Core consequence
+                "context": 4,                      # More situational weight
+                "interaction_moment": 3,           # Operational locus
+                "semantic_customer_reality": 3,    # Customer perspective
+                "customer_journey_stage": 2,       # Journey position
+                "behavioral_impact": 2,            # Supporting signal
+                "stream_justification": 1,         # Supporting signal
+                "customer_journey": 1,             # High-level anchor
+            },
+            "high_precision_K2": {                 # For maximum separation
+                "interaction_moment": 6,           # Maximize operational specificity
+                "matters": 5,                      # Core consequence
+                "customer_journey_stage": 4,       # Journey position
+                "context": 3,                      # Situational detail
+                "semantic_customer_reality": 2,    # Customer perspective
+                "behavioral_impact": 1,            # Supporting signal
+                "stream_justification": 1,         # Supporting signal
+                "customer_journey": 1,             # High-level anchor
+            },
+        }
+        
+        # ✅ Default choice
+        self.OU_CFG["signature_config_name"] = "default_K1"
+        self.OU_CFG["signature_weights"] = self.SIGNATURE_LIBRARY[self.OU_CFG["signature_config_name"]]
+        self.OU_CFG["bcs_distance_threshold"] = self.OU_CFG["signature_threshold_start"][self.OU_CFG["signature_config_name"]]
+        self.OU_CFG["semantic_statement_mode"] = "customer_reality_only"
+                     
+                     
+                     
+                     
         # ✅ Do NOT instantiate a second model here.
         # Warm the cached model once so everything else uses the same instance.
         self._ensure_st_model()
@@ -1515,6 +1559,7 @@ class FlexibleTimeframeAnalyzer:
 
 
         return pd.DataFrame(records)
+
 
 
 
