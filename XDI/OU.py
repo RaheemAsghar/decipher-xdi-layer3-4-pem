@@ -1103,7 +1103,17 @@ class FlexibleTimeframeAnalyzer:
             else:
                 customer_review_value = None
 
-            first_row = grp.iloc[0]
+            # first_row = grp.iloc[0]
+
+            # Pick the medoid row (closest to centroid in embedding space)
+            if len(grp) == 1:
+                medoid_idx = 0
+            else:
+                vecs = embeds[grp.index]
+                centroid = vecs.mean(axis=0, keepdims=True)
+                sims = cosine_similarity(vecs, centroid).ravel()
+                medoid_idx = int(sims.argmax())
+            first_row = grp.iloc[medoid_idx]
 
             if len(grp) == 1:
                 emo_prim = (first_row.get("emotion_primary") or "").strip().lower() or None
@@ -1505,3 +1515,4 @@ class FlexibleTimeframeAnalyzer:
 
 
         return pd.DataFrame(records)
+
