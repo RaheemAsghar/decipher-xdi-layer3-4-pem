@@ -430,3 +430,139 @@ def map_evi_tier(EVI):
     if v >= 40: return "Moderate Volatility"
     if v >= 20: return "Low Volatility"
     return "Stable Emotion"
+
+
+import math
+import pandas as pd
+
+# -----------------------------
+# ERI TIER MAPPING
+# -----------------------------
+
+def map_eri_tier(eri):
+    """
+    Map ERI score (-100 to 100) to a 5-level perception tier.
+    Boundaries based on your existing spec:
+      Very Positive: eri >= 80
+      Positive     : 30 <= eri <= 79
+      Neutral      : -10 <= eri <= 29
+      Negative     : -50 <= eri <= -11
+      Very Negative: eri <= -51
+    """
+    try:
+        v = float(eri)
+    except (TypeError, ValueError):
+        v = float("nan")
+
+    if not pd.notna(v):
+        return "Neutral"  # safe default
+
+    if v >= 80:
+        return "Very Positive"
+    if v >= 30:
+        return "Positive"
+    if v >= -10:
+        return "Neutral"
+    if v >= -50:
+        return "Negative"
+    return "Very Negative"
+
+
+    # -----------------------------
+    # EVI TIER MAPPING
+    # -----------------------------
+    
+    def map_evi_tier(evi):
+        """
+        Map Emotional Volatility Index (EVI ∈ [0, 100]) to 5-level volatility tier.
+          Stable Emotion    : [0,19]
+          Low Volatility    : [20,39]
+          Moderate Volatility: [40,59]
+          High Volatility   : [60,79]
+          Extreme Volatility: [80,100]
+        """
+        try:
+            v = float(evi)
+        except (TypeError, ValueError):
+            v = float("nan")
+    
+        if not pd.notna(v):
+            return "Stable Emotion"  # safe default
+    
+        v = max(0.0, min(100.0, v))
+    
+        if v >= 80:
+            return "Extreme Volatility"
+        if v >= 60:
+            return "High Volatility"
+        if v >= 40:
+            return "Moderate Volatility"
+        if v >= 20:
+            return "Low Volatility"
+        return "Stable Emotion"
+    
+    
+    # -----------------------------
+    # ERI × EVI MATRIX DEFINITION
+    # -----------------------------
+    
+    ERI_EVI_MATRIX = {
+        "Very Positive": {
+            "Stable Emotion":      "Elite Advocates",
+            "Low Volatility":      "Strong Loyalty",
+            "Moderate Volatility": "Fragile Advocates",
+            "High Volatility":     "At-Risk Champions",
+            "Extreme Volatility":  "Volatile Promoters",
+        },
+        "Positive": {
+            "Stable Emotion":      "Steady Growth",
+            "Low Volatility":      "Healthy Progress",
+            "Moderate Volatility": "Mixed Satisfaction",
+            "High Volatility":     "Inconsistent Value",
+            "Extreme Volatility":  "Chaotic Positive",
+        },
+        "Neutral": {
+            "Stable Emotion":      "True Apathy",
+            "Low Volatility":      "Passive Drift",
+            "Moderate Volatility": "Ambiguous Signals",
+            "High Volatility":     "Conflicted State",
+            "Extreme Volatility":  "War Zone Neutral",
+        },
+        "Negative": {
+            "Stable Emotion":      "Chronic Friction",
+            "Low Volatility":      "Mounting Issues",
+            "Moderate Volatility": "Volatile Detraction",
+            "High Volatility":     "Escalating Crisis",
+            "Extreme Volatility":  "Explosive Churn",
+        },
+        "Very Negative": {
+            "Stable Emotion":      "Terminal State",
+            "Low Volatility":      "Active Churn",
+            "Moderate Volatility": "Destructive Rage",
+            "High Volatility":     "Crisis Cascade",
+            "Extreme Volatility":  "Total Breakdown",
+        },
+    }
+    
+    
+    # -----------------------------
+    # MASTER CLASSIFIER
+    # -----------------------------
+    
+    def classify_eri_evi_cell(eri, evi):
+        """
+        Given ERI score (-100..100) and EVI index (0..100),
+        return:
+          - eri_tier   (string)
+          - evi_tier   (string)
+          - cell_label (string, e.g. 'Elite Advocates')
+        """
+        eri_tier = map_eri_tier(eri)
+        evi_tier = map_evi_tier(evi)
+    
+        # Look up the matrix; fall back gracefully if something is missing
+        row = ERI_EVI_MATRIX.get(eri_tier, {})
+        cell_label = row.get(evi_tier, "Unclassified State")
+    
+        return eri_tier, evi_tier, cell_label
+
