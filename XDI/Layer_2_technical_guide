@@ -1,0 +1,405 @@
+Decipher Layer 2 — Full Intelligence Payload & Agentic Interpretation Guide
+
+### A Complete Breakdown of What Layer 2 Gives You and How an Intelligent Agent Uses It
+
+---
+
+# 1. Introduction
+
+Layer 2 transforms raw emotional labels into a **fully structured emotional intelligence payload**.
+This payload is designed not just for analytics, but for **agentic decision-making** — where autonomous systems can:
+
+* sense emotional states
+* understand their dynamics
+* route missions
+* assign urgency
+* interpret patterns
+* and influence actions downstream
+
+Layer 2 is the **first layer in the world** that makes emotional telemetry **machine-readable AND machine-actionable**.
+
+This document outlines:
+
+* **Everything Layer 2 produces**
+* **Why each field matters**
+* **How an intelligent entity (agent) would use it**
+* **What new emergent abilities Layer 2 unlocks**
+
+---
+
+# **2. Layer 2 Output — Complete Field Breakdown**
+
+Layer 2 generates intelligence across **seven major dimensions**:
+
+---
+
+## **2.1 Emotional Reality Index (ERI)**
+
+**What it is:**
+A normalized emotional score from **−100 to +100**, derived from weighted emotional categories.
+
+**Fields:**
+
+* `ERI`
+* `ERI_Tier` (Very Positive / Positive / Neutral / Negative / Very Negative)
+* `Loyalty_State` (alias for ERI Tier)
+
+**What an agent infers:**
+
+* Baseline emotional health of an experience driver
+* Whether customers emotionally “trust,” “like,” “tolerate,” “dislike,” or “hate” the experience
+* Stability of loyalty vs risk
+
+---
+
+## **2.2 Emotional Volatility Index (EVI)**
+
+**What it is:**
+A measure of **internal emotional conflict** within the data window.
+
+Derived from distribution across:
+
+* Adoration
+* Appreciation
+* Ambivalence
+* Agitation
+* Anger
+
+**Fields:**
+
+* `EVI`
+* `EVI_Tier` (Stable / Low / Moderate / High / Extreme)
+
+**What an agent infers:**
+
+* Is the emotional system conflicted?
+* Are emotions polarized or uniform?
+* Is there hidden ambivalence beneath high ERI?
+* Is negativity episodic or entrenched?
+
+EVI reveals **false positives** (high ERI but high volatility) and **false negatives** (negative ERI but low volatility).
+
+---
+
+## **2.3 Emotional State Band (ES1–ES5)**
+
+**What it is:**
+A synthesis of **ERI × EVI**, forming a high-level emotional category.
+
+**Fields:**
+
+* `Emotional_State_Band` (ES1_Secure_Loyalty → ES5_Critical_Failure)
+
+**What an agent infers:**
+
+* Whether this ED is in:
+
+  * Secure loyalty
+  * Growth opportunity
+  * At-risk
+  * Active crisis
+  * Full failure
+* What type of mission is required
+* Whether to stabilize, accelerate, recover, or triage
+
+This is the **agent’s emotional compass**.
+
+---
+
+## **2.4 Recency–Frequency (RF) Urgency System**
+
+**What it is:**
+A composite of:
+
+* **Recency (R)** → exponential decay
+* **Frequency (F)** → log-normalized density
+* Combine → **RF Score**, mapped into urgency categories.
+
+**Fields:**
+
+* `R`, `F`, `RF`
+* `RF_Weight_R`, `RF_Weight_F`
+* `RF_R_Component`, `RF_F_Component`
+* `RF_R_ContributionPct`, `RF_F_ContributionPct`
+* `Recency_Decay_Days`
+* `RF_Urgency_Category` (Dormant → Very High Activity)
+* `RF_Tier_Short` (Dormant / Low / Moderate / High / Intense)
+
+**What an agent infers:**
+
+* How **hot** the experience driver is
+* Whether a problem is:
+
+  * Sleepy
+  * Waking up
+  * Active
+  * Surging
+  * Exploding
+* Whether negative signals are old or fresh
+* Whether customers repeatedly mention this issue
+
+This becomes the **urgency engine**.
+
+---
+
+## **2.5 Priority Tier + Purpose Matrix (Mission Routing)**
+
+**What it is:**
+A decision grid combining:
+
+* **Emotional State Band (ES)**
+* **RF Tier**
+
+To produce:
+
+* **Priority Tier (P0–P5)**
+* **Priority Purpose**
+* **Quadrant Purpose**
+* **ERI × RF Quadrant**
+
+**Fields:**
+
+* `Priority_Tier`
+* `Priority_Score`
+* `Priority_Purpose`
+* `Quadrant_Purpose`
+* `Priority_Status`
+* `Quadrant_Key`
+
+**What an agent infers:**
+
+* Mission routing:
+
+  * Fix
+  * Optimize
+  * Innovate
+  * Amplify
+* Severity vs opportunity
+* Whether to notify immediately or schedule
+* Whether to trigger recovery or enhancement
+* How resources should be allocated
+
+This makes **autonomous decision-making possible**.
+
+---
+
+## **2.6 Emotion Recency Profile (your newest god-tier addition)**
+
+**What it is:**
+A 2-part emotional telemetry engine:
+
+### **A) by_emotion**
+
+For each of the 5 emotions:
+
+* total count
+* distribution across:
+
+  * Tier_1 (newest)
+  * Tier_2
+  * Tier_3
+  * Tier_4
+  * Tier_5
+  * Beyond_Window
+
+### **B) by_tier**
+
+For each timeframe:
+
+* dominant emotion
+* dominant pct
+* runner-up emotion
+* total mentions
+
+**What an agent infers:**
+
+* emotional **trajectory over time**
+* recent emotional collapse
+* recent negative shifts masked by old positivity
+* emerging anger pockets
+* fresh agitation spikes
+* old negativity fading
+* early warning signs
+* emotional decay
+* emotional recovery
+
+This is the **final missing component** of true emotional intelligence.
+
+---
+
+## **2.7 Entity Metadata & Diagnostics**
+
+These include:
+
+* `Today_Anchor`
+* `Window_Days`
+* `Associated_Entity_Names`
+* `No_of_Mentions`
+* `Mention_Share_%`
+* `First_Seen_Date`, `Most_Recent_Date`
+* `Age_Days`
+* Raw emotion counts
+* Debug fields
+
+**What an agent infers:**
+
+* where this ED sits in the global ecosystem
+* coverage and sampling density
+* whether the dataset is reliable
+* whether this signal is noise or meaningful
+* whether long-tail EDs should be ignored
+
+These form the **sanity and reliability checks** an agent needs.
+
+---
+
+# **3. How an Intelligent Agent Uses Layer 2 (Field-by-Field)**
+
+Here is how an agent would autonomously interpret the Layer 2 signals:
+
+---
+
+## **3.1 Decide *Where* to Look**
+
+Use:
+
+* ERI
+* EVI
+* Emotional State Band
+* Emotion Recency Profile
+
+Agent identifies:
+
+* Which EDs have decaying positivity
+* Which EDs show fresh agitation
+* Which EDs show conflicted emotions
+* Which EDs have high ambivalence
+* Which EDs are entering ES3–ES5
+
+---
+
+## **3.2 Decide *Why* to Look**
+
+Use:
+
+* EVI
+* Recency Profile
+* ERI trajectory (implicitly through recency tiers)
+
+Agent identifies:
+
+* Internal emotional conflict
+* Early collapse of loyalty
+* Hidden agitation behind high ERI
+* Fresh emotional turbulence
+
+---
+
+## **3.3 Decide *When* to Act**
+
+Use:
+
+* RF
+* RF_Tier_Short
+* Age_Days
+* Tier_1 dominant emotion
+
+Agent determines:
+
+* immediate intervention vs scheduled
+* cooldown vs escalation
+* whether negative emotion is fresh or stale
+
+---
+
+## **3.4 Decide *How* to Act (Strategy)**
+
+Use:
+
+* Priority Tier
+* Emotional State Band
+* Emotional distribution
+
+Agent chooses:
+
+* FIX → if ES4/ES5 or fresh agitation/anger
+* OPTIMIZE → if ES3 and stable
+* AMPLIFY → if ES1/ES2 with positive recency
+* INNOVATE → if volatility signals structural opportunity
+
+---
+
+## **3.5 Decide *What to Say* (Narrative)**
+
+Use:
+
+* dominant emotion per recency slice
+* emotional volatility
+* state band
+
+Agent constructs:
+
+* emotional summaries
+* executive briefs
+* routing statements
+* PDCA-ready inputs
+
+---
+
+# **4. Why Layer 2 Is Already an Agentic Emotional Engine**
+
+Layer 2 gives an autonomous system:
+
+* a **global emotional center (ERI)**
+* a **conflict detector (EVI)**
+* a **recency map (Recency Profile)**
+* an **urgency engine (RF)**
+* a **mission router (Priority Tier)**
+* a **risk compass (Emotional State Band)**
+* a **coverage indicator (mention share)**
+* a **time anchor (Age_Days)**
+* a **meta signature of emotional stability (distribution)**
+
+This is literally the minimum sufficient emotional intelligence for:
+
+* autonomous prioritization
+* autonomous pattern detection
+* autonomous decision routing
+* autonomous emotional risk detection
+* autonomous opportunity detection
+* autonomous execution scheduling
+
+**This is agentic by construction.**
+
+---
+
+# **5. Summary — What We Get Courtesy Layer 2**
+
+### Layer 2 gives you:
+
+✔ Stable emotional score (ERI)
+✔ Emotional conflict score (EVI)
+✔ Emotional state band (ES1–ES5)
+✔ Recency-frequency urgency (RF)
+✔ Mission priority (P0–P5)
+✔ Emotional recency map (dominant emotion by timeframe)
+✔ Emotional distribution map (per emotion × per tier)
+✔ Entity-level diagnostics
+✔ Time-based metadata
+✔ Agent-ready decision fields
+
+### What an agent does with it:
+
+✔ Detects where emotional risk is rising
+✔ Detects why it is rising
+✔ Determines when to intervene
+✔ Determines how to act
+✔ Determines what mission to activate
+✔ Predicts emotional drift
+✔ Summarizes emotional stories
+✔ Routes missions autonomously
+✔ Maintains long-term emotional memory
+✔ Creates feedback–action loops
+
+---
+
