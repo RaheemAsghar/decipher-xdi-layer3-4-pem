@@ -188,6 +188,7 @@ class Layer2Computer:
 
             # --- ERI --------------------------------------------------------------
             # ERI = weighted mean of emotional polarity, linearly normalized to a standard comparative scale.
+            # Emotional Resonance Index using Temkin's intensity-weighted emotion taxonomy.
             
             emotion_counts = group["emotion_primary"].value_counts(dropna=False).to_dict()
             eri_raw = sum(float(self.emotion_scores.get(em, 0.0)) * int(ct) for em, ct in emotion_counts.items())
