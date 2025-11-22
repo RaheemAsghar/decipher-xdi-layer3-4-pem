@@ -1,3 +1,9 @@
+# 1. Compute ERI (from emotion counts)
+# 2. Compute EVI (from emotion counts)  
+# 3. Apply ERI×EVI Matrix → Get Emotional State (ES1-ES5)
+# 4. Compute RF (from recency + frequency)
+# 5. Apply ES×RF Grid → Get Final Priority (P0-P5)
+
 import os, numpy as np, pandas as pd
 
 # === Layer 2 Logic ===
@@ -513,5 +519,6 @@ class Layer2Computer:
             self.meta_f_quantiles = {}
 
         return df
+
 
     
