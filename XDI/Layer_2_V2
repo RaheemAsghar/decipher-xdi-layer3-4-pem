@@ -495,3 +495,158 @@ def map_evi_tier(EVI):
     
         return eri_tier, evi_tier, cell_label
 
+
+# -----------------------------
+# RF TIER NORMALIZATION
+# (assuming you already have _map_rf_tier(RF) that returns the long string)
+# -----------------------------
+
+def normalize_rf_tier(rf_tier_str):
+    """
+    Map your RF tier labels to short keys used in the priority grid.
+    Expects one of:
+      "Very High Activity", "High Activity",
+      "Moderate Activity", "Low Activity", "Activity Dormant"
+    """
+    mapping = {
+        "Very High Activity": "Very High",
+        "High Activity": "High",
+        "Moderate Activity": "Moderate",
+        "Low Activity": "Low",
+        "Activity Dormant": "Dormant",
+    }
+    return mapping.get(rf_tier_str, "Dormant")  # safe default
+
+
+# -----------------------------
+# ERI×EVI -> EMOTIONAL STATE BAND (ES1..ES5)
+# -----------------------------
+
+def map_emotional_state_band(eri_tier, evi_tier):
+    """
+    Map ERI tier + EVI tier into a coarse Emotional State band:
+      ES1_Secure_Loyalty
+      ES2_Growth_Opportunity
+      ES3_At_Risk
+      ES4_Active_Crisis
+      ES5_Critical_Failure
+    """
+
+    # For convenience
+    et = eri_tier
+    vt = evi_tier
+
+    # ES1 – Secure Loyalty
+    if et in {"Very Positive", "Positive"} and vt in {"Stable Emotion", "Low Volatility"}:
+        return "ES1_Secure_Loyalty"
+
+    # ES2 – Growth Opportunity
+    if (et in {"Very Positive", "Positive"} and vt == "Moderate Volatility") or \
+       (et == "Neutral" and vt == "Stable Emotion"):
+        return "ES2_Growth_Opportunity"
+
+    # ES5 – Critical Failure (strongest rule: any Very Negative, or Negative+Extreme)
+    if et == "Very Negative":
+        return "ES5_Critical_Failure"
+    if et == "Negative" and vt == "Extreme Volatility":
+        return "ES5_Critical_Failure"
+
+    # ES4 – Active Crisis
+    if (et == "Neutral" and vt in {"High Volatility", "Extreme Volatility"}) or \
+       (et == "Negative" and vt in {"Moderate Volatility", "High Volatility"}):
+        return "ES4_Active_Crisis"
+
+    # ES3 – At Risk
+    if (et in {"Very Positive", "Positive"} and vt in {"High Volatility", "Extreme Volatility"}) or \
+       (et == "Neutral" and vt in {"Low Volatility", "Moderate Volatility"}) or \
+       (et == "Negative" and vt in {"Stable Emotion", "Low Volatility"}):
+        return "ES3_At_Risk"
+
+    # Fallback (should rarely hit if all combos covered)
+    return "ES3_At_Risk"
+
+
+# -----------------------------
+# PRIORITY GRID: Emotional State × RF -> P0..P5
+# -----------------------------
+
+PRIORITY_GRID = {
+    "ES1_Secure_Loyalty": {
+        "Dormant":  "P5",
+        "Low":      "P4",
+        "Moderate": "P3",
+        "High":     "P2",
+        "Very High":"P2",
+    },
+    "ES2_Growth_Opportunity": {
+        "Dormant":  "P5",
+        "Low":      "P4",
+        "Moderate": "P3",
+        "High":     "P3",
+        "Very High":"P2",
+    },
+    "ES3_At_Risk": {
+        "Dormant":  "P4",
+        "Low":      "P3",
+        "Moderate": "P2",
+        "High":     "P1",
+        "Very High":"P0",
+    },
+    "ES4_Active_Crisis": {
+        "Dormant":  "P3",
+        "Low":      "P2",
+        "Moderate": "P1",
+        "High":     "P1",
+        "Very High":"P0",
+    },
+    "ES5_Critical_Failure": {
+        "Dormant":  "P2",
+        "Low":      "P2",
+        "Moderate": "P1",
+        "High":     "P0",
+        "Very High":"P0",
+    },
+}
+
+
+# -----------------------------
+# MASTER PRIORITY CLASSIFIER
+# -----------------------------
+
+def classify_priority(eri_score, evi_score, rf_score, rf_tier_func):
+    """
+    Given:
+      - eri_score (-100..100)
+      - evi_score (0..100)
+      - rf_score (0..100)
+      - rf_tier_func: your existing function, e.g. _map_rf_tier(rf_score)
+
+    Returns:
+      dict with:
+        - eri_tier
+        - evi_tier
+        - emotional_state_band
+        - rf_tier_long
+        - rf_tier_short
+        - priority
+    """
+
+    eri_tier = map_eri_tier(eri_score)
+    evi_tier = map_evi_tier(evi_score)
+
+    emotional_state_band = map_emotional_state_band(eri_tier, evi_tier)
+
+    rf_tier_long = rf_tier_func(rf_score)  # e.g. "High Activity"
+    rf_tier_short = normalize_rf_tier(rf_tier_long)  # e.g. "High"
+
+    priority = PRIORITY_GRID.get(emotional_state_band, {}).get(rf_tier_short, "P3")
+
+    return {
+        "eri_tier": eri_tier,
+        "evi_tier": evi_tier,
+        "emotional_state_band": emotional_state_band,
+        "rf_tier_long": rf_tier_long,
+        "rf_tier_short": rf_tier_short,
+        "priority": priority,
+    }
+
