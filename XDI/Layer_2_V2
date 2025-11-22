@@ -429,78 +429,7 @@ def map_evi_tier(EVI):
     if v >= 60: return "High Volatility"
     if v >= 40: return "Moderate Volatility"
     if v >= 20: return "Low Volatility"
-    return "Stable Emotion"
-
-
-import math
-import pandas as pd
-
-# -----------------------------
-# ERI TIER MAPPING
-# -----------------------------
-
-def map_eri_tier(eri):
-    """
-    Map ERI score (-100 to 100) to a 5-level perception tier.
-    Boundaries based on your existing spec:
-      Very Positive: eri >= 80
-      Positive     : 30 <= eri <= 79
-      Neutral      : -10 <= eri <= 29
-      Negative     : -50 <= eri <= -11
-      Very Negative: eri <= -51
-    """
-    try:
-        v = float(eri)
-    except (TypeError, ValueError):
-        v = float("nan")
-
-    if not pd.notna(v):
-        return "Neutral"  # safe default
-
-    if v >= 80:
-        return "Very Positive"
-    if v >= 30:
-        return "Positive"
-    if v >= -10:
-        return "Neutral"
-    if v >= -50:
-        return "Negative"
-    return "Very Negative"
-
-
-    # -----------------------------
-    # EVI TIER MAPPING
-    # -----------------------------
-    
-    def map_evi_tier(evi):
-        """
-        Map Emotional Volatility Index (EVI ∈ [0, 100]) to 5-level volatility tier.
-          Stable Emotion    : [0,19]
-          Low Volatility    : [20,39]
-          Moderate Volatility: [40,59]
-          High Volatility   : [60,79]
-          Extreme Volatility: [80,100]
-        """
-        try:
-            v = float(evi)
-        except (TypeError, ValueError):
-            v = float("nan")
-    
-        if not pd.notna(v):
-            return "Stable Emotion"  # safe default
-    
-        v = max(0.0, min(100.0, v))
-    
-        if v >= 80:
-            return "Extreme Volatility"
-        if v >= 60:
-            return "High Volatility"
-        if v >= 40:
-            return "Moderate Volatility"
-        if v >= 20:
-            return "Low Volatility"
-        return "Stable Emotion"
-    
+    return "Stable Emotion"  
     
     # -----------------------------
     # ERI × EVI MATRIX DEFINITION
