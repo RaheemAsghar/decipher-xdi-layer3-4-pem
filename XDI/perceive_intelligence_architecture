@@ -1,0 +1,290 @@
+# PERCEIVE: The Intelligence Architecture 🧠
+
+## The Perceive Stack: From Raw Data → Actionable Understanding
+
+### **Layer 0: Raw Signal Ingestion**
+```
+Input: Customer interaction records with:
+- date (temporal anchor)
+- emotion_primary (emotional signal)
+- experience_driver (what triggered it)
+- entity_name (who/what is mentioned)
+```
+
+### **Layer 1: Signal Processing** (Your Current Implementation)
+Transforms raw signals into:
+- **Temporal features**: age_days, recency tiers
+- **Emotional features**: emotion counts, distributions
+- **Engagement features**: mention frequency, coverage
+
+### **Layer 2: State Computation** (Your Innovation)
+Synthesizes processed signals into **multi-dimensional state vectors**:
+
+```python
+Customer State Vector = {
+    # Emotional Dimension
+    "ERI": -23.4,  # WHERE they are emotionally
+    "ERI_Tier": "Negative",
+    
+    # Stability Dimension  
+    "EVI": 68.2,  # HOW stable/volatile they are
+    "EVI_Tier": "High Volatility",
+    
+    # Composite State
+    "Emotional_State_Band": "ES4_Active_Crisis",
+    
+    # Engagement Dimension
+    "RF": 72.3,  # WHEN + HOW OFTEN they engage
+    "RF_Tier_Short": "High",
+    "R": 85.2,  # Recency component
+    "F": 45.7,  # Frequency component
+    
+    # Priority Synthesis
+    "Priority_Tier": "P0",
+    "Priority_Purpose": "Emergency Crisis Response",
+    
+    # Temporal Intelligence
+    "Emotion_Recency_Profile": {
+        "by_emotion": {...},  # Emotion trajectories
+        "by_tier": {...}       # Time-window snapshots
+    }
+}
+```
+
+---
+
+## How An Agent PERCEIVES With This Intelligence
+
+### **PERCEPTION LEVEL 1: Immediate State Recognition**
+*"What is the current condition?"*
+
+```python
+Agent observes:
+- Customer X: ES4_Active_Crisis
+- Priority: P0
+- Purpose: Emergency Crisis Response
+
+Agent perceives:
+"This customer is in active emotional crisis requiring immediate intervention"
+```
+
+**Intelligence employed:**
+- ERI × EVI → ES4 classification
+- ES4 × RF → P0 priority
+- ES4 + P0 → Crisis response mode
+
+---
+
+### **PERCEPTION LEVEL 2: Dimensional Decomposition**
+*"Why is this the current condition?"*
+
+```python
+Agent decomposes ES4_Active_Crisis:
+
+Emotional Polarity (ERI):
+- Score: -23.4 (Negative territory)
+- Composition: 40% Agitation, 30% Ambivalence, 20% Anger
+- "Customer sentiment is negative but not extreme"
+
+Emotional Stability (EVI):
+- Score: 68.2 (High Volatility)  
+- σ = 2.05 on [-3, +3] scale
+- "Customer emotions are highly unstable"
+
+Synthesis:
+"Negative + Unstable = Active Crisis"
+"Not the worst polarity (not ES5) but the volatility makes it dangerous"
+```
+
+**Intelligence employed:**
+- ERI reveals MAGNITUDE of negativity
+- EVI reveals STABILITY of that negativity
+- Together they reveal RISK PROFILE
+
+---
+
+### **PERCEPTION LEVEL 3: Temporal Pattern Recognition**
+*"How did we get here? Where is this going?"*
+
+```python
+Agent analyzes Emotion_Recency_Profile:
+
+by_emotion["Anger"]:
+  Tier_1: 45%  # Last 6 days
+  Tier_2: 30%  # 7-12 days ago
+  Tier_3: 15%  # 13-18 days ago
+  Tier_4: 10%  # 19-24 days ago
+  Tier_5: 0%   # 25-30 days ago
+
+by_emotion["Adoration"]:
+  Tier_1: 0%   # Absent recently
+  Tier_2: 5%
+  Tier_3: 15%
+  Tier_4: 40%  # Was strong 2-3 weeks ago
+  Tier_5: 40%
+
+Agent perceives:
+"Anger is ACCELERATING (concentrating in recent tiers)"
+"Adoration is DECAYING (concentrated in old tiers)"
+"This is a DETERIORATING relationship with directional momentum"
+```
+
+**Intelligence employed:**
+- Tier distribution reveals **emotion velocity**
+- Cross-emotion comparison reveals **relationship trajectory**
+- Concentration patterns reveal **momentum direction**
+
+---
+
+### **PERCEPTION LEVEL 4: Engagement Context**
+*"Is the crisis loud or silent?"*
+
+```python
+Agent analyzes RF decomposition:
+
+RF: 72.3 (High Activity)
+├─ R: 85.2 (Very recent - 2 days ago)
+├─ F: 45.7 (Moderate frequency - 8 mentions)
+└─ Contribution: 67% Recency, 33% Frequency
+
+Agent perceives:
+"This is a HOT crisis - customer just expressed it"
+"Not chronic complaining (F moderate), but ACUTE event (R very high)"
+"Urgency driven by recency - this is fresh pain"
+```
+
+**Alternate scenario:**
+```python
+RF: 38.2 (Moderate Activity)
+├─ R: 12.4 (Last interaction 28 days ago)
+├─ F: 78.9 (High frequency - 45 mentions over time)
+└─ Contribution: 18% Recency, 82% Frequency
+
+Agent perceives:
+"This is a SILENT crisis - customer stopped engaging"
+"Was chronic complainer (F high), now DORMANT (R low)"
+"Silence after high frequency = likely churned or churning"
+```
+
+**Intelligence employed:**
+- RF absolute value = overall urgency
+- R vs F contribution = crisis TYPE (acute vs chronic vs silent)
+- Recency-dominant = active fire
+- Frequency-dominant + low recency = gave up
+
+---
+
+### **PERCEPTION LEVEL 5: Cross-Driver Pattern Recognition**
+*"Is this isolated or systemic?"*
+
+```python
+Agent scans multiple experience_drivers for same customer:
+
+Driver: "Product Quality"
+├─ ES4_Active_Crisis, P0
+├─ Anger concentrating in Tier_1
+└─ High Volatility (EVI: 68)
+
+Driver: "Customer Support"  
+├─ ES3_At_Risk, P2
+├─ Ambivalence dominant
+└─ Moderate Volatility (EVI: 42)
+
+Driver: "Pricing"
+├─ ES1_Secure_Loyalty, P4
+├─ Appreciation stable
+└─ Low Volatility (EVI: 18)
+
+Agent perceives:
+"Crisis is NOT about pricing (still positive there)"
+"Crisis IS about product + support (both negative)"
+"Product is the epicenter (P0 vs P2)"
+"This is a QUALITY CRISIS, not a value crisis"
+```
+
+**Intelligence employed:**
+- Multi-driver state comparison
+- Priority differentiation reveals root cause
+- Emotional consistency across related drivers = systemic issue
+
+---
+
+### **PERCEPTION LEVEL 6: Cohort Context** (If Available)
+*"Is this customer's state normal or anomalous?"*
+
+```python
+Agent compares to similar customers:
+
+Customer X:
+- ES4_Active_Crisis
+- EVI: 68.2
+- RF: 72.3
+
+Cohort (same product, tenure, value):
+- Avg ES: ES2_Growth_Opportunity
+- Avg EVI: 35.4
+- Avg RF: 48.7
+
+Deviation scores:
+- ES: -2 bands (much worse)
+- EVI: +32.8 points (way more volatile)
+- RF: +23.6 points (much more active)
+
+Agent perceives:
+"This customer is SIGNIFICANTLY more distressed than peers"
+"Volatility is 2x cohort average - emotional instability"
+"High engagement suggests they're fighting to resolve, not silent churn"
+"This is a RECOVERABLE crisis if addressed quickly"
+```
+
+**Intelligence employed:**
+- Relative state positioning
+- Statistical deviation from baseline
+- Behavioral signature comparison
+
+---
+
+## The Complete Perception Synthesis
+
+An agent with your Layer 2 intelligence can now answer:
+
+| **Question** | **Intelligence Source** | **Perception Output** |
+|---|---|---|
+| **What is happening?** | ES Band | "Active emotional crisis" |
+| **How bad is it?** | ERI + EVI + Priority | "P0 urgency, negative but volatile" |
+| **Why is it happening?** | Emotion decomposition | "Product quality issues causing anger" |
+| **When did it start?** | Recency profile | "Anger spiked in last 6 days" |
+| **Where is it going?** | Tier momentum | "Deteriorating - positive emotions decaying" |
+| **How urgent is it?** | RF + Priority Purpose | "Emergency response needed" |
+| **Is it loud or silent?** | R vs F contribution | "Loud - 67% recency-driven" |
+| **Is it isolated?** | Multi-driver comparison | "Systemic across product + support" |
+| **Is it normal?** | Cohort deviation | "Anomalously distressed vs peers" |
+
+---
+
+## What Traditional Systems CANNOT Perceive
+
+❌ **Traditional CX analytics:**
+- "Customer X has -0.4 sentiment, 3 recent tickets, medium priority"
+
+✅ **Your intelligence framework:**
+- "Customer X: ES4 Active Crisis requiring Emergency Response (P0). Negative polarity (-23.4) with high emotional volatility (68.2), creating unstable crisis state. Anger accelerating in recent tiers (45% in last 6 days vs 0% in 25-30 days) while Adoration decaying (40% in old tiers, 0% recent). Crisis is hot (RF 72.3, 67% recency-driven, last contact 2 days ago), indicating active distress not silent churn. Product Quality is epicenter (P0) vs Customer Support (P2) vs stable Pricing satisfaction (P4). Customer is 2 ES bands worse and 2x more volatile than cohort, but high RF suggests recoverable if acted on immediately."
+
+**That's not analytics. That's situational awareness.**
+
+---
+
+## The Perceive → Decide Bridge
+
+You've built the **complete sensory system**. An agent using this can:
+
+✅ Detect multi-dimensional state  
+✅ Understand causal composition  
+✅ Track temporal trajectories  
+✅ Contextualize urgency  
+✅ Recognize patterns  
+✅ Compare to baselines  
+
+
+
+You've built the **eyes and ears**. Now show me the **brain and hands**.
