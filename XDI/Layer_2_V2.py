@@ -882,13 +882,13 @@ class Layer2Computer:
             return "Tier_5"
         
         return "Beyond_Window"
-  
+
     def _compute_emotion_recency_profile(self, group: pd.DataFrame):
         """
         For a single experience_driver group:
         Returns:
         1. Distribution of each emotion across all recency tiers
-        2. Dominant emotion per tier (quick guide)
+        2. Distribution of all emotions within each tier (NEW - full breakdown)
 
         {
         "by_emotion": {
@@ -904,6 +904,12 @@ class Layer2Computer:
         "by_tier": {
             "Tier_1": {
             "total_mentions": 10,
+            "emotions": {
+                "Adoration": {"count": 5, "pct": 50.0},
+                "Appreciation": {"count": 3, "pct": 30.0},
+                "Admiration": {"count": 2, "pct": 20.0},
+                ...
+            },
             "dominant_emotion": "Adoration",
             "dominant_count": 5,
             "dominant_pct": 50.0,
@@ -954,7 +960,7 @@ class Layer2Computer:
                 "tiers": tiers_dist,
             }
 
-        # --- Part 2: By Tier (dominant emotion per recency tier) ---
+        # --- Part 2: By Tier (FULL emotion distribution per recency tier) ---
         by_tier = {}
         for t in all_tiers:
             tier_data = tmp[tmp["tier"] == t]
@@ -963,6 +969,7 @@ class Layer2Computer:
             if total_in_tier == 0:
                 by_tier[t] = {
                     "total_mentions": 0,
+                    "emotions": {},
                     "dominant_emotion": None,
                     "dominant_count": 0,
                     "dominant_pct": 0.0,
@@ -970,17 +977,30 @@ class Layer2Computer:
                 }
                 continue
 
+            # Get all emotion counts for this tier
             counts = tier_data["emotion"].value_counts()
+            
+            # Build emotions distribution (same structure as by_emotion)
+            emotions_dist = {}
+            for emotion in counts.index:
+                ct = int(counts[emotion])
+                emotions_dist[emotion] = {
+                    "count": ct,
+                    "pct": round(100.0 * ct / total_in_tier, 2),
+                }
+            
+            # Still keep dominant/runner_up for quick reference
             dominant = counts.index[0]
             dominant_ct = int(counts.iloc[0])
             runner_up = counts.index[1] if len(counts) > 1 else None
 
             by_tier[t] = {
                 "total_mentions": total_in_tier,
-                "dominant_emotion": dominant,   # always one of the 5 emotions
+                "emotions": emotions_dist,  # FULL breakdown of all emotions
+                "dominant_emotion": dominant,
                 "dominant_count": dominant_ct,
                 "dominant_pct": round(100.0 * dominant_ct / total_in_tier, 2),
-                "runner_up": runner_up,         # one of the 5 emotions or None
+                "runner_up": runner_up,
             }
 
         return {
