@@ -1,446 +1,333 @@
 
-# ⭐ THE META-INSIGHT: WHY DECIPHER’S TEMPORAL INTELLIGENCE IS A CATEGORY BREAKTHROUGH
+# ⭐ **Decipher Layer 2 — Temporal Intelligence (Final, Updated Version)**
 
-### Most analytics engines see time as a sequence.
-
-Decipher sees time as an emotional evolution.
-
-Traditional timeseries systems track values over days.
-Decipher tracks emotional transitions across phases of experience.
-
-This is the breakthrough.
-
-Instead of depending on dense, high-frequency CX data (which never exists in the real world), 
-Decipher reconstructs the “emotional arc” of any Experience Driver using five innovations:
+**Emotion-Centric Time Reconstruction for Autonomous CX Systems**
 
 ---
 
-## 🔥 1. Tier-Based Emotional Time Reconstruction (TE-TR)
+# **1. The Meta-Insight: Decipher Treats Time as Emotional Evolution, Not Chronology**
 
-Decipher transforms unstable timestamps into **emotionally coherent time phases** (Tier_1 → Tier_5), 
-creating stable temporal reasoning even with sparse mentions.
+Traditional analytics view time as **a sequence of timestamps**.
 
-This gives the agent temporal awareness even when data density is near-zero — something no VoC/AI system can do.
+Decipher sees time as **an emotional arc**.
 
----
+Because CX data is sparse, irregular, and event-driven, statistical time-series models fail.
+Decipher solves this by reconstructing temporal meaning through **emotion, not density**.
 
-## 🔥 2. Emotion-Weighted Time Perception
+This unlocks something no CX platform has ever achieved:
 
-Time is not treated as equal.
+### ➜ **Emotion-Based Temporal Reasoning**
 
-A single recent surge of Anger weighs more than 10 old Adoration mentions.
-This mirrors human cognitive bias (recency + emotional salience).
-Decipher encodes this bias mathematically.
-
-This is how the system achieves emotional relevance, not statistical noise.
+A system that understands *how emotional states evolve* —
+not just when comments happened.
 
 ---
 
-## 🔥 3. State Migration Instead of Value Delta
+# **2. The Five Breakthroughs Behind Decipher’s Temporal Engine**
 
-Most systems compare numbers. Decipher compares states:
+## 🔥 **1. Tier-Based Emotional Time Reconstruction (TE-TR)**
 
-* ES1 → ES4 = collapse
-* ES4 → ES2 = stabilization
-* ES3 → ES5 = churn actualized
-* ES2 → ES1 = volatility resolved
+Decipher converts raw dates into **emotionally coherent time phases**:
 
-This is an ontology of emotional evolution, not a graph of numbers.
+```
+Tier_1 → Most Recent
+Tier_2
+Tier_3
+Tier_4
+Tier_5 → Oldest
+```
 
-This alone puts Decipher in a different category.
+These tiers anchor all temporal logic.
+
+They solve the biggest weakness in CX:
+**low-volume, irregular timestamps**.
+
+Even with sparse data, the agent gets a *stable emotional timeline*.
 
 ---
 
-## 🔥 4. Emotional Succession Analytics
+## 🔥 **2. Emotion-Weighted Time Perception**
 
-Where others track “sentiment trend,” Decipher tracks:
+Time is weighted by **emotional salience**, not equal intervals.
+
+One fresh spike of *Anger* outweighs ten old *Adoration* mentions.
+
+This mirrors real human cognition:
+
+* recency bias
+* emotional intensity bias
+* affective weighting
+
+Decipher encodes these into the computation of:
+
+* ERI_start / ERI_end
+* EVI_start / EVI_end
+* Momentum per emotion
+* ES migration
+
+This yields **emotionally truthful** temporal analysis.
+
+---
+
+## 🔥 **3. State Migration Instead of Raw Delta**
+
+Most systems track numerical changes.
+Decipher tracks **state transitions**:
+
+```
+ES1 → ES4 = Relationship Collapse
+ES4 → ES2 = Stabilization
+ES3 → ES5 = Churn Actualized
+ES2 → ES1 = Volatility Resolved
+```
+
+This is an ontology of **emotional evolution**, not simple trend lines.
+
+It tells the agent:
+
+* whether loyalty collapsed
+* whether crisis is resolving
+* whether risk is hardening
+* whether positivity is stabilizing
+
+This is the **core temporal signal** in Decipher.
+
+---
+
+## 🔥 **4. Emotional Succession Analytics**
+
+Decipher does not just track “sentiment trend.”
+
+It tracks **emotional succession**:
 
 * which emotion is replacing which
-* which emotion is emerging
+* which emotion is emerging strongly
 * which emotion is fading
-* whether chaos or consolidation is increasing
-* whether a stable relationship is now fragmenting
+* whether chaos is increasing (fragmentation)
+* whether the emotional world is consolidating (clarity)
+* whether neutrality is **true** vs **false** ambivalence
 
-Most systems don’t even know these questions exist. Decipher answers all of them.
+These transitions **are the root causes of temporal change**.
 
 ---
 
-## 🔥 5. Multi-Layer Synthesis into a Single Emotional Narrative
+## 🔥 **5. Multi-Layer Synthesis into a Single Emotional Narrative**
 
-Finally, Decipher does something world-first: It fuses ERI trajectory + EVI trajectory + ES band migration + 
-emotion momentum into a single narrative sentence.
+Decipher fuses:
+
+* ERI trajectory
+* EVI trajectory
+* ES band migration
+* Momentum per emotion
+* Ambivalence type
+* Tier-level context
+
+…into **one human-readable narrative**.
 
 This gives the agent:
 
 * interpretability
-* explainability
 * justification
-* escalation triggers
-* root-cause insight
-* emotional forecast
+* situational context
+* reasoning transparency
+* escalation clarity
+
+One sentence captures the whole emotional journey.
 
 ---
 
-# ⭐ WHY THIS MATTERS FOR AGENTIC AI
+# **3. The Four Core Temporal Analytics (Updated to Match New Code)**
 
-Decipher’s temporal intelligence gives an autonomous agent:
-
-1. Situational Awareness: It knows where the relationship has been and where it is going.
-
-2. Deterioration Detection: It knows if the customer is collapsing into crisis or just oscillating.
-
-3. Emotional Context Memory: It knows whether anger is new, persistent, fading, or stabilizing.
-
-4. Predictive Power: It sees early-warning signals before crisis emerges — because volatility and 
-state migration precede sentiment shifts.
-
-5. Actionable Interpretation: It produces reasoning the agent can verbalize:
-"Sentiment is declining sharply while volatility is rising — this is a crisis pattern."
-
-This is exactly the reasoning architecture needed for agentic autonomy.
-
-Decipher transforms raw timestamps into emotional intelligence, and emotional intelligence into temporal foresight.
-This is not analytics — it is emotional time travel.
+Below is the exact breakdown aligned with your latest implementation.
 
 ---
 
-# COMPLETE TEMPORAL ANALYTICS BREAKDOWN 📊
+# **1️⃣ ERI TRAJECTORY — Emotional Polarity Over Time**
 
-## THE 4 CORE TEMPORAL ANALYTICS:
+### **What It Measures**
 
-## 1️⃣ ERI TRAJECTORY
+How sentiment (polarity) has shifted from early to recent emotional phases.
 
-### What It Measures:
-How emotional polarity (aggregate sentiment) changed over time
+### **How It Works (Updated Logic)**
 
-### Method:
-- Compares early tiers (Tier_4, Tier_5) vs recent tiers (Tier_1, Tier_2)
-- Calculates: `mean(recent ERI) - mean(early ERI)`
-- Uses **tier-crossing logic** to determine significance
+* ERI_start = weighted ERI across Tier_4 + Tier_5
+* ERI_end = weighted ERI across Tier_1 + Tier_2
+* delta = ERI_end – ERI_start
+* tier_shift = difference in ERI Tier between start and end
+* trend = labeled from tier_shift
 
-### Thresholds (Statistically-Grounded):
+### **Trend Labels (Unchanged Conceptually)**
+
 ```
-+2 tiers crossed  → ↑↑ Strongly Improving
-+1 tier crossed   → ↑ Improving
-0 tiers crossed   → → Stable
--1 tier crossed   → ↓ Declining
--2 tiers crossed  → ↓↓ Strongly Declining
-```
-
-### **What It Tells Us:**
-
-| Trend | What It Means | Example |
-|---|---|---|
-| **↑↑ Strongly Improving** | Customer went from negative → positive (2+ tier jump) | Negative (-40) → Positive (+50) |
-| **↑ Improving** | Customer sentiment improved 1 tier | Neutral (0) → Positive (+40) |
-| **→ Stable** | Sentiment stayed in same tier | Positive (50) → Positive (55) |
-| **↓ Declining** | Customer sentiment declined 1 tier | Positive (50) → Neutral (10) |
-| **↓↓ Strongly Declining** | Customer went from positive → negative (2+ tier drop) | Very Positive (85) → Negative (-30) |
-
-### Output Example:
-```python
-"ERI_trajectory": {
-    "start": 45.3,           # Early tiers average
-    "end": -23.4,            # Recent tiers average
-    "delta": -68.7,          # Absolute change
-    "tier_shift": -2,        # Crossed 2 tiers downward
-    "trend": "↓↓ Strongly Declining",
-    "by_tier": {
-        "Tier_1": -35.2,
-        "Tier_2": -11.6,
-        "Tier_3": 8.5,
-        "Tier_4": 38.7,
-        "Tier_5": 51.9
-    }
-}
++2 tiers → ↑↑ Strongly Improving  
++1 tier  → ↑ Improving  
+ 0 tiers → → Stable  
+-1 tier  → ↓ Declining  
+-2 tiers → ↓↓ Strongly Declining  
 ```
 
-### Autonomous Agent Uses This To:
-- ✅ Detect relationship deterioration (positive → negative)
-- ✅ Confirm recovery (negative → positive)
-- ✅ Prioritize interventions (strongly declining = urgent)
+### **What It Enables**
+
+* detect recovery (negative → positive)
+* detect collapse (positive → negative)
+* distinguish soft drift vs crisis drops
 
 ---
 
-## 2️⃣ EVI TRAJECTORY
+# **2️⃣ EVI TRAJECTORY — Evolution of Emotional Stability**
 
-### What It Measures:
-How emotional volatility (complexity/chaos) changed over time
+### **What It Measures**
 
-### Method:
-- Compares early tiers (Tier_4, Tier_5) vs recent tiers (Tier_1, Tier_2)
-- Calculates: `mean(recent EVI) - mean(early EVI)`
-- Uses tier-crossing logic to determine significance
+How emotional volatility (conflict, chaos) has changed across time.
 
-### Thresholds (Statistically-Grounded):
+### **How It Works (Updated Logic)**
+
+* EVI_start = weighted EVI across Tier_4 + Tier_5
+* EVI_end = weighted EVI across Tier_1 + Tier_2
+* delta = EVI_end – EVI_start
+* tier_shift = difference in EVI Tier between start and end
+* trend = labeled from tier_shift
+
+### **Trend Labels**
+
 ```
-+2 tiers crossed  → ↑↑ Rapidly Fragmenting
-+1 tier crossed   → ↑ Fragmenting
-0 tiers crossed   → → Stable Volatility
--1 tier crossed   → ↓ Consolidating
--2 tiers crossed  → ↓↓ Rapidly Consolidating
-```
-
-### What It Tells Us:
-
-| Trend | What It Means | Example |
-|---|---|---|
-| ↑↑ Rapidly Fragmenting | Emotions becoming highly chaotic (2+ tier jump) | Stable (15) → High Volatility (65) |
-| ↑ Fragmenting | Emotional complexity increasing | Low Vol (25) → Moderate Vol (45) |
-| → Stable Volatility | Emotional consistency unchanged | Moderate Vol (50) → Moderate Vol (55) |
-| ↓ Consolidating | Emotions converging into fewer states | High Vol (70) → Moderate Vol (50) |
-| ↓↓ Rapidly Consolidating | Emotions hardening into single state (2+ tier drop) | Extreme Vol (85) → Low Vol (25) |
-
-### Output Example:
-```python
-"EVI_trajectory": {
-    "start": 22.1,           # Early tiers: Low Volatility
-    "end": 72.4,             # Recent tiers: High Volatility
-    "delta": +50.3,          # Massive increase
-    "tier_shift": +2,        # Crossed 2 tiers upward
-    "trend": "↑↑ Rapidly Fragmenting",
-    "by_tier": {
-        "Tier_1": 78.2,      # Extreme chaos now
-        "Tier_2": 66.6,
-        "Tier_3": 42.1,
-        "Tier_4": 18.5,
-        "Tier_5": 25.7       # Was stable
-    }
-}
++2 tiers → ↑↑ Rapidly Fragmenting  
++1 tier  → ↑ Fragmenting  
+ 0 tiers → → Stable Volatility  
+-1 tier  → ↓ Consolidating  
+-2 tiers → ↓↓ Rapidly Consolidating  
 ```
 
-### Autonomous Agent Uses This To:
-- ✅ Detect relationship instability (fragmenting = unpredictable)
-- ✅ Identify consolidation patterns:
-  - Consolidating + Positive ERI = Maturing loyalty ✅
-  - Consolidating + Negative ERI = Entrenching hatred ❌
-- ✅ Flag chaos risks (fragmenting = intervention needed)
+### **What It Enables**
+
+* detect emerging chaos
+* detect consolidation (emotions settling)
+* distinguish false calm vs true stability
 
 ---
 
-## 3️⃣ ES BAND MIGRATION
+# **3️⃣ ES BAND MIGRATION — Relationship State Evolution**
 
-### What It Measures:
-How the emotional state classification changed over time
+### **What It Measures**
 
-### Method:
-- Identifies most common ES Band in early tiers (Tier_4, Tier_5)
-- Identifies most common ES Band in recent tiers (Tier_1, Tier_2)
-- Tracks migration path: `ES_start → ES_end`
+Movement between high-level emotional states:
 
-### Possible States:
 ```
-ES1_Secure_Loyalty      (Positive + Stable)
-ES2_Growth_Opportunity  (Positive + Volatile)
-ES3_At_Risk            (Neutral + Any Vol)
-ES4_Active_Crisis      (Negative + Any Vol)
-ES5_Critical_Failure   (Very Negative)
+ES1_Secure_Loyalty
+ES2_Growth_Opportunity
+ES3_At_Risk
+ES4_Active_Crisis
+ES5_Critical_Failure
 ```
 
-### What It Tells Us:
+### **How It Works (Updated Logic)**
 
-| Migration Path | What It Means | Severity |
-|---|---|---|
-| ES1 → ES4 | Secure Loyalty → Active Crisis | 🔴 CATASTROPHIC |
-| ES1 → ES5 | Secure Loyalty → Critical Failure | ⚫ WORST CASE |
-| ES2 → ES4 | Growth → Crisis | 🔴 CRITICAL |
-| ES3 → ES5 | At Risk → Critical Failure | 🔴 CHURN ACTUALIZED |
-| ES4 → ES1 | Crisis → Secure Loyalty | ✅ FULL RECOVERY |
-| ES5 → ES3 | Critical → At Risk | ✅ STABILIZATION |
-| ES1 → ES2 | Secure → Growth | ⚠️ VOLATILITY EMERGING |
-| No Change | Same state maintained | ➡️ CONSISTENT |
+* ES_start = most frequent ES band in Tier_4 + Tier_5
+* ES_end   = most frequent ES band in Tier_1 + Tier_2
+* changed = boolean (start ≠ end)
 
-### Output Example:
-```python
-"ES_Band_migration": {
-    "start": "ES1_Secure_Loyalty",
-    "end": "ES4_Active_Crisis",
-    "trajectory": "ES1_Secure_Loyalty → ES4_Active_Crisis",
-    "changed": True
-}
-```
+### **Why It Matters**
 
-### Autonomous Agent Uses This To:
-- ✅ Detect state transitions (most important signal)
-- ✅ Trigger escalation protocols (ES1→ES4 = emergency)
-- ✅ Validate interventions (ES4→ES2 = containment working)
-- ✅ Predict churn (ES3→ES5 = lost customer)
+This is the **single most important signal** for agents.
+
+Because it tells:
+
+* whether loyalty collapsed
+* whether crisis stabilized
+* whether risk hardened
+* whether recovery is real
 
 ---
 
-## 4️⃣ EMOTION MOMENTUM
+# **4️⃣ EMOTION MOMENTUM — Emotional Forces Driving the Shift**
 
-### What It Measures:
-Which specific emotions gained or lost share over time
+### **What It Measures**
 
-### Method:
-- Aggregates emotion distribution in early tiers (Tier_4, Tier_5)
-- Aggregates emotion distribution in recent tiers (Tier_1, Tier_2)
-- Calculates: `new_pct - old_pct` for each emotion
+Which emotions are responsible for temporal change.
 
-### Thresholds (Statistically-Grounded):
+### **How It Works (Updated Logic)**
+
+* aggregate emotion counts in early tiers → %
+* aggregate emotion counts in recent tiers → %
+* compute delta per emotion
+* assign momentum label using thresholds
+* determine dominant shift (max |delta|)
+
+### **Momentum Examples**
+
 ```
-≥ +20%  → ↑↑ Strongly Emerging
-≥ +10%  → ↑ Rising
-≥ +5%   → ↑ Minor Rise
--5 to +5% → → Stable
-≤ -5%   → ↓ Minor Decline
-≤ -10%  → ↓ Declining
-≤ -20%  → ↓↓ Rapidly Fading
-```
-
-### What It Tells Us:
-
-| Shift Pattern | What It Means | Example |
-|---|---|---|
-| Adoration → Anger | Love turning to hate | Adoration: 50%→0%, Anger: 0%→60% |
-| Anger → Ambivalence | Rage cooling to indifference | Anger: 70%→10%, Ambivalence: 5%→55% |
-| Appreciation → Adoration | Satisfaction deepening | Appreciation: 60%→20%, Adoration: 15%→60% |
-| Ambivalence increasing | Disengagement growing | Ambivalence: 10%→45% |
-| Multiple emotions rising | Fragmentation (chaos) | All 5 emotions present equally |
-
-### Output Example:
-```python
-"emotion_momentum": {
-    "shifts": {
-        "Adoration": {
-            "old_pct": 50.0,     # Was dominant
-            "new_pct": 0.0,      # Now extinct
-            "delta": -50.0,
-            "trend": "↓↓ Rapidly Fading"
-        },
-        "Anger": {
-            "old_pct": 0.0,      # Didn't exist
-            "new_pct": 60.0,     # Now dominant
-            "delta": +60.0,
-            "trend": "↑↑ Strongly Emerging"
-        },
-        "Agitation": {
-            "old_pct": 10.0,
-            "new_pct": 25.0,
-            "delta": +15.0,
-            "trend": "↑ Rising"
-        },
-        "Ambivalence": {
-            "old_pct": 25.0,
-            "new_pct": 15.0,
-            "delta": -10.0,
-            "trend": "↓ Declining"
-        },
-        "Appreciation": {
-            "old_pct": 15.0,
-            "new_pct": 0.0,
-            "delta": -15.0,
-            "trend": "↓↓ Rapidly Fading"
-        }
-    },
-    "dominant_shift": {
-        "emotion": "Anger",
-        "delta": +60.0,
-        "trend": "↑↑ Strongly Emerging"
-    }
-}
+↑↑ Strongly Emerging  
+↑ Rising  
+→ Stable  
+↓ Declining  
+↓↓ Rapidly Fading  
 ```
 
-### Autonomous Agent Uses This To:
-- ✅ Identify root cause (which emotion is driving the change?)
-- ✅ Detect churn signals (Adoration fading = loyalty eroding)
-- ✅ Spot recovery signals (Anger declining = intervention working)
-- ✅ Tailor messaging (address the emerging emotion, not the fading one)
+### **What It Enables**
+
+* identify *why* ERI/EVI changed
+* detect rising anger
+* capture fading appreciation
+* highlight chaos vs coherence
+* expose TRUE vs FALSE ambivalence
+
+All of this matches the new code’s `_compute_emotion_flow()` perfectly.
 
 ---
 
-## 5️⃣ INTERPRETATION (SYNTHESIS)
+# **4. Interpretation Layer — Synthesizing the Whole Journey**
 
-### What It Does:
-Combines all 4 analytics into human-readable pattern recognition
+### **Priority Logic (Updated to Match New Implementation)**
 
-### Priority Logic:
-1. ES Band Migration (highest priority - synthesized intelligence)
-2. ERI × EVI Combined Patterns (if no migration or same state)
-3. Fallback Message (if ambiguous)
+1. **ES Band Migration** (highest priority)
+2. **ERI & EVI Trajectories** (if ES unchanged)
+3. **Emotion Momentum + Ambivalence Type**
+4. **Fallback narrative** if all signals are neutral
 
-### Pattern Examples:
-
-| Pattern | Interpretation |
-|---|---|
-| ES1 → ES4 | "RELATIONSHIP COLLAPSE: Secure Loyalty → Active Crisis (rapid deterioration)" |
-| ES4 → ES1 | "FULL RECOVERY: Active Crisis → Secure Loyalty (successful intervention)" |
-| ERI ↓↓ + EVI ↑↑ | "CRISIS PATTERN: Sentiment collapsing while emotions fragmenting rapidly." |
-| ERI ↑↑ + EVI ↓↓ | "RECOVERY PATTERN: Sentiment improving and emotions stabilizing." |
-| ERI ↓↓ + EVI ↓↓ | "DANGER PATTERN: Negative consolidation – dissatisfaction hardening." |
-| ERI → + EVI → | "STAGNANT RELATIONSHIP: Neither improving nor declining meaningfully." |
-
-### Output Example:
-```python
-"interpretation": "RELATIONSHIP COLLAPSE: Secure Loyalty → Active Crisis (rapid deterioration)"
-```
-
-### Autonomous Agent Uses This To:
-- ✅ Generate executive summaries (one sentence = complete story)
-- ✅ Trigger workflows (pattern-specific playbooks)
-- ✅ Explain decisions (why this customer is P0)
+This mirrors your `_interpret_temporal_pattern()` and `_build_temporal_context_summary()` functions exactly.
 
 ---
 
-## COMPLETE ANALYTICS SUMMARY:
+# **5. Why Temporal Intelligence Makes Agentic Autonomy Possible**
 
-| Analytic | What It Measures | Key Output | Agent Uses It For |
-|---|---|---|---|
-| ERI Trajectory | Sentiment direction | Tier-shift: ±2, ±1, 0 | Detect deterioration/recovery |
-| EVI Trajectory | Volatility evolution | Tier-shift: ±2, ±1, 0 | Detect chaos/consolidation |
-| ES Band Migration | State transitions | ES_start → ES_end | Trigger escalations |
-| Emotion Momentum | Emotion replacement | Which emotion emerging/fading | Root cause + messaging |
-| Interpretation | Synthesized pattern | Human-readable summary | Decision explanations |
+Decipher’s temporal layer offers an agent:
 
----
+### **1. Situational Awareness**
 
-## WHAT THESE TELL US TOGETHER:
+Knows where emotional relationships *were* and where they *are heading*.
 
-### Example Scenario:
+### **2. Early Deterioration Detection**
 
-```python
-Customer: "Product Quality" Experience Driver
+Sees collapse *before* ERI tanks — because EVI rises first.
 
-ERI Trajectory:
-- Start: +45.3 (Positive)
-- End: -23.4 (Negative)
-- Tier Shift: -2 (Crossed 2 tiers)
-- Trend: ↓↓ Strongly Declining
+### **3. Emotional Memory**
 
-EVI Trajectory:
-- Start: 22.1 (Low Volatility)
-- End: 72.4 (High Volatility)
-- Tier Shift: +2 (Crossed 2 tiers)
-- Trend: ↑↑ Rapidly Fragmenting
+Understands whether anger is new, recurring, or fading.
 
-ES Band Migration:
-- Start: ES1_Secure_Loyalty
-- End: ES4_Active_Crisis
-- Changed: True
+### **4. Predictive Insight**
 
-Emotion Momentum:
-- Adoration: 50% → 0% (↓↓ Rapidly Fading)
-- Anger: 0% → 60% (↑↑ Strongly Emerging)
-- Dominant Shift: Anger (+60%)
+Stabilizing EVI + rising ERI = recovery likely
+Fragmenting EVI + declining ERI = crisis incoming
 
-Interpretation:
-"RELATIONSHIP COLLAPSE: Secure Loyalty → Active Crisis (rapid deterioration)"
-```
+### **5. Explainable Reasoning**
 
-### What Autonomous Agent Knows:
+Produces clear, defensible temporal narratives the agent can verbalize:
 
-1. ✅ Severity: Catastrophic (ES1→ES4, 2-tier ERI drop)
-2. ✅ Type: Crisis with chaos (EVI fragmenting rapidly)
-3. ✅ Root Cause: Product Quality issues (driver context)
-4. ✅ Emotion: Love turned to hate (Adoration→Anger)
-5. ✅ Trajectory: Rapid collapse (not gradual)
-6. ✅ Urgency: Immediate (ES4 = P0 if high RF)
-7. ✅ Action: Emergency crisis response + address product issues
-8. ✅ Message: Acknowledge their loyalty history, apologize for quality breakdown
+> “Sentiment is declining sharply while volatility is rising — this is a fragmentation-driven crisis.”
+
+This transforms raw timestamps into **temporal emotional intelligence**,
+and emotional intelligence into **temporal foresight**.
 
 ---
 
-## THIS IS COMPLETE SITUATIONAL AWARENESS.
+# **6. Temporal Intelligence Summary Table**
 
-No human needed to interpret. The agent has everything it needs to autonomously decide, act, and explain.
+| Analytic         | Measures            | Output                | What Agent Learns                 |
+| ---------------- | ------------------- | --------------------- | --------------------------------- |
+| ERI Trajectory   | Polarity shift      | start/end/delta/trend | deterioration vs recovery         |
+| EVI Trajectory   | Chaos shift         | start/end/delta/trend | fragmentation vs stabilization    |
+| ES Migration     | State shift         | ES_start → ES_end     | relationship collapse or recovery |
+| Emotion Momentum | Emotional mechanics | per-emotion deltas    | root cause of shift               |
+| Interpretation   | Narrative           | pattern + summary     | explanation + escalation          |
+
+---
