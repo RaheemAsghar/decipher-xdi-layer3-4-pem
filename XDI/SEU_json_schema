@@ -1,0 +1,417 @@
+{
+  "$id": "https://decipher.cx/schemas/structured_experience_unit.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Structured Experience Unit (SEU) – Layer 2 Atomic Unit per Experience Driver",
+  "type": "object",
+  "description": "One SEU represents the computed emotional-temporal state of a single Experience Driver over a defined analysis window. It is the atomic unit of CX in Decipher's XDI engine.",
+  "properties": {
+    "experience_driver": {
+      "type": "string",
+      "description": "Canonical Experience Driver label (e.g., 'Emergency Services → Triage Efficiency'). This is the atomic key."
+    },
+
+    "Today_Anchor": {
+      "type": "string",
+      "format": "date",
+      "description": "Analysis reference date (YYYY-MM-DD) used as the 'today' anchor for recency calculations."
+    },
+    "Window_Days": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "description": "Configured analysis window length in days (e.g., 75)."
+    },
+    "Recency_Decay_Days": {
+      "type": "number",
+      "minimum": 1,
+      "description": "Tau parameter used in the exponential recency decay function for R (typically 30.0)."
+    },
+
+    "ERI": {
+      "type": "number",
+      "minimum": -100,
+      "maximum": 100,
+      "description": "Emotional Resonance Index for this Experience Driver, normalized to [-100, +100]."
+    },
+    "ERI_Tier": {
+      "type": "string",
+      "description": "Discrete ERI band (e.g., 'Very Positive', 'Positive', 'Neutral', 'Negative', 'Very Negative')."
+    },
+    "Loyalty_State": {
+      "type": "string",
+      "description": "Alias of ERI_Tier used for backwards compatibility and loyalty mapping."
+    },
+
+    "EVI": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Emotional Volatility Index for this Experience Driver, computed from the spread across Adoration/Appreciation/Ambivalence/Agitation/Anger."
+    },
+    "EVI_Tier": {
+      "type": "string",
+      "description": "Discrete EVI band (e.g., 'Stable Emotion', 'Low Volatility', 'Moderate Volatility', 'High Volatility', 'Extreme Volatility')."
+    },
+
+    "Emotional_State_Band": {
+      "type": "string",
+      "description": "Combined ERI_Tier × EVI_Tier classification (e.g., 'ES1_Secure_Loyalty', 'ES2_Growth_Opportunity', 'ES3_At_Risk', 'ES4_Active_Crisis', 'ES5_Dormant_Drift')."
+    },
+
+    "R": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Recency score for this Experience Driver based on exponential decay over age_days."
+    },
+    "F": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Frequency score for this Experience Driver based on normalized log(count)."
+    },
+    "RF": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Composite RF score = RF_R_Component + RF_F_Component; higher means more urgent/active signal."
+    },
+    "RF_R_Component": {
+      "type": "number",
+      "description": "Absolute contribution of the Recency component to RF, incorporating RF_Weight_R."
+    },
+    "RF_F_Component": {
+      "type": "number",
+      "description": "Absolute contribution of the Frequency component to RF, incorporating RF_Weight_F."
+    },
+    "RF_R_ContributionPct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Percentage share of RF contributed by Recency (R)."
+    },
+    "RF_F_ContributionPct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Percentage share of RF contributed by Frequency (F)."
+    },
+    "RF_Weight_R": {
+      "type": "number",
+      "description": "Configured weight for Recency in RF computation (default 0.6)."
+    },
+    "RF_Weight_F": {
+      "type": "number",
+      "description": "Configured weight for Frequency in RF computation (default 0.4)."
+    },
+    "RF_Urgency_Category": {
+      "type": "string",
+      "description": "Long-form urgency label derived from RF (e.g., 'Dormant', 'Low Activity', 'Moderate Activity', 'High Activity', 'Emergency')."
+    },
+    "RF_Tier_Short": {
+      "type": "string",
+      "description": "Short-form RF tier used in decision grids (e.g., 'Dormant', 'Low', 'Moderate', 'High', 'Emergency')."
+    },
+
+    "R_Tier": {
+      "type": ["string", "null"],
+      "description": "Quantile-based 5-tier label for Recency (e.g., 'No Recent Activity', 'Low Recency', 'Moderate Recency', 'High Recency', 'Very High Recency')."
+    },
+    "R_Tier_Rank": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "Numeric rank aligned with R_Tier (0 for missing, 1–5 for tier strength)."
+    },
+    "F_Tier": {
+      "type": ["string", "null"],
+      "description": "Quantile-based 5-tier label for Frequency (e.g., 'Sparse Mentions', 'Low Frequency', 'Moderate Frequency', 'High Frequency', 'Very High Frequency')."
+    },
+    "F_Tier_Rank": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "Numeric rank aligned with F_Tier (0 for missing, 1–5 for tier strength)."
+    },
+
+    "Priority_Tier": {
+      "type": "string",
+      "description": "P0–P5 priority classification derived from Emotional_State_Band × RF_Tier_Short."
+    },
+    "Priority_Status": {
+      "type": "string",
+      "description": "Human-readable alias of Priority_Tier for UI or narrative purposes."
+    },
+    "Priority_Purpose": {
+      "type": "string",
+      "description": "Interpretive intent of the priority (e.g., 'Protect & Retain', 'Grow & Nurture', 'Stabilize', 'Firefight')."
+    },
+
+    "ERI_RF_Quadrant": {
+      "type": "string",
+      "description": "Text key describing the ERI_Tier × RF_Urgency_Category intersection (e.g., 'Negative | High Activity')."
+    },
+    "Quadrant_Purpose": {
+      "type": "string",
+      "description": "Strategic purpose of this ERI×RF quadrant (e.g., 'High-risk churn zone', 'Emerging delight pocket')."
+    },
+    "Quadrant_Key": {
+      "type": "string",
+      "description": "Canonical machine key for ERI×RF quadrant (e.g., 'Negative|High Activity')."
+    },
+
+    "Associated_Entity_Names": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Unique list of entity_name values attached to this Experience Driver (e.g., 'ED Waiting Area Status Updates')."
+    },
+    "No_of_Mentions": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of SEU mentions (rows) mapped to this Experience Driver within the analysis window."
+    },
+    "Mention_Share_%": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Percentage of all mentions in the dataset that belong to this Experience Driver."
+    },
+    "First_Seen_Date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Earliest date on which this Experience Driver appeared in the window (YYYY-MM-DD), or null if no valid dates."
+    },
+    "Most_Recent_Date": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Most recent date on which this Experience Driver appeared in the window (YYYY-MM-DD), or null if no valid dates."
+    },
+    "Age_Days": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Age in days between Most_Recent_Date and Today_Anchor for this Experience Driver."
+    },
+
+    "Emotion_Recency_Profile": {
+      "type": ["object", "null"],
+      "description": "Rich recency-of-emotion structure for this Experience Driver across time tiers.",
+      "properties": {
+        "by_emotion": {
+          "type": "object",
+          "description": "For each emotion, its distribution across recency tiers.",
+          "additionalProperties": {
+            "type": "object",
+            "description": "Per-emotion recency details (implementation-specific; usually counts per tier and totals)."
+          }
+        },
+        "by_tier": {
+          "type": "object",
+          "description": "For each recency tier, emotion mix and tier-level ERI/EVI/ES_Band.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "total_mentions": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Total mentions in this recency tier."
+              },
+              "emotions": {
+                "type": "object",
+                "description": "Distribution of emotions in this tier (e.g., { 'Adoration': 3, 'Anger': 5 }).",
+                "additionalProperties": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "dominant_emotion": {
+                "type": ["string", "null"],
+                "description": "Emotion with highest count in this tier."
+              },
+              "dominant_count": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Count of the dominant emotion in this tier."
+              },
+              "dominant_pct": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Share of dominant emotion in this tier."
+              },
+              "runner_up": {
+                "type": ["string", "null"],
+                "description": "Second strongest emotion in this tier, if any."
+              },
+              "ERI": {
+                "type": "number",
+                "minimum": -100,
+                "maximum": 100,
+                "description": "Tier-level ERI computed from this tier's emotion mix."
+              },
+              "ERI_Tier": {
+                "type": "string",
+                "description": "Tier-level ERI band."
+              },
+              "EVI": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Tier-level EVI computed for this tier."
+              },
+              "EVI_Tier": {
+                "type": "string",
+                "description": "Tier-level EVI band."
+              },
+              "ES_Band": {
+                "type": "string",
+                "description": "Tier-level emotional state band (ES1–ES5 style label)."
+              }
+            },
+            "required": [
+              "total_mentions",
+              "emotions",
+              "ERI",
+              "EVI",
+              "ERI_Tier",
+              "EVI_Tier",
+              "ES_Band"
+            ],
+            "additionalProperties": true
+          }
+        },
+        "temporal_intelligence": {
+          "type": "object",
+          "description": "Derived temporal intelligence across recency tiers (trend, flow, shifts).",
+          "properties": {
+            "Context_Flow": {
+              "type": "string",
+              "description": "High-level narrative summary of how emotion distribution shifts across tiers."
+            },
+            "ERI_Flow": {
+              "type": "string",
+              "description": "Narrative/label summarizing ERI movement across tiers (e.g., 'Improving', 'Declining', 'Stable')."
+            },
+            "EVI_Flow": {
+              "type": "string",
+              "description": "Narrative/label summarizing EVI movement across tiers."
+            },
+            "ES_Flow": {
+              "type": "string",
+              "description": "Narrative/label summarizing ES_Band migration over tiers."
+            },
+            "Emotion_Flow": {
+              "type": "string",
+              "description": "Narrative view of dominant emotion evolution (e.g., 'Adoration → Ambivalence → Anger')."
+            },
+            "Pattern_Flow": {
+              "type": "string",
+              "description": "High-level pattern label combining ERI/EVI dynamics."
+            },
+            "early_distribution": {
+              "type": "object",
+              "description": "Emotion distribution in early tiers (e.g., Tier_4/5).",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "recent_distribution": {
+              "type": "object",
+              "description": "Emotion distribution in recent tiers (e.g., Tier_1/2).",
+              "additionalProperties": {
+                "type": "number"
+              }
+            },
+            "top_early_emotions": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of top emotions in early tiers."
+            },
+            "top_recent_emotions": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of top emotions in recent tiers."
+            },
+            "eri_trend": {
+              "type": "string",
+              "description": "Signal like 'Strong Improvement', 'Improvement', 'Stable', 'Decline', etc., based on ERI tier shifts."
+            },
+            "evi_trend": {
+              "type": "string",
+              "description": "Signal like 'Fragmenting', 'Consolidating', 'Stable', based on EVI tier shifts."
+            },
+            "es_trajectory": {
+              "type": "string",
+              "description": "ES_Band trajectory label across tiers (e.g., 'ES3→ES4', 'ES2→ES1')."
+            },
+            "trend": {
+              "type": "string",
+              "description": "Generalized up/down/stable pattern classification."
+            },
+            "trajectory": {
+              "type": "string",
+              "description": "Optional extended trajectory descriptor (implementation-specific)."
+            },
+            "tier_shift": {
+              "type": "integer",
+              "description": "Net tier movement between early and recent tiers (e.g., +2, -1)."
+            },
+            "pattern_label": {
+              "type": "string",
+              "description": "Canonical label for the pattern (e.g., 'Crisis', 'Recovery', 'Stable-At-Risk')."
+            },
+            "summary": {
+              "type": "string",
+              "description": "Concise natural-language summary of the temporal intelligence."
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "by_emotion",
+        "by_tier",
+        "temporal_intelligence"
+      ],
+      "additionalProperties": false
+    },
+
+    "Debug_Emotion_Counts": {
+      "type": "object",
+      "description": "Raw emotion count dictionary used to compute ERI/EVI, useful for audit/debug.",
+      "properties": {
+        "Adoration": { "type": "integer", "minimum": 0 },
+        "Appreciation": { "type": "integer", "minimum": 0 },
+        "Ambivalence": { "type": "integer", "minimum": 0 },
+        "Agitation": { "type": "integer", "minimum": 0 },
+        "Anger": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    }
+  },
+
+  "required": [
+    "experience_driver",
+    "ERI",
+    "ERI_Tier",
+    "EVI",
+    "EVI_Tier",
+    "Emotional_State_Band",
+    "R",
+    "F",
+    "RF",
+    "RF_Urgency_Category",
+    "RF_Tier_Short",
+    "Priority_Tier",
+    "Priority_Purpose",
+    "Priority_Status",
+    "ERI_RF_Quadrant",
+    "Quadrant_Purpose",
+    "Quadrant_Key",
+    "Associated_Entity_Names",
+    "No_of_Mentions",
+    "Today_Anchor",
+    "Recency_Decay_Days"
+  ],
+  "additionalProperties": true
+}
