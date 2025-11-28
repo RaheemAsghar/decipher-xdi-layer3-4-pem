@@ -932,7 +932,7 @@ class Layer2Computer:
         else:
             eri_delta_pct = round((eri_delta / abs(eri_start)) * 100.0, 2)
 
-        # EVI scale is 0 → 100, so max swing = 100 points
+        # ERI scale spans 200 points total: -100 → +100
         full_scale_move_pct = round((abs(eri_delta) / 200.0) * 100.0, 2)
 
         # Calculate tier-crossing distance
@@ -1627,5 +1627,6 @@ class Layer2Computer:
         # Chaos patterns
         if evi_delta > self.PATTERN_EVI_CHAOS_THRESHOLD:
             return "FRAGMENTING RELATIONSHIP: Emotional complexity and instability rising."
+
 
         return "Mixed or ambiguous temporal signals - review detailed tier-level data."
