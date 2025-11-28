@@ -1,3 +1,312 @@
+# XDI Output: What Information Is Captured Per Experience Driver
+
+When the XDI engine (Layer_2_V5) runs, every **Experience Driver** is converted into a **stateful atomic 
+unit of CX intelligence**.
+
+This atomic unit is not a row, not a comment, not a customer. It’s:
+
+> **“Experience Driver + Emotional State + Temporal Trajectory + Operational Priority + Structural Weight + Provenance.”**
+
+Below is exactly what is captured.
+
+---
+
+## 1. Emotional State Snapshot (ERI, EVI, Bands)
+
+For each Experience Driver, XDI computes an emotional fingerprint:
+
+* **ERI (Emotional Resonance Index)**
+
+  * Scalar measure of overall sentiment on a **-100 → +100** scale.
+  * Captures the net emotional polarity.
+
+* **ERI Tier / Loyalty State**
+
+  * ERI mapped into discrete tiers (Very Positive → Very Negative).
+  * Represents the **current loyalty perception** for that driver.
+
+* **EVI (Emotional Volatility Index)**
+
+  * Measures how **spread/unstable** the emotions are across Adoration / Appreciation / Ambivalence / Agitation / Anger.
+  * Range: **0–100**.
+
+* **EVI Tier**
+
+  * EVI mapped into stability bands (stable → highly volatile).
+
+* **Emotional State Band (ES1–ES5)**
+
+  * Composite state from ERI + EVI tiers:
+
+    * ES1 – Secure / Loyal & Stable
+    * ES2 – Positive but with headroom
+    * ES3 – At Risk
+    * ES4 – Active Crisis
+    * ES5 – Critical / Chaotic
+
+👉 **This answers:**
+“How do customers feel about this driver right now, and how stable or unstable are those emotions?”
+
+---
+
+## 2. Temporal Urgency (Recency, Frequency, RF)
+
+XDI captures how “alive” this driver is in time:
+
+* **Recency (R)**
+
+  * Time-decayed measure of how recently the driver was mentioned.
+
+* **Frequency (F)**
+
+  * Density of mentions within the analysis window.
+
+* **RF Score & RF Tier**
+
+  * Combined urgency from Recency + Frequency, with configurable weights.
+  * Maps to urgency bands (Dormant → Very High).
+
+* **Age (days since last mention)**
+
+  * Direct measure of time since the last signal.
+
+* **Meta time config**
+
+  * `Window_Days`, `Recency_Decay_Days (τ)`, RF weights for R/F.
+
+👉 **This answers:**
+“Is this driver active right now, how often is it showing up, and how urgent is it?”
+
+---
+
+## 3. God-Tier Temporal Intelligence (Flow & Trajectory)
+
+This is the upgraded, **bulletproof** temporal layer, driven by your new versions of:
+
+* `_derive_temporal_intelligence_from_tiers()`
+* `_calculate_eri_trajectory()`
+* `_calculate_evi_trajectory()`
+* `_compute_emotion_flow()`
+* `_build_temporal_context_summary()`
+
+The output sits in three key structures:
+
+* `ERI_Flow`
+* `EVI_Flow`
+* `Emotion_Flow`
+
+### 3.1 ERI_Flow – Change in Sentiment
+
+XDI now answers **all** questions about ERI change:
+
+* **ERI change magnitude**
+
+  * `ERI_Flow["delta"]`
+  * Example: `65.7` if ERI went from 20.5 → 86.2
+
+* **ERI % change**
+
+  * `ERI_Flow["delta_pct"]`
+  * Example: `320.49` (% change from early to recent ERI)
+
+* **ERI change direction (qualitative)**
+
+  * `ERI_Flow["trend"]`
+  * e.g. `"↑↑ Strongly Improving"`, `"↓↓ Sharply Declining"`, `"≈ Stable"`
+
+* **ERI tier crossings**
+
+  * `ERI_Flow["tier_shift"]`
+  * How many ERI tiers were crossed between early and recent periods.
+
+👉 **Net effect:**
+You know **how much** sentiment changed, **which way**, **how strongly**, and **how many perception tiers** it crossed.
+
+---
+
+### 3.2 EVI_Flow – Change in Volatility
+
+Same level of precision for volatility:
+
+* **EVI change magnitude**
+
+  * `EVI_Flow["delta"]`
+
+* **EVI % change**
+
+  * `EVI_Flow["delta_pct"]`
+  * Example: `-61.54` if EVI went from 65.0 → 25.0
+
+* **EVI change direction**
+
+  * `EVI_Flow["trend"]`
+  * e.g. `"↓↓ Rapidly Consolidating"`, `"↑↑ Rapidly Destabilizing"`, `"≈ Stable"`
+
+* **EVI tier crossings**
+
+  * `EVI_Flow["tier_shift"]`
+  * How many volatility bands it moved across.
+
+👉 **Net effect:**
+You know whether emotions are becoming **more chaotic or more consolidated**, and by how much.
+
+---
+
+### 3.3 Emotion_Flow – Composition, Polarity & Dominant Shifts
+
+This is the richest block. The structure now looks like:
+
+```python
+Emotion_Flow = {
+  "early_distribution": {...},
+  "recent_distribution": {...},
+  "combined_distribution": {...},
+  "shifts": {
+    "Anger": {
+      "old_pct": 45.0,
+      "new_pct": 5.0,
+      "delta": -40.0,
+      "trend": "↓↓ Rapidly Fading"
+    },
+    "Appreciation": {
+      "old_pct": 5.0,
+      "new_pct": 60.0,
+      "delta": 55.0,
+      "trend": "↑↑ Strongly Emerging"
+    },
+    ...
+  },
+  "dominant_shift": {
+    "emotion": "Appreciation",
+    "delta": 55.0,
+    "trend": "↑↑ Strongly Emerging"
+  },
+  "top_early_emotions": [...],
+  "top_recent_emotions": [...],
+  "ambivalence_type": "none",
+
+  # NEW POLARITY + DOMINANT EMOTION FIELDS
+  "polarity_shift": {
+    "negative_early_pct": 75.0,
+    "negative_recent_pct": 20.0,
+    "negative_delta": -55.0,
+    "positive_early_pct": 10.0,
+    "positive_recent_pct": 65.0,
+    "positive_delta": 55.0,
+    "neutral_early_pct": 15.0,
+    "neutral_recent_pct": 20.0,
+    "neutral_delta": 5.0,
+    "polarity_flow_direction": "Negative → Positive"
+  },
+
+  "dominant_emotion_early": "Anger",
+  "dominant_emotion_early_pct": 45.0,
+  "dominant_emotion_recent": "Appreciation",
+  "dominant_emotion_recent_pct": 60.0,
+  "dominant_emotion_transition": "Anger → Appreciation"
+}
+```
+
+This allows you to answer, cleanly:
+
+#### a) “What emotion was dominant, and what did it become?”
+
+* **Early dominant emotion**
+
+  * `Emotion_Flow["dominant_emotion_early"]`
+  * `Emotion_Flow["dominant_emotion_early_pct"]`
+
+* **Recent dominant emotion**
+
+  * `Emotion_Flow["dominant_emotion_recent"]`
+  * `Emotion_Flow["dominant_emotion_recent_pct"]`
+
+* **Explicit transition**
+
+  * `Emotion_Flow["dominant_emotion_transition"]`
+  * e.g. `"Anger → Appreciation"`
+
+#### b) “What is the polarity flow?”
+
+* `Emotion_Flow["polarity_shift"]["polarity_flow_direction"]`
+
+  * e.g. `"Negative → Positive"`, `"Positive → Negative"`, `"Mixed → Negative"`, etc.
+
+* With full polarity deltas:
+
+  * `negative_delta` (e.g. `-55.0`)
+  * `positive_delta` (e.g. `+55.0`)
+  * plus neutral movement.
+
+#### c) “How big is the emotion change (per emotion)?”
+
+* Per-emotion delta:
+
+  * `Emotion_Flow["shifts"][emotion]["delta"]`
+  * For any emotion in {Adoration, Appreciation, Ambivalence, Agitation, Anger}.
+
+* Dominant shift:
+
+  * `Emotion_Flow["dominant_shift"]["emotion"]`
+  * `Emotion_Flow["dominant_shift"]["delta"]`
+
+👉 **Net effect:**
+You know **which feeling ruled the past**, **which feeling rules now**, **how the polarity moved 
+(Neg → Pos, Pos → Neg, etc.)**, and **which specific emotion had the biggest swing**.
+
+---
+
+### 3.4 Context Summary / Pattern Layer
+
+On top of these flows, the temporal module still builds a **one-line context summary / pattern label** 
+using these ingredients (ERI_Flow, EVI_Flow, Emotion_Flow). That gives you a narrative handle like:
+
+* “LOYALTY RECOVERY: ERI strongly improving, volatility consolidating, Anger → Appreciation.”
+* “CRISIS PATTERN: ERI collapsing, volatility rising, Appreciation → Anger.”
+
+You now have *all* the raw fields needed to generate and justify those patterns.
+
+---
+
+## 4. Priority & Mission Routing
+
+Using emotional state + RF + the temporal flows, XDI assigns:
+
+* **Priority Tier (P0–P5)**
+* **Priority Purpose / Mission Type**
+
+This is the **routing layer** that says:
+
+> “Given how they feel, how fast it’s changing, and how often it’s surfacing — what kind of mission should 
+we run on this driver?”
+
+---
+
+## 5. Structural Weight & Provenance
+
+Finally, each atomic unit also includes:
+
+* **Experience Driver Share & Relative Share**
+* **Observed Days / Coverage**
+* Full meta-config: `Today_Anchor`, `Window_Days`, `Recency_Decay_Days`, RF weights, etc.
+
+---
+
+## One-Line Summary
+
+After XDI runs, each Experience Driver becomes an atomic object that can answer — **directly from fields, 
+no recomputation**:
+
+* How sentiment and volatility changed (absolute + percentage + tier crossings).
+* Which emotion was dominant, which emotion is dominant now, and how polarity flowed.
+* How urgent the driver is in time.
+* What priority and mission type it should be routed into.
+* How big and representative the signal is.
+
+--------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------
+
+
 Decipher Layer 2 — Full Intelligence Payload & Agentic Interpretation Guide
 
 ### A Complete Breakdown of What Layer 2 Gives You and How an Intelligent Agent Uses It
