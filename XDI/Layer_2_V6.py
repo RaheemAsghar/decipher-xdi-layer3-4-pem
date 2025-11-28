@@ -932,6 +932,9 @@ class Layer2Computer:
         else:
             eri_delta_pct = round((eri_delta / abs(eri_start)) * 100.0, 2)
 
+        # EVI scale is 0 → 100, so max swing = 100 points
+        full_scale_move_pct = round((abs(eri_delta) / 200.0) * 100.0, 2)
+
         # Calculate tier-crossing distance
         start_tier_idx = self._eri_tier_index(eri_start)
         end_tier_idx = self._eri_tier_index(eri_end)
@@ -954,6 +957,7 @@ class Layer2Computer:
             "end": eri_end,
             "delta": eri_delta,
             "delta_pct": eri_delta_pct,  # NEW: Percentage change
+            "full_scale_move_pct": full_scale_move_pct,
             "tier_shift": tier_shift,
             "trend": eri_trend,
             "by_tier": {t: by_tier[t].get("ERI") for t in all_tiers},
@@ -990,6 +994,9 @@ class Layer2Computer:
         else:
             evi_delta_pct = round((evi_delta / evi_start) * 100.0, 2)
 
+        # EVI scale spans 100 points total: 0 → 100
+        full_scale_move_pct = round((abs(evi_delta) / 100.0) * 100.0, 2)
+        
         # Calculate tier-crossing distance
         start_tier_idx = self._evi_tier_index(evi_start)
         end_tier_idx = self._evi_tier_index(evi_end)
@@ -1011,7 +1018,8 @@ class Layer2Computer:
             "start": evi_start,
             "end": evi_end,
             "delta": evi_delta,
-            "delta_pct": evi_delta_pct,  # NEW: Percentage change
+            "delta_pct": evi_delta_pct,  
+            "full_scale_move_pct": full_scale_move_pct,
             "tier_shift": tier_shift,
             "trend": evi_trend,
             "by_tier": {t: by_tier[t].get("EVI") for t in all_tiers},
