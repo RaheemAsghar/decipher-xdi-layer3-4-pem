@@ -675,138 +675,181 @@ class Layer2Computer:
                 counts.get("Agitation", 0),
                 counts.get("Anger", 0),
             )
-    
+
     # ----------- Emotion Recency Profile -----------
     def _compute_emotion_recency_profile(self, group: pd.DataFrame) -> dict:
-            """
-            For a single experience_driver group:
-            Returns:
-            1. Distribution of each emotion across all recency tiers
-            2. FULL emotion distribution within each tier
-            3. ERI per tier (normalized -100..+100) using _compute_eri_from_counts
-            4. EVI per tier (0..100) using _compute_evi_from_counts → _compute_evi
-            5. ES_Band per tier using existing decision matrix
-            6. Temporal intelligence (auto-derived from tier comparisons),
-                with guard rails for sparse / incomplete tier coverage.
-            """
+        """
+        For a single experience_driver group:
+        Returns:
+        1. Distribution of each emotion across all recency tiers (by_emotion)
+        2. FULL emotion distribution within each tier (by_tier)
+        3. ERI per tier (normalized -100..+100) using _compute_eri_from_counts
+        4. EVI per tier (0..100) using _compute_evi_from_counts → _compute_evi
+        5. ES_Band per tier using existing decision matrix
+        6. Temporal intelligence (auto-derived from tier comparisons),
+           with guard rails for sparse / incomplete tier coverage.
+        7. NEW: Tier volume profile → share of total mentions per tier
+        8. NEW: Tier volume summary → early vs recent concentration
+        """
 
-            # Basic safety checks
-            if "date" not in group.columns or "emotion_primary" not in group.columns:
-                return {}
+        # Basic safety checks
+        if "date" not in group.columns or "emotion_primary" not in group.columns:
+            return {}
 
-            sub = group.dropna(subset=["date"])
-            if sub.empty:
-                return {}
+        sub = group.dropna(subset=["date"])
+        if sub.empty:
+            return {}
 
-            # Compute age in days and map to recency tiers
-            ages = (self.today - sub["date"]).dt.days.clip(lower=0)
+        # Compute age in days and map to recency tiers
+        ages = (self.today - sub["date"]).dt.days.clip(lower=0)
 
-            tmp = pd.DataFrame({
-                "emotion": sub["emotion_primary"],
-                "age_days": ages,
-            })
-            tmp["tier"] = tmp["age_days"].apply(
-                lambda x: self._map_emotion_recency_tier(x, self.window_days)
-            )
+        tmp = pd.DataFrame({
+            "emotion": sub["emotion_primary"],
+            "age_days": ages,
+        })
+        tmp["tier"] = tmp["age_days"].apply(
+            lambda x: self._map_emotion_recency_tier(x, self.window_days)
+        )
 
-            all_tiers = ["Tier_1", "Tier_2", "Tier_3", "Tier_4", "Tier_5", "Beyond_Window"]
+        all_tiers = ["Tier_1", "Tier_2", "Tier_3", "Tier_4", "Tier_5", "Beyond_Window"]
 
-            # --- Part 1: By Emotion (how each emotion is spread across tiers) ---
-            by_emotion = {}
-            for emotion, g_em in tmp.groupby("emotion"):
-                total = len(g_em)
-                tier_counts = g_em["tier"].value_counts().to_dict()
+        # --- Part 1: By Emotion (how each emotion is spread across tiers) ---
+        by_emotion: dict = {}
+        for emotion, g_em in tmp.groupby("emotion"):
+            total = len(g_em)
+            tier_counts = g_em["tier"].value_counts().to_dict()
 
-                tiers_dist = {}
-                for t in all_tiers:
-                    ct = int(tier_counts.get(t, 0))
-                    tiers_dist[t] = {
-                        "count": ct,
-                        "pct": round(100.0 * ct / max(1, total), 2),
-                    }
-
-                by_emotion[str(emotion)] = {
-                    "total_count": total,
-                    "tiers": tiers_dist,
-                }
-
-            # --- Part 2: By Tier (FULL emotion distribution + ERI/EVI/ES_Band per tier) ---
-            by_tier = {}
+            tiers_dist = {}
             for t in all_tiers:
-                tier_data = tmp[tmp["tier"] == t]
-                total_in_tier = len(tier_data)
-
-                if total_in_tier == 0:
-                    by_tier[t] = {
-                        "total_mentions": 0,
-                        "emotions": {},
-                        "dominant_emotion": None,
-                        "dominant_count": 0,
-                        "dominant_pct": 0.0,
-                        "runner_up": None,
-                        # Tier-level intelligence (null for empty tiers)
-                        "ERI": None,
-                        "ERI_Tier": None,
-                        "EVI": None,
-                        "EVI_Tier": None,
-                        "ES_Band": None,
-                    }
-                    continue
-
-                # Emotion counts in this tier
-                counts = tier_data["emotion"].value_counts()
-                total_in_tier = int(counts.sum())
-                tier_emotion_counts = counts.to_dict()
-
-                # Build emotions distribution
-                emotions_dist = {}
-                for emotion, ct in tier_emotion_counts.items():
-                    ct_int = int(ct)
-                    emotions_dist[emotion] = {
-                        "count": ct_int,
-                        "pct": round(100.0 * ct_int / max(1, total_in_tier), 2),
-                    }
-
-                # Dominant / runner_up for quick reference
-                dominant = counts.index[0]
-                dominant_ct = int(counts.iloc[0])
-                runner_up = counts.index[1] if len(counts) > 1 else None
-
-                # ERI for this tier (DRY helper)
-                eri_value = self._compute_eri_from_counts(tier_emotion_counts, total_in_tier)
-                eri_tier_label = self._map_loyalty_tier(eri_value)
-
-                # EVI for this tier (DRY wrapper -> _compute_evi)
-                evi_value = self._compute_evi_from_counts(tier_emotion_counts)
-                evi_tier_label = self._map_evi_tier(evi_value)
-
-                # ES Band from existing decision matrix
-                es_band_tier = self._classify_emotional_state_band(eri_tier_label, evi_tier_label)
-
-                by_tier[t] = {
-                    "total_mentions": total_in_tier,
-                    "emotions": emotions_dist,
-                    "dominant_emotion": dominant,
-                    "dominant_count": dominant_ct,
-                    "dominant_pct": round(100.0 * dominant_ct / max(1, total_in_tier), 2),
-                    "runner_up": runner_up,
-
-                    # Tier-level intelligence
-                    "ERI": round(eri_value, 2),
-                    "ERI_Tier": eri_tier_label,
-                    "EVI": round(evi_value, 2),
-                    "EVI_Tier": evi_tier_label,
-                    "ES_Band": es_band_tier,
+                ct = int(tier_counts.get(t, 0))
+                tiers_dist[t] = {
+                    "count": ct,
+                    "pct": round(100.0 * ct / max(1, total), 2),
                 }
 
-            # --- Part 3: Temporal Intelligence (with guard rails) ---
-            temporal_intel = self._derive_temporal_intelligence_from_tiers(by_tier, all_tiers)
-
-            return {
-                "by_emotion": by_emotion,
-                "by_tier": by_tier,
-                "temporal_intelligence": temporal_intel,
+            by_emotion[str(emotion)] = {
+                "total_count": int(total),
+                "tiers": tiers_dist,
             }
+
+        # --- Part 2: By Tier (FULL emotion distribution + ERI/EVI/ES_Band per tier) ---
+        by_tier: dict = {}
+        for t in all_tiers:
+            tier_data = tmp[tmp["tier"] == t]
+            total_in_tier = len(tier_data)
+
+            if total_in_tier == 0:
+                by_tier[t] = {
+                    "total_mentions": 0,
+                    "emotions": {},
+                    "dominant_emotion": None,
+                    "dominant_count": 0,
+                    "dominant_pct": 0.0,
+                    "runner_up": None,
+                    # Tier-level intelligence (null for empty tiers)
+                    "ERI": None,
+                    "ERI_Tier": None,
+                    "EVI": None,
+                    "EVI_Tier": None,
+                    "ES_Band": None,
+                }
+                continue
+
+            # Emotion counts in this tier
+            counts = tier_data["emotion"].value_counts()
+            total_in_tier = int(counts.sum())
+            tier_emotion_counts = counts.to_dict()
+
+            # Build emotions distribution
+            emotions_dist = {}
+            for emotion, ct in tier_emotion_counts.items():
+                ct_int = int(ct)
+                emotions_dist[emotion] = {
+                    "count": ct_int,
+                    "pct": round(100.0 * ct_int / max(1, total_in_tier), 2),
+                }
+
+            # Dominant / runner_up for quick reference
+            dominant = counts.index[0]
+            dominant_ct = int(counts.iloc[0])
+            runner_up = counts.index[1] if len(counts) > 1 else None
+
+            # ERI for this tier (DRY helper)
+            eri_value = self._compute_eri_from_counts(tier_emotion_counts, total_in_tier)
+            eri_tier_label = self._map_loyalty_tier(eri_value)
+
+            # EVI for this tier (DRY wrapper -> _compute_evi)
+            evi_value = self._compute_evi_from_counts(tier_emotion_counts)
+            evi_tier_label = self._map_evi_tier(evi_value)
+
+            # ES Band from existing decision matrix
+            es_band_tier = self._classify_emotional_state_band(eri_tier_label, evi_tier_label)
+
+            by_tier[t] = {
+                "total_mentions": total_in_tier,
+                "emotions": emotions_dist,
+                "dominant_emotion": dominant,
+                "dominant_count": dominant_ct,
+                "dominant_pct": round(100.0 * dominant_ct / max(1, total_in_tier), 2),
+                "runner_up": runner_up,
+                # Tier-level intelligence
+                "ERI": round(eri_value, 2),
+                "ERI_Tier": eri_tier_label,
+                "EVI": round(evi_value, 2),
+                "EVI_Tier": evi_tier_label,
+                "ES_Band": es_band_tier,
+            }
+
+        # --- Part 2b: Tier Volume Profile (share of total mentions per tier) ---
+        total_all_mentions = sum(info["total_mentions"] for info in by_tier.values())
+        tier_volume_profile: dict = {}
+
+        for t, info in by_tier.items():
+            ct = int(info["total_mentions"])
+            share_pct = round(100.0 * ct / max(1, total_all_mentions), 2)
+            # Enrich by_tier with share-of-total
+            info["share_of_total_pct"] = share_pct
+
+            tier_volume_profile[t] = {
+                "total_mentions": ct,
+                "share_pct": share_pct,
+            }
+
+        # --- Part 2c: Early vs Recent Volume Summary (high-level concentration) ---
+        early_tiers = ["Tier_4", "Tier_5"]
+        recent_tiers = ["Tier_1", "Tier_2"]
+
+        early_total = sum(by_tier[t]["total_mentions"] for t in early_tiers if t in by_tier)
+        recent_total = sum(by_tier[t]["total_mentions"] for t in recent_tiers if t in by_tier)
+
+        early_share = round(100.0 * early_total / max(1, total_all_mentions), 2)
+        recent_share = round(100.0 * recent_total / max(1, total_all_mentions), 2)
+
+        tier_volume_summary = {
+            "total_mentions": int(total_all_mentions),
+            "early": {
+                "tiers": early_tiers,
+                "mentions": int(early_total),
+                "share_pct": early_share,
+            },
+            "recent": {
+                "tiers": recent_tiers,
+                "mentions": int(recent_total),
+                "share_pct": recent_share,
+            },
+        }
+
+        # --- Part 3: Temporal Intelligence (with guard rails) ---
+        temporal_intel = self._derive_temporal_intelligence_from_tiers(by_tier, all_tiers)
+
+        return {
+            "by_emotion": by_emotion,
+            "by_tier": by_tier,
+            "tier_volume_profile": tier_volume_profile,   # NEW
+            "tier_volume_summary": tier_volume_summary,   # NEW
+            "temporal_intelligence": temporal_intel,
+        }
+
 
     # ----------- Temporal Intelligence -----------
     def _derive_temporal_intelligence_from_tiers(self, by_tier: dict, all_tiers: list) -> dict:
@@ -932,7 +975,7 @@ class Layer2Computer:
         else:
             eri_delta_pct = round((eri_delta / abs(eri_start)) * 100.0, 2)
 
-        # ERI scale spans 200 points total: -100 → +100
+        # EVI scale is 0 → 100, so max swing = 100 points
         full_scale_move_pct = round((abs(eri_delta) / 200.0) * 100.0, 2)
 
         # Calculate tier-crossing distance
@@ -1627,6 +1670,5 @@ class Layer2Computer:
         # Chaos patterns
         if evi_delta > self.PATTERN_EVI_CHAOS_THRESHOLD:
             return "FRAGMENTING RELATIONSHIP: Emotional complexity and instability rising."
-
 
         return "Mixed or ambiguous temporal signals - review detailed tier-level data."
