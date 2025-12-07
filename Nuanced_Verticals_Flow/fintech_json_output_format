@@ -1,8 +1,6 @@
 ✅ STRICT JSON OUTPUT FORMAT (MANDATORY)
 FOR FINTECH CX DIMENSIONS
 
----
-
 ⚙️ STRICT JSON OUTPUT FORMAT (MANDATORY)
 Context: You have been trained on all Experience Driver dimensions, emotion taxonomies, journey stages, and scoring rubrics in previous sections. This section defines ONLY the mandatory output structure.
 Purpose: Enforce schema compliance for downstream ETL ingestion.
@@ -10,16 +8,13 @@ Rules:
 - The model must output ONLY valid JSON, formatted according to the exact schema below.
 - The response MUST be one of the following:
 
----
-
 A) SUCCESS CASE (Experience Drivers Found)
 Output a JSON object containing:
 {
-   "schema_version": "string", 
-   "processed_at": "string",
-
-   "customer_review": "string",
-   "experience_drivers": [
+  "schema_version": "fintech_ed_v1",
+  "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "string",
+  "experience_drivers": [
     {
       "theme": "string",
       "experience_driver": {
@@ -32,7 +27,7 @@ Output a JSON object containing:
         "text": "string",
         "keywords": ["string"]
       },
-      "feedback_type": "Complaint | Compliment | Suggestion | Request | Question | Product Usage Insight | Emerging Trend",
+      "feedback_type": "Complaint",
       "emotion": {
         "group": "string",
         "specific": "string"
@@ -42,8 +37,8 @@ Output a JSON object containing:
         "customer_journey_stage": "string",
         "interaction_moment": "string"
       },
-      "opportunity_maximisation_stream": "Fix | Optimize | Innovate | Amplify",
-      "customer_effort_score": 1,
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 4,
       "orchestration_unit": {
         "ou_name": "string",
         "experience_driver": "string",
@@ -186,14 +181,14 @@ Controlled vocabulary fields MUST use allowed values EXACTLY.
 customer_effort_score MUST be an integer between 1 and 7.
 
 
----
-
 ### ✅ EXAMPLES TO FOLLOW
+
+—
 
 #### Example 1:
 
 {
-  "schema_version": "1.0.0",
+  "schema_version": "fintech_ed_v1",
   "processed_at": "2025-12-07T14:23:45Z",
   "customer_review": "I attempted to pay my credit card bill via the app, but after confirming the payment, I received two separate debit notifications. One of those was later reversed, yet the duplicate charge left me worried about my actual balance and potential unauthorized activity.",
   "experience_drivers": [
@@ -207,7 +202,15 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "Credit Card Payment Module",
       "context": {
         "text": "Customer initiated a credit card payment via the app. After confirming, they received two debit notifications — one eventually reversed. This raised immediate concerns about account safety and triggered suspicion of unauthorized activity.",
-        "keywords": ["duplicate charge", "payment confirmation", "debit notification", "reversed", "unauthorized", "panic", "transaction error"]
+        "keywords": [
+          "duplicate charge",
+          "payment confirmation",
+          "debit notification",
+          "reversed",
+          "unauthorized",
+          "panic",
+          "transaction error"
+        ]
       },
       "feedback_type": "Complaint",
       "emotion": {
@@ -248,7 +251,7 @@ customer_effort_score MUST be an integer between 1 and 7.
 #### Example 2:
 
 {
-  "schema_version": "1.0.0",
+  "schema_version": "fintech_ed_v1",
   "processed_at": "2025-12-07T14:23:45Z",
   "customer_review": "Your app froze right as I was trying to transfer money — I had to restart it twice. And then the recent transactions list was all jumbled, so I couldn't even confirm if the payment went through or not.",
   "experience_drivers": [
@@ -262,7 +265,13 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "App Freeze During Fund Transfer",
       "context": {
         "text": "Customer faced repeated app freezes during a real-time fund transfer, forcing restarts and breaking transaction continuity at a critical financial moment.",
-        "keywords": ["app freeze", "transfer failure", "restart", "transaction flow", "funds not confirmed"]
+        "keywords": [
+          "app freeze",
+          "transfer failure",
+          "restart",
+          "transaction flow",
+          "funds not confirmed"
+        ]
       },
       "feedback_type": "Complaint",
       "emotion": {
@@ -305,7 +314,13 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "Jumbled Transaction List",
       "context": {
         "text": "After the app restarted, the customer checked the recent transaction list but found it disorganized, unclear, and missing confirmation signals for the payment they just tried.",
-        "keywords": ["transaction history", "missing payment", "unclear", "jumbled", "recent activity"]
+        "keywords": [
+          "transaction history",
+          "missing payment",
+          "unclear",
+          "jumbled",
+          "recent activity"
+        ]
       },
       "feedback_type": "Complaint",
       "emotion": {
@@ -346,7 +361,7 @@ customer_effort_score MUST be an integer between 1 and 7.
 #### Example 3:
 
 {
-  "schema_version": "1.0.0",
+  "schema_version": "fintech_ed_v1",
   "processed_at": "2025-12-07T14:23:45Z",
   "customer_review": "The rep on the call didn't just help me — she explained why the delay happened, reassured me it wouldn't impact my credit score, and even followed up via WhatsApp the next day to confirm resolution. Also, I wish the app could let me dispute a transaction directly without having to call in.",
   "experience_drivers": [
@@ -360,7 +375,14 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "Rep-Initiated WhatsApp Follow-Up",
       "context": {
         "text": "A customer received proactive, empathetic follow-up from a support rep after resolving a delay issue. The rep provided reassurance about credit score protection and offered an unprompted next-day check-in.",
-        "keywords": ["follow-up", "WhatsApp", "reassurance", "credit score", "empathy", "human touch"]
+        "keywords": [
+          "follow-up",
+          "WhatsApp",
+          "reassurance",
+          "credit score",
+          "empathy",
+          "human touch"
+        ]
       },
       "feedback_type": "Compliment",
       "emotion": {
@@ -383,14 +405,14 @@ customer_effort_score MUST be an integer between 1 and 7.
         "opportunity_maximisation_stream": "Amplify",
         "interaction_moment": "after the delay was resolved by phone",
         "context": "A customer received proactive, empathetic follow-up from a support rep after resolving a delay issue. The rep provided reassurance about credit score protection and offered an unprompted next-day check-in.",
-        "matters": "Proactive post-resolution outreach — especially via personal channels like WhatsApp — makes customers feel seen beyond the ticket, reinforcing trust through continuity and unprompted reassurance.",
+        "matters": "Proactive post-resolution outreach — especially through personal channels like WhatsApp — makes customers feel seen beyond the transaction, reinforcing trust and creating emotional continuity.",
         "semantic_action_statement": {
           "section_1_customer_reality": "The customer gave a Compliment about a rep who not only resolved their issue but followed up proactively via WhatsApp the next day to reassure them about their credit score.",
-          "section_2_strategic_response": "We need to Amplify → Customer Support → Post-Resolution Follow-Up to scale these emotionally resonant moments that create lasting trust and signal human care."
+          "section_2_strategic_response": "We need to Amplify → Customer Support → Post-Resolution Follow-Up to scale emotionally resonant behaviors that create lasting trust and human warmth."
         },
-        "stream_justification": "This is a textbook Amplify moment — unprompted, emotionally anchored, and tied to institutional empathy. It deserves spotlighting and systemic reinforcement.",
+        "stream_justification": "This moment exemplifies trust reinforcement — unprompted, emotionally anchored, and relational in nature. It is the kind of experience that should be spotlighted and replicated.",
         "matters_extraction": "Raw Customer Voice, Context, Interaction Moment",
-        "behavioral_impact": "Increases post-resolution confidence, deepens brand warmth, and shifts support from transactional to transformational."
+        "behavioral_impact": "Increases post-resolution confidence, deepens emotional connection to the brand, and shifts support engagements from transactional to relationship-building."
       }
     },
     {
@@ -403,7 +425,14 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "Transaction Dispute Shortcut",
       "context": {
         "text": "Customer wished for a seamless in-app experience to dispute a transaction instead of relying on phone support, indicating a desire for frictionless, autonomous issue management.",
-        "keywords": ["dispute", "app feature", "shortcut", "self-serve", "manual process", "delay"]
+        "keywords": [
+          "dispute",
+          "app feature",
+          "shortcut",
+          "self-serve",
+          "manual process",
+          "delay"
+        ]
       },
       "feedback_type": "Suggestion",
       "emotion": {
@@ -426,15 +455,16 @@ customer_effort_score MUST be an integer between 1 and 7.
         "opportunity_maximisation_stream": "Innovate",
         "interaction_moment": "when trying to initiate a dispute via the app",
         "context": "Customer wished for a seamless in-app experience to dispute a transaction instead of relying on phone support, indicating a desire for frictionless, autonomous issue management.",
-        "matters": "Forcing users to call support for basic dispute actions interrupts flow, adds unnecessary friction, and undermines the self-serve autonomy users expect from digital platforms.",
+        "matters": "Forcing users to call support for disputes interrupts flow, introduces friction, and undermines the expectation that digital platforms should support autonomous issue resolution.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The customer made a Suggestion about wanting to dispute transactions directly in the app instead of being forced to call support.",
-          "section_2_strategic_response": "We need to Innovate → Dispute Management → In-App Resolution Options to enable frictionless, self-guided dispute initiation that aligns with modern expectations."
+          "section_1_customer_reality": "The customer made a Suggestion about wanting to dispute transactions directly inside the app instead of being forced to call support.",
+          "section_2_strategic_response": "We need to Innovate → Dispute Management → In-App Resolution Options to enable frictionless, self-guided dispute initiation aligned with modern digital expectations."
         },
-        "stream_justification": "This is a forward-looking request tied to UX modernity and emotional ease. The operational process exists but isn't accessible in the way customers want.",
+        "stream_justification": "This is a forward-looking request rooted in digital autonomy and operational ease. The dispute workflow exists, but customers cannot access it in a frictionless manner.",
         "matters_extraction": "Raw Customer Voice, Context, Keywords",
-        "behavioral_impact": "Reduce support tickets, increase user control, and shift perception of the app as a self-reliant command center."
+        "behavioral_impact": "Reduce support dependency, increase user control, and strengthen perception of the app as a complete self-service command center."
       }
     }
   ]
 }
+
