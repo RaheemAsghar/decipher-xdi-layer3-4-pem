@@ -1,6 +1,5 @@
 ✅ STRICT JSON OUTPUT FORMAT (MANDATORY)
 FOR HEALTHCARE CX DIMENSIONS
----
 
 ⚙️ STRICT JSON OUTPUT FORMAT (MANDATORY)
 Context: You have been trained on all Experience Driver dimensions, emotion taxonomies, journey stages, and scoring rubrics in previous sections. This section defines ONLY the mandatory output structure.
@@ -8,16 +7,14 @@ Purpose: Enforce schema compliance for downstream ETL ingestion.
 Rules:
 - The model must output ONLY valid JSON, formatted according to the exact schema below.
 - The response MUST be one of the following:
----
 
 A) SUCCESS CASE (Experience Drivers Found)
 Output a JSON object containing:
 {
-   "schema_version": "string", 
-   "processed_at": "string",
-
-   "customer_review": "string",
-   "experience_drivers": [
+  "schema_version": "healthcare_ed_v1",
+  "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "string",
+  "experience_drivers": [
     {
       "theme": "string",
       "experience_driver": {
@@ -30,7 +27,7 @@ Output a JSON object containing:
         "text": "string",
         "keywords": ["string"]
       },
-      "feedback_type": "Complaint | Compliment | Suggestion | Request | Question | Product Usage Insight | Emerging Trend",
+      "feedback_type": "Complaint",
       "emotion": {
         "group": "string",
         "specific": "string"
@@ -40,8 +37,8 @@ Output a JSON object containing:
         "customer_journey_stage": "string",
         "interaction_moment": "string"
       },
-      "opportunity_maximisation_stream": "Fix | Optimize | Innovate | Amplify",
-      "customer_effort_score": 1,
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 4,
       "orchestration_unit": {
         "ou_name": "string",
         "experience_driver": "string",
@@ -189,10 +186,11 @@ customer_effort_score MUST be an integer between 1 and 7.
 
 ---
 
-#### **Example 1 – FIX STREAM | Anger | Test Result Accuracy**
-
+#### Example 1 – FIX STREAM | Anger | Test Result Accuracy
 
 {
+  "schema_version": "healthcare_ed_v1",
+  "processed_at": "2025-12-07T14:23:45Z",
   "customer_review": "I had my blood test done, and when I checked the results in the patient portal, two different cholesterol readings were listed for the same date. One was later corrected, but the discrepancy made me question the reliability of my entire report and whether my treatment plan might be affected.",
   "experience_drivers": [
     {
@@ -205,7 +203,15 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "Laboratory Reporting System",
       "context": {
         "text": "Patient reviewed their lab results in the portal and noticed duplicate/conflicting cholesterol readings for the same test date. One was later corrected, but the inconsistency caused anxiety about accuracy and potential care impact.",
-        "keywords": ["duplicate result", "conflicting data", "lab error", "portal", "correction", "trust", "treatment impact"]
+        "keywords": [
+          "duplicate result",
+          "conflicting data",
+          "lab error",
+          "portal",
+          "correction",
+          "trust",
+          "treatment impact"
+        ]
       },
       "feedback_type": "Complaint",
       "emotion": {
@@ -234,7 +240,7 @@ customer_effort_score MUST be an integer between 1 and 7.
           "section_2_strategic_response": "We need to Fix → Diagnostic Processing → Result Accuracy Management to eliminate conflicting lab data that erodes trust, disrupts decision-making, and creates unnecessary patient anxiety."
         },
         "stream_justification": "Clinical data integrity is a zero-tolerance domain; even small anomalies can shake confidence and drive avoidance behaviors.",
-        "matters_extraction": "Raw Voice, Keywords, Journey Context.",
+        "matters_extraction": "Raw Voice, Keywords, Journey Context",
         "behavioral_impact": "Improve validation checks before publishing results, add proactive patient notifications when corrections are made, and embed real-time trust cues in result delivery."
       }
     }
@@ -247,10 +253,9 @@ customer_effort_score MUST be an integer between 1 and 7.
 #### **Example 2 – FIX + OPTIMIZE STREAM COMBINATION (Dual Drivers)**
 
 {
-"schema_version": 1.0.0, 
-"processed_at": "string", 
-
- "customer_review": "The telehealth app froze right as I was explaining my symptoms to the doctor — I had to restart twice. Then when I rejoined, my visit notes were incomplete, and I couldn't tell if the prescription was even sent to my pharmacy.",
+  "schema_version": "healthcare_ed_v1",
+  "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "The telehealth app froze right as I was explaining my symptoms to the doctor — I had to restart twice. Then when I rejoined, my visit notes were incomplete, and I couldn't tell if the prescription was even sent to my pharmacy.",
   "experience_drivers": [
     {
       "theme": "Technical Resilience",
@@ -262,7 +267,13 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "App Freeze During Consultation",
       "context": {
         "text": "Patient experienced repeated app freezes during a live telehealth consultation, forcing restarts and breaking continuity of care.",
-        "keywords": ["app freeze", "consultation failure", "restart", "loss of continuity", "symptom explanation interrupted"]
+        "keywords": [
+          "app freeze",
+          "consultation failure",
+          "restart",
+          "loss of continuity",
+          "symptom explanation interrupted"
+        ]
       },
       "feedback_type": "Complaint",
       "emotion": {
@@ -305,7 +316,12 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "Incomplete Post-Visit Notes",
       "context": {
         "text": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
-        "keywords": ["missing notes", "no prescription confirmation", "incomplete summary", "care continuity"]
+        "keywords": [
+          "missing notes",
+          "no prescription confirmation",
+          "incomplete summary",
+          "care continuity"
+        ]
       },
       "feedback_type": "Complaint",
       "emotion": {
@@ -341,12 +357,13 @@ customer_effort_score MUST be an integer between 1 and 7.
   ]
 }
 
-
 ---
 
 #### **Example 3 – AMPLIFY + INNOVATE STREAM COMBINATION**
 
 {
+  "schema_version": "healthcare_ed_v1",
+  "processed_at": "2025-12-07T14:23:45Z",
   "customer_review": "The nurse didn't just take my vitals — she noticed I looked pale, asked about my diet, and suggested a quick iron test, which turned out to be helpful. Also, I wish I could schedule lab tests directly through the patient portal instead of having to call.",
   "experience_drivers": [
     {
@@ -359,7 +376,12 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "Nurse-Initiated Iron Test",
       "context": {
         "text": "Nurse observed pallor during vitals check, inquired about diet, and recommended an iron test that revealed a deficiency.",
-        "keywords": ["proactive care", "nurse observation", "iron test", "preventive action"]
+        "keywords": [
+          "proactive care",
+          "nurse observation",
+          "iron test",
+          "preventive action"
+        ]
       },
       "feedback_type": "Compliment",
       "emotion": {
@@ -402,7 +424,12 @@ customer_effort_score MUST be an integer between 1 and 7.
       "entity_name": "In-Portal Lab Test Booking",
       "context": {
         "text": "Patient wished to schedule lab tests directly through the portal instead of calling, indicating a need for streamlined, self-service diagnostics access.",
-        "keywords": ["self-service", "test booking", "patient portal", "lab scheduling"]
+        "keywords": [
+          "self-service",
+          "test booking",
+          "patient portal",
+          "lab scheduling"
+        ]
       },
       "feedback_type": "Suggestion",
       "emotion": {
