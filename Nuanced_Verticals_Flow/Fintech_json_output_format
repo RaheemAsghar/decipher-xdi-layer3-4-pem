@@ -1,9 +1,16 @@
 ✅ STRICT JSON OUTPUT FORMAT (MANDATORY)
 FOR FINTECH CX DIMENSIONS
 
+---
+
 ⚙️ STRICT JSON OUTPUT FORMAT (MANDATORY)
-The model must output ONLY valid JSON, formatted according to the exact schema below.
-The response MUST be one of the following:
+Context: You have been trained on all Experience Driver dimensions, emotion taxonomies, journey stages, and scoring rubrics in previous sections. This section defines ONLY the mandatory output structure.
+Purpose: Enforce schema compliance for downstream ETL ingestion.
+Rules:
+- The model must output ONLY valid JSON, formatted according to the exact schema below.
+- The response MUST be one of the following:
+
+---
 
 A) SUCCESS CASE (Experience Drivers Found)
 Output a JSON object containing:
