@@ -1,0 +1,434 @@
+✅ STRICT JSON OUTPUT FORMAT (MANDATORY)
+FOR HEALTHCARE CX DIMENSIONS
+
+⚙️ STRICT JSON OUTPUT FORMAT (MANDATORY)
+The model must output ONLY valid JSON, formatted according to the exact schema below.
+The response MUST be one of the following:
+
+A) SUCCESS CASE (Experience Drivers Found)
+Output a JSON object containing:
+{
+   "schema_version": "string", 
+   "processed_at": "string",
+
+   "customer_review": "string",
+   "experience_drivers": [
+    {
+      "theme": "string",
+      "experience_driver": {
+        "label": "string",
+        "category": "string",
+        "subcategory": "string"
+      },
+      "entity_name": "string",
+      "context": {
+        "text": "string",
+        "keywords": ["string"]
+      },
+      "feedback_type": "Complaint | Compliment | Suggestion | Request | Question | Product Usage Insight | Emerging Trend",
+      "emotion": {
+        "group": "string",
+        "specific": "string"
+      },
+      "journey": {
+        "customer_journey": "string",
+        "customer_journey_stage": "string",
+        "interaction_moment": "string"
+      },
+      "opportunity_maximisation_stream": "Fix | Optimize | Innovate | Amplify",
+      "customer_effort_score": 1,
+      "orchestration_unit": {
+        "ou_name": "string",
+        "experience_driver": "string",
+        "entity_name": "string",
+        "theme": "string",
+        "feedback_type": "string",
+        "opportunity_maximisation_stream": "string",
+        "interaction_moment": "string",
+        "context": "string",
+        "matters": "string",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "string",
+          "section_2_strategic_response": "string"
+        },
+        "stream_justification": "string",
+        "matters_extraction": "string",
+        "behavioral_impact": "string"
+      }
+    }
+  ]
+}
+
+Rules for SUCCESS output:
+experience_drivers MUST be an array.
+processed_at MUST be a string in ISO 8601 timestamp format: "YYYY-MM-DDTHH:MM:SSZ" (e.g., "2025-12-07T14:23:45Z").
+Each Experience Driver MUST be a separate object inside the array.
+The structure of each object MUST match the schema exactly.
+All fields MUST appear even if empty (empty string "" or empty array []).
+Output MUST be valid JSON — no comments, no trailing commas, no markdown.
+NO preamble text, NO explanations, NO notes — JSON ONLY.
+
+B) FAILURE CASE (No Valid Experience Driver)
+If no Experience Driver passes filtering:
+Output exactly the following JSON object:
+{
+  "status": "skipped",
+  "reason": "insufficient_info"
+}
+
+NO additional fields.
+NO commentary.
+NO alternative formulations.
+
+🔒 NON-NEGOTIABLE RULES (MANDATORY)
+1. JSON Schema Integrity
+You MUST follow the schema exactly.
+
+
+No missing fields.
+
+
+No renaming fields.
+
+
+No extra fields.
+
+
+No reordering of structural layers.
+
+
+This is a strict parsing contract for downstream ETL and XDI ingestion.
+
+2. Experience Driver Handling
+Each valid ED → one full JSON block in the array.
+
+
+Do NOT merge multiple EDs into one block.
+
+
+Do NOT create partial blocks.
+
+
+Blocks MUST be fully independent and complete.
+
+3. Output Scope Is All-or-Nothing
+If ≥1 ED is valid → output full JSON with an array of ED blocks.
+
+
+If 0 EDs valid → output the skipped JSON object ONLY.
+
+
+No partial extraction.
+
+
+No degraded output.
+
+4. Zero Tolerance for Leakage
+You MUST NOT output:
+Markdown
+
+
+Headings
+
+
+Commentary
+
+
+Explanations
+
+
+Backticks
+
+
+Natural language outside JSON
+
+
+Additional keys not present in the schema
+
+
+Any leakage invalidates the output.
+
+5. Multiple Experience Drivers
+If a review yields multiple EDs:
+{
+  "customer_review": "...",
+  "experience_drivers": [
+    { /* ED Block 1 */ },
+    { /* ED Block 2 */ },
+    { /* ED Block 3 */ }
+  ]
+}
+
+Each block MUST follow the schema.
+NO text between blocks.
+NO commentary.
+
+6. Strict Data Typing
+Strings MUST be strings.
+
+
+Arrays MUST be arrays.
+
+
+Numbers MUST be numbers.
+
+
+Controlled vocabulary fields MUST use allowed values EXACTLY.
+
+
+customer_effort_score MUST be an integer between 1 and 7.
+
+
+
+### ✅ EXAMPLES TO FOLLOW – HEALTHCARE
+
+---
+
+#### **Example 1 – FIX STREAM | Anger | Test Result Accuracy**
+
+
+{
+  "customer_review": "I had my blood test done, and when I checked the results in the patient portal, two different cholesterol readings were listed for the same date. One was later corrected, but the discrepancy made me question the reliability of my entire report and whether my treatment plan might be affected.",
+  "experience_drivers": [
+    {
+      "theme": "Clinical Data Integrity",
+      "experience_driver": {
+        "label": "Result Accuracy Management",
+        "category": "Diagnostic Processing",
+        "subcategory": "Result Accuracy Management"
+      },
+      "entity_name": "Laboratory Reporting System",
+      "context": {
+        "text": "Patient reviewed their lab results in the portal and noticed duplicate/conflicting cholesterol readings for the same test date. One was later corrected, but the inconsistency caused anxiety about accuracy and potential care impact.",
+        "keywords": ["duplicate result", "conflicting data", "lab error", "portal", "correction", "trust", "treatment impact"]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Anger",
+        "specific": "Betrayed by System Malfunction"
+      },
+      "journey": {
+        "customer_journey": "Diagnostic Experience",
+        "customer_journey_stage": "Result Review",
+        "interaction_moment": "while reviewing test results in the portal"
+      },
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 7,
+      "orchestration_unit": {
+        "ou_name": "Duplicate Test Result Discrepancy – Complaint – Fix",
+        "experience_driver": "Diagnostic Processing → Result Accuracy Management",
+        "entity_name": "Laboratory Reporting System",
+        "theme": "Clinical Data Integrity",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Fix",
+        "interaction_moment": "while reviewing test results in the portal",
+        "context": "Patient saw two conflicting cholesterol results for the same test date, one later corrected, which created serious doubt about report reliability and potential treatment changes.",
+        "matters": "Conflicting lab results undermine confidence, create emotional distress, and risk inappropriate clinical decisions.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient submitted a Complaint about seeing conflicting cholesterol readings for the same test date in the portal. Although one was corrected later, they feared the error could impact their treatment plan.",
+          "section_2_strategic_response": "We need to Fix → Diagnostic Processing → Result Accuracy Management to eliminate conflicting lab data that erodes trust, disrupts decision-making, and creates unnecessary patient anxiety."
+        },
+        "stream_justification": "Clinical data integrity is a zero-tolerance domain; even small anomalies can shake confidence and drive avoidance behaviors.",
+        "matters_extraction": "Raw Voice, Keywords, Journey Context.",
+        "behavioral_impact": "Improve validation checks before publishing results, add proactive patient notifications when corrections are made, and embed real-time trust cues in result delivery."
+      }
+    }
+  ]
+}
+
+
+---
+
+#### **Example 2 – FIX + OPTIMIZE STREAM COMBINATION (Dual Drivers)**
+
+{
+"schema_version": 1.0.0, 
+"processed_at": "string", 
+
+ "customer_review": "The telehealth app froze right as I was explaining my symptoms to the doctor — I had to restart twice. Then when I rejoined, my visit notes were incomplete, and I couldn't tell if the prescription was even sent to my pharmacy.",
+  "experience_drivers": [
+    {
+      "theme": "Technical Resilience",
+      "experience_driver": {
+        "label": "Session Stability",
+        "category": "Telehealth Platform",
+        "subcategory": "Session Stability"
+      },
+      "entity_name": "App Freeze During Consultation",
+      "context": {
+        "text": "Patient experienced repeated app freezes during a live telehealth consultation, forcing restarts and breaking continuity of care.",
+        "keywords": ["app freeze", "consultation failure", "restart", "loss of continuity", "symptom explanation interrupted"]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Agitation",
+        "specific": "Panic"
+      },
+      "journey": {
+        "customer_journey": "Care Delivery",
+        "customer_journey_stage": "Telehealth Session",
+        "interaction_moment": "while explaining symptoms to the doctor"
+      },
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 6,
+      "orchestration_unit": {
+        "ou_name": "Telehealth App Freeze – Complaint – Fix",
+        "experience_driver": "Telehealth Platform → Session Stability",
+        "entity_name": "App Freeze During Consultation",
+        "theme": "Technical Resilience",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Fix",
+        "interaction_moment": "while explaining symptoms to the doctor",
+        "context": "Patient experienced repeated app freezes during a live telehealth consultation, forcing restarts and breaking continuity of care.",
+        "matters": "Telehealth freezes mid-consultation break care continuity, force repetition of symptoms, and risk incomplete diagnosis.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient submitted a Complaint about the telehealth app freezing twice during their consultation, forcing restarts and interrupting their symptom explanation.",
+          "section_2_strategic_response": "We need to Fix → Telehealth Platform → Session Stability to prevent mid-consultation freezes that disrupt diagnosis and cause patient frustration."
+        },
+        "stream_justification": "Session stability failures during live consultations create direct clinical risk, harm diagnostic accuracy, and erode patient trust — requiring immediate remediation.",
+        "matters_extraction": "Patient frustration from disrupted symptom explanation and uncertainty in diagnosis due to session instability.",
+        "behavioral_impact": "Affects patient confidence in virtual care, increases repeat visits, and may drive patients back to in-person care."
+      }
+    },
+    {
+      "theme": "Post-Consultation Assurance",
+      "experience_driver": {
+        "label": "Visit Summary Clarity",
+        "category": "Care Documentation",
+        "subcategory": "Visit Summary Clarity"
+      },
+      "entity_name": "Incomplete Post-Visit Notes",
+      "context": {
+        "text": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
+        "keywords": ["missing notes", "no prescription confirmation", "incomplete summary", "care continuity"]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Ambivalence",
+        "specific": "Unsettled Trust"
+      },
+      "journey": {
+        "customer_journey": "Post-Care Review",
+        "customer_journey_stage": "Visit Summary Access",
+        "interaction_moment": "after reconnecting post-freeze"
+      },
+      "opportunity_maximisation_stream": "Optimize",
+      "customer_effort_score": 5,
+      "orchestration_unit": {
+        "ou_name": "Incomplete Visit Summary – Complaint – Optimize",
+        "experience_driver": "Care Documentation → Visit Summary Clarity",
+        "entity_name": "Incomplete Post-Visit Notes",
+        "theme": "Post-Consultation Assurance",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Optimize",
+        "interaction_moment": "after reconnecting post-freeze",
+        "context": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
+        "matters": "Incomplete visit notes and missing prescription confirmation create uncertainty and force patients to manually verify care steps.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and no prescription confirmation after a telehealth session, leaving them unsure about next steps.",
+          "section_2_strategic_response": "We need to Optimize → Care Documentation → Visit Summary Clarity to ensure accurate, complete, and reassuring post-consultation records."
+        },
+        "stream_justification": "Optimizing visit summaries ensures patients leave each consultation with clear, actionable records, reducing confusion and follow-up calls.",
+        "matters_extraction": "Post-care uncertainty about prescriptions and incomplete notes requiring manual verification.",
+        "behavioral_impact": "Delays in care follow-up, increased administrative burden on patients, and lower satisfaction with telehealth services."
+      }
+    }
+  ]
+}
+
+
+---
+
+#### **Example 3 – AMPLIFY + INNOVATE STREAM COMBINATION**
+
+{
+  "customer_review": "The nurse didn't just take my vitals — she noticed I looked pale, asked about my diet, and suggested a quick iron test, which turned out to be helpful. Also, I wish I could schedule lab tests directly through the patient portal instead of having to call.",
+  "experience_drivers": [
+    {
+      "theme": "Preventive Intervention",
+      "experience_driver": {
+        "label": "Proactive Observation",
+        "category": "Clinical Care",
+        "subcategory": "Proactive Observation"
+      },
+      "entity_name": "Nurse-Initiated Iron Test",
+      "context": {
+        "text": "Nurse observed pallor during vitals check, inquired about diet, and recommended an iron test that revealed a deficiency.",
+        "keywords": ["proactive care", "nurse observation", "iron test", "preventive action"]
+      },
+      "feedback_type": "Compliment",
+      "emotion": {
+        "group": "Adoration",
+        "specific": "Reassured"
+      },
+      "journey": {
+        "customer_journey": "In-Person Care",
+        "customer_journey_stage": "Vitals Assessment",
+        "interaction_moment": "during routine vitals check"
+      },
+      "opportunity_maximisation_stream": "Amplify",
+      "customer_effort_score": 2,
+      "orchestration_unit": {
+        "ou_name": "Nurse-Initiated Iron Test – Compliment – Amplify",
+        "experience_driver": "Clinical Care → Proactive Observation",
+        "entity_name": "Nurse-Initiated Iron Test",
+        "theme": "Preventive Intervention",
+        "feedback_type": "Compliment",
+        "opportunity_maximisation_stream": "Amplify",
+        "interaction_moment": "during routine vitals check",
+        "context": "Nurse observed pallor during vitals check, inquired about diet, and recommended an iron test that revealed a deficiency.",
+        "matters": "Proactive clinical observation leads to early detection and patient reassurance, strengthening trust in care quality.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient gave a Compliment about a nurse who noticed pallor during vitals, asked about diet, and suggested an iron test that revealed a deficiency.",
+          "section_2_strategic_response": "We need to Amplify → Clinical Care → Proactive Observation to scale anticipatory patient assessment that improves early detection and builds trust."
+        },
+        "stream_justification": "Proactive detection during standard care moments boosts patient safety, increases trust, and supports preventive healthcare strategies.",
+        "matters_extraction": "Early diagnosis of deficiency due to attentive clinical observation.",
+        "behavioral_impact": "Encourages patient openness, increases preventive screenings, and strengthens loyalty to provider."
+      }
+    },
+    {
+      "theme": "Patient Autonomy",
+      "experience_driver": {
+        "label": "Self-Service Test Scheduling",
+        "category": "Diagnostics Access",
+        "subcategory": "Self-Service Test Scheduling"
+      },
+      "entity_name": "In-Portal Lab Test Booking",
+      "context": {
+        "text": "Patient wished to schedule lab tests directly through the portal instead of calling, indicating a need for streamlined, self-service diagnostics access.",
+        "keywords": ["self-service", "test booking", "patient portal", "lab scheduling"]
+      },
+      "feedback_type": "Suggestion",
+      "emotion": {
+        "group": "Appreciation",
+        "specific": "Interested"
+      },
+      "journey": {
+        "customer_journey": "Diagnostics Access",
+        "customer_journey_stage": "Test Scheduling",
+        "interaction_moment": "when trying to arrange a lab test"
+      },
+      "opportunity_maximisation_stream": "Innovate",
+      "customer_effort_score": 4,
+      "orchestration_unit": {
+        "ou_name": "In-Portal Lab Test Booking – Suggestion – Innovate",
+        "experience_driver": "Diagnostics Access → Self-Service Test Scheduling",
+        "entity_name": "In-Portal Lab Test Booking",
+        "theme": "Patient Autonomy",
+        "feedback_type": "Suggestion",
+        "opportunity_maximisation_stream": "Innovate",
+        "interaction_moment": "when trying to arrange a lab test",
+        "context": "Patient wished to schedule lab tests directly through the portal instead of calling, indicating a need for streamlined, self-service diagnostics access.",
+        "matters": "Lack of self-service lab scheduling adds friction, delays diagnostics, and reduces patient autonomy.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient made a Suggestion about wanting to schedule lab tests directly in the portal rather than calling.",
+          "section_2_strategic_response": "We need to Innovate → Diagnostics Access → Self-Service Test Scheduling to enable frictionless, autonomous lab test booking that speeds care and enhances convenience."
+        },
+        "stream_justification": "Empowering patients to self-schedule diagnostics reduces admin friction, accelerates care, and enhances patient autonomy.",
+        "matters_extraction": "Desire for direct in-portal booking to eliminate unnecessary phone scheduling steps.",
+        "behavioral_impact": "Shortens time to diagnosis, increases portal usage, and improves patient satisfaction."
+      }
+    }
+  ]
+}
