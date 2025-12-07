@@ -1,0 +1,433 @@
+✅ STRICT JSON OUTPUT FORMAT (MANDATORY)
+FOR FINTECH CX DIMENSIONS
+
+⚙️ STRICT JSON OUTPUT FORMAT (MANDATORY)
+The model must output ONLY valid JSON, formatted according to the exact schema below.
+The response MUST be one of the following:
+
+A) SUCCESS CASE (Experience Drivers Found)
+Output a JSON object containing:
+{
+   "schema_version": "string", 
+   "processed_at": "string",
+
+   "customer_review": "string",
+   "experience_drivers": [
+    {
+      "theme": "string",
+      "experience_driver": {
+        "label": "string",
+        "category": "string",
+        "subcategory": "string"
+      },
+      "entity_name": "string",
+      "context": {
+        "text": "string",
+        "keywords": ["string"]
+      },
+      "feedback_type": "Complaint | Compliment | Suggestion | Request | Question | Product Usage Insight | Emerging Trend",
+      "emotion": {
+        "group": "string",
+        "specific": "string"
+      },
+      "journey": {
+        "customer_journey": "string",
+        "customer_journey_stage": "string",
+        "interaction_moment": "string"
+      },
+      "opportunity_maximisation_stream": "Fix | Optimize | Innovate | Amplify",
+      "customer_effort_score": 1,
+      "orchestration_unit": {
+        "ou_name": "string",
+        "experience_driver": "string",
+        "entity_name": "string",
+        "theme": "string",
+        "feedback_type": "string",
+        "opportunity_maximisation_stream": "string",
+        "interaction_moment": "string",
+        "context": "string",
+        "matters": "string",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "string",
+          "section_2_strategic_response": "string"
+        },
+        "stream_justification": "string",
+        "matters_extraction": "string",
+        "behavioral_impact": "string"
+      }
+    }
+  ]
+}
+
+Rules for SUCCESS output:
+experience_drivers MUST be an array.
+processed_at MUST be a string in ISO 8601 timestamp format: "YYYY-MM-DDTHH:MM:SSZ" (e.g., "2025-12-07T14:23:45Z").
+Each Experience Driver MUST be a separate object inside the array.
+The structure of each object MUST match the schema exactly.
+All fields MUST appear even if empty (empty string "" or empty array []).
+Output MUST be valid JSON — no comments, no trailing commas, no markdown.
+NO preamble text, NO explanations, NO notes — JSON ONLY.
+
+B) FAILURE CASE (No Valid Experience Driver)
+If no Experience Driver passes filtering:
+Output exactly the following JSON object:
+{
+  "status": "skipped",
+  "reason": "insufficient_info"
+}
+
+NO additional fields.
+NO commentary.
+NO alternative formulations.
+
+🔒 NON-NEGOTIABLE RULES (MANDATORY)
+1. JSON Schema Integrity
+You MUST follow the schema exactly.
+
+
+No missing fields.
+
+
+No renaming fields.
+
+
+No extra fields.
+
+
+No reordering of structural layers.
+
+
+This is a strict parsing contract for downstream ETL and XDI ingestion.
+
+2. Experience Driver Handling
+Each valid ED → one full JSON block in the array.
+
+
+Do NOT merge multiple EDs into one block.
+
+
+Do NOT create partial blocks.
+
+
+Blocks MUST be fully independent and complete.
+
+3. Output Scope Is All-or-Nothing
+If ≥1 ED is valid → output full JSON with an array of ED blocks.
+
+
+If 0 EDs valid → output the skipped JSON object ONLY.
+
+
+No partial extraction.
+
+
+No degraded output.
+
+4. Zero Tolerance for Leakage
+You MUST NOT output:
+Markdown
+
+
+Headings
+
+
+Commentary
+
+
+Explanations
+
+
+Backticks
+
+
+Natural language outside JSON
+
+
+Additional keys not present in the schema
+
+
+Any leakage invalidates the output.
+
+5. Multiple Experience Drivers
+If a review yields multiple EDs:
+{
+  "customer_review": "...",
+  "experience_drivers": [
+    { /* ED Block 1 */ },
+    { /* ED Block 2 */ },
+    { /* ED Block 3 */ }
+  ]
+}
+
+Each block MUST follow the schema.
+NO text between blocks.
+NO commentary.
+
+6. Strict Data Typing
+Strings MUST be strings.
+
+
+Arrays MUST be arrays.
+
+
+Numbers MUST be numbers.
+
+
+Controlled vocabulary fields MUST use allowed values EXACTLY.
+
+
+customer_effort_score MUST be an integer between 1 and 7.
+
+
+---
+
+### ✅ EXAMPLES TO FOLLOW
+
+#### Example 1:
+
+{
+  "schema_version": "1.0.0",
+  "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "I attempted to pay my credit card bill via the app, but after confirming the payment, I received two separate debit notifications. One of those was later reversed, yet the duplicate charge left me worried about my actual balance and potential unauthorized activity.",
+  "experience_drivers": [
+    {
+      "theme": "Financial Transaction Integrity",
+      "experience_driver": {
+        "label": "Duplicate Charge Management",
+        "category": "Transaction Processing",
+        "subcategory": "Duplicate Charge Management"
+      },
+      "entity_name": "Credit Card Payment Module",
+      "context": {
+        "text": "Customer initiated a credit card payment via the app. After confirming, they received two debit notifications — one eventually reversed. This raised immediate concerns about account safety and triggered suspicion of unauthorized activity.",
+        "keywords": ["duplicate charge", "payment confirmation", "debit notification", "reversed", "unauthorized", "panic", "transaction error"]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Anger",
+        "specific": "Betrayed by System Malfunction"
+      },
+      "journey": {
+        "customer_journey": "Transaction Experience",
+        "customer_journey_stage": "Payment Processing",
+        "interaction_moment": "during payment confirmation"
+      },
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 7,
+      "orchestration_unit": {
+        "ou_name": "Duplicate Charge Shock – Complaint – Fix",
+        "experience_driver": "Transaction Processing → Duplicate Charge Management",
+        "entity_name": "Credit Card Payment Module",
+        "theme": "Financial Transaction Integrity",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Fix",
+        "interaction_moment": "during payment confirmation",
+        "context": "Customer received duplicate debit notifications after one payment. Although one charge was reversed later, the experience caused panic over balance accuracy and potential fraud.",
+        "matters": "Duplicate debit events during a single payment trigger panic, force users to verify balances manually, and raise fears of account compromise.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer submitted a Complaint about receiving duplicate debit notifications for a single credit card payment. Although one charge was reversed, they experienced intense confusion and fear that their account had been compromised.",
+          "section_2_strategic_response": "We need to Fix → Transaction Processing → Duplicate Charge Management to eliminate volatile transaction errors that destabilize user trust and expose them to unnecessary emotional and financial stress."
+        },
+        "stream_justification": "Financial systems operate on a fragile trust curve. Even momentary anomalies like duplicate charges evoke panic, push users into defensive behaviors (freezing cards, calling support), and break digital confidence. Fixing this is mission-critical.",
+        "matters_extraction": "Raw Voice, Keywords, Panic Signal, Journey Context",
+        "behavioral_impact": "Improve real-time payment event accuracy, introduce anomaly flags for duplicate detection, and embed immediate user-facing trust cues to reassure in-flight."
+      }
+    }
+  ]
+}
+
+---
+
+#### Example 2:
+
+{
+  "schema_version": "1.0.0",
+  "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "Your app froze right as I was trying to transfer money — I had to restart it twice. And then the recent transactions list was all jumbled, so I couldn't even confirm if the payment went through or not.",
+  "experience_drivers": [
+    {
+      "theme": "Technical Resilience",
+      "experience_driver": {
+        "label": "Transaction Flow Stability",
+        "category": "App Reliability",
+        "subcategory": "Transaction Flow Stability"
+      },
+      "entity_name": "App Freeze During Fund Transfer",
+      "context": {
+        "text": "Customer faced repeated app freezes during a real-time fund transfer, forcing restarts and breaking transaction continuity at a critical financial moment.",
+        "keywords": ["app freeze", "transfer failure", "restart", "transaction flow", "funds not confirmed"]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Agitation",
+        "specific": "Panic"
+      },
+      "journey": {
+        "customer_journey": "Payments & Transactions",
+        "customer_journey_stage": "Fund Transfer Execution",
+        "interaction_moment": "while initiating a fund transfer"
+      },
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 6,
+      "orchestration_unit": {
+        "ou_name": "App Freeze During Fund Transfer – Complaint – Fix",
+        "experience_driver": "App Reliability → Transaction Flow Stability",
+        "entity_name": "App Freeze During Fund Transfer",
+        "theme": "Technical Resilience",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Fix",
+        "interaction_moment": "while initiating a fund transfer",
+        "context": "Customer faced repeated app freezes during a real-time fund transfer, forcing restarts and breaking transaction continuity at a critical financial moment.",
+        "matters": "App freezes mid-transfer break execution flow, force manual restarts, and leave users without confirmation, injecting real-time panic and transactional uncertainty at critical financial moments.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer submitted a Complaint about the app freezing while they initiated a fund transfer. They had to restart the app twice and were left uncertain if their money had been sent — creating real-time fear and a loss of confidence.",
+          "section_2_strategic_response": "We need to Fix → App Reliability → Transaction Flow Stability to prevent critical execution freezes that trigger panic, force user restarts, and fracture confidence in digital banking pathways."
+        },
+        "stream_justification": "This is a live-execution failure during a no-error-margin financial task. At the precise moment trust should peak, the system collapses. Such disruptions force panic behaviors, including multiple restarts and irrational fund-checking. Immediate stability is essential.",
+        "matters_extraction": "Raw Customer Voice, Context, Interaction Moment",
+        "behavioral_impact": "Stabilize transaction execution layers, introduce live freeze detection, and ensure atomicity in transfers to prevent user abandonment or escalation to support."
+      }
+    },
+    {
+      "theme": "Post-Transaction Visibility",
+      "experience_driver": {
+        "label": "Transaction History Clarity",
+        "category": "Account Transparency",
+        "subcategory": "Transaction History Clarity"
+      },
+      "entity_name": "Jumbled Transaction List",
+      "context": {
+        "text": "After the app restarted, the customer checked the recent transaction list but found it disorganized, unclear, and missing confirmation signals for the payment they just tried.",
+        "keywords": ["transaction history", "missing payment", "unclear", "jumbled", "recent activity"]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Ambivalence",
+        "specific": "Unsettled Trust"
+      },
+      "journey": {
+        "customer_journey": "Account Review & Assurance",
+        "customer_journey_stage": "Recent Transaction Check",
+        "interaction_moment": "after attempting a fund transfer"
+      },
+      "opportunity_maximisation_stream": "Optimize",
+      "customer_effort_score": 5,
+      "orchestration_unit": {
+        "ou_name": "Jumbled Transaction List – Complaint – Optimize",
+        "experience_driver": "Account Transparency → Transaction History Clarity",
+        "entity_name": "Jumbled Transaction List",
+        "theme": "Post-Transaction Visibility",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Optimize",
+        "interaction_moment": "after attempting a fund transfer",
+        "context": "After the app restarted, the customer checked the recent transaction list but found it disorganized, unclear, and missing confirmation signals for the payment they just tried.",
+        "matters": "Jumbled or incomplete post-payment transaction lists create verification loops, delay reassurance, and cause users to question whether their actions succeeded — even when the transfer is complete.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer submitted a Complaint about their transaction list appearing jumbled and unclear after a fund transfer, leaving them unsure whether the payment went through and forcing unnecessary double-checking.",
+          "section_2_strategic_response": "We need to Optimize → Account Transparency → Transaction History Clarity to resolve post-transaction confusion that undermines confidence in digital recordkeeping and forces avoidable verification fatigue."
+        },
+        "stream_justification": "This is a UX-level ambiguity at a moment when users seek confirmation, not confusion. It generates effort debt, disrupts reassurance, and triggers emotional fatigue — undermining trust in silent success.",
+        "matters_extraction": "Raw Customer Voice, Context, Interaction Moment",
+        "behavioral_impact": "Enhance visual hierarchy in transaction records, clarify success indicators, and reduce redundant confirmation steps to preserve post-action confidence."
+      }
+    }
+  ]
+}
+
+---
+
+#### Example 3:
+
+{
+  "schema_version": "1.0.0",
+  "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "The rep on the call didn't just help me — she explained why the delay happened, reassured me it wouldn't impact my credit score, and even followed up via WhatsApp the next day to confirm resolution. Also, I wish the app could let me dispute a transaction directly without having to call in.",
+  "experience_drivers": [
+    {
+      "theme": "Trust Reinforcement",
+      "experience_driver": {
+        "label": "Post-Resolution Follow-Up",
+        "category": "Customer Support",
+        "subcategory": "Post-Resolution Follow-Up"
+      },
+      "entity_name": "Rep-Initiated WhatsApp Follow-Up",
+      "context": {
+        "text": "A customer received proactive, empathetic follow-up from a support rep after resolving a delay issue. The rep provided reassurance about credit score protection and offered an unprompted next-day check-in.",
+        "keywords": ["follow-up", "WhatsApp", "reassurance", "credit score", "empathy", "human touch"]
+      },
+      "feedback_type": "Compliment",
+      "emotion": {
+        "group": "Adoration",
+        "specific": "Reassured"
+      },
+      "journey": {
+        "customer_journey": "Issue Resolution & Recovery",
+        "customer_journey_stage": "Customer Support Engagement",
+        "interaction_moment": "after the delay was resolved by phone"
+      },
+      "opportunity_maximisation_stream": "Amplify",
+      "customer_effort_score": 2,
+      "orchestration_unit": {
+        "ou_name": "Rep-Initiated WhatsApp Follow-Up – Compliment – Amplify",
+        "experience_driver": "Customer Support → Post-Resolution Follow-Up",
+        "entity_name": "Rep-Initiated WhatsApp Follow-Up",
+        "theme": "Trust Reinforcement",
+        "feedback_type": "Compliment",
+        "opportunity_maximisation_stream": "Amplify",
+        "interaction_moment": "after the delay was resolved by phone",
+        "context": "A customer received proactive, empathetic follow-up from a support rep after resolving a delay issue. The rep provided reassurance about credit score protection and offered an unprompted next-day check-in.",
+        "matters": "Proactive post-resolution outreach — especially via personal channels like WhatsApp — makes customers feel seen beyond the ticket, reinforcing trust through continuity and unprompted reassurance.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer gave a Compliment about a rep who not only resolved their issue but followed up proactively via WhatsApp the next day to reassure them about their credit score.",
+          "section_2_strategic_response": "We need to Amplify → Customer Support → Post-Resolution Follow-Up to scale these emotionally resonant moments that create lasting trust and signal human care."
+        },
+        "stream_justification": "This is a textbook Amplify moment — unprompted, emotionally anchored, and tied to institutional empathy. It deserves spotlighting and systemic reinforcement.",
+        "matters_extraction": "Raw Customer Voice, Context, Interaction Moment",
+        "behavioral_impact": "Increases post-resolution confidence, deepens brand warmth, and shifts support from transactional to transformational."
+      }
+    },
+    {
+      "theme": "Self-Service UX",
+      "experience_driver": {
+        "label": "In-App Resolution Options",
+        "category": "Dispute Management",
+        "subcategory": "In-App Resolution Options"
+      },
+      "entity_name": "Transaction Dispute Shortcut",
+      "context": {
+        "text": "Customer wished for a seamless in-app experience to dispute a transaction instead of relying on phone support, indicating a desire for frictionless, autonomous issue management.",
+        "keywords": ["dispute", "app feature", "shortcut", "self-serve", "manual process", "delay"]
+      },
+      "feedback_type": "Suggestion",
+      "emotion": {
+        "group": "Appreciation",
+        "specific": "Interested"
+      },
+      "journey": {
+        "customer_journey": "Issue Resolution & Recovery",
+        "customer_journey_stage": "Transaction Dispute Path",
+        "interaction_moment": "when trying to initiate a dispute via the app"
+      },
+      "opportunity_maximisation_stream": "Innovate",
+      "customer_effort_score": 4,
+      "orchestration_unit": {
+        "ou_name": "Transaction Dispute Shortcut – Suggestion – Innovate",
+        "experience_driver": "Dispute Management → In-App Resolution Options",
+        "entity_name": "Transaction Dispute Shortcut",
+        "theme": "Self-Service UX",
+        "feedback_type": "Suggestion",
+        "opportunity_maximisation_stream": "Innovate",
+        "interaction_moment": "when trying to initiate a dispute via the app",
+        "context": "Customer wished for a seamless in-app experience to dispute a transaction instead of relying on phone support, indicating a desire for frictionless, autonomous issue management.",
+        "matters": "Forcing users to call support for basic dispute actions interrupts flow, adds unnecessary friction, and undermines the self-serve autonomy users expect from digital platforms.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer made a Suggestion about wanting to dispute transactions directly in the app instead of being forced to call support.",
+          "section_2_strategic_response": "We need to Innovate → Dispute Management → In-App Resolution Options to enable frictionless, self-guided dispute initiation that aligns with modern expectations."
+        },
+        "stream_justification": "This is a forward-looking request tied to UX modernity and emotional ease. The operational process exists but isn't accessible in the way customers want.",
+        "matters_extraction": "Raw Customer Voice, Context, Keywords",
+        "behavioral_impact": "Reduce support tickets, increase user control, and shift perception of the app as a self-reliant command center."
+      }
+    }
+  ]
+}
