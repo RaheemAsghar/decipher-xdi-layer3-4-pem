@@ -8,7 +8,7 @@ import hdbscan
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.metrics.pairwise import cosine_similarity
 
-from OU_prioritisation import TemporalIntelligenceFilter
+from OU_prioritisation_V2 import TemporalIntelligenceFilter
     
 import numpy as np
 import math
@@ -1576,4 +1576,5 @@ class FlexibleTimeframeAnalyzer:
             deferred = (filtered_df["temporal_action"] == "DEFER").sum()
             print(f"✅ Temporal filter: {activated} ACTIVATED, {deferred} DEFERRED")
         
+
         return filtered_df
