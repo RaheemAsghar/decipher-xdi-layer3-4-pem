@@ -1,0 +1,83 @@
+## 3️⃣ IME Lifecycle Rulebook
+
+This is just **clear rules** for when memory is written, updated, and never touched.
+
+### 🔹 Phase 1 – Record Creation (at OU Activation)
+
+On **OU activation**:
+
+* Create a new `IME_Record` with:
+
+  * `experience_driver` block
+  * `xdi_state_snapshot` (SEU as of activation)
+  * `activated_ou` block
+  * `meta.activated_at` timestamp
+* At this point:
+
+  * `problem_statement_payload`, `pdca_payload`, `outcome_evaluation` may be **empty or partial**.
+
+> 🧠 Principle: “As soon as we commit to a mission, it gets an IME slot.”
+
+---
+
+### 🔹 Phase 2 – PDCA Completion
+
+When the PDCA cycle is completed for that OU:
+
+* Fill in / attach:
+
+  * `problem_statement_payload`
+  * full `pdca_payload` (Plan/Do/Check/Act)
+* Update:
+
+  * `meta.updated_by = "DecipherPDCA"`
+* Do **not** change:
+
+  * `xdi_state_snapshot`
+  * `activated_ou`
+
+> 🧠 Principle: “We never rewrite what we *thought* the world looked like when we started.”
+
+---
+
+### 🔹 Phase 3 – Outcome Evaluation
+
+When Outcome Evaluation runs for the mission:
+
+* Attach **one** `outcome_evaluation` block:
+
+  * Pre vs Post ERI
+  * Pre vs Post volume
+  * Elasticity
+  * outcome classification
+* Set:
+
+  * `meta.closed_at`
+  * `outcome_evaluation.mission_status` (COMPLETED / FAILED / ABORTED / IN_PROGRESS)
+
+> 🧠 Principle: “Outcome evaluation closes the record and turns it into a reusable unit of memory.”
+
+---
+
+### 🔹 Mutability Rules
+
+* **Immutable fields:**
+
+  * `xdi_state_snapshot`
+  * `activated_ou`
+  * `meta.activated_at`
+  * `experience_driver_key`
+* **Append-only fields:**
+
+  * `pdca_payload` (you can version sections if needed, but treat older versions as history)
+  * `outcome_evaluation` (you could version, but generally 1 final block is enough)
+* **Derived / recomputable fields:**
+
+  * Any reporting views built on top of many IME records (dashboards, KPIs, etc.)
+
+> 🧠 Principle: “IME is an audit trail, not a scratchpad.”
+
+---
+
+
+---
