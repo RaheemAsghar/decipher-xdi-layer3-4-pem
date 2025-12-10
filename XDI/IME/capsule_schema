@@ -1,0 +1,124 @@
+
+## 1️⃣ IME Capsule Schema (what one memory record looks like)
+
+Think of this as **“one mission’s biography”**:
+
+* 1 SEU snapshot at the moment of action
+* 1 OU that was activated
+* 1 PDCA cycle
+* 1 Outcome Evaluation
+* All frozen with timestamps
+
+You can name it `IME_Record` (or `MissionMemoryRecord` if you prefer).
+
+```jsonc
+{
+  "ime_id": "IME-2025-000123",          // unique IME record id
+
+  "experience_driver": {
+    "seu_id": "SEU-CHK-INV-0009",
+    "experience_driver_key": "Checkout → Inventory Mismatch",
+    "theme": "Order & Fulfilment",
+    "entity_name": "Ecom Checkout Service"
+  },
+
+  "xdi_state_snapshot": {
+    "as_of_date": "2025-05-10",
+    "eri_score": -42.5,
+    "eri_band": "ES4",                  // Active Crisis, as per your ES bands
+    "rf_score": 78.0,
+    "priority_tier": "P0",
+    "qssi_tier": "Q1",
+    "emotion_distribution": {
+      "Anger": 62.0,
+      "Agitation": 28.0,
+      "Ambivalent": 8.0,
+      "Appreciation": 2.0,
+      "Adoration": 0.0
+    },
+    "dominant_emotion": "Anger",
+    "pattern_label": "CRISIS PATTERN: Sentiment collapsing while emotions fragmenting rapidly.",
+    "temporal_intelligence": {
+      "ERI_Flow": { /* existing object */ },
+      "EVI_Flow": { /* existing object */ },
+      "ES_Flow": { /* existing object */ },
+      "Emotion_Flow": { /* existing object */ },
+      "Pattern_Flow": { /* existing object */ },
+      "PEM_Guidance": { /* new block we just defined */ }
+    }
+  },
+
+  "activated_ou": {
+    "ou_id": "OU-FIX-CHK-INV-0013",
+    "ou_name": "Fix – Checkout → Real-Time Stock Visibility",
+    "stream": "Fix",
+    "feedback_type_focus": ["Complaint"],
+    "dominant_emotion": "Anger",
+    "matters": "Customers feel misled when items shown as available fail at payment, creating a sense of betrayal and wasted effort.",
+    "interaction_moment": "Cart → Checkout",
+    "semantic_action_statement": "We need to Fix → Checkout → Real-Time Stock Visibility to remove the sense of betrayal customers feel when supposedly available items fail during payment.",
+    "ou_priority_score": 92.0,
+    "ou_priority_class": "CRITICAL",
+    "cluster_metadata": {
+      "cluster_id": "CL-CHK-INV-ANG-01",
+      "cluster_share_pct": 54.0,
+      "cluster_size": 137
+    }
+  },
+
+  "problem_statement_payload": {
+    "problem_statement_id": "PS-OU-FIX-CHK-INV-0013",
+    "what": "Checkout inventory mismatch is causing failed payments and emotional collapse around trust.",
+    "where": "Digital checkout flow (Cart → Payment).",
+    "why": "Real-time inventory is not synchronized with stock, especially under promotion and surge conditions.",
+    "so_what": "Customers feel deceived and are abandoning both orders and future intent, driving churn risk and negative word-of-mouth.",
+    "source_ou_id": "OU-FIX-CHK-INV-0013"
+  },
+
+  "pdca_payload": {
+    "pdca_id": "PDCA-OU-FIX-CHK-INV-0013",
+    "plan": {
+      /* your existing PLAN phase structure: RCA, hypotheses, target state */
+    },
+    "do": {
+      /* initiatives, owners, timelines, execution conditions */
+    },
+    "check": {
+      /* prioritization matrix, impact vs feasibility vs risk, etc. */
+    },
+    "act": {
+      /* final outcome definition, committed KPIs, decision to scale / pivot / stop */
+    }
+  },
+
+  "outcome_evaluation": {
+    "evaluation_id": "OE-OU-FIX-CHK-INV-0013",
+    "mission_status": "COMPLETED",     // COMPLETED / IN_PROGRESS / ABORTED / FAILED
+    "mission_duration_days": 45,
+    "eri_before": -42.5,
+    "eri_after": -10.0,
+    "eri_delta": 32.5,
+    "emotion_distribution_before": { /* snapshot of pre-mission ED */ },
+    "emotion_distribution_after": { /* post-mission ED */ },
+    "volume_before": 210,
+    "volume_after": 88,
+    "volume_change_pct": -58.1,
+    "elasticity_score": 1.35,         // interpretation: >1 = highly responsive ED
+    "outcome_classification": "Durable Improvement",
+    "comparison_block": {
+      /* your canonical Outcome Evaluation comparison fields:
+         eri_score, trend, momentum, volatility, pattern, qssi_tier, priority_class, etc. */
+    },
+    "mission_tagline": "MISSION ACCOMPLISHED – SIGNAL TRANSFORMED, IMPACT QUANTIFIED, INTELLIGENCE CAPTURED"
+  },
+
+  "meta": {
+    "activated_at": "2025-05-10T12:53:00Z",
+    "closed_at": "2025-06-24T09:17:00Z",
+    "created_by": "DecipherXDI",
+    "updated_by": "DecipherOutcomeEngine",
+    "version": 1
+  }
+}
+```
+
