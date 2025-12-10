@@ -1,0 +1,91 @@
+## 4️⃣ Consumption Story (who uses IME, how, and when)
+
+### A. XDI / SEU Level
+
+* XDI can call MQPs like:
+
+  * `EARLY_WARNING_FROM_HISTORY`
+  * `LAST_TIME_THIS_STATE_OCCURRED`
+* Use case:
+
+  * When computing new SEU state, XDI can add extra flags:
+
+    * “This pattern previously led to ES5 in < N days”
+    * “This ED has a high elasticity history with Fix stream”
+
+You still **do not change** XDI math — just attach hints from IME when available.
+
+---
+
+### B. OU Prioritization & Selection
+
+* The OU engine can ask IME:
+
+  * `HIGHEST_ELASTICITY_ACTION` for this ED
+  * `HAS_THIS_ACTION_FAILED_BEFORE` for each candidate OU
+* It can:
+
+  * boost candidates with strong past elasticity
+  * penalize OUs with repeated failure
+* This is your **“memory-informed prioritization”** without changing Layer_2 core logic.
+
+---
+
+### C. PDCA – Plan & Act Phases
+
+* **PLAN phase:**
+
+  * Pull from:
+
+    * `REUSEABLE_PATTERN_LIBRARY`
+    * `WHAT_FIXED_THIS_LAST_TIME`
+  * Use them to:
+
+    * pre-populate root cause hypotheses
+    * suggest initiative archetypes
+
+* **ACT phase:**
+
+  * On completion:
+
+    * write back to IME
+    * update mission outcome + tagline
+  * This closes the loop.
+
+---
+
+### D. Outcome Evaluation / CSLI / Portfolio View
+
+* IME becomes the **source of truth** for:
+
+  * `elasticity_score` by ED
+  * stream effectiveness
+  * mission quality per owner/team
+* CSLI and any OU-portfolio view can:
+
+  * use `CROSS_ED_ELASTICITY_LEADERS`
+  * use `STREAM_EFFECTIVENESS_FOR_ED`
+
+> This is where you step from **“triage engine”** to **“enterprise oracle.”**
+
+---
+
+### E. Agentic Layer (future consumers)
+
+When you, later, or someone else drops an **agent** on top of Decipher, it can:
+
+* For a new crisis:
+
+  * Call `LAST_TIME_THIS_STATE_OCCURRED` + `WHAT_FIXED_THIS_LAST_TIME`
+  * Propose a mission template
+* For every candidate OU:
+
+  * Call `HAS_THIS_ACTION_FAILED_BEFORE`
+* For planning:
+
+  * Call `REUSEABLE_PATTERN_LIBRARY`
+* For strategy:
+
+  * Call `CROSS_ED_ELASTICITY_LEADERS` to see where to invest more.
+
+IME becomes the **memory cortex** for any future agent.
