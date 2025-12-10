@@ -1,0 +1,117 @@
+
+## 2️⃣ Memory Query Primitives (MQPs)
+
+These are **verbs**; not implementation.
+Think of them like “emotional SQL” functions.
+
+I’ll give you ~12 that cover 95% of needs.
+
+### MQP-1: `LAST_TIME_THIS_STATE_OCCURRED`
+
+* **Input:** `experience_driver_key`, `eri_band` or `priority_tier`
+* **Output:** Latest `IME_Record` matching that severity
+* **Use:** “When was the last time Checkout hit ES4 with P0?”
+
+---
+
+### MQP-2: `HIGHEST_ELASTICITY_ACTION`
+
+* **Input:** `experience_driver_key`
+* **Output:** `IME_Record` with max `elasticity_score`
+* **Use:** “For this ED, which OU historically moved the needle the most?”
+
+---
+
+### MQP-3: `WHAT_FIXED_THIS_LAST_TIME`
+
+* **Input:** `experience_driver_key`, `pattern_label` (or `mode` from PEM)
+* **Output:** Top 1–3 IME records where:
+
+  * same ED
+  * similar pattern (e.g., CRISIS → RECOVERY)
+  * positive outcome (`Durable Improvement`)
+* **Use:** “Under similar crisis pattern, what worked last time?”
+
+---
+
+### MQP-4: `HAS_THIS_ACTION_FAILED_BEFORE`
+
+* **Input:** `ou_id` (or OU signature: ED + stream + interaction_moment + emotion)
+* **Output:** Boolean + list of failed/neutral IME records
+* **Use:** “Is this OU a repeated failure pattern we should avoid?”
+
+---
+
+### MQP-5: `RECURRENT_FAILURE_PATTERNS`
+
+* **Input:** `experience_driver_key`
+* **Output:** Summary of OUs that repeatedly failed to shift ERI/volume
+* **Use:** “Where are we throwing effort with no emotional ROI?”
+
+---
+
+### MQP-6: `REPEAT_MISSIONS_FOR_ED`
+
+* **Input:** `experience_driver_key`
+* **Output:** Chronological list of IME records for that ED
+* **Use:** “Show me the full mission history for this Experience Driver.”
+
+---
+
+### MQP-7: `EARLY_WARNING_FROM_HISTORY`
+
+* **Input:** `experience_driver_key`, current `pattern_label` or `PEM.mode`
+* **Output:** Risk level + historical analogs where this pattern evolved into ES5 / P0
+* **Use:** “Has this pattern historically led to collapse if we did nothing?”
+
+---
+
+### MQP-8: `STREAM_EFFECTIVENESS_FOR_ED`
+
+* **Input:** `experience_driver_key`
+* **Output:** Per-stream summary:
+
+  * Fix → average ERI delta, count of missions, average elasticity
+  * Optimize → …
+  * Innovate → …
+  * Amplify → …
+* **Use:** “Which stream has historically been most effective for this ED?”
+
+---
+
+### MQP-9: `CROSS_ED_ELASTICITY_LEADERS`
+
+* **Input:** optional filters (`theme`, `journey_stage`, `stream`)
+* **Output:** Ranked list of EDs + OUs with highest mean `elasticity_score`
+* **Use:** “Which parts of the experience are most emotionally responsive to change?”
+
+---
+
+### MQP-10: `MISSION_QUALITY_SCORECARD_FOR_OWNER`
+
+* **Input:** `owner_id` or team identifier
+* **Output:** Aggregated outcomes:
+
+  * count of missions
+  * % durable improvements
+  * average ERI delta
+  * median elasticity
+* **Use:** “How effective is this squad at emotionally repairing or growing EDs?”
+
+---
+
+### MQP-11: `REUSEABLE_PATTERN_LIBRARY`
+
+* **Input:** filter by `pattern_label`, `stream`, `theme`
+* **Output:** Templates: (problem_statement + initiative archetypes + outcome ranges)
+* **Use:** “Give me example playbooks that worked for similar patterns.”
+
+---
+
+### MQP-12: `MISSION_REGRESSION_DETECTOR`
+
+* **Input:** `experience_driver_key`, reference `IME_Record`
+* **Output:** True/False + evidence if ED has drifted back to pre-mission ERI/ES band
+* **Use:** “Is that ‘fixed’ problem relapsing emotionally?”
+
+---
