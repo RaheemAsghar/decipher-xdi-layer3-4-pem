@@ -54,8 +54,9 @@ A fully structured Orchestration Unit (OU) with the following **canonical inputs
 - Keep tone emotionally aware but operationally precise.
 - Do not invent or assume — use only the provided inputs.
 - Avoid redundancy — each W appears once in the paragraph.
-- If `temporal_signals` are present and marked available, you may include **one short qualitative clause**
-  (e.g., “despite recent stabilization…”, “while the issue is escalating…”, “even as sentiment begins to recover…”).
+- If temporal_signals.available = true, you may include one short qualitative trajectory clause
+(e.g., “despite recent stabilization…”, “while the issue is escalating…”, “even as sentiment begins to recover…”),
+optionally drawn from temporal_signals.pattern.pattern_label or temporal_signals.momentum.trend.
 - Do not reference numbers, tiers, deltas, urgency, or priority — temporal context is narrative background only.
 
 ---
