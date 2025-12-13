@@ -355,9 +355,12 @@ Every Experience Driver must pass the following core requirements:
 
 # 🧠 **Healthcare Experience Driver Taxonomy — DecipherOS Protocol (Healthcare Services Edition)**
 
-This taxonomy defines all valid **Experience Drivers** that may be extracted from patient and caregiver feedback across **digital-first and hybrid healthcare ecosystems** (e.g., hospitals, clinics, telemedicine platforms, diagnostic labs, insurance portals, pharmacy services).
+This taxonomy defines all valid **Experience Drivers** that may be extracted from patient and caregiver feedback 
+across **digital-first and hybrid healthcare ecosystems** (e.g., hospitals, clinics, telemedicine platforms, 
+diagnostic labs, insurance portals, pharmacy services).
 
-In DecipherOS, the **Experience Driver** is the atomic unit of orchestration. It reflects a **precisely scoped surface of experience**, always expressed as:
+The **Experience Driver** is the atomic unit of orchestration. It reflects a **precisely scoped 
+surface of experience**, always expressed as:
 
 > **`Category → Subcategory`** (e.g., `Appointment Scheduling → Delayed Confirmations`)
 
@@ -378,7 +381,8 @@ Only Experience Drivers listed in this taxonomy — following the format above �
 * ❌ Abstract or overly broad labels
 * ❌ Tagging Theme or Entity Name as the Experience Driver
 
-If an Experience Driver is not listed here, it must follow the **New Entity Governance Protocol** (see Rule 7 in the Extraction Layer).
+If an Experience Driver is not listed here, it must follow the **New Entity Governance Protocol** 
+(see Rule 7 in the Extraction Layer).
 
 ---
 
@@ -671,7 +675,11 @@ Use these patterns to generate consistent, comprehensive patient experience fram
 
 ### 📌 **Purpose**
 
-The **Experience Driver Context** provides a **precise and actionable explanation** for **why a specific Experience Driver is being mentioned** in the patient, caregiver, or healthcare consumer feedback. It isolates the **core trigger, patient challenge, or improvement opportunity** linked to that driver — ensuring that each Experience Driver is interpreted **independently**, even if multiple are present in a single review or case note.
+The **Experience Driver Context** provides a **precise and actionable explanation** for **why a specific 
+Experience Driver is being mentioned** in the patient, caregiver, or healthcare consumer feedback. It 
+isolates the **core trigger, patient challenge, or improvement opportunity** linked to that driver — 
+ensuring that each Experience Driver is interpreted **independently**, even if multiple are present in a 
+single review or case note.
 
 This targeted context becomes the foundational layer for:
 
@@ -830,11 +838,6 @@ This targeted context becomes the foundational layer for:
 
 * "Nurse was caring" mentioned twice → ✅ Consolidate
 * "Nurse was caring during surgery prep but unavailable during post-op recovery." → ✅ Extract both separately
-
----
-
-Here’s your **Healthcare rewrite** of this **Experience Driver – Specific Feedback Type** section.
-I’ve kept the structure, tone, and rules identical to the FinTech version but swapped in healthcare-appropriate domains, workflows, and examples — still aligned with DecipherOS’s CX data unpacking logic.
 
 ---
 
@@ -1078,16 +1081,12 @@ Each structured feedback instance must include:
 
 ---
 
-Here’s the **Healthcare rewrite** for the **Experience Driver – Specific Emotion** section, keeping the DecipherOS structure intact and replacing all fintech-specific contexts/examples with healthcare ones.
-
----
-
 ## 🧩 **Experience Driver – Specific Emotion** (Healthcare)
 
 ### **📌 Purpose**
 
 The **Emotion** dimension captures the **dominant emotional response** associated with each extracted **Experience Driver**. This emotion must be tied **specifically to that driver**, not to the overall patient comment.
-The emotional signal becomes a **core routing input** for downstream orchestration — including ERI scoring, stream assignment, and urgency prioritization.
+The emotional signal becomes a **core routing input** for downstream orchestration
 
 ✅ **Key Enhancements:**
 
@@ -1237,7 +1236,6 @@ The emotional signal becomes a **core routing input** for downstream orchestrati
 | AWE          | Overwhelmed       | Stunned         | Appreciation   |
 |SADNESS       | Dissatisfied      | Dissatisfied    | Agitation      |
 
-
 ---
 
 ### 🔎 Emotion Mapping Logic
@@ -1367,13 +1365,17 @@ Apply in this order when feedback contains more than one emotional cue:
 
 ### 📌 **Purpose:**
 
-For each identified **Experience Driver**, classify the **exact moment** of the patient’s healthcare experience across three layers:
+For each identified **Experience Driver**, classify the **exact moment** of the patient’s healthcare experience across 
+three layers:
 
 * **Patient Journey**
 * **Journey Stage**
 * **Interaction Moment**
 
-This ensures the **temporal and situational context** is always anchored to the **specific trigger that caused the experience driver to surface** — not to the general comment. This classification powers execution-grade orchestration by anchoring each identified experience driver to the exact when, where, and triggering behavior of the patient’s interaction.
+This ensures the **temporal and situational context** is always anchored to the **specific trigger that caused 
+the experience driver to surface** — not to the general comment. This classification powers execution-grade orchestration 
+by anchoring each identified experience driver to the exact when, where, and triggering behavior of the patient’s 
+interaction.
 
 ✅ **Why it matters:**
 
@@ -1432,21 +1434,21 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 | Journey Stage      | "Insurance Verification"                          |
 | Interaction Moment | "Insurance approval delayed at registration desk" |
 
-\| Patient Journey  | "Clinical Consultation"                                             |
-\| Journey Stage    | "Specialist Assessment"                                             |
-\| Interaction Moment | "Consultation rushed due to overlapping appointments"              |
+| Patient Journey  | "Clinical Consultation"                                             |
+| Journey Stage    | "Specialist Assessment"                                             |
+| Interaction Moment | "Consultation rushed due to overlapping appointments"              |
 
-\| Patient Journey  | "Diagnostic Testing"                                                |
-\| Journey Stage    | "Blood Sample Collection"                                           |
-\| Interaction Moment | "Blood draw repeated after initial sample was mislabeled"          |
+| Patient Journey  | "Diagnostic Testing"                                                |
+| Journey Stage    | "Blood Sample Collection"                                           |
+| Interaction Moment | "Blood draw repeated after initial sample was mislabeled"          |
 
-\| Patient Journey  | "Procedure & Surgery"                                                |
-\| Journey Stage    | "Operating Room Scheduling"                                         |
-\| Interaction Moment | "Surgery postponed due to missing test results"                    |
+| Patient Journey  | "Procedure & Surgery"                                                |
+| Journey Stage    | "Operating Room Scheduling"                                         |
+| Interaction Moment | "Surgery postponed due to missing test results"                    |
 
-\| Patient Journey  | "Post-Care Follow-Up"                                               |
-\| Journey Stage    | "Medication Refill Process"                                         |
-\| Interaction Moment | "Prescription refill delayed due to stock shortage at hospital pharmacy" |
+| Patient Journey  | "Post-Care Follow-Up"                                               |
+| Journey Stage    | "Medication Refill Process"                                         |
+| Interaction Moment | "Prescription refill delayed due to stock shortage at hospital pharmacy" |
 
 ---
 
@@ -1709,11 +1711,13 @@ Always return CES as a **quoted number**:
 
 ### 🎯 **Purpose**
 
-An **Orchestration Unit (OU)** in Healthcare is a precision-guided micro-mission built from structured patient or caregiver feedback, focused on a distinct **Experience Driver** tied to:
+An **Orchestration Unit (OU)** in Healthcare is a precision-guided micro-mission built from structured patient or 
+caregiver feedback, focused on a distinct **Experience Driver** tied to:
 
-> **Emotion × Feedback Type × Opportunity Stream**
+> **Feedback Type × Opportunity Stream**
 
-It blends clinical sensitivity, trust in care providers, service complexity, and emotional signal routing into one execution-grade payload. Each OU includes:
+It blends clinical sensitivity, trust in care providers, service complexity, and emotional signal routing into 
+one execution-grade payload. Each OU includes:
 
 * Feedback Type
 * Opportunity Stream (Fix, Optimize, Amplify, Innovate)
@@ -1947,21 +1951,13 @@ We need to Fix → Medication Refill Process in response to a Complaint reflecti
   ```
 
 * **Opportunity Stream**: `Fix | Optimize | Innovate | Amplify`
-
 * **Experience Driver**: `Category → Subcategory`
-
 * **Feedback Type**: `Complaint | Compliment | Request | Suggestion | Question | Product Usage Insight | Emerging Trend`
-
 * **Matters**: `Direct behavioral trigger described in plain, precise language`
-
 * **Interaction Moment**: `Time/trigger of the experience`
-
 * **Context**: `What actually happened — pulled directly from patient reality`
-
 * **Stream Justification**: `Why this stream is correct based on feedback type, behavior, and urgency`
-
 * **Matters Extraction**: `Source(s) used → e.g., Voice, Context, Keywords`
-
 * **Behavioral Impact**: `What this OU aims to shift — trust, safety, clarity, recovery speed, access, adherence, etc.`
 
 ---
@@ -2222,9 +2218,6 @@ These cases represent **the apex of emotion-to-action orchestration** in healthc
 
 ---
 
-✅ STRICT JSON OUTPUT FORMAT (MANDATORY)
-FOR HEALTHCARE CX DIMENSIONS
-
 ⚙️ STRICT JSON OUTPUT FORMAT (MANDATORY)
 Context: You have been trained on all Experience Driver dimensions, emotion taxonomies, journey stages, and scoring rubrics in previous sections. This section defines ONLY the mandatory output structure.
 Purpose: Enforce schema compliance for downstream ETL ingestion.
@@ -2308,71 +2301,36 @@ NO alternative formulations.
 
 🔒 NON-NEGOTIABLE RULES (MANDATORY)
 1. JSON Schema Integrity
-You MUST follow the schema exactly.
-
-
-No missing fields.
-
-
-No renaming fields.
-
-
-No extra fields.
-
-
-No reordering of structural layers.
-
+* You MUST follow the schema exactly.
+* No missing fields.
+* No renaming fields.
+* No extra fields.
+* No reordering of structural layers.
 
 This is a strict parsing contract for downstream ETL and XDI ingestion.
 
 2. Experience Driver Handling
-Each valid ED → one full JSON block in the array.
-
-
-Do NOT merge multiple EDs into one block.
-
-
-Do NOT create partial blocks.
-
-
-Blocks MUST be fully independent and complete.
+* Each valid ED → one full JSON block in the array.
+* Do NOT merge multiple EDs into one block.
+* Do NOT create partial blocks.
+* Blocks MUST be fully independent and complete.
 
 3. Output Scope Is All-or-Nothing
-If ≥1 ED is valid → output full JSON with an array of ED blocks.
-
-
-If 0 EDs valid → output the skipped JSON object ONLY.
-
-
-No partial extraction.
-
-
-No degraded output.
+* If ≥1 ED is valid → output full JSON with an array of ED blocks.
+* If 0 EDs valid → output the skipped JSON object ONLY.
+* No partial extraction.
+* No degraded output.
 
 4. Zero Tolerance for Leakage
 You MUST NOT output:
-Markdown
-
-
-Headings
-
-
-Commentary
-
-
-Explanations
-
-
-Backticks
-
-
-Natural language outside JSON
-
-
-Additional keys not present in the schema
-
-
-Any leakage invalidates the output.
+* Markdown
+* Headings
+* Commentary
+* Explanations
+* Backticks
+* Natural language outside JSON
+* Additional keys not present in the schema
+* Any leakage invalidates the output.
 
 5. Multiple Experience Drivers
 If a review yields multiple EDs:
@@ -2390,21 +2348,13 @@ NO text between blocks.
 NO commentary.
 
 6. Strict Data Typing
-Strings MUST be strings.
+* Strings MUST be strings.
+* Arrays MUST be arrays.
+* Numbers MUST be numbers.
+* Controlled vocabulary fields MUST use allowed values EXACTLY.
+* customer_effort_score MUST be an integer between 1 and 7.
 
-
-Arrays MUST be arrays.
-
-
-Numbers MUST be numbers.
-
-
-Controlled vocabulary fields MUST use allowed values EXACTLY.
-
-
-customer_effort_score MUST be an integer between 1 and 7.
-
-
+---
 
 ### ✅ EXAMPLES TO FOLLOW – HEALTHCARE
 
