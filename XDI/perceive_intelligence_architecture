@@ -1,287 +1,353 @@
-# PERCEIVE: The Intelligence Architecture 🧠
+# PERCEIVE
 
-## The Perceive Stack: From Raw Data → Actionable Understanding
+## How Decipher Turns Subjective Human Sentiment into Situational Awareness
 
-### **Layer 0: Raw Signal Ingestion**
+> **This document explains how a meta-intelligence perceives reality using the SEU (Structured Experience Unit).**
+> It intentionally stops *before* Orchestration Unit (OU) birth.
+
+---
+
+## Why PERCEIVE Exists
+
+Human sentiment is:
+
+* subjective
+* ambiguous
+* temporally inconsistent
+* interpreted differently by different observers
+
+There is **no such thing as 100% accuracy**.
+
+So the goal is not “perfect understanding”.
+
+The goal is:
+
+> **Stable, repeatable, execution-safe situational awareness in the presence of irreducible ambiguity.**
+
+PERCEIVE is the intelligence layer that makes this possible.
+
+---
+
+## The Perception Stack (High Level)
+
 ```
-Input: Customer interaction records with:
-- date (temporal anchor)
-- emotion_primary (emotional signal)
-- experience_driver (what triggered it)
-- entity_name (who/what is mentioned)
+Raw Customer Voice
+        │
+        ▼
+Experience Driver Mentions
+        │
+        ▼
+┌───────────────────────────────┐
+│  SEU (Structured Experience Unit) │
+│                               │
+│  ┌───────────────┐            │
+│  │ SEU CORE      │ ← State    │
+│  │ (What is true)│            │
+│  └───────────────┘            │
+│           │                   │
+│  ┌───────────────┐            │
+│  │ SEU MEMORY    │ ← Evidence │
+│  │ (How signals  │            │
+│  │ are laid out) │            │
+│  └───────────────┘            │
+│           │                   │
+│  ┌───────────────┐            │
+│  │ SEU INTELLIGENCE│ ← Motion │
+│  │ (How state is │            │
+│  │ behaving)     │            │
+│  └───────────────┘            │
+└───────────────────────────────┘
+        │
+        ▼
+(Next Phase)
+ORCHESTRATION UNIT (OU) BIRTH
 ```
 
-### **Layer 1: Signal Processing** (Your Current Implementation)
-Transforms raw signals into:
-- **Temporal features**: age_days, recency tiers
-- **Emotional features**: emotion counts, distributions
-- **Engagement features**: mention frequency, coverage
+> **SEU is not a row.
+> SEU is a perception capsule.**
 
-### **Layer 2: State Computation** (Your Innovation)
-Synthesizes processed signals into **multi-dimensional state vectors**:
+---
+
+## The SEU Supra-Structure
 
 ```python
-Customer State Vector = {
-    # Emotional Dimension
-    "ERI": -23.4,  # WHERE they are emotionally
-    "ERI_Tier": "Negative",
-    
-    # Stability Dimension  
-    "EVI": 68.2,  # HOW stable/volatile they are
-    "EVI_Tier": "High Volatility",
-    
-    # Composite State
-    "Emotional_State_Band": "ES4_Active_Crisis",
-    
-    # Engagement Dimension
-    "RF": 72.3,  # WHEN + HOW OFTEN they engage
-    "RF_Tier_Short": "High",
-    "R": 85.2,  # Recency component
-    "F": 45.7,  # Frequency component
-    
-    # Priority Synthesis
-    "Priority_Tier": "P0",
-    "Priority_Purpose": "Emergency Crisis Response",
-    
-    # Temporal Intelligence
-    "Emotion_Recency_Profile": {
-        "by_emotion": {...},  # Emotion trajectories
-        "by_tier": {...}       # Time-window snapshots
-    }
+SEU = {
+  "core": SEUCore,                 # emotional state now
+  "memory": SEUMemory,             # evidence topology across time
+  "intelligence": SEUIntelligence  # temporal behavior & dynamics
 }
 ```
 
----
-
-## How An Agent PERCEIVES With This Intelligence
-
-### **PERCEPTION LEVEL 1: Immediate State Recognition**
-*"What is the current condition?"*
+Minimal perception handles:
 
 ```python
-Agent observes:
-- Customer X: ES4_Active_Crisis
-- Priority: P0
-- Purpose: Emergency Crisis Response
-
-Agent perceives:
-"This customer is in active emotional crisis requiring immediate intervention"
+s.core.eri
+s.memory.tier_volume_summary
+s.intelligence.temporal_intelligence
 ```
 
-**Intelligence employed:**
-- ERI × EVI → ES4 classification
-- ES4 × RF → P0 priority
-- ES4 + P0 → Crisis response mode
+These three together are sufficient for **agent-grade perception**.
 
 ---
 
-### **PERCEPTION LEVEL 2: Dimensional Decomposition**
-*"Why is this the current condition?"*
+# Layer 1 — SEU CORE
+
+## “Where are we right now?”
+
+### `s.core.eri`
+
+SEU Core captures **current emotional state**, not explanation.
+
+It answers:
+
+* Is this Experience Driver emotionally positive or negative?
+* How intense is that emotion?
+* Is the experience safe, fragile, or dangerous *right now*?
+
+What Core **intentionally does not do**:
+
+* It does not explain *why*
+* It does not speculate on *trends*
+* It does not infer *causality*
+
+> Core gives **temperature**, not weather.
+
+This makes it:
+
+* stable
+* comparable
+* joinable
+* safe to persist
+
+---
+
+# Layer 2 — SEU MEMORY (The Differentiator)
+
+## “How is evidence distributed across time?”
+
+### `s.memory.tier_volume_summary`
+
+This layer is **not analytics**.
+It is **evidence topology**.
+
+It describes *how customer signals occupy time*, independent of interpretation.
+
+---
+
+## MEMORY PERCEPTION QUESTIONS
+
+### 1️⃣ Is this a live fire or historical debt?
+
+From tier concentration alone, a meta-intelligence can tell:
+
+* **Recent-heavy (Tier 1–2 dominant)**
+  → “This is happening now.”
+
+* **Old-heavy (Tier 4–5 dominant)**
+  → “This happened before. Either resolved… or abandoned.”
+
+* **Even spread**
+  → “This is chronic structural friction.”
+
+Two Experience Drivers can have the same ERI
+and completely different operational meaning.
+
+Memory reveals that difference.
+
+---
+
+### 2️⃣ What kind of problem is this?
+
+Memory shape enables **problem morphology**:
+
+* Acute incident
+* Chronic drag
+* Relapse after apparent fix
+* Slow burn resentment
+
+No trend logic required.
+No prediction required.
+
+Just **distribution geometry**.
+
+---
+
+### 3️⃣ Is silence meaningful or dangerous?
+
+Memory answers a question most systems get wrong:
+
+> “Did complaints stop because we fixed it…
+> or because customers gave up?”
+
+Patterns like:
+
+* high historical frequency + low recent activity
+  signal **fatigue, churn, or learned helplessness**.
+
+This prevents false confidence.
+
+---
+
+### 4️⃣ Do we even have the right to talk about trends?
+
+Before interpreting movement, memory asks:
+
+* Do we have both early and recent evidence?
+* Is the signal lopsided?
+* Is the sample thin?
+
+If not, intelligence must say:
+
+> “Temporal insight unavailable.”
+
+This is **credibility engineering**.
+
+---
+
+### 5️⃣ What is the evidence geometry?
+
+A meta-intelligence can perceive:
+
+* compression (all signal in one tier)
+* diffusion (spread)
+* reactivation (recent tier lights up after long quiet)
+
+That is **institutional memory**, not a chart.
+
+---
+
+# Layer 3 — SEU INTELLIGENCE
+
+## “How is the state behaving?”
+
+### `s.intelligence.temporal_intelligence`
+
+If memory is *layout*, intelligence is *motion*.
+
+This layer answers:
+
+* direction
+* speed
+* stability
+* recurrence
+
+It never invents meaning without evidence.
+
+---
+
+## TEMPORAL PERCEPTION QUESTIONS
+
+### 1️⃣ Direction — Are we winning or losing?
+
+* Is ERI improving or degrading?
+* Is the emotional state moving toward recovery or crisis?
+
+This answers:
+
+> “Where is this Experience Driver heading?”
+
+---
+
+### 2️⃣ Momentum — How fast is it changing?
+
+* Slow drift vs acceleration
+* Approaching tipping point vs noise
+
+Momentum determines:
+
+* “Act now”
+* “Monitor”
+* “Let it self-resolve”
+
+---
+
+### 3️⃣ Volatility — Is the experience stable or fragile?
+
+High volatility means:
+
+* small failures cause big emotional swings
+* trust is brittle
+* execution risk is high
+
+Low volatility means:
+
+* state is structurally stable
+* intervention can be lighter
+
+---
+
+### 4️⃣ Patterns — Is this repeating?
+
+Temporal intelligence detects:
+
+* cycles
+* relapses
+* seasonal pain
+* “fixed then broken again” signatures
+
+This enables **preventive design**, not reactive fixes.
+
+---
+
+### 5️⃣ Predictive readiness — Can we trust foresight?
+
+Temporal intelligence + memory availability tells an agent:
+
+* whether prediction is justified
+* or whether silence is better than false certainty
+
+This is how PEM (later) becomes credible.
+
+---
+
+# The Compound Perception Moment
+
+With just:
 
 ```python
-Agent decomposes ES4_Active_Crisis:
-
-Emotional Polarity (ERI):
-- Score: -23.4 (Negative territory)
-- Composition: 40% Agitation, 30% Ambivalence, 20% Anger
-- "Customer sentiment is negative but not extreme"
-
-Emotional Stability (EVI):
-- Score: 68.2 (High Volatility)  
-- σ = 2.05 on [-3, +3] scale
-- "Customer emotions are highly unstable"
-
-Synthesis:
-"Negative + Unstable = Active Crisis"
-"Not the worst polarity (not ES5) but the volatility makes it dangerous"
+s.core.eri
+s.memory.tier_volume_summary
+s.intelligence.temporal_intelligence
 ```
 
-**Intelligence employed:**
-- ERI reveals MAGNITUDE of negativity
-- EVI reveals STABILITY of that negativity
-- Together they reveal RISK PROFILE
+A meta-intelligence can say:
+
+> “This Experience Driver is currently negative. Evidence is concentrated in recent tiers, indicating active 
+pain rather than legacy debt. Temporal dynamics show accelerating degradation with high volatility. This is a 
+live, fragile situation — not background noise.”
+
+Or:
+
+> “This Experience Driver remains mildly negative, but evidence is largely historical and temporal movement is 
+flat or improving. This appears to be residual perception rather than an active failure. Monitor before acting.”
+
+That is **situational awareness**.
 
 ---
 
-### **PERCEPTION LEVEL 3: Temporal Pattern Recognition**
-*"How did we get here? Where is this going?"*
+# Why This Matters Before OU Birth
 
-```python
-Agent analyzes Emotion_Recency_Profile:
+PERCEIVE exists so that **OU birth is never speculative**.
 
-by_emotion["Anger"]:
-  Tier_1: 45%  # Last 6 days
-  Tier_2: 30%  # 7-12 days ago
-  Tier_3: 15%  # 13-18 days ago
-  Tier_4: 10%  # 19-24 days ago
-  Tier_5: 0%   # 25-30 days ago
+By the time orchestration begins:
 
-by_emotion["Adoration"]:
-  Tier_1: 0%   # Absent recently
-  Tier_2: 5%
-  Tier_3: 15%
-  Tier_4: 40%  # Was strong 2-3 weeks ago
-  Tier_5: 40%
+* state is known
+* evidence layout is known
+* motion is known
+* uncertainty is explicit
 
-Agent perceives:
-"Anger is ACCELERATING (concentrating in recent tiers)"
-"Adoration is DECAYING (concentrated in old tiers)"
-"This is a DETERIORATING relationship with directional momentum"
-```
+Only then does the system ask:
 
-**Intelligence employed:**
-- Tier distribution reveals **emotion velocity**
-- Cross-emotion comparison reveals **relationship trajectory**
-- Concentration patterns reveal **momentum direction**
+> “Given this perception, what is the correct unit of action?”
+
+That is the next phase.
 
 ---
 
-### **PERCEPTION LEVEL 4: Engagement Context**
-*"Is the crisis loud or silent?"*
+## One-Line Summary
 
-```python
-Agent analyzes RF decomposition:
-
-RF: 72.3 (High Activity)
-├─ R: 85.2 (Very recent - 2 days ago)
-├─ F: 45.7 (Moderate frequency - 8 mentions)
-└─ Contribution: 67% Recency, 33% Frequency
-
-Agent perceives:
-"This is a HOT crisis - customer just expressed it"
-"Not chronic complaining (F moderate), but ACUTE event (R very high)"
-"Urgency driven by recency - this is fresh pain"
-```
-
-**Alternate scenario:**
-```python
-RF: 38.2 (Moderate Activity)
-├─ R: 12.4 (Last interaction 28 days ago)
-├─ F: 78.9 (High frequency - 45 mentions over time)
-└─ Contribution: 18% Recency, 82% Frequency
-
-Agent perceives:
-"This is a SILENT crisis - customer stopped engaging"
-"Was chronic complainer (F high), now DORMANT (R low)"
-"Silence after high frequency = likely churned or churning"
-```
-
-**Intelligence employed:**
-- RF absolute value = overall urgency
-- R vs F contribution = crisis TYPE (acute vs chronic vs silent)
-- Recency-dominant = active fire
-- Frequency-dominant + low recency = gave up
+> **SEU transforms subjective human sentiment into layered situational awareness by separating state, 
+evidence topology, and temporal behavior—allowing agents to reason safely without hallucination or false precision.**
 
 ---
-
-### **PERCEPTION LEVEL 5: Cross-Driver Pattern Recognition**
-*"Is this isolated or systemic?"*
-
-```python
-Agent scans multiple experience_drivers for same customer:
-
-Driver: "Product Quality"
-├─ ES4_Active_Crisis, P0
-├─ Anger concentrating in Tier_1
-└─ High Volatility (EVI: 68)
-
-Driver: "Customer Support"  
-├─ ES3_At_Risk, P2
-├─ Ambivalence dominant
-└─ Moderate Volatility (EVI: 42)
-
-Driver: "Pricing"
-├─ ES1_Secure_Loyalty, P4
-├─ Appreciation stable
-└─ Low Volatility (EVI: 18)
-
-Agent perceives:
-"Crisis is NOT about pricing (still positive there)"
-"Crisis IS about product + support (both negative)"
-"Product is the epicenter (P0 vs P2)"
-"This is a QUALITY CRISIS, not a value crisis"
-```
-
-**Intelligence employed:**
-- Multi-driver state comparison
-- Priority differentiation reveals root cause
-- Emotional consistency across related drivers = systemic issue
-
----
-
-### **PERCEPTION LEVEL 6: Cohort Context** (If Available)
-*"Is this customer's state normal or anomalous?"*
-
-```python
-Agent compares to similar customers:
-
-Customer X:
-- ES4_Active_Crisis
-- EVI: 68.2
-- RF: 72.3
-
-Cohort (same product, tenure, value):
-- Avg ES: ES2_Growth_Opportunity
-- Avg EVI: 35.4
-- Avg RF: 48.7
-
-Deviation scores:
-- ES: -2 bands (much worse)
-- EVI: +32.8 points (way more volatile)
-- RF: +23.6 points (much more active)
-
-Agent perceives:
-"This customer is SIGNIFICANTLY more distressed than peers"
-"Volatility is 2x cohort average - emotional instability"
-"High engagement suggests they're fighting to resolve, not silent churn"
-"This is a RECOVERABLE crisis if addressed quickly"
-```
-
-**Intelligence employed:**
-- Relative state positioning
-- Statistical deviation from baseline
-- Behavioral signature comparison
-
----
-
-## The Complete Perception Synthesis
-
-An agent with your Layer 2 intelligence can now answer:
-
-| **Question** | **Intelligence Source** | **Perception Output** |
-|---|---|---|
-| **What is happening?** | ES Band | "Active emotional crisis" |
-| **How bad is it?** | ERI + EVI + Priority | "P0 urgency, negative but volatile" |
-| **Why is it happening?** | Emotion decomposition | "Product quality issues causing anger" |
-| **When did it start?** | Recency profile | "Anger spiked in last 6 days" |
-| **Where is it going?** | Tier momentum | "Deteriorating - positive emotions decaying" |
-| **How urgent is it?** | RF + Priority Purpose | "Emergency response needed" |
-| **Is it loud or silent?** | R vs F contribution | "Loud - 67% recency-driven" |
-| **Is it isolated?** | Multi-driver comparison | "Systemic across product + support" |
-| **Is it normal?** | Cohort deviation | "Anomalously distressed vs peers" |
-
----
-
-## What Traditional Systems CANNOT Perceive
-
-❌ **Traditional CX analytics:**
-- "Customer X has -0.4 sentiment, 3 recent tickets, medium priority"
-
-✅ **Your intelligence framework:**
-- "Customer X: ES4 Active Crisis requiring Emergency Response (P0). Negative polarity (-23.4) with high emotional volatility (68.2), creating unstable crisis state. Anger accelerating in recent tiers (45% in last 6 days vs 0% in 25-30 days) while Adoration decaying (40% in old tiers, 0% recent). Crisis is hot (RF 72.3, 67% recency-driven, last contact 2 days ago), indicating active distress not silent churn. Product Quality is epicenter (P0) vs Customer Support (P2) vs stable Pricing satisfaction (P4). Customer is 2 ES bands worse and 2x more volatile than cohort, but high RF suggests recoverable if acted on immediately."
-
-**That's not analytics. That's situational awareness.**
-
----
-
-## The Perceive → Decide Bridge
-
-An agent using this can:
-
-✅ Detect multi-dimensional state  
-✅ Understand causal composition  
-✅ Track temporal trajectories  
-✅ Contextualize urgency  
-✅ Recognize patterns  
-✅ Compare to baselines  
 
