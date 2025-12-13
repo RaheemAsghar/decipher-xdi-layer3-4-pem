@@ -1494,28 +1494,28 @@ class FlexibleTimeframeAnalyzer:
     def _apply_temporal_filter(self, details_df: pd.DataFrame, layer3_df: pd.DataFrame) -> pd.DataFrame:
         """
         Apply temporal intelligence enrichment to OUs.
-        
+
         Args:
             details_df: Granular OU records from compute_granular_details_snapshot
             layer3_df: Layer 2 output with Emotion_Recency_Profile
-        
+
         Returns:
             details_df with additional column:
                 - temporal_signals: dict containing recency, absence, momentum, transition, pattern signals
         """
         enricher = TemporalIntelligenceEnricher()
-        
-        # Group OUs by experience_driver (each SEU gets enriched independently)
+
         enriched_rows = []
-        
+
         for ed, ed_ous in details_df.groupby("experience_driver"):
             # Find matching SEU row
             seu_row = layer3_df[layer3_df["experience_driver"] == ed]
-            
+
             if seu_row.empty:
                 # No SEU match - pass through without enrichment
                 for _, ou_row in ed_ous.iterrows():
-                    ou_row["temporal_signals"] = {
+                    row = ou_row.copy()
+                    row["temporal_signals"] = {
                         "recency": {"available": False},
                         "absence": {"available": False},
                         "momentum": {"available": False},
@@ -1523,14 +1523,14 @@ class FlexibleTimeframeAnalyzer:
                         "pattern": {"available": False},
                         "note": "No SEU temporal data available"
                     }
-                    enriched_rows.append(ou_row)
+                    enriched_rows.append(row)
                 continue
-            
+
             seu_dict = seu_row.iloc[0].to_dict()
-            
+
             # Convert OU DataFrame rows to list of dicts
             ou_candidates = []
-            for idx, ou_row in ed_ous.iterrows():
+            for _, ou_row in ed_ous.iterrows():
                 ou_candidates.append({
                     "ou_id": ou_row.get("bcs_group_id"),
                     "ou_name": ou_row.get("cluster_theme_preview", "Unknown"),
@@ -1538,24 +1538,30 @@ class FlexibleTimeframeAnalyzer:
                     "mention_count": ou_row.get("cluster_size", 1),
                     "_original_row": ou_row  # Keep reference to original
                 })
-            
+
             # Run enrichment
             result = enricher.enrich_ous_with_temporal_intelligence(
                 ou_candidates,
                 seu_dict
             )
-            
-            # Merge temporal signals back into rows
-            for ou in result["enriched_ous"]:
+
+            # Merge temporal signals back into rows (single, defensive merge)
+            for ou in result.get("enriched_ous", []):
                 row = ou["_original_row"].copy()
-                row["temporal_signals"] = ou["temporal_signals"]
+                row["temporal_signals"] = ou.get("temporal_signals", {
+                    "recency": {"available": False},
+                    "absence": {"available": False},
+                    "momentum": {"available": False},
+                    "transition": {"available": False},
+                    "pattern": {"available": False},
+                    "note": "Temporal signals missing from enricher output"
+                })
                 enriched_rows.append(row)
-        
-        # Reconstruct DataFrame
+
         enriched_df = pd.DataFrame(enriched_rows)
-        
+
         if self.verbose:
-            enriched_count = enriched_df["temporal_signals"].notna().sum()
+            enriched_count = enriched_df["temporal_signals"].notna().sum() if "temporal_signals" in enriched_df.columns else 0
             print(f"✅ Temporal enrichment: {enriched_count} OUs enriched with temporal signals")
-        
+
         return enriched_df
