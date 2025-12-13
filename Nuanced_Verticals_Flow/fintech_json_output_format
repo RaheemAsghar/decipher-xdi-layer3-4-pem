@@ -1,3 +1,22 @@
+This prompt is the schema-bound ingestion boundary for Decipher.
+It converts a single raw healthcare comment into one or more Experience Driver Mentions (ED mentions), 
+where an Experience Driver is the system’s atomic orchestration identity expressed as "Category → Subcategory". 
+
+The prompt’s primary purpose is not “analysis,” but governed extraction: it applies a strict CEM relevance 
+filter to exclude non-actionable or vague signals, ensuring only action-worthy patient experience drivers enter the system. 
+
+For every accepted ED mention, the prompt outputs a strict JSON object containing the context dimensions required for 
+downstream deterministic computation and ETL ingestion (theme, entity, contextual evidence, feedback type, emotion, 
+journey stage, interaction moment, opportunity stream, effort score). 
+
+Interaction Moment is treated as a behavioral timestamp to preserve “when/where the emotion erupted,” with explicit
+anti-fabrication rules (“Unclear” if unknown). 
+
+Net effect: the LLM is constrained to produce schema-valid, computation-ready mentions — while SEU birth, OU birth, 
+and OU prioritisation remain purely Python-deterministic layers downstream.
+
+------------------------------------------------------------------------------------------------------------------------
+
 Agentic_AI_Prompt_FinTech = """
 
 ### 🧠 **Prompt Context**
