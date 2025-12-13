@@ -1,0 +1,297 @@
+problem_statement_prompt = """
+
+# 🎯 DECIPHER PDCA – PROBLEM STATEMENT GENERATION PROMPT (CANONICAL VERSION)
+
+## 🔬 Purpose
+Generate a **diagnostic-grade, emotionally faithful Problem Statement** to kick off the Plan phase of the PDCA lifecycle.
+This is a **fluent paragraph** (2–5 sentences) — not a stitched list — that combines:
+- Emotional truth from the customer voice
+- Operational precision from the OU’s journey data
+- Strategic justification from the chosen opportunity stream
+- Clear articulation of business risk if unresolved
+
+The Problem Statement is the **go/no-go gate** for PDCA execution.  
+If it is vague, generic, or emotionally disconnected, the mission does not proceed.
+
+---
+
+## 🔐 You Are Given
+A fully structured Orchestration Unit (OU) with the following **canonical inputs**:
+
+* `semantic_action_statement.section_1_customer_reality` → Core customer reality narrative
+* `matters` → The behavioral core of why this matters to the customer
+* `context` → Supporting situational detail from the customer voice
+* `experience_driver` → The WHAT / WHERE anchor
+* `customer_journey` → High-level journey category
+* `customer_journey_stage` → Stage within the journey
+* `interaction_moment` → The WHEN anchor
+* `stream_justification` → Reason why Fix / Optimize / Amplify / Innovate was chosen
+* `behavioral_impact` → The SO WHAT — consequence if unresolved
+* `opportunity_stream` → Stream type (Fix / Optimize / Amplify / Innovate)
+* `emotion` → Primary emotional signal (optional flavor only)
+* `feedback_type` → Feedback category (optional flavor only)
+* `temporal_signals` → Optional precomputed context indicating how the experience driver is evolving over time
+  (contextual only — do not analyze, quantify, or override the problem framing)
+
+---
+
+## 🧬 Construction Framework (5Ws + So What)
+
+| Dimension  | Pull From | Purpose |
+|------------|-----------|---------|
+| **WHAT**   | `semantic_action_statement.section_1_customer_reality` + `matters` (+ short clause from `context` if useful) | State the core customer reality, grounded in emotion and behavior |
+| **WHEN**   | `interaction_moment` | Pinpoint when the issue occurs |
+| **WHERE**  | `experience_driver` + `customer_journey` + `customer_journey_stage` | Operationally locate the issue |
+| **WHY**    | `stream_justification` | Explain why this stream is the correct strategic/structural path |
+| **SO WHAT**| `behavioral_impact` | Define the business risk or consequence if unresolved |
+| **HOW IT IS EVOLVING (optional)** | `temporal_signals` (qualitative labels only, if available) | Add a single short trajectory clause without altering scope or intent |
+
+---
+
+## 🧩 Tactics
+- Begin with **WHAT** (customer reality + matters), then layer **WHEN** and **WHERE**.
+- Follow with **WHY** (strategic justification), and close with **SO WHAT** (business risk).
+- Keep tone emotionally aware but operationally precise.
+- Do not invent or assume — use only the provided inputs.
+- Avoid redundancy — each W appears once in the paragraph.
+- If `temporal_signals` are present and marked available, you may include **one short qualitative clause**
+  (e.g., “despite recent stabilization…”, “while the issue is escalating…”, “even as sentiment begins to recover…”).
+- Do not reference numbers, tiers, deltas, urgency, or priority — temporal context is narrative background only.
+
+---
+
+## ✅ Output Format
+
+Return JSON:
+{
+  "problem_statement": "<2–5 sentence fluent paragraph>",
+  "breakdown": {
+    "what": "<string>",
+    "when": "<string>",
+    "where": {
+      "experience_driver": "<string>",
+      "customer_journey": "<string>",
+      "customer_journey_stage": "<string>"
+    },
+    "why": "<string>",
+    "so_what": "<string>"
+  },
+  "meta": {
+    "opportunity_stream": "<Fix|Optimize|Amplify|Innovate>",
+    "emotion": "<string>",
+    "feedback_type": "<string>"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "<field>", "supporting": "<field>", "extracted": "<string>" },
+    "when_source": { "field": "<field>", "extracted": "<string>" },
+    "where_source": { "experience_driver": "<string>", "customer_journey": "<string>", "customer_journey_stage": "<string>" },
+    "why_source": { "field": "<field>", "extracted": "<string>" },
+    "so_what_source": { "field": "<field>", "extracted": "<string>" }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "<GO|NO-GO>",
+    "validation_checklist": {
+      "emotionally_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "customer_rooted": true,
+      "business_impact_clear": true
+    }
+  }
+}
+
+---
+
+## ❌ What NOT to Do
+* Don’t stitch raw fields verbatim.
+* Don’t regurgitate `semantic_action_statement` sections separately.
+* Don’t ignore emotional tone.
+* Don’t fabricate stream logic — it’s already provided.
+* Don’t write generic consequences — use the provided `behavioral_impact`.
+
+---
+
+## 🔁 Final Note
+> This is the **first sentence of the PDCA loop**.  
+> It must be emotionally clean, behaviorally precise, and strategically actionable.
+
+---
+
+### ✅ Examples
+
+#### Example 1 – Fix Stream
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_customer_reality:**
+  The customer submitted a Complaint about receiving duplicate debit notifications for a single credit card payment. Although one charge was reversed, they experienced intense confusion and fear that their account had been compromised.
+* **matters:** Duplicate debit notifications causing confusion and fear of compromised account.
+* **context:** Account activity confusion after duplicate notifications.
+* **experience_driver:** Transaction Processing → Duplicate Charge Management
+* **customer_journey:** Transaction Experience
+* **customer_journey_stage:** Payment Processing
+* **interaction_moment:** During payment notification events
+* **stream_justification:** Financial systems operate on a fragile trust curve. Even momentary anomalies like duplicate charges evoke panic, push users into defensive behaviors (freezing cards, calling support), and break digital confidence. Fixing this is mission-critical.
+* **behavioral_impact:** Improve real-time payment event accuracy, introduce anomaly flags for duplicate detection, and embed immediate user-facing trust cues to reassure in-flight.
+* **opportunity_stream:** Fix
+* **emotion:** Agitation – Confused
+* **feedback_type:** Complaint
+
+**🧠 Output:**
+{
+  "problem_statement": "The customer submitted a Complaint about receiving duplicate debit notifications for a single credit card payment, and although one charge was reversed, they experienced intense confusion and fear that their account had been compromised. This occurred during payment notification events within the Payment Processing stage of the Transaction Experience journey, focused on the Transaction Processing → Duplicate Charge Management driver. The orchestration stream is Fix — mission-critical to restoring trust in our financial systems. It was routed here because even minor anomalies like duplicate charges can trigger panic, defensive actions, and erode digital confidence. If unresolved, this risk will continue to destabilize user trust, increase unnecessary support contact, and weaken confidence in real-time transaction accuracy.",
+  "breakdown": {
+    "what": "Duplicate debit notifications caused confusion and fear of a compromised account.",
+    "when": "During payment notification events",
+    "where": {
+      "experience_driver": "Transaction Processing → Duplicate Charge Management",
+      "customer_journey": "Transaction Experience",
+      "customer_journey_stage": "Payment Processing"
+    },
+    "why": "Financial systems operate on a fragile trust curve where anomalies like duplicate charges evoke panic, push users into defensive behaviors, and break digital confidence.",
+    "so_what": "If unresolved, it risks continued payment accuracy issues, defensive user behaviors, and erosion of digital financial trust."
+  },
+  "meta": {
+    "opportunity_stream": "Fix",
+    "emotion": "Agitation – Confused",
+    "feedback_type": "Complaint"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "semantic_action_statement.section_1_customer_reality", "supporting": "matters", "extracted": "Duplicate debit notifications caused confusion and fear of a compromised account." },
+    "when_source": { "field": "interaction_moment", "extracted": "During payment notification events" },
+    "where_source": { "experience_driver": "Transaction Processing → Duplicate Charge Management", "customer_journey": "Transaction Experience", "customer_journey_stage": "Payment Processing" },
+    "why_source": { "field": "stream_justification", "extracted": "Financial systems operate on a fragile trust curve where anomalies like duplicate charges evoke panic, push users into defensive behaviors, and break digital confidence." },
+    "so_what_source": { "field": "behavioral_impact", "extracted": "If unresolved, it risks continued payment accuracy issues, defensive user behaviors, and erosion of digital financial trust." }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "GO",
+    "validation_checklist": {
+      "emotionally_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "customer_rooted": true,
+      "business_impact_clear": true
+    }
+  }
+}
+
+---
+
+#### Example 2 – Innovate Stream
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_customer_reality:**
+  The customer made a Suggestion about wanting to dispute transactions directly in the app instead of being forced to call support.
+* **matters:** Inability to dispute transactions in-app, forcing customers to call support.
+* **context:** Current dispute process requires phone support instead of self-service.
+* **experience_driver:** Dispute Management → In-App Resolution Options
+* **customer_journey:** Issue Resolution & Recovery
+* **customer_journey_stage:** Transaction Dispute Path
+* **interaction_moment:** While initiating a transaction dispute
+* **stream_justification:** This is a forward-looking request tied to UX modernity and emotional ease. The operational process exists but isn't accessible in the way customers want.
+* **behavioral_impact:** Reduce support tickets, increase user control, and shift perception of the app as a self-reliant command center.
+* **opportunity_stream:** Innovate
+* **emotion:** Appreciation – Interested
+* **feedback_type:** Suggestion
+
+**🧠 Output:**
+
+{
+  "problem_statement": "The customer made a Suggestion about wanting to dispute transactions directly in the app instead of being forced to call support. This occurred while initiating a transaction dispute within the Transaction Dispute Path stage of the Issue Resolution & Recovery journey, focused on the Dispute Management → In-App Resolution Options driver. The orchestration stream is Innovate — designed to unlock new capabilities that enhance user autonomy and meet modern expectations. It was routed here because the current process exists but is inaccessible in the way customers want, creating unnecessary friction. If not pursued, the business misses opportunities to reduce support tickets, improve user control, and reinforce the app as a self-reliant command center.",
+  "breakdown": {
+    "what": "Customers cannot dispute transactions in-app, forcing them to call support.",
+    "when": "While initiating a transaction dispute",
+    "where": {
+      "experience_driver": "Dispute Management → In-App Resolution Options",
+      "customer_journey": "Issue Resolution & Recovery",
+      "customer_journey_stage": "Transaction Dispute Path"
+    },
+    "why": "This is a forward-looking request tied to UX modernity and emotional ease, where the operational process exists but is inaccessible in the way customers want.",
+    "so_what": "If not pursued, the business misses opportunities to reduce support tickets, increase user control, and strengthen the app's position as a self-reliant command center."
+  },
+  "meta": {
+    "opportunity_stream": "Innovate",
+    "emotion": "Appreciation – Interested",
+    "feedback_type": "Suggestion"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "semantic_action_statement.section_1_customer_reality", "supporting": "matters", "extracted": "Customers cannot dispute transactions in-app, forcing them to call support." },
+    "when_source": { "field": "interaction_moment", "extracted": "While initiating a transaction dispute" },
+    "where_source": { "experience_driver": "Dispute Management → In-App Resolution Options", "customer_journey": "Issue Resolution & Recovery", "customer_journey_stage": "Transaction Dispute Path" },
+    "why_source": { "field": "stream_justification", "extracted": "This is a forward-looking request tied to UX modernity and emotional ease, where the operational process exists but is inaccessible in the way customers want." },
+    "so_what_source": { "field": "behavioral_impact", "extracted": "If not pursued, the business misses opportunities to reduce support tickets, increase user control, and strengthen the app's position as a self-reliant command center." }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "GO",
+    "validation_checklist": {
+      "emotionally_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "customer_rooted": true,
+      "business_impact_clear": true
+    }
+  }
+}
+
+------
+
+
+#### Example 3 – Optimize Stream
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_customer_reality:**
+  The customer submitted a Complaint about other employees at the Metro store being unfriendly and unprofessional during interactions.
+* **matters:** Unfriendly and unprofessional staff interactions that degrade customer experience.
+* **context:** Other employees at the Metro store are not friendly or professional.
+* **experience_driver:** Customer Service → Staff Interaction
+* **customer_journey:** In-Store Experience
+* **customer_journey_stage:** Service Interaction
+* **interaction_moment:** During interactions with other store employees
+* **stream_justification:** While the core service is functional, the quality of staff interaction introduces friction and dissatisfaction, necessitating optimization to enhance customer experience.
+* **behavioral_impact:** Improve staff professionalism, enhance customer interactions, and elevate overall service quality.
+* **opportunity_stream:** Optimize
+* **emotion:** Agitation – Disappointed
+* **feedback_type:** Complaint
+
+**🧠 Output:**
+
+{
+  "problem_statement": "The customer submitted a Complaint about other employees at the Metro store being unfriendly and unprofessional during interactions. This occurred during interactions with other store employees within the Service Interaction stage of the In-Store Experience journey, focused on the Customer Service → Staff Interaction driver. The orchestration stream is Optimize — aimed at improving existing service quality without altering the core service itself. It was routed here because staff professionalism gaps create friction and dissatisfaction even when the core service is functional. If not addressed, it risks ongoing erosion of customer satisfaction, diminished loyalty, and reduced perception of service quality.",
+  "breakdown": {
+    "what": "Unfriendly and unprofessional staff interactions that degrade customer experience.",
+    "when": "During interactions with other store employees",
+    "where": {
+      "experience_driver": "Customer Service → Staff Interaction",
+      "customer_journey": "In-Store Experience",
+      "customer_journey_stage": "Service Interaction"
+    },
+    "why": "While the core service is functional, the quality of staff interaction introduces friction and dissatisfaction, necessitating optimization to enhance customer experience.",
+    "so_what": "If not addressed, it risks ongoing erosion of customer satisfaction, diminished loyalty, and reduced perception of service quality."
+  },
+  "meta": {
+    "opportunity_stream": "Optimize",
+    "emotion": "Agitation – Disappointed",
+    "feedback_type": "Complaint"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "semantic_action_statement.section_1_customer_reality", "supporting": "matters", "extracted": "Unfriendly and unprofessional staff interactions that degrade customer experience." },
+    "when_source": { "field": "interaction_moment", "extracted": "During interactions with other store employees" },
+    "where_source": { "experience_driver": "Customer Service → Staff Interaction", "customer_journey": "In-Store Experience", "customer_journey_stage": "Service Interaction" },
+    "why_source": { "field": "stream_justification", "extracted": "While the core service is functional, the quality of staff interaction introduces friction and dissatisfaction, necessitating optimization to enhance customer experience." },
+    "so_what_source": { "field": "behavioral_impact", "extracted": "If not addressed, it risks ongoing erosion of customer satisfaction, diminished loyalty, and reduced perception of service quality." }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "GO",
+    "validation_checklist": {
+      "emotionally_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "customer_rooted": true,
+      "business_impact_clear": true
+    }
+  }
+}
+
+"""
