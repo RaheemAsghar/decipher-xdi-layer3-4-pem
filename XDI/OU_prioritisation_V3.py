@@ -306,7 +306,7 @@ class TemporalIntelligenceEnricher:
             return {
                 "transition": transition or "Stable",
                 "is_new_dominant": emotion == dom_recent,
-                "is_old_dominant": False,
+                "is_old_dominant": emotion == dom_early,
                 "available": bool(dom_recent),
             }
 
@@ -328,7 +328,7 @@ class TemporalIntelligenceEnricher:
         temporal_intel: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Query: Does the overall pattern suggest this emotion is relevant?
+        Query: What is the overall detected pattern context (label + crisis/recovery flags)?
 
         Uses:
             temporal_intel["Pattern_Flow"]["pattern_label"]
@@ -412,3 +412,4 @@ class TemporalIntelligenceEnricher:
             },
             "summary": summary,
         }
+
