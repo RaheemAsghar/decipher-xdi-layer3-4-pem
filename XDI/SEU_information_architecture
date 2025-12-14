@@ -1,0 +1,179 @@
+# 📊 **SEU INFORMATION ARCHITECTURE — 360° VIEW**
+
+---
+
+## 🏗️ **STRUCTURAL OVERVIEW**
+
+The SEU is organized into **7 major information buckets**, each serving a distinct analytical or operational purpose:
+
+---
+
+## **1️⃣ IDENTITY & SCOPE**
+*Who/what is this SEU about?*
+
+| Field | Purpose |
+|-------|---------|
+| `experience_driver` | The atomic unit identifier (Category → Subcategory) |
+| `theme` | Strategic domain context |
+| `associated_entity_names` | Specific services/features/processes implicated |
+| `no_of_mentions` | Statistical weight (volume) |
+| `mention_share_%` | Relative importance in the dataset |
+
+**Function:** Establishes the **subject** of the SEU and its **statistical significance**.
+
+---
+
+## **2️⃣ TEMPORAL METADATA**
+*When did this happen? How old is this signal?*
+
+| Field | Purpose |
+|-------|---------|
+| `today_anchor` | Reference date for all calculations |
+| `window_days` | Analysis window (timeframe scope) |
+| `first_seen_date` | When this driver first appeared |
+| `most_recent_date` | Last time this driver was mentioned |
+| `age_days` | Days since most recent mention |
+
+**Function:** Establishes the **temporal boundaries** and **recency context** of the driver's activity.
+
+---
+
+## **3️⃣ POLARITY STATE (ERI)**
+*How do customers feel about this driver?*
+
+| Field | Purpose |
+|-------|---------|
+| `ERI` | Emotional Resonance Index (-100 to +100) |
+| `ERI_Tier` | Categorical polarity (Very Positive → Very Negative) |
+| `loyalty_state` | Synonym for ERI_Tier (backward compatibility) |
+| `debug_emotion_counts` | Raw emotion distribution (Adoration, Appreciation, Ambivalence, Agitation, Anger) |
+
+**Function:** Captures the **directional sentiment** — is this driver loved, hated, or neutral?
+
+---
+
+## **4️⃣ VOLATILITY STATE (EVI)**
+*How consistent/chaotic is the emotional response?*
+
+| Field | Purpose |
+|-------|---------|
+| `EVI` | Emotional Volatility Index (0 to 100) |
+| `EVI_Tier` | Categorical volatility (Stable Emotion → Extreme Volatility) |
+
+**Function:** Measures **emotional consistency** — is feedback uniform or fragmented?
+
+---
+
+## **5️⃣ MOMENTUM STATE (RF)**
+*How active and recent is this driver?*
+
+| Field | Purpose |
+|-------|---------|
+| `R` | Recency score (0-100, exponential decay) |
+| `F` | Frequency score (0-100, log-scaled mention volume) |
+| `RF` | Combined Recency-Frequency urgency score |
+| `RF_R_Component` | Absolute R contribution to RF |
+| `RF_F_Component` | Absolute F contribution to RF |
+| `RF_R_ContributionPct` | % of RF from recency |
+| `RF_F_ContributionPct` | % of RF from frequency |
+| `RF_Weight_R` | Configured weight for recency (default 0.6) |
+| `RF_Weight_F` | Configured weight for frequency (default 0.4) |
+| `Recency_Decay_Days` | Tau parameter (default 30 days) |
+| `RF_Urgency_Category` | Long-form tier (Very High Activity → Activity Dormant) |
+| `RF_Tier_Short` | Short-form tier for priority grid (Very High → Dormant) |
+| `R_Tier` | Recency tier (Very High Recency → No Recent Activity) |
+| `R_Tier_Rank` | Numeric rank (1-5) for R tier |
+| `F_Tier` | Frequency tier (Very High Frequency → Sparse Mentions) |
+| `F_Tier_Rank` | Numeric rank (1-5) for F tier |
+
+**Function:** Quantifies **signal urgency** — how hot/cold is this driver right now?
+
+---
+
+## **6️⃣ RELATIONSHIP HEALTH & PRIORITY**
+*What's the overall state? How urgent is action?*
+
+| Field | Purpose |
+|-------|---------|
+| `Emotional_State_Band` | ES1 (Secure Loyalty) → ES5 (Critical Failure) |
+| `Priority_Tier` | P0 (emergency) → P5 (monitor) |
+| `Priority_Purpose` | Strategic intent (e.g., "Active Crisis Intervention") |
+| `ERI_RF_Quadrant` | Legacy format: ERI_Tier × RF_Urgency |
+| `Quadrant_Purpose` | Synonym for Priority_Purpose |
+| `Priority_Status` | Synonym for Priority_Tier |
+| `Quadrant_Key` | Legacy key: "ERI_Tier\|RF_Urgency" |
+
+**Function:** Synthesizes polarity + volatility + momentum into **actionable health state** and **execution priority**.
+
+**Decision Logic:**
+- `Emotional_State_Band` = `ERI_Tier` × `EVI_Tier` → ES1-ES5
+- `Priority_Tier` = `Emotional_State_Band` × `RF_Tier_Short` → P0-P5
+
+---
+
+## **7️⃣ TEMPORAL INTELLIGENCE**
+*How is this driver evolving over time?*
+
+### **7a. Emotion Recency Profile**
+*Nested structure capturing emotion × time distribution*
+
+| Sub-Bucket | Purpose |
+|------------|---------|
+| **`by_emotion`** | For each emotion (Adoration, Appreciation, etc.): distribution across 5 recency tiers + Beyond_Window |
+| **`by_tier`** | For each recency tier (Tier_1 → Tier_5, Beyond_Window): <br>• Full emotion distribution<br>• Dominant emotion + runner-up<br>• Tier-level ERI, EVI, ES_Band<br>• Share of total mentions |
+| **`tier_volume_profile`** | Share of total mentions per tier (concentration analysis) |
+| **`tier_volume_summary`** | Early vs Recent concentration (Tier_4+5 vs Tier_1+2) |
+| **`temporal_intelligence`** | See 7b below ↓ |
+
+**Function:** Enables **time-series emotion analysis** — when did emotions shift? Which tiers are most active?
+
+---
+
+### **7b. Temporal Intelligence Flows**
+*Multi-dimensional trajectory analysis*
+
+| Flow | Purpose |
+|------|---------|
+| **`ERI_Flow`** | Polarity trajectory (early → recent): <br>• Start/End ERI<br>• Delta (absolute + %)<br>• Tier shift count<br>• Trend label<br>• By-tier ERI values |
+| **`EVI_Flow`** | Volatility trajectory: <br>• Start/End EVI<br>• Delta (absolute + %)<br>• Tier shift count<br>• Trend label (Fragmenting/Consolidating)<br>• By-tier EVI values |
+| **`ES_Flow`** | Relationship state migration: <br>• Start/End ES_Band<br>• Trajectory label<br>• Changed flag |
+| **`Emotion_Flow`** | Composition shifts: <br>• Early/Recent/Combined emotion distributions<br>• Per-emotion shifts (delta + trend)<br>• Dominant shift<br>• Top emotions (early vs recent)<br>• Ambivalence type (true/false/none)<br>• **Polarity shift** (Negative/Positive/Neutral group flows)<br>• **Dominant emotion transition** (e.g., "Anger → Appreciation") |
+| **`Pattern_Flow`** | High-level interpretation: <br>• Pattern label (e.g., "CRISIS PATTERN", "RECOVERY")<br>• ERI trend<br>• EVI trend<br>• ES trajectory<br>• Dominant emotion shift |
+| **`Context_Flow`** | Narrative summary: <br>• Plain-English explanation of what changed |
+| **`PEM_Guidance`** | Derived guidance layer (NO NEW MATH): <br>• Mode (CRISIS/RECOVERY/STABLE/etc.)<br>• Recommended stream bias (Fix/Optimize/Amplify/Innovate)<br>• Urgency band (Immediate/Near-Term/Watchful/Dormant)<br>• Emotional driver<br>• Pattern label<br>• ES start/end<br>• ERI/EVI numeric hooks |
+
+**Function:** Converts raw tier-level data into **strategic intelligence** — is this improving, deteriorating, or stable?
+
+---
+
+---
+
+## 🎯 **INFORMATION BUCKET SUMMARY**
+
+| Bucket | What It Captures | Execution Value |
+|--------|------------------|-----------------|
+| **1. Identity & Scope** | What driver, how much data | Traceability + confidence |
+| **2. Temporal Metadata** | When, how recent, how old | Recency context |
+| **3. Polarity State** | Positive/Negative sentiment | Directional health |
+| **4. Volatility State** | Emotional consistency | Predictability risk |
+| **5. Momentum State** | Activity level + urgency | Hot/cold signal strength |
+| **6. Relationship Health** | Overall state + priority | Triage + routing |
+| **7. Temporal Intelligence** | Evolution over time | Trend detection + guidance |
+
+---
+
+## 🔥 **KEY INSIGHT**
+
+The SEU is **NOT a flat record** — it's a **multi-layered intelligence capsule** where:
+
+- **Layers 1-6** = **Snapshot state** (current condition)
+- **Layer 7** = **Motion state** (directional change)
+
+This dual structure enables:
+- ✅ **Point-in-time decisions** (Priority_Tier, ES_Band)
+- ✅ **Trajectory-aware decisions** (PEM_Guidance, Pattern_Flow)
+- ✅ **Drill-down diagnostics** (by_tier, by_emotion)
+- ✅ **Compositional analytics** (aggregate SEUs → portfolio views)
+
+---
+
