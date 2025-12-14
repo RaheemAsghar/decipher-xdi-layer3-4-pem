@@ -1,0 +1,115 @@
+
+Where the SEU is the State Object (The Noun), the OU is the Mission Object (The Verb). Its 
+architecture is designed not just to store data, but to instruct an agent.
+
+🚀 OU INFORMATION ARCHITECTURE — 360° VIEW
+🏗️ STRUCTURAL OVERVIEW
+
+The Orchestration Unit (OU) is organized into 7 major information buckets, transforming a cluster of raw signals into a Single Source of Truth for execution.
+
+1️⃣ IDENTITY & TAXONOMY
+
+What is this mission uniquely identified as?
+
+Field	Purpose
+bcs_group_id	The Machine ID (UUID) — The unique address of this specific problem/opportunity.
+cluster_theme_preview	The Human ID — A generated 80-char summary of the root cause (e.g., "Nurse Call Bell Failure...").
+experience_driver	The Parent Entity (Link to SEU).
+feedback_type	The Intent (Complaint, Suggestion, Request, etc.).
+opportunity_stream	The Strategy (Fix, Optimize, Amplify, Innovate).
+theme	High-level strategic domain.
+
+Function: Establishes the Unique Lineage of the mission. No two OUs share this exact combination of coordinates.
+
+2️⃣ BEHAVIORAL & SEMANTIC CORE
+
+What actually happened? (The "God-Tier" Extraction)
+
+Field	Purpose
+matters	The Behavioral Trigger. The specific interaction/breakdown (e.g., "confusing discharge paperwork creates follow-up risk").
+semantic_action_statement	The Narrative. A structured MMR summary of the Customer Reality vs. Strategic Response.
+context	The Situation. The observable event extracted via centroid fusion.
+entity_name	The specific object/person involved (e.g., "MRI Machine", "Dr. Smith").
+
+Function: Captures the Behavioral Reality. This prevents "Generic Fixes" by forcing the agent to read the specific Matters statement.
+
+3️⃣ SPATIAL CONTEXT (LOCATOR)
+
+Where in the journey did this occur?
+
+Field	Purpose
+customer_journey	Macro Phase (e.g., "Emergency Care").
+customer_journey_stage	Micro Step (e.g., "Triage Assessment").
+interaction_moment	The Trigger Window. The exact moment of impact (e.g., "while awaiting initial triage").
+
+Function: Pinpoints the Operational Coordinates. It tells the agent where to deploy the fix.
+
+4️⃣ STATISTICAL VALIDITY
+
+How significant is this specific cluster?
+
+Field	Purpose
+cluster_size	Raw volume of mentions in this specific OU cluster.
+bcs_share	Relative weight of this OU against the total dataset.
+cluster_cohesion	Semantic density (0.0 - 1.0). High cohesion = highly specific, identical complaints.
+
+Function: Validates the Truth. A high cohesion score proves this is a real, recurring pattern, not random noise.
+
+5️⃣ INHERITED STATE PHYSICS (Temporal Injection)
+
+What is the physics of the Parent Driver? (Enriched from SEU)
+
+This data is Read-Only, injected from the SEU to ensure Referential Integrity.
+
+Field	Purpose
+emotion_primary	Dominant emotion of the cluster (e.g., "Anger").
+emotion_specific	Nuanced feeling (e.g., "Betrayed").
+temporal_signals.momentum	Is the emotion Rising (↑), Fading (↓), or Stable (→)?
+temporal_signals.pattern	Contextual label (e.g., "CRISIS PATTERN", "RECOVERY").
+temporal_signals.recency	% of volume in recent vs. early tiers.
+temporal_signals.transition	Did the dominant emotion shift? (e.g., "Anxiety → Anger").
+
+Function: Provides Temporal Context without recalculation. It tells the agent: "You are fixing a problem that is accelerating (Momentum: Rising)."
+
+6️⃣ EXECUTION LOGIC
+
+Why are we doing this?
+
+Field	Purpose
+stream_justification	The logic for the chosen stream (e.g., "Why Fix vs. Optimize?").
+behavioral_impact	The Predicted ROI. What happens if we succeed? (e.g., "Restore trust in triage speed").
+customer_effort_score	The Friction Metric (1-7). High score = High Friction = Higher Priority.
+
+Function: Provides the Strategic Mandate. It justifies the resource allocation.
+
+7️⃣ EVIDENCE TRACEABILITY
+
+Show me the proof.
+
+Field	Purpose
+customer_review	The Representative Verbatim (Centroid-picked). The "Voice of the Customer."
+keywords	Top n-grams associated with this cluster.
+bcs_id	List of underlying raw row IDs (Traceability back to source).
+
+Function: Ensures Auditability. If an agent is challenged, it cites the customer_review as proof.
+
+🎯 INFORMATION BUCKET SUMMARY
+Bucket	What It Captures	Execution Value
+1. Identity & Taxonomy	Unique ID + Hierarchy	De-duplication of missions
+2. Behavioral Core	The specific trigger (Matters)	Precision problem solving
+3. Spatial Context	Journey / Stage / Moment	Operational targeting
+4. Statistical Validity	Volume + Cohesion	Confidence in the signal
+5. Inherited Physics	SEU State (Momentum/Pattern)	Urgency & Trajectory awareness
+6. Execution Logic	Justification + Impact	Strategy alignment
+7. Evidence Traceability	Verbatim Proof	Trust & Audit
+🔥 KEY ARCHITECTURAL DISTINCTION
+
+While the SEU is a Hologram of State (Multi-dimensional, Physics-based),
+The OU is a Laser of Action (Singular, Vector-based).
+
+SEU: "The Patient is in Critical Condition (ES5), Volatility is High, Trend is Deteriorating."
+
+OU: "Go to the Triage Desk (Locator), Fix the Call Bell (Matters), because it is causing Fear 
+(Inherited Physics), and this is a P0 Safety Risk (Justification)."
+
+The OU depends on the SEU for Gravity, but the SEU depends on the OU for Motion.
