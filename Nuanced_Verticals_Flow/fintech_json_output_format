@@ -376,16 +376,15 @@ Experience Driver Taxonomy**.
 ---
 
 ## 🧠 **FinTech Experience Driver Taxonomy — DecipherOS Protocol (Financial Services Edition)**
+This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from 
+customer feedback across **digital-first and hybrid financial ecosystems** 
+(e.g., digital banks, payment platforms, investment apps, lending services, insurance portals, wealth management).
 
-This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from
-customer and user feedback across **digital-first and hybrid financial ecosystems**
-(e.g., digital banks, payment platforms, lending systems, trading apps, insurance portals, crypto wallets).
-
-An **Experience Driver** is the atomic unit of orchestration. It represents a **precisely scoped surface of experience**
+An **Experience Driver** is the atomic unit of orchestration. It represents a **precisely scoped surface of experience** 
 and is always expressed in the canonical form:
 
 > **`Category → Subcategory`**
-> *(e.g., `Payments → Failed Transactions`)*
+> *(e.g., `Payment Processing → Transaction Delays`)*
 
 Experience Drivers are **identities**, not descriptions.
 They must be **selected**, not rephrased, inferred, or generated.
@@ -393,9 +392,9 @@ They must be **selected**, not rephrased, inferred, or generated.
 Each valid extraction must also include:
 
 * A corresponding **Theme** (strategic or operational financial services domain)
-* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *“Mobile Banking App”*, *“Card Authorization System”*)
+* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *"QuickPay UPI Gateway"*)
 
-Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream
+Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream 
 processing.
 
 ---
@@ -413,6 +412,40 @@ It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in 
 
 ---
 
+## ⚠️ **CONSTRAINT LAYER 1: EXPLICIT STRING-MATCH ENFORCEMENT**
+
+**CRITICAL INSTRUCTION - READ CAREFULLY:**
+
+Experience Drivers are **IDENTITIES**, not descriptions. You are performing **LOOKUP**, not **GENERATION**.
+
+### Mandatory Rules:
+
+1. **EXACT STRING MATCH REQUIRED**
+   - You MUST output the EXACT `Category → Subcategory` string from the taxonomy tables below
+   - Character-for-character matching is mandatory
+   - Even one word difference = VIOLATION
+
+2. **ZERO TOLERANCE FOR VARIATION**
+   - ❌ NO paraphrasing (e.g., `"Transaction Delays"` ≠ `"Delayed Transactions"`)
+   - ❌ NO reordering (e.g., `"Delays → Payment Processing"` ≠ `"Payment Processing → Transaction Delays"`)
+   - ❌ NO semantic equivalents (e.g., `"Slow Payments"` ≠ `"Transaction Delays"`)
+   - ❌ NO word substitutions (e.g., `"Payment Lags"` ≠ `"Transaction Delays"`)
+   - ❌ NO pluralization changes (e.g., `"Transaction Delay"` ≠ `"Transaction Delays"`)
+
+3. **IF UNCERTAIN**
+   - Re-scan the complete taxonomy table below
+   - Locate the exact match visually
+   - Copy it character-for-character
+   - If still no match exists, invoke **New Experience Driver Protocol**
+   - NEVER output a "close enough" approximation
+
+4. **SEMANTIC SIMILARITY ≠ CORRECTNESS**
+   - Two drivers may describe the same concept but have different canonical forms
+   - Always use the exact form listed in the taxonomy
+   - Your judgment of equivalence is NOT valid for substitution
+
+---
+
 ## 🛡️ **Governance & Selection Rules**
 
 | Rule                     | Description                                                                                                                         |
@@ -422,7 +455,7 @@ It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in 
 | 🎯 **Specificity Wins**  | If multiple drivers appear applicable, select the **most specific driver** that best represents the underlying operational surface. |
 | 🧹 **No Duplication**    | Do not extract multiple Experience Drivers representing the same surface of experience within a single comment.                     |
 | 🔁 **Stream Alignment**  | Each Experience Driver must align to one orchestration stream: **Fix**, **Optimize**, **Amplify**, or **Innovate**.                 |
-| 🔍 **Traceability**      | Each driver must be directly traceable to customer verbatim and support downstream diagnostics and execution logic.                 |
+| 🔍 **Traceability**      | Each driver must be directly traceable to customer verbatim and support downstream diagnostics and execution logic.     |
 | 🆕 **New Drivers**       | If no listed driver applies, flag as **temporary**, preserve format, and submit to governance before reuse.                         |
 
 ---
@@ -442,34 +475,185 @@ Theme
 ### ✅ **Canonical Example**
 
 ```
-Theme: Payments & Transactions  
-Experience Driver: Card Payments → Transaction Declines  
-Entity Name: Debit Card Authorization System  
+Theme: Digital Payments & Transfers  
+Experience Driver: Payment Processing → Transaction Delays  
+Entity Name: QuickPay UPI Gateway  
 ```
 
 ---
 
-🏦 **FinTech Experience Driver Taxonomy — DecipherOS Protocol**
+## ❌ **CONSTRAINT LAYER 2: ANTI-PATTERN EXAMPLES (VIOLATIONS TO AVOID)**
 
-The following tables define the **complete, closed, and authoritative list** of valid **FinTech Experience Drivers**
+The examples below show **INCORRECT outputs that MUST NOT be generated**.  
+These are common drift patterns that violate taxonomy discipline.
+
+---
+
+### **Example 1: Paraphrasing Violation**
+
+**Customer Feedback:** *"My fund transfer took 3 days to complete."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Money Transfer → Processing Latency"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Payment Processing → Transaction Delays"`
+
+**Why it's wrong:** "Processing Latency" is semantically similar but NOT the canonical form.
+
+---
+
+### **Example 2: Word Reordering Violation**
+
+**Customer Feedback:** *"The payment system delayed my transaction confirmation."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Transaction Delays → Payment Processing"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Payment Processing → Transaction Delays"`
+
+**Why it's wrong:** Category and Subcategory are reversed.
+
+---
+
+### **Example 3: Semantic Equivalent Violation**
+
+**Customer Feedback:** *"KYC verification took forever to complete."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Account Onboarding → Slow KYC Processing"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "KYC Verification → Processing Speed"`  
+*(assuming this exists in your taxonomy - verify exact match)*
+
+**Why it's wrong:** "Slow KYC Processing" ≠ canonical taxonomy term.
+
+---
+
+### **Example 4: Abbreviation/Expansion Violation**
+
+**Customer Feedback:** *"The loan approval status wasn't updated on time."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Loan Management → Approval Status Update Delay"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Loan Processing → Status Visibility"`  
+*(or exact match from taxonomy)*
+
+**Why it's wrong:** Added words not in canonical form.
+
+---
+
+### **Example 5: Premature New Driver Creation**
+
+**Customer Feedback:** *"The credit card reward points took too long to reflect."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Rewards Program → Points Crediting Delay"` (marked as NEW)
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Rewards & Cashback → Points Crediting"`  
+*(using existing taxonomy entry)*
+
+**Why it's wrong:** New driver created when existing entry already covers this.
+
+---
+
+### **Example 6: Plural/Singular Mismatch**
+
+**Customer Feedback:** *"Multiple transactions failed today."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Payment Processing → Transactions Failures"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Payment Processing → Transaction Failure"`
+
+**Why it's wrong:** Pluralization changes the canonical form.
+
+---
+
+## 🔍 **CONSTRAINT LAYER 3: PRE-OUTPUT VALIDATION CHECKLIST**
+**MANDATORY VERIFICATION PROTOCOL - EXECUTE BEFORE GENERATING JSON OUTPUT**
+
+Before you output any Experience Driver, you MUST complete this verification sequence:
+
+---
+
+### **Step 1: Locate the Taxonomy Table**
+- [ ] I have visually located the taxonomy tables below
+- [ ] I can see the Theme, Category, and Subcategory columns
+
+---
+
+### **Step 2: Search for Exact Match**
+- [ ] I have identified the customer's issue/praise point
+- [ ] I have scanned the taxonomy for the most specific matching entry
+- [ ] I have found a `Category → Subcategory` that precisely fits
+
+---
+
+### **Step 3: Verify Character-for-Character Match**
+- [ ] My output string EXACTLY matches the taxonomy entry (including spacing, arrows, capitalization)
+- [ ] I have NOT paraphrased, reordered, or modified any words
+- [ ] I have NOT substituted synonyms or semantic equivalents
+
+---
+
+### **Step 4: Cross-Check Against Anti-Patterns**
+- [ ] My output does NOT resemble any of the violation examples in Constraint Layer 2
+- [ ] I am not using "close enough" reasoning
+- [ ] I am not creating a new driver when an existing one fits
+
+---
+
+### **Step 5: Final Decision Point**
+
+**If ALL checkboxes above are checked:**  
+→ Proceed to output the Experience Driver
+
+**If ANY checkbox is unchecked:**  
+→ **STOP** - Re-scan the taxonomy OR invoke New Experience Driver Protocol
+
+---
+
+### **Step 6: New Driver Protocol (Only if No Match Exists)**
+
+If genuinely no existing driver fits:
+- [ ] I have scanned the ENTIRE taxonomy at least twice
+- [ ] I have considered broader and narrower category options
+- [ ] I have verified this is truly a gap, not a matching failure
+- [ ] I am creating a NEW driver following the exact `Category → Subcategory` format
+- [ ] I will flag it as **temporary** and submit for governance review
+
+---
+
+**⚠️ CRITICAL REMINDER:**  
+This checklist is NOT optional. Skipping verification leads to taxonomy drift, orchestration failure, and data corruption.
+
+---
+
+💳 FinTech Experience Driver Taxonomy — DecipherOS Protocol
+The following tables define the complete, closed, and authoritative list of valid FinTech Experience Drivers 
 for this taxonomy version.
 
-You must select the most appropriate Experience Driver **only** from the entries listed below.
+You must select the most appropriate Experience Driver only from the entries listed below.
 
 * Do not treat these as examples
 * Do not generate new labels
 * Do not infer similar or equivalent phrasing
 * Do not modify, reorder, or paraphrase Category or Subcategory names
 
-Each Experience Driver must be used **exactly as written**, following the canonical structure:
+Each Experience Driver must be used exactly as written, following the canonical structure:
+Theme → Experience Driver (Category → Subcategory) → Entity Name
 
-> **Theme → Experience Driver (Category → Subcategory) → Entity Name**
-
-If no listed Experience Driver applies, invoke the **New Experience Driver Governance Protocol** and flag the driver
-as **temporary**. Do not improvise or approximate.
+If no listed Experience Driver applies, invoke the New Experience Driver Governance Protocol and flag the driver 
+as temporary. Do not improvise or approximate.
 
 These taxonomy entries exist to ensure:
-
 * stable identity resolution
 * zero duplication
 * cross-comment comparability
