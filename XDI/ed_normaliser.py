@@ -113,10 +113,11 @@ def greedy_cluster_global(eds: List[str], threshold: float = THRESHOLD, weight_s
         assigned[i] = True
         for j in range(i+1, n):
             if assigned[j]:
-                continue
+                continue              
             if weighted_jaccard(docs[i], docs[j]) >= threshold:
                 cluster.append(j)
                 assigned[j] = True
+        
         clusters.append(cluster)
     return clusters, docs
 
