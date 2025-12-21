@@ -149,12 +149,6 @@ Extract **every Experience Driver separately** if the feedback contains more tha
 
 ---
 
-### 🚫 Deprecated: SKU-Level Diagnostics
-This section does not apply to Healthcare. Patients don’t mention SKUs; they mention services, treatments,  
-journeys, or care episodes. Omit this logic.
-
----
-
 ### ⛔ Final Exclusion Protocol
 
 If an experience driver **fails even one** of the above rules:
@@ -1510,17 +1504,22 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 
 ## 🧩 **Experience Driver – Specific Opportunity Maximisation Stream (OMS)**
 
+*(Healthcare Edition)*
+
 ### 📌 **Purpose**
+For each extracted **Experience Driver**, determine the **single most precise strategic response pathway** — 
+the **Opportunity Maximisation Stream** (**Fix**, **Optimize**, **Amplify**, **Innovate**).
 
-For each extracted **Experience Driver**, determine the **single most precise strategic response pathway** — the **Opportunity Maximisation Stream** (**Fix**, **Optimize**, **Amplify**, **Innovate**).
-This classification is **never** made at the whole-comment level — it is **driver-specific**, grounded in the **exact issue, emotion, and context** that surfaced the driver.
+This classification is **never** made at the whole-comment level — it is **driver-specific**, grounded in the 
+**exact care issue, emotion, and clinical or operational context** that surfaced the driver.
 
-This guarantees orchestration decisions are **behaviorally correct**, ensuring system response aligns with **urgency**, **risk**, and **opportunity type**.
+This guarantees orchestration decisions are **behaviorally correct**, ensuring system response aligns with 
+**patient safety, urgency, trust, and opportunity type**.
 
 ✅ **Why it matters:**
 
-* Eliminates overgeneralization in multi-driver feedback
-* Maintains **mutual exclusivity** of OMS per driver
+* Eliminates overgeneralization in multi-driver patient feedback
+* Maintains **mutual exclusivity** of OMS per Experience Driver
 * Controls OU routing, PDCA targeting, and Silent Guidance triggers
 * Ensures a single, unambiguous execution path per driver — no overlaps, no hybrids
 
@@ -1530,17 +1529,17 @@ This guarantees orchestration decisions are **behaviorally correct**, ensuring s
 
 Every Experience Driver must be evaluated using:
 
-* **Experience Driver** – Which surface of the experience is implicated?
-* **Theme** – What strategic area does it fall into?
-* **Emotion** – How strong or polarized is the sentiment?
-* **Feedback Type** – Complaint, compliment, suggestion, etc.
-* **Context** – What happened, and what was expected?
+* **Experience Driver** – Which patient-facing surface of care is implicated?
+* **Theme** – What healthcare domain does it fall into (clinical, diagnostic, access, billing, digital, safety)?
+* **Emotion** – How strong or polarized is the patient sentiment?
+* **Feedback Type** – Complaint, compliment, request, suggestion, question
+* **Context** – What happened, during which care moment, and what was expected?
 * **Framing cues** – Does the signal describe:
 
-  * ❌ Something broken or failing?
-  * ⚙️ Something usable but inefficient?
-  * 🚀 Something working brilliantly?
-  * 🧪 Something missing that’s desired?
+  * ❌ A care process that is broken or unsafe?
+  * ⚙️ A process that works but causes friction or anxiety?
+  * 🚀 A care interaction that worked exceptionally well?
+  * 🧪 A care capability that does not exist but is desired?
 
 ---
 
@@ -1548,81 +1547,97 @@ Every Experience Driver must be evaluated using:
 
 Exactly **one** of these streams must be assigned:
 
-| Stream       | Description                                                |
-| ------------ | ---------------------------------------------------------- |
-| **Fix**      | Exists, but is broken, failing, or unreliable              |
-| **Optimize** | Exists and works, but causes confusion, delay, or friction |
-| **Amplify**  | Exists and works exceptionally well — worth scaling        |
-| **Innovate** | Does not exist — customer wants it built or introduced     |
+| Stream       | Description                                                       |
+| ------------ | ----------------------------------------------------------------- |
+| **Fix**      | Exists, but is broken, unsafe, delayed, or unreliable             |
+| **Optimize** | Exists and works, but creates confusion, delay, or patient effort |
+| **Amplify**  | Exists and works exceptionally well — worth scaling or protecting |
+| **Innovate** | Does not exist — patient wants it introduced or built             |
 
 ⚠️ **Mutual Exclusivity:** One stream only.
-Choose based on **core implication**, not hypothetical potential.
+Choose based on the **core care implication**, not hypothetical potential.
 
 ---
 
-## 📂 The Four Streams
+## 📂 The Four Streams (Healthcare)
 
-### 🔧 1. **Fix** — *Resolve what’s failing*
+### 🔧 1. **Fix** — *Resolve what’s failing or unsafe*
 
-* **Definition:** Experience exists but is **broken or blocked**
-* **When to Use:** Login failures, payment errors, refund blocks, crashes
-* **Signals:** “OTP never arrives”, “Refund failed”, “KYC blocked after submission”
+* **Definition:** Experience exists but is **broken, delayed, unsafe, or unreliable**
+* **When to Use:** Missed care, incorrect records, safety risks, access failures
+* **Signals:**
+
+  * “My lab results were uploaded to the wrong patient account”
+  * “Ambulance never arrived”
+  * “Prescription was entered incorrectly”
 * **Boundary:** ✅ Exists → ❌ Does not work as expected
-* **Never Use If:** Functional but clunky (→ Optimize) or nonexistent (→ Innovate)
+* **Never Use If:** Process works but is merely slow or confusing (→ Optimize)
 
 ---
 
-### 🛠 2. **Optimize** — *Remove avoidable friction*
+### 🛠 2. **Optimize** — *Reduce avoidable patient effort*
 
-* **Definition:** Experience works, but creates **delay, doubt, or wasted effort**
-* **When to Use:** Inefficient flows, unnecessary steps, unclear settings
-* **Signals:** “Too many taps to reach statements”, “Enter CVV every time”
-* **Boundary:** ✅ Exists → ✅ Works → ❌ Clunky or wasteful
-* **Never Use If:** Broken (→ Fix) or nonexistent (→ Innovate)
+* **Definition:** Experience works, but causes **delay, confusion, repetition, or anxiety**
+* **When to Use:** Inefficient scheduling, unclear instructions, redundant steps
+* **Signals:**
+
+  * “I had to call three times to reschedule my appointment”
+  * “MRI preparation instructions were confusing”
+  * “Too many forms asking the same information”
+* **Boundary:** ✅ Exists → ✅ Works → ❌ Friction remains
+* **Never Use If:** Broken or unsafe (→ Fix) or missing entirely (→ Innovate)
 
 ---
 
-### 🧪 3. **Innovate** — *Create what’s missing*
+### 🧪 3. **Innovate** — *Create what doesn’t exist*
 
-* **Definition:** Requested feature/service **does not exist** today
-* **When to Use:** Net-new features, competitive parity, emerging needs
-* **Signals:** “Offer virtual cards”, “Allow freezing UPI access”
+* **Definition:** Requested care capability or support **does not exist today**
+* **When to Use:** New access models, digital care, proactive services
+* **Signals:**
+
+  * “Offer virtual physiotherapy after surgery”
+  * “Allow same-day digital delivery of lab results”
+  * “Provide remote monitoring for chronic patients”
 * **Boundary:** ❌ Not present — net-new build required
-* **Never Use If:** Refinement of existing (→ Optimize) or fixing (→ Fix)
+* **Never Use If:** Improving or fixing something that already exists
 
-**Sub-Tier Innovation Scoring** *(Innovate only)*:
+**Sub-Tier Innovation Scoring (Innovate only):**
 
-| Score | Tier Label             | Description                                                       |
-| ----- | ---------------------- | ----------------------------------------------------------------- |
-| 1     | Hygiene Need           | Baseline expectation (e.g., mini-statements)                      |
-| 2     | Convenience Enhancer   | Reduces effort (e.g., biometric login)                            |
-| 3     | Experience Upgrade     | Boosts delight (e.g., gamified saving goals)                      |
-| 4     | New Capability         | Adds powerful utility (e.g., instant EMI conversion)              |
-| 5     | Transformational Shift | Redefines interaction (e.g., AI co-pilot, proactive fraud sweeps) |
+| Score | Tier Label             | Description                                                               |
+| ----- | ---------------------- | ------------------------------------------------------------------------- |
+| 1     | Hygiene Need           | Baseline care expectation (e.g., online appointment booking)              |
+| 2     | Convenience Enhancer   | Reduces patient effort (e.g., digital check-in)                           |
+| 3     | Experience Upgrade     | Improves reassurance or clarity (e.g., plain-language lab explanations)   |
+| 4     | New Capability         | Adds meaningful clinical utility (e.g., remote vitals monitoring)         |
+| 5     | Transformational Shift | Redefines care delivery (e.g., AI-assisted triage, proactive risk alerts) |
 
 ---
 
-### 📣 4. **Amplify** — *Scale what earns love*
+### 📣 4. **Amplify** — *Scale what builds trust and loyalty*
 
-* **Definition:** Something is **exceptionally effective** and valued by customers
-* **When to Use:** Praised support, frictionless onboarding, reliable core functions
-* **Signals:** “KYC was super easy”, “Login is instant”, “Fraud alert saved me”
+* **Definition:** Experience is **exceptionally effective and emotionally valued**
+* **When to Use:** Praised care, proactive communication, empathetic staff
+* **Signals:**
+
+  * “The nurse followed up personally the same day”
+  * “Doctor explained everything clearly and calmly”
+  * “Telehealth visit was seamless and reassuring”
 * **Boundary:** ✅ Exists → ✅ Works brilliantly
-* **Never Use If:** Any improvement request, issue, or missing feature is present
+* **Never Use If:** Any issue, request, or missing capability is present
 
 ---
 
-## 🔍 **Diagnostic Flow**
+## 🔍 **Diagnostic Flow (Healthcare)**
 
 ```text
-Does it exist?
+Does the care experience exist?
 ├── No → INNOVATE
 │
-├── Yes → Is it broken?
+├── Yes → Is it broken or unsafe?
 │     ├── Yes → FIX
-│     └── No → Is it inefficient or confusing?
+│     └── No → Does it create patient friction or confusion?
 │             ├── Yes → OPTIMIZE
-│             └── No → Is it delightful?
+│             └── No → Is it exceptional and praised?
 │                     ├── Yes → AMPLIFY
 │                     └── No → Discard / Unclear
 ```
@@ -1632,9 +1647,9 @@ Does it exist?
 ## 🧠 **Execution Rules**
 
 * Assign **one** OMS per Experience Driver — no blending
-* Never confuse Fix and Optimize boundaries
+* Never confuse **Fix** and **Optimize** boundaries
 * Apply sub-tier scoring **only** for Innovate
-* Selection must be **justifiable** using structured inputs
+* Selection must be **justifiable** using structured Healthcare inputs
 
 ---
 
