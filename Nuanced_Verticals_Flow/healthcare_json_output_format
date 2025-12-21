@@ -375,7 +375,7 @@ An **Experience Driver** is the atomic unit of orchestration. It represents a **
 and is always expressed in the canonical form:
 
 > **`Category → Subcategory`**
-> *(e.g., `Appointment Scheduling → Delayed Confirmations`)*
+> *(e.g., `Appointment Booking → Delayed Confirmation`)*
 
 Experience Drivers are **identities**, not descriptions.
 They must be **selected**, not rephrased, inferred, or generated.
@@ -383,7 +383,7 @@ They must be **selected**, not rephrased, inferred, or generated.
 Each valid extraction must also include:
 
 * A corresponding **Theme** (strategic or operational healthcare domain)
-* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *“CityCare Telehealth Portal”*)
+* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *"CityCare Telehealth Portal"*)
 
 Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream 
 processing.
@@ -400,6 +400,40 @@ processing.
 
 If no listed Experience Driver applies, the extraction **must not improvise**.
 It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in the Extraction Layer).
+
+---
+
+## ⚠️ **CONSTRAINT LAYER 1: EXPLICIT STRING-MATCH ENFORCEMENT**
+
+**CRITICAL INSTRUCTION - READ CAREFULLY:**
+
+Experience Drivers are **IDENTITIES**, not descriptions. You are performing **LOOKUP**, not **GENERATION**.
+
+### Mandatory Rules:
+
+1. **EXACT STRING MATCH REQUIRED**
+   - You MUST output the EXACT `Category → Subcategory` string from the taxonomy tables below
+   - Character-for-character matching is mandatory
+   - Even one word difference = VIOLATION
+
+2. **ZERO TOLERANCE FOR VARIATION**
+   - ❌ NO paraphrasing (e.g., `"Delayed Confirmation"` ≠ `"Confirmation Delay"`)
+   - ❌ NO reordering (e.g., `"Confirmation → Booking"` ≠ `"Booking → Confirmation"`)
+   - ❌ NO semantic equivalents (e.g., `"Slow Response"` ≠ `"Delayed Confirmation"`)
+   - ❌ NO word substitutions (e.g., `"Late Confirmation"` ≠ `"Delayed Confirmation"`)
+   - ❌ NO pluralization changes (e.g., `"Delayed Confirmations"` ≠ `"Delayed Confirmation"`)
+
+3. **IF UNCERTAIN**
+   - Re-scan the complete taxonomy table below
+   - Locate the exact match visually
+   - Copy it character-for-character
+   - If still no match exists, invoke **New Experience Driver Protocol**
+   - NEVER output a "close enough" approximation
+
+4. **SEMANTIC SIMILARITY ≠ CORRECTNESS**
+   - Two drivers may describe the same concept but have different canonical forms
+   - Always use the exact form listed in the taxonomy
+   - Your judgment of equivalence is NOT valid for substitution
 
 ---
 
@@ -436,6 +470,160 @@ Theme: Patient Appointments & Scheduling
 Experience Driver: Appointment Booking → Delayed Confirmation  
 Entity Name: CityCare Telehealth Portal  
 ```
+
+---
+
+## ❌ **CONSTRAINT LAYER 2: ANTI-PATTERN EXAMPLES (VIOLATIONS TO AVOID)**
+
+The examples below show **INCORRECT outputs that MUST NOT be generated**.  
+These are common drift patterns that violate taxonomy discipline.
+
+---
+
+### **Example 1: Paraphrasing Violation**
+
+**Patient Feedback:** *"My appointment confirmation took 3 days to arrive."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Appointment Scheduling → Confirmation Latency"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Appointment Booking → Delayed Confirmation"`
+
+**Why it's wrong:** "Confirmation Latency" is semantically similar but NOT the canonical form.
+
+---
+
+### **Example 2: Word Reordering Violation**
+
+**Patient Feedback:** *"The booking system delayed my confirmation email."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Delayed Confirmation → Appointment Booking"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Appointment Booking → Delayed Confirmation"`
+
+**Why it's wrong:** Category and Subcategory are reversed.
+
+---
+
+### **Example 3: Semantic Equivalent Violation**
+
+**Patient Feedback:** *"Lab results took forever to show up in my portal."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Diagnostics & Lab Services → Slow Result Delivery"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Result Communication → Delayed Notification"`  
+*(assuming this exists in your taxonomy - verify exact match)*
+
+**Why it's wrong:** "Slow Result Delivery" ≠ canonical taxonomy term.
+
+---
+
+### **Example 4: Abbreviation/Expansion Violation**
+
+**Patient Feedback:** *"The MRI report wasn't available on time."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Diagnostic Testing → Report Availability Delay"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Diagnostic Services → Lab Test Turnaround"`  
+*(or exact match from taxonomy)*
+
+**Why it's wrong:** Added words not in canonical form.
+
+---
+
+### **Example 5: Premature New Driver Creation**
+
+**Patient Feedback:** *"The pharmacy took too long to fill my prescription."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Medication Services → Prescription Fulfillment Delay"` (marked as NEW)
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Prescription Fulfillment → Turnaround Time"`  
+*(using existing taxonomy entry)*
+
+**Why it's wrong:** New driver created when existing entry already covers this.
+
+---
+
+### **Example 6: Plural/Singular Mismatch**
+
+**Patient Feedback:** *"Multiple test results were delayed."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Diagnostic Services → Lab Tests Turnarounds"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Diagnostic Services → Lab Test Turnaround"`
+
+**Why it's wrong:** Pluralization changes the canonical form.
+
+---
+
+## 🔍 **CONSTRAINT LAYER 3: PRE-OUTPUT VALIDATION CHECKLIST**
+**MANDATORY VERIFICATION PROTOCOL - EXECUTE BEFORE GENERATING JSON OUTPUT**
+
+Before you output any Experience Driver, you MUST complete this verification sequence:
+
+---
+
+### **Step 1: Locate the Taxonomy Table**
+- [ ] I have visually located the taxonomy tables below
+- [ ] I can see the Theme, Category, and Subcategory columns
+
+---
+
+### **Step 2: Search for Exact Match**
+- [ ] I have identified the patient's issue/praise point
+- [ ] I have scanned the taxonomy for the most specific matching entry
+- [ ] I have found a `Category → Subcategory` that precisely fits
+
+---
+
+### **Step 3: Verify Character-for-Character Match**
+- [ ] My output string EXACTLY matches the taxonomy entry (including spacing, arrows, capitalization)
+- [ ] I have NOT paraphrased, reordered, or modified any words
+- [ ] I have NOT substituted synonyms or semantic equivalents
+
+---
+
+### **Step 4: Cross-Check Against Anti-Patterns**
+- [ ] My output does NOT resemble any of the violation examples in Constraint Layer 2
+- [ ] I am not using "close enough" reasoning
+- [ ] I am not creating a new driver when an existing one fits
+
+---
+
+### **Step 5: Final Decision Point**
+
+**If ALL checkboxes above are checked:**  
+→ Proceed to output the Experience Driver
+
+**If ANY checkbox is unchecked:**  
+→ **STOP** - Re-scan the taxonomy OR invoke New Experience Driver Protocol
+
+---
+
+### **Step 6: New Driver Protocol (Only if No Match Exists)**
+
+If genuinely no existing driver fits:
+- [ ] I have scanned the ENTIRE taxonomy at least twice
+- [ ] I have considered broader and narrower category options
+- [ ] I have verified this is truly a gap, not a matching failure
+- [ ] I am creating a NEW driver following the exact `Category → Subcategory` format
+- [ ] I will flag it as **temporary** and submit for governance review
+
+---
+
+**⚠️ CRITICAL REMINDER:**  
+This checklist is NOT optional. Skipping verification leads to taxonomy drift, orchestration failure, and data corruption.
 
 ---
 
