@@ -382,80 +382,107 @@ Experience Driver Taxonomy**.
 
 ---
 
-# 🧠 **FinTech Experience Driver Taxonomy — DecipherOS Protocol (Financial Services Edition)**
-This taxonomy defines all valid **Experience Drivers** that may be extracted from customer feedback  
-across digital-first financial ecosystems (e.g., neo-banks, investment platforms, lending apps, payment gateways).
+## 🧠 **FinTech Experience Driver Taxonomy — DecipherOS Protocol (Financial Services Edition)**
 
-In DecipherOS, the **Experience Driver** is the atomic unit of orchestration. It reflects a **precisely  
-scoped surface of experience**, always expressed as:
+This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from
+customer and user feedback across **digital-first and hybrid financial ecosystems**
+(e.g., digital banks, payment platforms, lending systems, trading apps, insurance portals, crypto wallets).
 
-> **`Category → Subcategory`** (e.g., `KYC & Identity → Document Upload Issues`)
+An **Experience Driver** is the atomic unit of orchestration. It represents a **precisely scoped surface of experience**
+and is always expressed in the canonical form:
 
-Each extraction must also include:
+> **`Category → Subcategory`**
+> *(e.g., `Payments → Failed Transactions`)*
 
-* A corresponding **Theme** (strategic or operational context)  
-* A specific **Entity Name** (verbatim or interpreted reference within the driver)
+Experience Drivers are **identities**, not descriptions.
+They must be **selected**, not rephrased, inferred, or generated.
 
-Only Experience Drivers listed in this taxonomy — following the format above — are valid for  
-downstream processing.
+Each valid extraction must also include:
 
----
+* A corresponding **Theme** (strategic or operational financial services domain)
+* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *“Mobile Banking App”*, *“Card Authorization System”*)
 
-### ✅ **What’s Not Allowed**
-
-* ❌ Aliases or synonyms  
-* ❌ Soft or approximate matches  
-* ❌ Freestyle category creation  
-* ❌ Abstract or overly broad labels  
-* ❌ Tagging Theme or Entity Name as the Experience Driver
-
-If an Experience Driver is not listed here, it must follow the **New Entity Governance Protocol**  
-(see Rule 7 in the Extraction Layer).
+Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream
+processing.
 
 ---
 
-## ✅ **Governance Rules**
+### 🚫 **Strictly Not Allowed**
 
-| Rule                  | Description                                                                                                          |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| 📌 **Exact Pathing**  | Every extracted Experience Driver must match a valid, pre-approved `Category → Subcategory` path from this taxonomy. |
-| 🔁 **Stream Routing** | Each driver must align to one orchestration stream: **Fix**, **Optimize**, **Amplify**, or **Innovate**.             |
-| 🔍 **Traceability**   | Each driver must be traceable to the customer verbatim and support downstream diagnostics and action logic.          |
-| 🆕 **New Drivers**    | If a valid Experience Driver is not found in the taxonomy, flag as **temporary** and submit to the governance layer. |
+* ❌ Aliases, paraphrases, or reordered phrasing
+* ❌ Soft, approximate, or semantic matches
+* ❌ Freestyle category or subcategory creation
+* ❌ Abstract, umbrella, or sentiment-based labels
+* ❌ Substituting Theme or Entity Name for the Experience Driver
+
+If no listed Experience Driver applies, the extraction **must not improvise**.
+It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in the Extraction Layer).
 
 ---
 
-## 📦 **Pathing Structure**
+## 🛡️ **Governance & Selection Rules**
 
-Each extraction must follow this strict 3-field model:
+| Rule                     | Description                                                                                                                         |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 📌 **Closed Vocabulary** | Experience Drivers must be selected from this taxonomy only. The list is exhaustive for this version.                               |
+| 🧭 **Exact Pathing**     | The selected Experience Driver must match a valid, pre-approved `Category → Subcategory` path **string-identically**.               |
+| 🎯 **Specificity Wins**  | If multiple drivers appear applicable, select the **most specific driver** that best represents the underlying operational surface. |
+| 🧹 **No Duplication**    | Do not extract multiple Experience Drivers representing the same surface of experience within a single comment.                     |
+| 🔁 **Stream Alignment**  | Each Experience Driver must align to one orchestration stream: **Fix**, **Optimize**, **Amplify**, or **Innovate**.                 |
+| 🔍 **Traceability**      | Each driver must be directly traceable to customer verbatim and support downstream diagnostics and execution logic.                 |
+| 🆕 **New Drivers**       | If no listed driver applies, flag as **temporary**, preserve format, and submit to governance before reuse.                         |
+
+---
+
+## 📦 **Canonical Pathing Structure**
+
+Each extraction must follow this strict, non-negotiable structure:
 
 ```
-
-Theme
-└── Experience Driver (Category → Subcategory)
-└── Entity Name
-
-```
-
----
-
-### ✅ **Example**
-
-```
-
-Theme: KYC & Identity
-Experience Driver: Document Verification → Rejected Valid Proofs
-Entity Name: Aadhaar Upload Flow
-
+Theme  
+└── Experience Driver (Category → Subcategory)  
+└── Entity Name  
 ```
 
 ---
 
-### 🏦 **Fintech Customer Feedback Taxonomy**
-The following taxonomy examples are provided for your learning and understanding, enabling you to output 
-similar structured Experience Drivers that follow the established format: Theme → Experience Driver → Sample Entity 
-Names. 
-Use these patterns to generate consistent, comprehensive customer experience frameworks.
+### ✅ **Canonical Example**
+
+```
+Theme: Payments & Transactions  
+Experience Driver: Card Payments → Transaction Declines  
+Entity Name: Debit Card Authorization System  
+```
+
+---
+
+🏦 **FinTech Experience Driver Taxonomy — DecipherOS Protocol**
+
+The following tables define the **complete, closed, and authoritative list** of valid **FinTech Experience Drivers**
+for this taxonomy version.
+
+You must select the most appropriate Experience Driver **only** from the entries listed below.
+
+* Do not treat these as examples
+* Do not generate new labels
+* Do not infer similar or equivalent phrasing
+* Do not modify, reorder, or paraphrase Category or Subcategory names
+
+Each Experience Driver must be used **exactly as written**, following the canonical structure:
+
+> **Theme → Experience Driver (Category → Subcategory) → Entity Name**
+
+If no listed Experience Driver applies, invoke the **New Experience Driver Governance Protocol** and flag the driver
+as **temporary**. Do not improvise or approximate.
+
+These taxonomy entries exist to ensure:
+
+* stable identity resolution
+* zero duplication
+* cross-comment comparability
+* downstream orchestration integrity
+
+---
 
 ## Payment & Transactions
 
