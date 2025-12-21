@@ -390,17 +390,16 @@ the experience driver itself.
 
 ---
 
-## 🧠 **Grocery Retail Experience Driver Taxonomy — DecipherOS Protocol (Grocery & FMCG Edition)**
+## 🧠 **Grocery Retail Experience Driver Taxonomy — DecipherOS Protocol (Retail Services Edition)**
+This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from 
+customer feedback across **digital-first and hybrid grocery retail ecosystems** 
+(e.g., supermarkets, online grocery platforms, quick commerce apps, delivery services, store pickup, subscription boxes).
 
-This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from
-customer feedback across **digital-first and omnichannel grocery retail ecosystems**
-(e.g., physical stores, online grocery platforms, click-and-collect services, delivery partners, loyalty apps, payment systems).
-
-An **Experience Driver** is the atomic unit of orchestration. It represents a **precisely scoped surface of experience**
+An **Experience Driver** is the atomic unit of orchestration. It represents a **precisely scoped surface of experience** 
 and is always expressed in the canonical form:
 
 > **`Category → Subcategory`**
-> *(e.g., `Online Ordering → Substituted Items Without Consent`)*
+> *(e.g., `Delivery Experience → Delayed Arrival`)*
 
 Experience Drivers are **identities**, not descriptions.
 They must be **selected**, not rephrased, inferred, or generated.
@@ -408,9 +407,9 @@ They must be **selected**, not rephrased, inferred, or generated.
 Each valid extraction must also include:
 
 * A corresponding **Theme** (strategic or operational grocery retail domain)
-* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *“Mobile Grocery App”*, *“Store Checkout Counter”*, *“Last-Mile Delivery Partner”*)
+* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *"FreshMart Express Delivery"*)
 
-Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream
+Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream 
 processing.
 
 ---
@@ -428,6 +427,40 @@ It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in 
 
 ---
 
+## ⚠️ **CONSTRAINT LAYER 1: EXPLICIT STRING-MATCH ENFORCEMENT**
+
+**CRITICAL INSTRUCTION - READ CAREFULLY:**
+
+Experience Drivers are **IDENTITIES**, not descriptions. You are performing **LOOKUP**, not **GENERATION**.
+
+### Mandatory Rules:
+
+1. **EXACT STRING MATCH REQUIRED**
+   - You MUST output the EXACT `Category → Subcategory` string from the taxonomy tables below
+   - Character-for-character matching is mandatory
+   - Even one word difference = VIOLATION
+
+2. **ZERO TOLERANCE FOR VARIATION**
+   - ❌ NO paraphrasing (e.g., `"Delayed Arrival"` ≠ `"Arrival Delays"`)
+   - ❌ NO reordering (e.g., `"Arrival → Delivery Experience"` ≠ `"Delivery Experience → Delayed Arrival"`)
+   - ❌ NO semantic equivalents (e.g., `"Late Delivery"` ≠ `"Delayed Arrival"`)
+   - ❌ NO word substitutions (e.g., `"Slow Delivery"` ≠ `"Delayed Arrival"`)
+   - ❌ NO pluralization changes (e.g., `"Delayed Arrivals"` ≠ `"Delayed Arrival"`)
+
+3. **IF UNCERTAIN**
+   - Re-scan the complete taxonomy table below
+   - Locate the exact match visually
+   - Copy it character-for-character
+   - If still no match exists, invoke **New Experience Driver Protocol**
+   - NEVER output a "close enough" approximation
+
+4. **SEMANTIC SIMILARITY ≠ CORRECTNESS**
+   - Two drivers may describe the same concept but have different canonical forms
+   - Always use the exact form listed in the taxonomy
+   - Your judgment of equivalence is NOT valid for substitution
+
+---
+
 ## 🛡️ **Governance & Selection Rules**
 
 | Rule                     | Description                                                                                                                         |
@@ -437,7 +470,7 @@ It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in 
 | 🎯 **Specificity Wins**  | If multiple drivers appear applicable, select the **most specific driver** that best represents the underlying operational surface. |
 | 🧹 **No Duplication**    | Do not extract multiple Experience Drivers representing the same surface of experience within a single comment.                     |
 | 🔁 **Stream Alignment**  | Each Experience Driver must align to one orchestration stream: **Fix**, **Optimize**, **Amplify**, or **Innovate**.                 |
-| 🔍 **Traceability**      | Each driver must be directly traceable to customer verbatim and support downstream diagnostics and execution logic.                 |
+| 🔍 **Traceability**      | Each driver must be directly traceable to customer verbatim and support downstream diagnostics and execution logic.     |
 | 🆕 **New Drivers**       | If no listed driver applies, flag as **temporary**, preserve format, and submit to governance before reuse.                         |
 
 ---
@@ -457,34 +490,186 @@ Theme
 ### ✅ **Canonical Example**
 
 ```
-Theme: Online Ordering & Fulfillment  
-Experience Driver: Order Fulfillment → Missing Items  
-Entity Name: Home Delivery Order  
+Theme: Delivery & Fulfillment  
+Experience Driver: Delivery Experience → Delayed Arrival  
+Entity Name: FreshMart Express Delivery  
 ```
 
 ---
 
-🛒 **Grocery Retail Experience Driver Taxonomy — DecipherOS Protocol**
+## ❌ **CONSTRAINT LAYER 2: ANTI-PATTERN EXAMPLES (VIOLATIONS TO AVOID)**
 
-The following tables define the **complete, closed, and authoritative list** of valid **Grocery Retail Experience Drivers**
+The examples below show **INCORRECT outputs that MUST NOT be generated**.  
+These are common drift patterns that violate taxonomy discipline.
+
+---
+
+### **Example 1: Paraphrasing Violation**
+
+**Customer Feedback:** *"My grocery order arrived 3 hours late."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Order Fulfillment → Delivery Latency"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Delivery Experience → Delayed Arrival"`
+
+**Why it's wrong:** "Delivery Latency" is semantically similar but NOT the canonical form.
+
+---
+
+### **Example 2: Word Reordering Violation**
+
+**Customer Feedback:** *"The delivery system delayed my order confirmation."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Delayed Arrival → Delivery Experience"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Delivery Experience → Delayed Arrival"`
+
+**Why it's wrong:** Category and Subcategory are reversed.
+
+---
+
+### **Example 3: Semantic Equivalent Violation**
+
+**Customer Feedback:** *"Product quality check took forever at checkout."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Checkout Process → Slow Quality Verification"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Checkout Experience → Queue Time"`  
+*(assuming this exists in your taxonomy - verify exact match)*
+
+**Why it's wrong:** "Slow Quality Verification" ≠ canonical taxonomy term.
+
+---
+
+### **Example 4: Abbreviation/Expansion Violation**
+
+**Customer Feedback:** *"The refund status wasn't updated on time."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Returns Management → Refund Status Update Delay"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Returns Processing → Refund Visibility"`  
+*(or exact match from taxonomy)*
+
+**Why it's wrong:** Added words not in canonical form.
+
+---
+
+### **Example 5: Premature New Driver Creation**
+
+**Customer Feedback:** *"The replacement item took too long to arrive."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Order Replacement → Item Delivery Delay"` (marked as NEW)
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Delivery Experience → Delayed Arrival"`  
+*(using existing taxonomy entry)*
+
+**Why it's wrong:** New driver created when existing entry already covers this.
+
+---
+
+### **Example 6: Plural/Singular Mismatch**
+
+**Customer Feedback:** *"Multiple items were damaged in my order."*
+
+❌ **WRONG OUTPUT:**  
+`Experience Driver: "Product Quality → Items Damages"`
+
+✅ **CORRECT OUTPUT:**  
+`Experience Driver: "Product Quality → Item Damage"`
+
+**Why it's wrong:** Pluralization changes the canonical form.
+
+---
+
+## 🔍 **CONSTRAINT LAYER 3: PRE-OUTPUT VALIDATION CHECKLIST**
+
+**MANDATORY VERIFICATION PROTOCOL - EXECUTE BEFORE GENERATING JSON OUTPUT**
+
+Before you output any Experience Driver, you MUST complete this verification sequence:
+
+---
+
+### **Step 1: Locate the Taxonomy Table**
+- [ ] I have visually located the taxonomy tables below
+- [ ] I can see the Theme, Category, and Subcategory columns
+
+---
+
+### **Step 2: Search for Exact Match**
+- [ ] I have identified the customer's issue/praise point
+- [ ] I have scanned the taxonomy for the most specific matching entry
+- [ ] I have found a `Category → Subcategory` that precisely fits
+
+---
+
+### **Step 3: Verify Character-for-Character Match**
+- [ ] My output string EXACTLY matches the taxonomy entry (including spacing, arrows, capitalization)
+- [ ] I have NOT paraphrased, reordered, or modified any words
+- [ ] I have NOT substituted synonyms or semantic equivalents
+
+---
+
+### **Step 4: Cross-Check Against Anti-Patterns**
+- [ ] My output does NOT resemble any of the violation examples in Constraint Layer 2
+- [ ] I am not using "close enough" reasoning
+- [ ] I am not creating a new driver when an existing one fits
+
+---
+
+### **Step 5: Final Decision Point**
+
+**If ALL checkboxes above are checked:**  
+→ Proceed to output the Experience Driver
+
+**If ANY checkbox is unchecked:**  
+→ **STOP** - Re-scan the taxonomy OR invoke New Experience Driver Protocol
+
+---
+
+### **Step 6: New Driver Protocol (Only if No Match Exists)**
+
+If genuinely no existing driver fits:
+- [ ] I have scanned the ENTIRE taxonomy at least twice
+- [ ] I have considered broader and narrower category options
+- [ ] I have verified this is truly a gap, not a matching failure
+- [ ] I am creating a NEW driver following the exact `Category → Subcategory` format
+- [ ] I will flag it as **temporary** and submit for governance review
+
+---
+
+**⚠️ CRITICAL REMINDER:**  
+This checklist is NOT optional. Skipping verification leads to taxonomy drift, orchestration failure, and data corruption.
+
+---
+
+🛒 Grocery Retail Experience Driver Taxonomy — DecipherOS Protocol
+The following tables define the complete, closed, and authoritative list of valid Grocery Retail Experience Drivers 
 for this taxonomy version.
 
-You must select the most appropriate Experience Driver **only** from the entries listed below.
+You must select the most appropriate Experience Driver only from the entries listed below.
 
 * Do not treat these as examples
 * Do not generate new labels
 * Do not infer similar or equivalent phrasing
 * Do not modify, reorder, or paraphrase Category or Subcategory names
 
-Each Experience Driver must be used **exactly as written**, following the canonical structure:
+Each Experience Driver must be used exactly as written, following the canonical structure:
+Theme → Experience Driver (Category → Subcategory) → Entity Name
 
-> **Theme → Experience Driver (Category → Subcategory) → Entity Name**
-
-If no listed Experience Driver applies, invoke the **New Experience Driver Governance Protocol** and flag the driver
-as **temporary**. Do not improvise or approximate.
+If no listed Experience Driver applies, invoke the New Experience Driver Governance Protocol and flag the driver 
+as temporary. Do not improvise or approximate.
 
 These taxonomy entries exist to ensure:
-
 * stable identity resolution
 * zero duplication
 * cross-comment comparability
