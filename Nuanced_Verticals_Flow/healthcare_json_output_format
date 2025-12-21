@@ -372,15 +372,6 @@ Every Experience Driver must pass the following core requirements:
 
 ---
 
-I **do not want to skip this**.
-This section is **almost right**, but there are **two subtle phrasing flaws** that *will* keep ED explosion alive even if everything else is perfect.
-
-So I’ll **rewrite it minimally** — same intent, same structure, but with **selection-first, closed-set, identity-safe language**.
-
-I’ll mark what changed *implicitly* through wording, not commentary.
-
----
-
 ## 🧠 **Healthcare Experience Driver Taxonomy — DecipherOS Protocol (Healthcare Services Edition)**
 This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from 
 patient and caregiver feedback across **digital-first and hybrid healthcare ecosystems** 
