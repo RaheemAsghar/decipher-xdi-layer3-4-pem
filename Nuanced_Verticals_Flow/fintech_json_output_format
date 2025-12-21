@@ -155,12 +155,6 @@ Extract **every Experience Driver separately** if the feedback contains more tha
 
 ---
 
-### 🚫 Deprecated: SKU-Level Diagnostics
-This section does not apply to FinTech. Customers don’t mention SKUs; they mention flows, instruments, 
-journeys, or services. Omit this logic.
-
----
-
 ### ⛔ Final Exclusion Protocol
 
 If an experience driver **fails even one** of the above rules:
@@ -191,9 +185,8 @@ and orchestration.
 This layer governs the extraction of **Experience Drivers** from unstructured customer feedback across  
 digital-first financial environments (e.g., neo-banks, investment platforms, digital lenders, payments apps).
 
-You are not extracting generic named entities.  
-You are constructing **emotion-linked, taxonomy-aligned Experience Drivers** that serve as the atomic  
-input into the DecipherOS orchestration engine.
+You are not extracting generic named entities. You are constructing **emotion-linked, taxonomy-aligned 
+Experience Drivers** that serve as the atomic input into the DecipherOS orchestration engine.
 
 Every Experience Driver must pass the following core requirements:
 
