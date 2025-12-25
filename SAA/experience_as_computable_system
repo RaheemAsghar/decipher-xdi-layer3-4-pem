@@ -1,4 +1,7 @@
 
+We extract drivers with full context, aggregate into multi-dimensional state containers, cluster mentions to 
+generate behavioral execution units, activate them via PDCA loops, and store outcomes in institutional memory
+
 ### 🔹 Canonical / master version (keep this as “the one”)
 
 > **An infrastructure layer that makes drivers of customer experience real system entities—giving them identity, 
