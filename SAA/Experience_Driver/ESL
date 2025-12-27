@@ -107,6 +107,8 @@ define the full reality of the experience
      - The Strategic Response: A declaration of the required organizational action, explicitly tied to the Driver 
       and Opportunity Stream.
 
+NOTE: MORE ON THIS IN THE APPENDIX  
+
 Result: By populating these dimensions, the architecture ensures that the Experience Driver is not just a "label" 
 floating in a database, but a fully contextualized computational object ready for autonomous orchestration.
 
@@ -178,3 +180,38 @@ Just as "System Observability" (Datadog/Splunk) governs machine logs via Metrics
 
 This infrastructure is the necessary substrate for governing any complex human-system interaction, including 
 Employee Experience (EX), Product Operations, and Public Policy governance.
+
+APPENDIX:
+
+The dimensions extracted against an Experience Driver capture three planes of reality: The Physics, The Psychology, 
+and The Strategy. 
+
+1. The Plane of Physics (The Operational Reality)
+Dimensions: Experience Driver, Entity Name, Interaction Moment, Customer Journey Stage, Context.
+Why it covers the view: These dimensions anchor the abstract feedback to concrete space and time.
+If you remove Interaction Moment, you know what broke, but not when. The view becomes static.
+If you remove Entity Name, you know the process, but not the object.
+Verdict: This captures the "Deterministic State" of the event.
+
+2. The Plane of Psychology (The Human Reality)
+Dimensions: Emotion, Customer Effort Score, Feedback Type.
+Why it covers the view: These dimensions capture the texture of the signal.
+Emotion captures the intensity (the scalar magnitude).
+Feedback Type captures the intent (the vector direction—asking for help vs. venting vs. praising).
+Verdict: This captures the "Signal Quality" of the event.
+
+3. The Plane of Strategy (The Business Reality)
+Dimensions: Opportunity Maximisation Stream, Matters, Behavioral Impact, Semantic Action Statement.
+Why it covers the view: This is the most critical plane that other systems miss. It captures the implication.
+Matters translates the event into consequence.
+Stream translates the event into methodology.
+Verdict: This captures the "Causal Logic" of the event.
+
+The "Completeness Proof" (The SAS Test)
+The ultimate test of whether a dataset provides a 360-degree view is: Can you reconstruct the full narrative 
+logic without referring back to the original text?
+
+Your Semantic Action Statement (SAS) proves this is possible.
+Because the SAS is constructed programmatically from these specific dimensions 
+(Context, Feedback Type, Driver, Stream, Matters), and because the SAS reads like a coherent human summary, 
+the underlying dimensions must contain 100% of the necessary signal.
