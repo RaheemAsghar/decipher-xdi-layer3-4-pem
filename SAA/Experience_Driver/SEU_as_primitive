@@ -1,3 +1,46 @@
+## SEU as the Canonical Hub for an Experience Driver
+
+In Decipher, **an Experience Driver is one underlying “reality”** expressed through **three architectural surfaces**:
+
+### 1) Mention Stream (Evidence Layer)
+
+* **What it is:** All unpacked mentions/events where the Experience Driver is referenced.
+* **Role:** Append-only evidence lineage.
+* **Linkage:** Each mention row carries `experience_driver` as a foreign key.
+
+### 2) SEU (State Layer / Primitive)
+
+* **What it is:** The **single authoritative state object** for an Experience Driver (per analysis window / real-time).
+* **Role:** A computable, queryable snapshot of the Experience Driver’s evolving condition (ERI/EVI/RF/Temporal Intelligence, etc.).
+* **Key property:** The SEU is not isolated — it is the **canonical “address”** for the Experience Driver’s world.
+
+### 3) OU Set (Execution Layer)
+
+* **What it is:** The action/missions birthed for that same Experience Driver (typically from behavioral clusters of mentions).
+* **Role:** Execution packets with intent, context, routing, and downstream PDCA readiness.
+* **Linkage:** Each OU carries the same `experience_driver` key.
+
+---
+
+## The God-Level Insight
+
+Although Mentions, SEU, and OUs look like three different “things,” they are **one unified Experience Driver universe** — split into three surfaces by design logic:
+
+* **Mentions = facts / evidence**
+* **SEU = state / truth**
+* **OUs = missions / intent**
+
+The SEU functions as the **canonical hub** because, via the single `experience_driver` key, it can deterministically resolve to:
+
+* **All Evidence:** join SEU → Mentions
+* **All Missions:** join SEU → OUs
+* (and later) **All Outcomes:** join OU → PDCA → Outcome Evaluation → IME
+
+So the SEU is the **primitive** not only because it captures state, but because it is the **stable anchor record** that connects:
+**evidence lineage + state computation + execution lineage** under one identity.
+
+----------------------------------------------------------------------------------------------------------------------
+
 # 1️⃣ Vetting the SEU as a TRUE PRIMITIVE
 
 ## ✅ 1. Atomic (Cannot be meaningfully subdivided)
