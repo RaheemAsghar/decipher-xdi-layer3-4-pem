@@ -1,0 +1,264 @@
+# PART 1 — Is the OU a TRUE PRIMITIVE?
+
+### 🔹 1️⃣ Atomic (Cannot be meaningfully subdivided)
+
+**PASS — strongly.**
+
+Why:
+
+* An OU corresponds to **one behaviorally coherent cluster** (`bcs_group_id`) inside a strict slice:
+
+  ```
+  Experience Driver → Feedback Type → Opportunity Stream → Behavioral Signature Cluster
+  ```
+* The clustering logic ensures:
+
+  * Semantic cohesion (`cluster_cohesion`)
+  * Shared “matters / moment / journey / context”
+  * One dominant behavioral mechanism
+
+If you subdivide an OU:
+
+* You destroy behavioral coherence
+* You break the semantic action statement
+* You invalidate the cluster-level CES, emotion distribution, and preview
+
+This is not an arbitrary grouping — it is a **minimal executable unit of behavior**.
+
+✅ **Atomicity holds**
+
+---
+
+### 🔹 2️⃣ Composable (Can be combined into higher-order constructs)
+
+**PASS — by design.**
+
+OUs compose cleanly into:
+
+* **OU portfolios per Experience Driver**
+  (via `experience_driver` FK)
+* **Execution backlogs**
+
+  * filtered by `temporal_action = ACTIVATE`
+  * sorted by `temporal_confidence`
+* **Strategic streams**
+
+  * Fix / Optimize / Innovate / Amplify
+* **PDCA programs**
+
+  * each OU already contains the full problem framing
+
+Critically:
+
+* OUs do **not** need to be merged or rewritten to compose
+* They are *referentially safe* and *execution-ready*
+
+✅ **Composability holds**
+
+---
+
+### 🔹 3️⃣ Semantically Stable (Means the same thing across contexts)
+
+**PASS — unusually strong.**
+
+Stability comes from **constraints**, not learning:
+
+* Identity is fixed by:
+
+  * `experience_driver`
+  * `feedback_type`
+  * `opportunity_stream`
+* Behavioral meaning is fixed by:
+
+  * Signature-weighted fields (matters, moment, stage, context)
+  * Deterministic clustering (no LLM decisions)
+* The OU always means:
+
+  > “This specific behavioral problem/opportunity is recurring *this way* for this Experience Driver”
+
+Healthcare, Retail, FinTech — the **OU construct does not change**.
+
+Only vocabulary does.
+
+✅ **Semantic stability holds**
+
+---
+
+### 🔹 4️⃣ Operationally Complete (Sufficient to execute work)
+
+**PASS — this is the OU’s superpower.**
+
+From **one OU record**, an agent or team knows:
+
+* **What to act on**
+  `experience_driver`
+* **Why it exists**
+  `matters`, `semantic_action_statement`, `cluster_theme_preview`
+* **When & where it happens**
+  `customer_journey`, `stage`, `interaction_moment`
+* **What kind of work this is**
+  `opportunity_stream`, `feedback_type`
+* **How hard it is for the customer**
+  `customer_effort_score`
+* **How confident we are**
+  `cluster_cohesion`, `cluster_size`, `bcs_share`
+* **Whether to act now or later**
+  `temporal_action`, `temporal_confidence`, `temporal_rationale`
+
+No dashboards.
+No re-analysis.
+No human translation required.
+
+✅ **Operational completeness holds**
+
+---
+
+## 🏆 OU PRIMITIVE VERDICT
+
+| Criterion              | Result |
+| ---------------------- | ------ |
+| Atomic                 | ✅      |
+| Composable             | ✅      |
+| Semantically Stable    | ✅      |
+| Operationally Complete | ✅      |
+
+👉 **The OU is a true primitive — but of a different class than the SEU.**
+
+* **SEU = State primitive**
+* **OU = Execution primitive**
+
+Both are first-class.
+
+---
+
+# PART 2 — What *Is* an OU (Ontologically)?
+
+**An Orchestration Unit (OU)** is:
+
+> A **behaviorally pure, execution-ready mission object** that represents *one repeatable way* an Experience Driver is failing, succeeding, or creating opportunity — scoped tightly enough to be acted on, measured, and remembered.
+
+Key distinction:
+
+* It is **not** an insight
+* It is **not** a ticket
+* It is **not** a theme
+
+It is a **mission packet**.
+
+And crucially:
+
+* OUs are **indirectly grounded in mentions**
+* OUs are **directly anchored to the SEU** (via `experience_driver`)
+* OUs are **filtered and sequenced using SEU temporal intelligence**
+
+This is the missing layer in almost all CX stacks.
+
+---
+
+# PART 3 — What the OU Data Structure Captures (Authoritative Inventory)
+
+Below is the **true OU schema**, distilled from the code.
+
+---
+
+## 🧬 A. Identity & Lineage
+
+* `bcs_group_id` (OU ID)
+* `bcs_id` (row-level member IDs)
+* `experience_driver`
+* `window`
+* Indirect lineage to:
+
+  * mention rows
+  * SEU row (same driver)
+
+---
+
+## 🎯 B. Classification Axes (Non-Negotiable)
+
+* `feedback_type`
+* `opportunity_stream`
+* `theme`
+
+These **lock execution intent**.
+
+---
+
+## 🧠 C. Behavioral Core (The “Why”)
+
+* `matters`
+* `semantic_action_statement`
+* `behavioral_impact`
+* `cluster_theme_preview` (human-readable root cause)
+
+This is the *executable problem definition*.
+
+---
+
+## ⏱️ D. Spatio-Temporal Locator
+
+* `customer_journey`
+* `customer_journey_stage`
+* `interaction_moment`
+
+This is what prevents vague initiatives.
+
+---
+
+## ❤️ E. Emotional Payload
+
+* `emotion_primary`
+* `emotion_specific`
+* `emotion_distribution`
+
+Emotion here is **contextual signal**, not aggregation noise.
+
+---
+
+## ⚖️ F. Effort & Evidence
+
+* `customer_effort_score`
+* `cluster_size`
+* `bcs_share`
+* `cluster_cohesion`
+
+This is **confidence-weighted evidence**.
+
+---
+
+## 🔮 G. Temporal Intelligence Overlay (via SEU)
+
+* `temporal_action` (ACTIVATE / DEFER)
+* `temporal_confidence`
+* `temporal_rationale`
+
+This is where **state (SEU)** governs **execution (OU)**.
+
+---
+
+## 🗃️ H. Persistence & Memory Hooks
+
+* Stored *as-is* in SQLite
+* Preserves member rows + composite
+* Ready for:
+
+  * PDCA
+  * Outcome Evaluation
+  * Institutional Memory Engine
+
+---
+
+# FINAL SYNTHESIS (Very Important)
+
+You now have **two true primitives**, each god-tier in its own domain:
+
+### 🔵 SEU — *State Primitive*
+
+* Answers: *“What is the condition of this Experience Driver right now?”*
+* Anchors: evidence + time + emotion + priority
+
+### 🔴 OU — *Execution Primitive*
+
+* Answers: *“What specific mission should we run to change that condition?”*
+* Anchors: behavior + context + effort + action intent
+
