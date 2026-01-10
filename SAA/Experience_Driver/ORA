@@ -1,161 +1,156 @@
 
-# Organisational Reality Augmentation Layer (ORA)
+Organisational Reality Augmentation (ORA)
+The Missing Execution Substrate Between CX Truth and Action
 
 ---
 
-## What Is Now Explicitly True in the Decipher System
+## Executive Truth (Read This First)
 
-### 1️⃣ Everything Up to the Problem Statement Is Complete and Correct
+### What Is Now Explicitly True
 
-The Decipher architecture up to this point is **finished, validated, and must not be disturbed**.
+1️⃣ **Everything upstream of the Problem Statement is complete and correct**
+The Decipher architecture has already solved the hardest part of CX:
 
-The upstream chain is:
+```
+Raw Signal
+→ Unpacking
+→ Experience Driver Identity
+→ SEU (Structured Experience Unit – state primitive)
+→ OU (Orchestration Unit – execution primitive)
+→ Problem Statement (CX-pure entry gate)
+```
 
-* Raw signal → **Unpacking**
-* **Experience Driver** identity (canonical)
-* **SEU** — Structured Experience Unit (state primitive)
-* **OU** — Orchestration Unit (execution primitive)
-* **Problem Statement** — PDCA entry gate (CX-pure)
+This chain:
 
-This entire chain is:
+* captures customer-expressed truth
+* preserves semantic fidelity
+* is atomic, composable, queryable
+* is agent-ready
+* must never be reinterpreted downstream
 
-* Lineage-safe
-* Deterministic
-* Queryable
-* Agent-ready
-
-It already captures **CX truth** with sufficient emotional, behavioral, and contextual fidelity.
-
-Nothing upstream needs improvement, enrichment, or reinterpretation.
+**CX truth is locked.**
 
 ---
 
-### 2️⃣ PDCA Fails Today for Exactly One Reason
+2️⃣ **PDCA failure is not an intelligence problem**
+PDCA does not fail because of:
 
-PDCA does **not** fail because of:
-
-* prompt quality
-* missing CX data
-* lack of intelligence
+* poor prompts
+* insufficient CX data
+* lack of telemetry
 * LLM limitations
 
-PDCA fails because it lacks **organisational reality as a first-class input**.
+PDCA fails because it is asked to act **without knowing the execution reality of the organisation**.
 
-Not more intelligence.
-Not more analysis.
-
-**Reality.**
-
----
-
-## The Missing Thing: A Documented Augmentation Layer
-
-What is missing is a **single, explicit, reusable document** that represents:
-
-> **How this organisation actually works.**
-
-This document is not:
-
-* CX
-* an OU
-* an SEU
-* PDCA itself
-
-It is a **reusable execution-reality contract** that PDCA must obey.
+This is not a CX problem.
+This is not an AI problem.
+This is an **organisational physics problem**.
 
 ---
 
-## The Correct Mental Model (Lock This)
+3️⃣ **One thing has always been missing**
+What has been missing is a formal, explicit, reusable declaration of:
+
+> *How this organisation actually works when it comes to change.*
+
+That declaration is ORA.
+
+---
+
+The Correct Mental Model (Final)
 
 ```
-CX Truth (locked)         →  OU + Problem Statement
-Org Reality (locked)     →  Organisational Reality Augmentation (ORA)
------------------------------------------------
-PDCA Execution Engine    →  Realistic initiatives, prioritisation, outcomes
+CX Truth (locked)
+→ OU + Problem Statement
+
+Organisational Reality (locked)
+→ ORA (Execution Constraints)
+
+System Evidence (optional)
+→ Correlated telemetry summaries
+
+---------------------------------
+PDCA Execution Engine
+→ Feasible initiatives, prioritisation, outcomes
 ```
 
-PDCA becomes **deterministic** because:
-
-* CX truth is fixed
-* Organisational reality is fixed
-
-The LLM is no longer allowed to invent either.
+**PDCA becomes deterministic not because it is smart,
+but because both truths it must obey are fixed.**
 
 ---
 
-# The Organisational Reality Augmentation Layer (ORA)
+# What ORA Is
+ORA is a **formal execution-reality contract**.
 
-## Purpose
+It declares:
+* what can be changed
+* who can change it
+* how fast change can occur
+* what risks cannot be violated
+* which outcomes can be owned and measured
 
-The ORA exists for **one reason only**:
-
-> To constrain PDCA so that it can only produce plans, priorities, and outcomes that this organisation can actually execute.
-
-It is an **input layer**, not an intelligence layer.
+ORA exists to **prevent PDCA from inventing reality**.
 
 ---
 
-## Design Principles
+# What ORA Is Not
 
-* **Declared, not inferred**
-* **Structured, not narrative**
+ORA is **not**:
+* CX enrichment
+* telemetry analysis
+* intelligence
+* recommendations
+* strategy
+* ERP logic
+* governance theatre
+
+ORA does not think. ORA constrains thinking.
+
+---
+
+## Design Principles (Non-Negotiable)
+* **Declared, never inferred**
+* **Structured, never narrative**
 * **Stable across many OUs**
-* **Versioned and queryable**
-* **Independent of CX**
+* **Versioned and auditable**
+* **Independent of CX and telemetry**
+* **Executable as configuration**
 
-If something is not explicitly declared in ORA, **PDCA must not assume it**.
+If it is not declared in ORA, **PDCA must assume it does not exist**.
 
 ---
 
-## ORA Core Domains (Mandatory)
+# ORA Core Domains (Canonical)
 
-### 1️⃣ Capability Reality
+---
 
-**Question answered:**
+## 1️⃣ Change Surface Reality
+### *Where change is actually possible*
 
-> What can this organisation actually change?
-
-**Why it is required:**
-Without this, PDCA invents systems, processes, and levers that do not exist.
-
-**Captured as:**
-
-* Explicit change surfaces
-* Allowed vs limited vs forbidden
-
-**Example structure:**
+This prevents PDCA from proposing action on surfaces the organisation cannot touch.
 
 ```json
 {
   "change_surfaces": {
-    "product_ui": "allowed",
-    "backend_logic": "limited",
-    "pricing_rules": "forbidden",
-    "policy_text": "allowed",
-    "agent_scripts": "allowed",
-    "training_programs": "allowed",
-    "vendor_dependencies": "constrained"
+    "customer_ui": "allowed",
+    "agent_tools": "allowed",
+    "agent_training": "allowed",
+    "backend_services": "limited",
+    "pricing_logic": "forbidden",
+    "policy_language": "allowed",
+    "vendor_systems": "constrained"
   }
 }
 ```
 
+No permission → no initiative.
+
 ---
 
-### 2️⃣ Decision & Authority Reality
+## 2️⃣ Authority & Decision Reality
+### *Who can approve what, and how far it can go*
 
-**Question answered:**
-
-> Who can approve what, and at what level?
-
-**Why it is required:**
-Without this, PDCA assumes infinite authority and instant alignment.
-
-**Captured as:**
-
-* Authority by stream
-* Escalation thresholds
-
-**Example structure:**
+This prevents fictional alignment and imaginary sign-off.
 
 ```json
 {
@@ -164,113 +159,162 @@ Without this, PDCA assumes infinite authority and instant alignment.
     "optimize": "functional_head",
     "innovate": "exec_committee",
     "amplify": "marketing_lead"
-  }
+  },
+  "escalation_required_after_days": 30
 }
 ```
 
+PDCA cannot assign ownership outside this map.
+
 ---
 
-### 3️⃣ Operating Cadence & Capacity Reality
+## 3️⃣ Capacity & Cadence Reality
+### *How fast the organisation can move*
 
-**Question answered:**
-
-> How fast can this organisation move, and how much can it handle at once?
-
-**Why it is required:**
-Without this, PDCA generates unrealistic timelines and overloaded plans.
-
-**Captured as:**
-
-* Delivery cadence by change type
-* Parallel initiative limits
-
-**Example structure:**
+This prevents fantasy timelines and initiative overload.
 
 ```json
 {
   "delivery_cadence": {
-    "minor_changes": "weekly",
-    "process_updates": "monthly",
+    "copy_or_config_changes": "weekly",
+    "process_changes": "monthly",
     "system_changes": "quarterly"
   },
   "parallel_initiative_limit": 3
 }
 ```
 
+If cadence or capacity is exceeded, the plan is invalid.
+
 ---
 
-### 4️⃣ Strategic & Economic Guardrails
+## 4️⃣ Risk & Guardrail Reality
+### *What must never be violated*
 
-**Question answered:**
-
-> What outcomes matter, and what trade-offs are unacceptable?
-
-**Why it is required:**
-Without this, PDCA invents KPIs no one owns and outcomes no one values.
-
-**Captured as:**
-
-* Strategic pillars
-* Non-negotiables
-
-**Example structure:**
+This anchors PDCA in regulatory, legal, and reputational reality.
 
 ```json
 {
-  "strategic_pillars": [
-    "cost_to_serve_reduction",
-    "trust_and_reliability",
-    "growth_enablement"
-  ],
   "non_negotiables": [
-    "no_regulatory_risk",
-    "no_customer_data_exposure"
+    "no_regulatory_exposure",
+    "no_customer_data_leakage",
+    "no_unapproved_pricing_change",
+    "no_model_behavior_without_audit"
   ]
+}
+```
+
+Guardrail breach = automatic rejection.
+
+---
+
+## 5️⃣ Outcome Ownership Reality
+### *Who owns outcomes and KPIs*
+
+This prevents KPI invention and orphaned success metrics.
+
+```json
+{
+  "kpi_owners": {
+    "cost_to_serve": "finance",
+    "first_contact_resolution": "operations",
+    "trust_and_reliability": "product",
+    "time_to_resolution": "support"
+  }
+}
+```
+
+No owner → no outcome.
+
+---
+
+## 6️⃣ Initiative Scope Reality
+### *What “done” actually means*
+
+This prevents vague initiatives and cosmetic change.
+
+```json
+{
+  "initiative_definition_rules": {
+    "must_have_owner": true,
+    "must_have_timebox": true,
+    "must_have_verifiable_signal": true,
+    "must_map_to_single_OU": true
+  }
 }
 ```
 
 ---
 
-## How ORA Is Used by PDCA
+# How Telemetry Fits (Final, Locked)
 
-* **PLAN** is constrained to declared assumptions
-* **DO** can only generate initiatives on allowed surfaces
-* **CHECK** prioritisation reflects real feasibility and risk
-* **ACT** outcomes and KPIs align with real strategic pillars
+Telemetry:
+* never alters CX truth
+* never creates SEUs or OUs
+* never drives prioritisation directly
 
-The LLM stops role-playing a consultant.
+Telemetry may appear **only as supporting evidence** via a bounded correlation object:
 
-It executes **within rails**.
+```json
+{
+  "system_evidence": {
+    "relevance": "high",
+    "confidence": 0.81,
+    "summary": "Latency spikes coincide with complaint surge during payment confirmation"
+  }
+}
+```
 
----
-
-## What ORA Is Not
-
-* ❌ Not analysis
-* ❌ Not recommendations
-* ❌ Not CX enrichment
-* ❌ Not regenerated per run
-
-It is **configuration**, not cognition.
-
----
-
-## Final Lock-In
-
-The Decipher system now rests on **two fixed truths**:
-
-* **CX Truth** (OU + Problem Statement)
-* **Organisational Reality** (ORA)
-
-PDCA sits between them as a **disciplined execution engine**.
-
-This is the missing layer that makes PDCA:
-
-* non-generic
-* organisation-true
-* enterprise-grade
-* agent-safe
+Telemetry explains **what systems did**.
+CX explains **what customers experienced**.
+ORA defines **what can responsibly be done**.
 
 ---
 
-**This document is the contract PDCA must obey.**
+# How ORA Constrains PDCA (Clean Mapping)
+
+### PLAN
+* Root cause analysis must respect declared constraints and authority
+
+### DO
+* Initiatives operate only on permitted change surfaces
+
+### CHECK
+* Prioritisation reflects real feasibility, capacity, and risk
+
+### ACT
+* Outcomes and KPIs must map to declared ownership and guardrails
+
+PDCA is no longer creative. It is accountable.
+
+---
+
+## The Final Architectural Claim
+
+This system rests on **three rigorously separated truths**:
+1. **CX Truth** — what customers experienced
+2. **System Evidence** — what systems did (optional support)
+3. **Organisational Reality** — what the organisation can change
+
+PDCA exists **only** to arbitrate between them.
+
+---
+
+## What This Architecture Does (Precisely)
+* Converts experience signals into executable missions
+* Prevents overclaiming causation
+* Eliminates initiative fantasy
+* Forces ownership and verification
+* Accumulates institutional learning
+* Makes action auditable and repeatable
+
+---
+
+## What It Explicitly Does *Not* Claim
+* Perfect causation
+* Revenue prediction
+* Guaranteed ROI
+* Strategic salvation
+* Control over all business variables
+
+It claims something narrower — and defensible.
