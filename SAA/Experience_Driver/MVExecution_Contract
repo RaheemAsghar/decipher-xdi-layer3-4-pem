@@ -1,0 +1,379 @@
+The Minimum Viable Execution Contract for Experience
+
+## 1️⃣ What the contract actually is (clean enumeration)
+
+Your Healthcare unpacking contract extracts, per **Experience Driver mention**, the following *classes* of dimensions:
+
+### A. Identity & Determinant
+
+* `experience_driver` (Theme → Category → Subcategory → Entity Name)
+* `theme`
+
+### B. Behavioral Reality (Why this mention exists)
+
+* `context`
+* `feedback_type`
+* `matters`
+* `behavioral_impact`
+
+### C. Temporal & Spatial Manifestation
+
+* `customer_journey`
+* `customer_journey_stage`
+* `interaction_moment`
+
+### D. Strategic Response Framing
+
+* `opportunity_stream`
+* `stream_justification`
+
+### E. Effort & Friction Signal
+
+* `customer_effort_score`
+
+### F. Linguistic Evidence
+
+* `keywords`
+* `semantic_action_statement`
+
+### G. Emotional Telemetry (non-driving, but present)
+
+* `emotion_primary`
+* `emotion_specific`
+
+That’s the **full contract**. No hidden fields.
+
+---
+
+## 2️⃣ What execution question each dimension answers
+
+This is the critical test. Every field must answer **one and only one execution-relevant question**.
+
+### A. Identity & Determinant
+
+#### `experience_driver`
+
+**Question answered:**
+
+> *What determinant of experience is being invoked?*
+
+This is **non-negotiable**.
+Without this, nothing can have state (SEU), ownership, or recurrence.
+
+✔ Primitive
+✔ Mandatory
+
+---
+
+#### `theme`
+
+**Question answered:**
+
+> *What higher-order domain does this determinant live in?*
+
+This is **not** execution-critical, but it is:
+
+* useful for portfolio aggregation
+* useful for navigation
+* useful for human cognition
+
+✔ Non-primitive
+✔ Optional but harmless
+
+Correctly placed.
+
+---
+
+### B. Behavioral Reality
+
+#### `context`
+
+**Question answered:**
+
+> *What exactly happened, in the customer’s words, that caused this determinant to be mentioned?*
+
+This is **causal reality**, not commentary.
+
+Remove this and:
+
+* agents hallucinate
+* humans reinterpret
+* OUs lose precision
+
+✔ Primitive-adjacent
+✔ Mandatory
+
+---
+
+#### `feedback_type`
+
+**Question answered:**
+
+> *Is this a failure, praise, request, or signal of emergence?*
+
+This is **response-shaping**, not emotional.
+
+It prevents:
+
+* fixing compliments
+* innovating complaints
+* amplifying failures
+
+✔ Mandatory
+✔ Correct abstraction
+
+---
+
+#### `matters`
+
+**Question answered:**
+
+> *Why does this determinant matter in this instance?*
+
+This is the **action anchor**.
+
+It is the bridge between:
+
+* raw narrative
+* executable mission
+
+Without this:
+
+* OUs become generic
+* PDCA becomes vague
+
+✔ Mandatory
+✔ Correctly distinct from context
+
+---
+
+#### `behavioral_impact`
+
+**Question answered:**
+
+> *What customer behavior or outcome is affected if this persists?*
+
+This is **future-facing causality**.
+
+It allows:
+
+* prioritization
+* outcome framing
+* success definition
+
+✔ Mandatory for execution
+✔ Not derivable later
+
+---
+
+### C. Temporal & Spatial Manifestation
+
+#### `customer_journey`
+
+**Question answered:**
+
+> *Which macro phase of the relationship is affected?*
+
+This enables:
+
+* ownership routing
+* systemic alignment
+
+✔ Mandatory at scale
+
+---
+
+#### `customer_journey_stage`
+
+**Question answered:**
+
+> *Where precisely does this break or succeed?*
+
+This is the difference between:
+
+* “checkout issue”
+* vs
+* “cart-to-checkout illusion”
+
+✔ Mandatory
+
+---
+
+#### `interaction_moment`
+
+**Question answered:**
+
+> *When exactly does the determinant manifest?*
+
+This is **operational gold**.
+
+It drives:
+
+* system targeting
+* intervention timing
+* OU differentiation
+
+✔ Mandatory
+✔ One of your strongest decisions
+
+---
+
+### D. Strategic Response Framing
+
+#### `opportunity_stream`
+
+**Question answered:**
+
+> *What class of response does this require?*
+
+This removes:
+
+* human reinterpretation
+* agent guessing
+
+It is the **execution fork**.
+
+✔ Mandatory
+✔ Primitive-aligned
+
+---
+
+#### `stream_justification`
+
+**Question answered:**
+
+> *Why this stream, not another?*
+
+This is not for execution — it’s for:
+
+* trust
+* explainability
+* governance
+
+✔ Optional
+✔ Correctly included
+
+---
+
+### E. Effort & Friction
+
+#### `customer_effort_score`
+
+**Question answered:**
+
+> *How hard was this for the customer?*
+
+This is a **prioritization amplifier**, not a driver.
+
+✔ Optional but valuable
+✔ Correctly not over-weighted
+
+---
+
+### F. Linguistic Evidence
+
+#### `keywords`
+
+**Question answered:**
+
+> *What linguistic signals support this classification?*
+
+This is **traceability**, not execution.
+
+✔ Optional
+✔ Fine as evidence
+
+---
+
+#### `semantic_action_statement`
+
+**Question answered:**
+
+> *Can the mission be stated in one deterministic sentence?*
+
+This is **OU crystallization**.
+
+It is not redundant with `matters` — it is **synthetic**, not analytic.
+
+✔ Mandatory for OU birth
+✔ Very strong design choice
+
+---
+
+### G. Emotional Telemetry
+
+#### `emotion_primary` / `emotion_specific`
+
+**Question answered:**
+
+> *What is the emotional weight acting on this determinant?*
+
+Correctly:
+
+* not causal
+* not driving
+* not overused
+
+✔ Optional
+✔ Correctly demoted
+
+---
+
+## 3️⃣ Stress test: what breaks if you remove fields?
+
+Here’s the brutal truth:
+
+| If you remove…            | What breaks              |
+| ------------------------- | ------------------------ |
+| experience_driver         | State, ownership, memory |
+| context                   | Causality, precision     |
+| feedback_type             | Response correctness     |
+| matters                   | Action clarity           |
+| interaction_moment        | Intervention accuracy    |
+| opportunity_stream        | Safe autonomy            |
+| semantic_action_statement | Deterministic execution  |
+
+Fields like:
+
+* theme
+* keywords
+* stream_justification
+* CES
+* emotion
+
+…can be removed **without collapsing the system**.
+
+That is the definition of a **clean minimum contract**.
+
+---
+
+## 4️⃣ Final verdict (no hedging)
+
+### Is this over-specified?
+
+❌ No.
+Every mandatory field answers a distinct execution question.
+
+### Is this under-specified?
+
+❌ No.
+An agent could act correctly without asking “what do you mean?”
+
+### Is this the minimum viable execution contract?
+
+✅ **Yes. Cleanly.**
+
+### Could others add more?
+
+Yes — but only as **vertical augmentations**, not corrections.
+
+---
+
+## The sentence you can lock in (this matters)
+> **This contract does not describe experience.
+> It makes experience executable.**
+
+That’s the difference between:
+* VoC
+* and infrastructure.
+
