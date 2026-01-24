@@ -167,591 +167,216 @@ and orchestration.
 
 ---
 
-# 🧠 Experience Driver Extraction Protocol — Healthcare CX Layer (DecipherOS Format)
+🧠 SECTION 1: Experience Driver Identification & Validation (Healthcare CX Layer — DecipherOS)
 
-🔁 **Definition**: In this system, an **Experience Driver** is the atomic unit of orchestration, expressed as
-`"Category → Subcategory"` (e.g., `"Appointments & Scheduling → Online Booking Failures"`).
+🔁 Canonical Definition
+An Experience Driver is the atomic unit of orchestration in DecipherOS.
+It represents a single, patient-perceived functional determinant of experience, always expressed as:
 
----
+Category → Subcategory
+An Experience Driver captures what exactly went right, wrong, or could be improved in the patient’s experience —
+not a department, role, sentiment, outcome, or abstract theme.
 
-### 🎯 Protocol Context
+🎯 Operating Assumptions (Locked)
+This layer runs only after:
+🧼 Data Laundry normalization (noise removed, patient reality preserved)
+🩺 CEM Relevance Filtering (only eligible, action-worthy signals remain)
 
-This layer governs the extraction of **Experience Drivers** from unstructured patient or caregiver feedback across  
-modern healthcare environments (e.g., hospitals, clinics, diagnostic labs, telehealth, home care services).
+As a result:
+* Every input is already CX-relevant
+* Every input already meets minimum detail
+* Every independent trigger is eligible for extraction
 
-You are not extracting generic named entities.  
-You are constructing **emotion-linked, taxonomy-aligned Experience Drivers** that serve as the atomic  
-input into the DecipherOS orchestration engine.
+Your task here is not to decide relevance — your task is to correctly identify and bind Experience Drivers.
 
-Every Experience Driver must pass the following core requirements:
+🧠 Core Identification Rules (Non-Negotiable)
+1️⃣ Canonical Driver Selection (Identity Law)
+For each valid experience signal, you must:
+* Select the single closest canonical Experience Driver from the Healthcare taxonomy
+* Use the exact Category → Subcategory structure
+* Do not invent, rename, rephrase, or alias Experience Drivers
 
----
+If multiple drivers appear plausible, choose the one that most directly represents the patient-perceived 
+functional surface of the issue or success.
 
-## ✅ Extraction Rules
+⚠️ Experience Drivers must be selected, not authored.
 
-✔ Experience Drivers must pass **all six CEM Filtering Criteria** (ensuring relevance, emotion, detail, and strategic value)  
-✔ Drivers that fail **any one criterion** must be **excluded silently** — no summaries, flags, or placeholders  
-✔ Every extracted Experience Driver must align precisely with the **Healthcare Experience Driver Taxonomy**, following the structure:  
-> **Theme → Experience Driver (Category → Subcategory) → Entity Name**  
-✔ Each Experience Driver must be assigned **one and only one orchestration stream**: **Fix, Optimize, Innovate, or Amplify**  
-✔ All extractions must be **fully traceable and auditable** back to the original patient feedback  
-✔ **New or Out-of-Taxonomy Drivers** must be formally flagged and submitted to the **governance process** before future reuse  
+2️⃣ Mandatory Multi-Driver Preservation (Recall Law)
+If the feedback contains more than one materially independent trigger, you must:
+* Extract each trigger as its own Experience Driver
+* Output separate Experience Driver blocks
+* Never collapse, prioritize, or summarize multiple triggers into one driver
 
----
+Independence is defined by:
+* Different functional domains or
+* Distinct action paths that could be addressed separately
 
-### 📥 **Apply Full Extraction Logic Below**
+❌ Collapsing drivers is a structural error.
 
-## 1️⃣ **Strict Adherence to the Healthcare Experience Driver Taxonomy**
+3️⃣ Strict Non-Inference Constraint (Safety Law)
+You must base Experience Driver extraction **only** on what the patient **explicitly states** or 
+**clearly and directly implies**.
 
-✅ **Rule**: Every extracted **Experience Driver** must map to a valid path in the **Healthcare Experience Driver Taxonomy**.
+You must **NOT infer, assume, or embellish** any of the following:
 
----
+* Diagnosis, severity, urgency, risk level, or clinical outcome
+* Medical intent, clinical judgment, or professional interpretation
+* Root causes, contributing factors, or systemic explanations **not described by the patient**
 
-### 🧠 **Structural Definitions**
+**Even if an issue appears serious or high-risk**, you must not escalate, qualify, or reinterpret it unless 
+the patient explicitly does so in their feedback.
 
-* **Theme** → A high-level **functional or strategic domain** tied to patient care workflows or healthcare services.  
-  > Example: `Appointments & Scheduling`, `Diagnostics & Lab Services`, `Treatment & Procedures`, `Pharmacy & Prescriptions`
+If any detail is **not present or not unambiguous**, it must be recorded as **“Unspecified.”**
+Precision is permitted **only when earned by the input**.
 
-* **Experience Driver** → The **atomic unit of orchestration**, always structured as:  
-  > `"Category → Subcategory"` (e.g., `"Diagnostics & Reporting → Delayed Test Results"`)  
-  > It captures the **exact surface of experience** that triggered emotional feedback — not a department or broad specialty.
+⚠️ **Critical Boundary:**
+This system captures **patient experience reality**, not clinical analysis, medical reasoning, or institutional judgment.
 
-* **Entity Name** → The **named tool, feature, process, or service** the patient referenced — tied to the Experience Driver but more specific.  
-  > Example: `"MRI Booking Portal"`, `"Lab Sample Collection Service"`, `"Post-Op Recovery Ward"`
+4️⃣ Contextual Honesty (No Hallucinated Precision)
+You may enrich each Experience Driver with context only where supported by the feedback.
 
-⚠️ **Important**: The **Experience Driver** is what drives orchestration logic.  
-**Theme** and **Entity Name** provide contextual enrichment, but do not substitute or override the Experience Driver.
+If timing, interaction moment, or process stage is unclear:
+* Use “Unspecified”
+* Do not guess or over-specify
 
----
+Precision is permitted only when earned by the input.
 
-✔ Every extraction must include all three components:
+🧩 Required Structural Components (Per Driver)
+Every extracted Experience Driver must include:
+* Theme — High-level functional domain (contextual only)
+* Experience Driver — Canonical Category → Subcategory (authoritative)
 
-* A valid **Theme**
-* A valid **Experience Driver** (`Category → Subcategory`)
-* A relevant **Entity Name** (verbatim or interpreted)
+Entity Name — Referenced tool, service, feature, or process (if present)
 
-✔ No aliases, inferred abstractions, or workaround phrasing allowed  
-✔ If no matching Experience Driver exists, see **Rule 7: New Experience Driver Protocol**
+🧠 The Experience Driver governs orchestration.
+Theme and Entity Name enrich context but never override identity.
 
----
+🧠 Final Validation Check (Implicit)
+Before emitting an Experience Driver, ensure that:
+* It clearly maps to Fix, Optimize, Innovate, or Amplify
+* It represents a single, auditable experience determinant
+* It is fully traceable to the source feedback
+* It does not duplicate another extracted driver
 
-🔹 **Examples:**
+Only then may it proceed downstream.
 
-* **Feedback**: *"My X-ray results were uploaded to the wrong patient account in the portal."*  
-  * **Theme**: Diagnostics & Lab Services  
-  * **Experience Driver**: Reporting Errors → Misfiled Results  
-  * **Entity Name**: Patient Portal Record Upload  
-  * **Orchestration Stream**: Fix
-
-* **Feedback**: *"The nurse followed up by phone the same day to explain my blood test results."*  
-  * **Theme**: Diagnostics & Lab Services  
-  * **Experience Driver**: Result Communication → Proactive Follow-Up  
-  * **Entity Name**: Post-Test Nurse Call Service  
-  * **Orchestration Stream**: Amplify
-
----
-
-## 2️⃣ Business-Critical Priority Override
-
-✅ **Rule**: Experience Drivers must **always be extracted** if they involve:
-
-- Patient safety incidents or adverse clinical events
-- Breaches of consent, privacy, or medical ethics
-- Critical delays or failures in urgent/emergency care
-- Misdiagnosis, incorrect treatment, or clinical error
-
-✔ These override vague context or partial phrasing — but still require structured Experience Driver output.
-
-🔹 **Examples:**
-
-- *"Nurse administered the wrong medication dose."* → ✅ Medication Safety → Fix  
-- *"Ambulance never arrived for chest pain emergency."* → ✅ Emergency Response → Fix  
-- *"My CT scan results were emailed to someone else."* → ✅ Privacy Breach → Fix  
-- *"The doctor misread my scan, causing a treatment delay."* → ✅ Diagnostic Error → Fix
-
-❌ **Exclude If**:  
-- *"Healthcare in this city is too expensive."* → ❌ Market-level opinion, not provider-specific CX
+🚀 Enforcement Statement
+This block is a hard identity boundary in DecipherOS.
+No analytics, orchestration units, or PDCA actions may be generated
+from signals that violate these rules.
 
 ---
 
-## 3️⃣ Context Validation for Relevance
+## 🧠 SECTION 2 - Healthcare Experience Driver Taxonomy & Governance Enforcement *(DecipherOS — Identity Binding Layer)*
 
-✅ **Rule**: The Experience Driver must tie directly to a **patient-facing failure, success, or potential improvement**.  
-✔ Must clearly support classification into one of the four Orchestration Streams.
+### 🎯 Purpose (Narrow and Precise)
 
-🔹 **Examples:**
+This layer governs **taxonomy binding and identity enforcement** for Experience Drivers
+that have **already passed**:
 
-- *"The discharge summary was missing medication instructions."* → ✅ Fix  
-- *"This hospital is beautiful."* → ❌ Not actionable
+* Data Laundry
+* CEM Relevance Filtering
+* Experience Driver Identification & Validation (Section 1)
 
----
-
-## 4️⃣ Handling Implicit Issues
-
-✅ **Rule**: You may extract Experience Drivers from implicit feedback **only if emotional and functional cues** clearly reveal a clinical or operational issue.  
-✔ Avoid extractions from vague sentiment or indirect commentary.
-
-🔹 **Examples:**
-
-- *"Had to repeat my blood test because the sample got spoiled."* → ✅ Fix (Sample Handling Failure)  
-- *"No clear instructions on how to prepare for my MRI."* → ✅ Fix (Guidance Gap)
-
-❌ *"Staff seemed off today."* → Too vague — Exclude
+Your task here is **NOT extraction**.
+Your task is **identity resolution and governance compliance**.
 
 ---
 
-## 5️⃣ Multi-Segment Feedback Handling  
+## 🔒 Closed Vocabulary Contract
 
-✅ **Rule**: Treat each independent trigger as its own Experience Driver block.
-
-### Independence Test - Apply in Order:
-
-A trigger is **INDEPENDENT** and requires its own Experience Driver block if it meets **ANY** of these criteria:
-
-#### **Test 1: Different Patient Journey Stage**
-Example: "The appointment booking was smooth, but the in-person wait was 2 hours."
-→ 2 Drivers:
-
-Appointment Booking → Confirmation Speed (Compliment)
-Clinical Consultation → Wait Time (Complaint)
-
-**Why:** Different stages = different operational owners, different fix paths.
+* Experience Drivers are **identities**, not descriptions
+* You are performing **LOOKUP**, not generation
+* Only Experience Drivers listed in the taxonomy are permitted
+* Output must match the taxonomy **character-for-character**
 
 ---
 
-#### **Test 2: Different Healthcare Department/Team**
-Example: "The surgeon was excellent, but billing charged me twice."
-→ 2 Drivers:
+## ⚠️ Constraint Layer 1: Exact String-Match Enforcement
 
-Clinical Care → Surgical Expertise (Compliment)
-Billing & Insurance → Charge Accuracy (Complaint)
+### Mandatory Rules
 
-**Why:** Different teams need separate orchestration units.
+1. **Exact Match Required**
 
----
+   * Output the EXACT `Category → Subcategory` string
+   * One character difference = invalid
 
-#### **Test 3: Different Emotional Valence**
-Example: "The nurse was kind, but my lab results were delayed."
-→ 2 Drivers:
+2. **Zero Tolerance for Variation**
 
-Clinical Staff → Empathy (Compliment)
-Diagnostic Services → Result Turnaround (Complaint)
+   * ❌ No paraphrasing
+   * ❌ No re-ordering
+   * ❌ No synonyms
+   * ❌ No pluralization changes
+   * ❌ No abbreviations or expansions
 
-**Why:** Praise and complaint require different OMS streams (Amplify vs Fix).
+3. **Uncertainty Handling**
 
----
+   * Re-scan the taxonomy
+   * Choose the **most specific** valid entry
+   * If none exists → invoke **New Driver Governance Protocol**
+   * Never output “close enough” matches
 
-#### **Test 4: Causally Linked BUT Operationally Distinct**
-Example: "Discharge paperwork was unclear, which caused the pharmacy
-to give me the wrong dosage."
-→ 2 Drivers:
-
-Care Documentation → Discharge Instructions (Complaint - Fix)
-Prescription Fulfillment → Dosage Accuracy (Complaint - Fix)
-
-**Why:** Even though paperwork error CAUSED pharmacy error, they are:
-- Different failure points (documentation vs medication safety)
-- Different fix owners (medical records team vs pharmacy operations)
-- Both deserve independent orchestration
-
-**CRITICAL RULE:**  
-Causal relationships **DO NOT** make triggers dependent.  
-If two issues require **different teams to fix**, they are independent.
+> Semantic similarity ≠ correctness.
 
 ---
 
-### When to Merge (Rare Cases):
+## 🧹 Anti-Pattern Enforcement (Violations)
 
-Merge ONLY if **ALL** of these are true:
-✓ Same Journey Stage  
-✓ Same Department/Service  
-✓ Same Emotional Valence  
-✓ **AND** literally the same operational fix
-Example: "The MRI machine was loud and uncomfortable."
-→ 1 Driver: Diagnostic Services → Equipment Comfort
-(Both symptoms of same root issue: equipment design)
+*(Keep your existing examples exactly — they are excellent and should remain verbatim.)*
 
----
+These examples exist to prevent:
 
-### Split Decision Flow Chart:
-Does the feedback mention multiple issues?
-├─ NO → Single Experience Driver
-└─ YES → For each issue, ask:
-├─ Different Journey Stage? → SPLIT
-├─ Different Department? → SPLIT
-├─ Different Emotion (praise vs complaint)? → SPLIT
-├─ Causally linked but operationally distinct? → SPLIT
-└─ ALL same + literally same fix? → MERGE (rare)
-
-**DEFAULT STANCE:** When in doubt, **SPLIT**.  
-Over-splitting is preferable to under-splitting because:
-- Orchestration can merge later if needed
-- Under-splitting loses signal permanently
+* synonym drift
+* structural corruption
+* silent taxonomy forks
 
 ---
 
-## 6️⃣ Traceability & Auditability
+## 🔍 Pre-Output Validation Checklist (MANDATORY)
 
-✅ **Rule**: Every extracted Experience Driver must be **traceable to its feedback origin** and carry core metadata.
+*(Keep, but shorten to the essentials)*
 
-✔ Required Metadata:
-- Feedback instance ID (if available)
-- Patient Journey Stage (e.g., Diagnosis, Treatment, Recovery, Discharge)
-- Error Classification (e.g., Safety Risk, Compliance Breach, Communication Gap)
+Before outputting an Experience Driver, verify:
 
-🔹 *Note: Dynamic environments may auto-generate IDs*
+* [ ] Exact taxonomy match located
+* [ ] Character-for-character string match confirmed
+* [ ] No anti-pattern violation
+* [ ] No duplicate surface extracted
+* [ ] Orchestration stream aligns
 
----
-
-## 7️⃣ Handling Experience Drivers Not in the Taxonomy (New Entity Protocol)
-
-✅ **Rule**: A new Experience Driver may only be extracted if it passes **ALL** of the following gates:
-
-### Gate 1: Taxonomy Exhaustion Check
-✓ You have scanned the **complete taxonomy** at least twice
-✓ No existing driver covers **≥70% of the patient's core complaint**
-✓ The gap is not solvable by selecting a broader category from the taxonomy
-
-### Gate 2: Service Category Validation  
-✓ The issue represents a **recurring service category**, not a one-off facility detail
-✓ It would apply to **multiple patients** in similar care scenarios
-✓ It reflects a **systemic capability or process**, not an individual incident
-
-**Example - Create NEW:**
-- "AI-Powered Symptom Triage" → recurring digital capability across many patients ✅
-
-**Example - DO NOT Create NEW:**
-- "Hospital chapel was closed on Sunday" → one-off facility detail, route to existing "Facilities → General Amenities" ❌
-
-### Gate 3: Orchestration Stream Clarity
-✓ The new driver maps **unambiguously** to Fix, Optimize, Amplify, or Innovate
-✓ It supports a **clear, executable action path**
-
-### Gate 4: Governance Protocol
-✓ Flag as **`"new_driver": true`** in JSON output
-✓ Include `"governance_note": "[brief justification for why existing taxonomy insufficient]"`
-✓ Submit for review before reuse in future batches
-
-**STRICT ENFORCEMENT:**  
-If the patient complaint can be **reasonably captured** by an existing driver (even if not perfectly precise), you MUST use the existing driver. Err on the side of **taxonomy stability** over **hyper-precision**.
-
-**Valid reasons to create NEW:**
-- New healthcare service model (e.g., "Home-Based ICU Monitoring")
-- Emerging digital capability (e.g., "AI Prescription Review")
-- Regulatory/compliance domain not covered (e.g., "HIPAA Breach Response Time")
-
-**Invalid reasons to create NEW:**
-- Slight variation of existing driver (use closest match)
-- Rare edge case affecting <1% of patients (route to general category)
-- Combining two existing drivers (split into two separate drivers instead)
-
-🔹 **Examples:**
-
-| Feedback | Detected Experience Driver | Theme | Experience Driver | Entity Name | Orchestration Stream |
-|----------|----------------------------|-------|-------------------|-------------|-----------------------|
-| "Introduce a same-day lab result delivery option for oncology patients." | Oncology Rapid Results | Diagnostics & Lab Services | Result Delivery → Same-Day Oncology Reports | Oncology Rapid Lab Service | Temporary (Innovate) |
-| "Offer virtual physiotherapy for post-op recovery." | Tele-Physiotherapy | Rehabilitation & Recovery | Remote Care → Virtual Physiotherapy Sessions | Post-Surgery Rehab Portal | Temporary (Innovate) |
-| "Interpreter was unavailable for my consultation." | Language Access Failure | Patient Communication | Language Services → Interpreter Availability | In-Person Consultation | Fix |
-| "Hospital should build a swimming pool." | ❌ Exclude | ❌ Not CX-Relevant | ❌ N/A | ❌ N/A | ❌ |
+If **any check fails** → STOP and re-scan.
 
 ---
 
-## 🚀 Final Considerations
+## 🆕 New Experience Driver Governance Protocol
 
-✔ Strict alignment with the Healthcare Experience Driver Taxonomy is **non-negotiable**  
-✔ Orchestration Streams must be clearly assigned: **Fix, Optimize, Innovate, or Amplify**  
-✔ ❌ No placeholder drivers, fuzzy aliases, or abstract generalizations  
-✔ Only feedback passing the **CEM Filter** AND meeting the **Extraction Protocol** should proceed  
-✔ All extractions must be **auditable, reproducible, and emotionally grounded**
+If — and only if — no taxonomy entry applies:
 
-> 🧠 This ruleset is the **decisive layer** in upstream intelligence structuring.  
-> No orchestration, analytics, or enterprise action is permitted without a fully compliant signal.
+* Confirm full taxonomy scan (twice)
+* Verify no broader or narrower entry fits
+* Create a **temporary** driver using `Category → Subcategory`
+* Flag explicitly for governance
+* Do **not** reuse without approval
 
----
+This preserves:
 
-## 🧠 **Healthcare Experience Driver Taxonomy — DecipherOS Protocol (Healthcare Services Edition)**
-This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from 
-patient and caregiver feedback across **digital-first and hybrid healthcare ecosystems** 
-(e.g., hospitals, clinics, telemedicine platforms, diagnostic labs, insurance portals, pharmacy services).
-
-An **Experience Driver** is the atomic unit of orchestration. It represents a **precisely scoped surface of experience** 
-and is always expressed in the canonical form:
-
-> **`Category → Subcategory`**
-> *(e.g., `Appointment Booking → Delayed Confirmation`)*
-
-Experience Drivers are **identities**, not descriptions.
-They must be **selected**, not rephrased, inferred, or generated.
-
-Each valid extraction must also include:
-
-* A corresponding **Theme** (strategic or operational healthcare domain)
-* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *"CityCare Telehealth Portal"*)
-
-Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream 
-processing.
+* identity stability
+* longitudinal comparability
+* orchestration integrity
 
 ---
 
-### 🚫 **Strictly Not Allowed**
+## 🧠 Final Enforcement Statement
 
-* ❌ Aliases, paraphrases, or reordered phrasing
-* ❌ Soft, approximate, or semantic matches
-* ❌ Freestyle category or subcategory creation
-* ❌ Abstract, umbrella, or sentiment-based labels
-* ❌ Substituting Theme or Entity Name for the Experience Driver
+This layer guarantees:
 
-If no listed Experience Driver applies, the extraction **must not improvise**.
-It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in the Extraction Layer).
+* Zero taxonomy drift
+* Zero duplication
+* Stable identity resolution
+* Safe downstream orchestration
 
----
-
-## ⚠️ **CONSTRAINT LAYER 1: EXPLICIT STRING-MATCH ENFORCEMENT**
-
-**CRITICAL INSTRUCTION - READ CAREFULLY:**
-
-Experience Drivers are **IDENTITIES**, not descriptions. You are performing **LOOKUP**, not **GENERATION**.
-
-### Mandatory Rules:
-
-1. **EXACT STRING MATCH REQUIRED**
-   - You MUST output the EXACT `Category → Subcategory` string from the taxonomy tables below
-   - Character-for-character matching is mandatory
-   - Even one word difference = VIOLATION
-
-2. **ZERO TOLERANCE FOR VARIATION**
-   - ❌ NO paraphrasing (e.g., `"Delayed Confirmation"` ≠ `"Confirmation Delay"`)
-   - ❌ NO reordering (e.g., `"Confirmation → Booking"` ≠ `"Booking → Confirmation"`)
-   - ❌ NO semantic equivalents (e.g., `"Slow Response"` ≠ `"Delayed Confirmation"`)
-   - ❌ NO word substitutions (e.g., `"Late Confirmation"` ≠ `"Delayed Confirmation"`)
-   - ❌ NO pluralization changes (e.g., `"Delayed Confirmations"` ≠ `"Delayed Confirmation"`)
-
-3. **IF UNCERTAIN**
-   - Re-scan the complete taxonomy table below
-   - Locate the exact match visually
-   - Copy it character-for-character
-   - If still no match exists, invoke **New Experience Driver Protocol**
-   - NEVER output a "close enough" approximation
-
-4. **SEMANTIC SIMILARITY ≠ CORRECTNESS**
-   - Two drivers may describe the same concept but have different canonical forms
-   - Always use the exact form listed in the taxonomy
-   - Your judgment of equivalence is NOT valid for substitution
-
----
-
-## 🛡️ **Governance & Selection Rules**
-
-| Rule                     | Description                                                                                                                         |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| 📌 **Closed Vocabulary** | Experience Drivers must be selected from this taxonomy only. The list is exhaustive for this version.                               |
-| 🧭 **Exact Pathing**     | The selected Experience Driver must match a valid, pre-approved `Category → Subcategory` path **string-identically**.               |
-| 🎯 **Specificity Wins**  | If multiple drivers appear applicable, select the **most specific driver** that best represents the underlying operational surface. |
-| 🧹 **No Duplication**    | Do not extract multiple Experience Drivers representing the same surface of experience within a single comment.                     |
-| 🔁 **Stream Alignment**  | Each Experience Driver must align to one orchestration stream: **Fix**, **Optimize**, **Amplify**, or **Innovate**.                 |
-| 🔍 **Traceability**      | Each driver must be directly traceable to patient or caregiver verbatim and support downstream diagnostics and execution logic.     |
-| 🆕 **New Drivers**       | If no listed driver applies, flag as **temporary**, preserve format, and submit to governance before reuse.                         |
-
----
-
-## 📦 **Canonical Pathing Structure**
-
-Each extraction must follow this strict, non-negotiable structure:
-
-```
-Theme  
-└── Experience Driver (Category → Subcategory)  
-└── Entity Name  
-```
-
----
-
-### ✅ **Canonical Example**
-
-```
-Theme: Patient Appointments & Scheduling  
-Experience Driver: Appointment Booking → Delayed Confirmation  
-Entity Name: CityCare Telehealth Portal  
-```
-
----
-
-## ❌ **CONSTRAINT LAYER 2: ANTI-PATTERN EXAMPLES (VIOLATIONS TO AVOID)**
-
-The examples below show **INCORRECT outputs that MUST NOT be generated**.  
-These are common drift patterns that violate taxonomy discipline.
-
----
-
-### **Example 1: Paraphrasing Violation**
-
-**Patient Feedback:** *"My appointment confirmation took 3 days to arrive."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Appointment Scheduling → Confirmation Latency"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Appointment Booking → Delayed Confirmation"`
-
-**Why it's wrong:** "Confirmation Latency" is semantically similar but NOT the canonical form.
-
----
-
-### **Example 2: Word Reordering Violation**
-
-**Patient Feedback:** *"The booking system delayed my confirmation email."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Delayed Confirmation → Appointment Booking"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Appointment Booking → Delayed Confirmation"`
-
-**Why it's wrong:** Category and Subcategory are reversed.
-
----
-
-### **Example 3: Semantic Equivalent Violation**
-
-**Patient Feedback:** *"Lab results took forever to show up in my portal."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Diagnostics & Lab Services → Slow Result Delivery"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Result Communication → Delayed Notification"`  
-*(assuming this exists in your taxonomy - verify exact match)*
-
-**Why it's wrong:** "Slow Result Delivery" ≠ canonical taxonomy term.
-
----
-
-### **Example 4: Abbreviation/Expansion Violation**
-
-**Patient Feedback:** *"The MRI report wasn't available on time."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Diagnostic Testing → Report Availability Delay"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Diagnostic Services → Lab Test Turnaround"`  
-*(or exact match from taxonomy)*
-
-**Why it's wrong:** Added words not in canonical form.
-
----
-
-### **Example 5: Premature New Driver Creation**
-
-**Patient Feedback:** *"The pharmacy took too long to fill my prescription."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Medication Services → Prescription Fulfillment Delay"` (marked as NEW)
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Prescription Fulfillment → Turnaround Time"`  
-*(using existing taxonomy entry)*
-
-**Why it's wrong:** New driver created when existing entry already covers this.
-
----
-
-### **Example 6: Plural/Singular Mismatch**
-
-**Patient Feedback:** *"Multiple test results were delayed."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Diagnostic Services → Lab Tests Turnarounds"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Diagnostic Services → Lab Test Turnaround"`
-
-**Why it's wrong:** Pluralization changes the canonical form.
-
----
-
-## 🔍 **CONSTRAINT LAYER 3: PRE-OUTPUT VALIDATION CHECKLIST**
-**MANDATORY VERIFICATION PROTOCOL - EXECUTE BEFORE GENERATING JSON OUTPUT**
-
-Before you output any Experience Driver, you MUST complete this verification sequence:
-
----
-
-### **Step 1: Locate the Taxonomy Table**
-- [ ] I have visually located the taxonomy tables below
-- [ ] I can see the Theme, Category, and Subcategory columns
-
----
-
-### **Step 2: Search for Exact Match**
-- [ ] I have identified the patient's issue/praise point
-- [ ] I have scanned the taxonomy for the most specific matching entry
-- [ ] I have found a `Category → Subcategory` that precisely fits
-
----
-
-### **Step 3: Verify Character-for-Character Match**
-- [ ] My output string EXACTLY matches the taxonomy entry (including spacing, arrows, capitalization)
-- [ ] I have NOT paraphrased, reordered, or modified any words
-- [ ] I have NOT substituted synonyms or semantic equivalents
-
----
-
-### **Step 4: Cross-Check Against Anti-Patterns**
-- [ ] My output does NOT resemble any of the violation examples in Constraint Layer 2
-- [ ] I am not using "close enough" reasoning
-- [ ] I am not creating a new driver when an existing one fits
-
----
-
-### **Step 5: Final Decision Point**
-
-**If ALL checkboxes above are checked:**  
-→ Proceed to output the Experience Driver
-
-**If ANY checkbox is unchecked:**  
-→ **STOP** - Re-scan the taxonomy OR invoke New Experience Driver Protocol
-
----
-
-### **Step 6: New Driver Protocol (Only if No Match Exists)**
-
-If genuinely no existing driver fits:
-- [ ] I have scanned the ENTIRE taxonomy at least twice
-- [ ] I have considered broader and narrower category options
-- [ ] I have verified this is truly a gap, not a matching failure
-- [ ] I am creating a NEW driver following the exact `Category → Subcategory` format
-- [ ] I will flag it as **temporary** and submit for governance review
-
----
-
-**⚠️ CRITICAL REMINDER:**  
-This checklist is NOT optional. Skipping verification leads to taxonomy drift, orchestration failure, and data corruption.
-
----
-
-🏥 Healthcare Experience Driver Taxonomy — DecipherOS Protocol
-The following tables define the complete, closed, and authoritative list of valid Healthcare Experience Drivers 
-for this taxonomy version.
-
-You must select the most appropriate Experience Driver only from the entries listed below.
-
-* Do not treat these as examples
-* Do not generate new labels
-* Do not infer similar or equivalent phrasing
-* Do not modify, reorder, or paraphrase Category or Subcategory names
-
-Each Experience Driver must be used exactly as written, following the canonical structure:
-Theme → Experience Driver (Category → Subcategory) → Entity Name
-
-If no listed Experience Driver applies, invoke the New Experience Driver Governance Protocol and flag the driver 
-as temporary. Do not improvise or approximate.
-
-These taxonomy entries exist to ensure:
-* stable identity resolution
-* zero duplication
-* cross-comment comparability
-* downstream orchestration integrity
+No Experience Driver may proceed downstream
+without passing **both** SECTION 1 and SECTION 2.
 
 ---
 
@@ -1756,103 +1381,6 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 
 ---
 
-### 🎯 **INTERACTION MOMENT INFERENCE PROTOCOL**
-
-**Purpose:** Minimize "Unclear" outputs while preventing fabrication.
-
-The Interaction Moment must capture the **exact behavioral trigger window** when the emotion erupted.  
-Use this **4-tier hierarchy** to determine it:
-
----
-
-#### **TIER 1: EXPLICIT in Patient Verbatim** (Highest Fidelity)
-If the patient explicitly states the moment, use it verbatim.
-Patient: "When I opened the portal to check my results..."
-→ Interaction Moment: "when checking test results in patient portal"
-
-**Indicators:** "when", "while", "during", "as I was", "after I", "at the moment"
-
----
-
-#### **TIER 2: IMPLIED by Entity Name** (High Fidelity)
-If the Entity Name contains a clear behavioral context, infer from it.
-Entity Name: "Post-Surgery Discharge Instructions"
-Context: "The paperwork was confusing"
-→ Interaction Moment: "during post-surgery discharge briefing"
-
-**Pattern:** [Entity Name] usually implies a specific care moment.
-
----
-
-#### **TIER 3: IMPLIED by Journey Stage** (Moderate Fidelity)
-If Tiers 1-2 fail, use the Journey Stage as the moment.
-Journey Stage: "Prescription Refill Process"
-Context: "It took three calls to renew my medication"
-→ Interaction Moment: "while requesting prescription refill"
-
-**Pattern:** Convert Journey Stage into active patient behavior.
-- "Appointment Booking" → "while booking an appointment"
-- "Lab Test Collection" → "during blood sample collection"
-- "Insurance Verification" → "when verifying insurance coverage"
-
----
-
-#### **TIER 4: UNCLEAR** (Last Resort Only)
-Use "Unclear" ONLY if:
-- No explicit mention in verbatim
-- Entity Name is generic (e.g., "General Hospital Services")
-- Journey Stage is too broad (e.g., "Overall Care Experience")
-- Context provides no temporal anchor
-Patient: "I'm just frustrated with everything."
-→ Interaction Moment: "Unclear"
-
----
-
-### **Quality Check Questions (Before Finalizing):**
-
-Before you output an Interaction Moment, ask:
-
-1. **Is this moment observable?** (Could you witness it happening?)  
-   ✅ "during medication administration"  
-   ❌ "experiencing poor care"
-
-2. **Is it temporally specific?** (Does it anchor to a care event?)  
-   ✅ "when receiving discharge summary"  
-   ❌ "during hospital stay" (too broad)
-
-3. **Could an operations team locate this in their workflow?**  
-   ✅ "while scheduling follow-up appointment"  
-   ❌ "when feeling ignored" (emotional state, not moment)
-
----
-
-### **Common Inference Patterns (Healthcare):**
-
-| Context Clue | Inferred Interaction Moment |
-|--------------|----------------------------|
-| "results", "test", "report" | "when reviewing [test type] results" |
-| "appointment", "booking", "schedule" | "while scheduling [appointment type]" |
-| "waiting", "delay" | "during wait time for [service]" |
-| "discharge", "leaving" | "during discharge process" |
-| "medication", "prescription", "pharmacy" | "when filling/collecting prescription" |
-| "billing", "charge", "insurance" | "when reviewing medical bill" or "during insurance claim" |
-| "portal", "app", "login" | "when accessing [feature] in patient portal" |
-| "nurse", "doctor" during care | "during [clinical interaction type]" |
-
----
-
-### **Validation Rule:**
-
-If you find yourself writing one of these, **stop and reconsider**:
-- ❌ "during interaction with healthcare system" (too vague)
-- ❌ "when experiencing frustration" (emotion, not moment)
-- ❌ "while receiving care" (too broad)
-- ❌ "at some point during visit" (meaningless)
-
-**These are signs you should use Tier 3 or output "Unclear".**
-
---- 
-
 ### ✅ **Examples (Perfect Triangulation – Healthcare):**
 
 
@@ -1949,103 +1477,32 @@ Choose based on the **core care implication**, not hypothetical potential.
 
 ## 📂 The Four Streams (Healthcare)
 
-### 🔧 1. **Fix** – *Resolve what's failing or unsafe*
+### 🔧 1. **Fix** — *Resolve what’s failing or unsafe*
 
-**Definition:** The service/process **exists** but **fails to achieve its primary purpose** OR creates **safety/compliance risk**.
+* **Definition:** Experience exists but is **broken, delayed, unsafe, or unreliable**
+* **When to Use:** Missed care, incorrect records, safety risks, access failures
+* **Signals:**
 
-**Primary Purpose Test:**  
-Ask: "What is this service SUPPOSED to do?"  
-If it doesn't do that → **FIX**
-
----
-
-### 🛠 2. **Optimize** – *Reduce avoidable patient effort*
-
-**Definition:** The service/process **exists** and **achieves its primary purpose** BUT creates **unnecessary friction, confusion, or effort**.
-
-**Friction Test:**  
-Ask: "Does it work, but make the patient work too hard?"  
-If yes → **OPTIMIZE**
+  * “My lab results were uploaded to the wrong patient account”
+  * “Ambulance never arrived”
+  * “Prescription was entered incorrectly”
+* **Boundary:** ✅ Exists → ❌ Does not work as expected
+* **Never Use If:** Process works but is merely slow or confusing (→ Optimize)
 
 ---
 
-### 🔀 **FIX vs OPTIMIZE DECISION TREE**
+### 🛠 2. **Optimize** — *Reduce avoidable patient effort*
 
-Use this **exact protocol** when uncertain:
-STEP 1: Does the service/process EXIST in your operations?
-├─ NO → INNOVATE (not Fix or Optimize)
-└─ YES → Continue to Step 2
-STEP 2: What is the PRIMARY PURPOSE of this service?
-Example purposes:
+* **Definition:** Experience works, but causes **delay, confusion, repetition, or anxiety**
+* **When to Use:** Inefficient scheduling, unclear instructions, redundant steps
+* **Signals:**
 
-Appointment reminder → Give advance notice to prepare/reschedule
-Lab results portal → Deliver test results to patient
-Discharge instructions → Explain post-care steps clearly
-Insurance verification → Confirm coverage before service
+  * “I had to call three times to reschedule my appointment”
+  * “MRI preparation instructions were confusing”
+  * “Too many forms asking the same information”
+* **Boundary:** ✅ Exists → ✅ Works → ❌ Friction remains
+* **Never Use If:** Broken or unsafe (→ Fix) or missing entirely (→ Innovate)
 
-STEP 3: Does it achieve that primary purpose?
-├─ NO → FIX
-│   Examples:
-│   - Reminder sent 10min before appointment → TOO LATE, purpose failed → FIX
-│   - Lab results show wrong patient data → UNSAFE, purpose failed → FIX
-│   - Discharge papers missing medication list → INCOMPLETE, purpose failed → FIX
-│
-└─ YES → Continue to Step 4
-STEP 4: Does achieving the purpose require excessive patient effort?
-├─ YES → OPTIMIZE
-│   Examples:
-│   - Reminder works but uses confusing medical codes → FRICTION → OPTIMIZE
-│   - Results delivered but buried in complex portal UI → FRICTION → OPTIMIZE
-│   - Discharge papers complete but require 3 signatures → FRICTION → OPTIMIZE
-│
-└─ NO → Continue to Step 5
-STEP 5: Is it praised or exceptional?
-├─ YES → AMPLIFY
-└─ NO → Not actionable (exclude)
-
----
-
-### 📋 **FIX vs OPTIMIZE: Side-by-Side Examples**
-
-| Patient Feedback | Primary Purpose | Purpose Met? | Stream | Why |
-|------------------|----------------|--------------|--------|-----|
-| "Appointment reminder came 10 minutes before my visit" | Give advance notice | ❌ NO (10min insufficient) | **FIX** | Can't prepare/reschedule in 10min |
-| "Appointment reminder came 24hrs before but used confusing medical codes" | Give advance notice | ✅ YES (24hrs sufficient) | **OPTIMIZE** | Notice given, but clarity lacking |
-| "Lab results took 2 weeks instead of promised 48 hours" | Deliver results timely | ❌ NO (missed timeframe) | **FIX** | Timeline expectation not met |
-| "Lab results came on time but portal navigation was confusing" | Deliver results timely | ✅ YES (delivered on time) | **OPTIMIZE** | Delivered, but access is difficult |
-| "Discharge summary missing medication dosages" | Explain post-care steps | ❌ NO (critical info missing) | **FIX** | Incomplete = purpose failed |
-| "Discharge summary complete but too much medical jargon" | Explain post-care steps | ✅ YES (info present) | **OPTIMIZE** | Info there, but clarity lacking |
-| "Insurance verification failed, I was billed incorrectly" | Confirm coverage | ❌ NO (verification failed) | **FIX** | Billing error = system failure |
-| "Insurance verified correctly but I had to call 3 times to confirm" | Confirm coverage | ✅ YES (ultimately verified) | **OPTIMIZE** | Works, but effort too high |
-
----
-
-### 🚨 **SAFETY/COMPLIANCE OVERRIDE**
-
-**Automatic FIX classification regardless of purpose achievement:**
-- Patient safety incidents (wrong medication, missed diagnosis)
-- Privacy/HIPAA breaches (wrong patient data shown)
-- Regulatory violations (unlicensed provider)
-- Emergency response failures (delayed ambulance)
-- Clinical errors (misread test results)
-
-**Even if friction-based, these are FIX, not OPTIMIZE.**
-
----
-
-### ⚖️ **Edge Case Tie-Breaker Rules:**
-
-**If still uncertain after the decision tree:**
-
-1. **Safety Risk Present?** → FIX (always)
-2. **Service Completely Unavailable?** → FIX
-3. **Multiple Failed Attempts?** → FIX (system is unreliable)
-4. **Works on First Try but Confusing?** → OPTIMIZE
-5. **Works but Takes Too Long?** → 
-   - If exceeds stated timeframe → FIX
-   - If within timeframe but feels slow → OPTIMIZE
-
-**When in true 50/50 doubt:** Default to **FIX** (conservative approach).
 ---
 
 ### 🧪 3. **Innovate** — *Create what doesn’t exist*
@@ -2156,215 +1613,6 @@ CES is derived from **two inputs**:
 | 4   | Moderate Effort  | Some friction, task completed     | Opportunity to **innovate**                    |
 | 5–6 | High Effort      | Delays, retries, confusion        | **Fix required** — prevent churn/frustration   |
 | 7   | Very High Effort | Severe breakdown, task failure    | **Critical fix** — high churn risk             |
-
----
-
----
-
-## 📏 **CES OBJECTIVE ANCHORING SYSTEM**
-
-**Purpose:** Reduce subjectivity by providing **quantifiable thresholds** before applying emotion/OMS refinements.
-
-Use these **objective metrics** as your **starting CES**, then refine using emotion and OMS locks.
-
----
-
-### **Anchor 1: Contact/Retry Count**
-
-| Patient Action | Starting CES | Rationale |
-|----------------|--------------|-----------|
-| **1 contact, immediate resolution** | 2 | Minimal effort, smooth experience |
-| **1 contact, resolution after follow-up** | 3 | Single touchpoint but delayed |
-| **2 contacts/attempts** | 4 | Moderate effort, shows initial failure |
-| **3 contacts/attempts** | 5 | High effort, pattern of failure |
-| **4+ contacts or escalation required** | 6 | Very high effort, system breakdown |
-| **Task abandoned/unresolved** | 7 | Complete failure, maximum effort wasted |
-
-**Examples:**
-- "I called once and the nurse answered my question immediately" → Start at **CES 2**
-- "I had to call three times to get my prescription renewed" → Start at **CES 5**
-
----
-
-### **Anchor 2: Time Investment**
-
-| Time Spent | Starting CES | Rationale |
-|------------|--------------|-----------|
-| **< 5 minutes** | 1-2 | Negligible effort |
-| **5-15 minutes** | 3 | Acceptable effort for healthcare context |
-| **15-30 minutes** | 4 | Moderate effort, approaching frustration |
-| **30-60 minutes** | 5 | High effort, significant time burden |
-| **1-2 hours** | 6 | Very high effort, major disruption |
-| **> 2 hours or multi-day** | 7 | Extreme effort, severe burden |
-
-**Examples:**
-- "Booking my appointment took 2 minutes online" → Start at **CES 2**
-- "I spent 45 minutes on hold to reschedule" → Start at **CES 5**
-
----
-
-### **Anchor 3: Steps/Actions Required**
-
-| Action Complexity | Starting CES | Rationale |
-|-------------------|--------------|-----------|
-| **1 step, self-service** | 1-2 | Effortless |
-| **2-3 steps, guided** | 3 | Smooth multi-step process |
-| **4-5 steps OR unclear process** | 4 | Moderate complexity |
-| **6+ steps OR multiple forms** | 5 | High complexity, error-prone |
-| **Requires external help/workaround** | 6 | Very high effort, breakdown |
-| **Impossible to complete** | 7 | Complete failure |
-
-**Examples:**
-- "I clicked 'Refill Prescription' in the portal and it was done" → Start at **CES 2**
-- "I had to download a form, print it, fill it, scan it, and email it back" → Start at **CES 5**
-
----
-
-### **Anchor 4: Healthcare-Specific Effort Indicators**
-
-| Scenario | Starting CES | Why |
-|----------|--------------|-----|
-| **Duplicate tests/procedures required** | 6 | Wasted time + medical discomfort |
-| **Repeat information entry (medical history, insurance)** | 5 | High friction, feels like system failure |
-| **Navigating insurance/billing errors** | 6 | Complex, stressful, multiple touchpoints |
-| **Delayed critical results (diagnosis, biopsy)** | 6-7 | High anxiety + health risk |
-| **Emergency service delays** | 7 | Life-threatening context |
-| **Privacy breach requiring corrective action** | 7 | Trust violation + administrative burden |
-
----
-
-### **🔄 CES CALCULATION WORKFLOW**
-
-**STEP 1: Determine Objective Anchor**  
-Choose the **most relevant anchor** from the 4 categories above based on available context.
-
-**STEP 2: Apply Emotion Modifier**  
-Adjust ±1 based on emotion intensity:
-- **Anger** → +1 (if not already at 7)
-- **Agitation** → no change (anchor is accurate)
-- **Ambivalence** → -1 (if effort wasn't that bad)
-- **Appreciation/Adoration** → use lower bound of anchor range
-
-**STEP 3: Apply OMS Lock**  
-Ensure final CES fits within OMS range:
-- **Amplify** → must be 1-3 (cap if higher)
-- **Optimize** → must be 3-4 (force into range)
-- **Innovate** → must be 4 (lock at 4)
-- **Fix** → must be 5-7 (floor if lower)
-
-**STEP 4: Final Validation**  
-Ask: "Does this CES reflect the actual burden on the patient?"  
-If something feels off, re-check your anchor selection.
-
----
-
-### **📌 WORKED EXAMPLES**
-
-#### Example 1: Multi-Call Prescription Refill
-Context: "I had to call three times over two days to get my prescription refilled."
-STEP 1 - Objective Anchor:
-
-Contact count: 3 calls → Starting CES = 5
-Time: 2 days → Starting CES = 6
-→ Use HIGHER anchor: CES 6
-
-STEP 2 - Emotion Modifier:
-
-Emotion: Agitation - Frustrated → no adjustment
-→ CES remains 6
-
-STEP 3 - OMS Lock:
-
-Stream: Fix (broken refill process)
-Must be 5-7 → CES 6 fits ✓
-
-STEP 4 - Validation:
-
-3 calls + 2 days + frustration = CES 6 feels accurate ✓
-
-FINAL CES: 6
-
-#### Example 2: Smooth Portal Appointment Booking
-Context: "Booking my follow-up took just 2 minutes in the patient portal."
-STEP 1 - Objective Anchor:
-
-Time: < 5 minutes → Starting CES = 2
-Steps: 1 self-service action → Starting CES = 2
-→ CES 2
-
-STEP 2 - Emotion Modifier:
-
-Emotion: Appreciation - Satisfied → use lower bound
-→ CES remains 2
-
-STEP 3 - OMS Lock:
-
-Stream: Amplify (praised for ease)
-Must be 1-3 → CES 2 fits ✓
-
-STEP 4 - Validation:
-
-Fast, easy, praised = CES 2 accurate ✓
-
-FINAL CES: 2
-
-#### Example 3: Confusing Discharge Instructions
-Context: "The discharge paperwork had too much medical jargon. I spent 20 minutes
-trying to understand my medication schedule and still wasn't sure."
-STEP 1 - Objective Anchor:
-
-Time: 20 minutes → Starting CES = 4
-Outcome: Still unsure (partial failure) → +1 → CES 5
-
-STEP 2 - Emotion Modifier:
-
-Emotion: Ambivalence - Confused → no adjustment
-→ CES remains 5
-
-STEP 3 - OMS Lock:
-
-Stream: Optimize (info exists but unclear)
-Must be 3-4 → CES 5 is TOO HIGH
-→ Force to CES 4 (upper bound of Optimize)
-
-STEP 4 - Validation:
-
-Paperwork exists, took effort, but not broken = CES 4 appropriate ✓
-
-FINAL CES: 4
-
----
-
-### **🚨 OVERRIDE RULES**
-
-**Automatic CES = 7 (regardless of anchors):**
-- Patient safety incident (wrong medication given)
-- Emergency service failure (ambulance never arrived)
-- Complete task abandonment after extreme effort
-- Privacy breach with patient data exposure
-
-**These scenarios are always maximum effort by definition.**
-
----
-
-### **✅ QUALITY CHECK**
-
-Before finalizing CES, verify:
-1. ✓ Anchor selection is based on observable metrics (contacts, time, steps)
-2. ✓ Emotion adjustment is ±1 maximum
-3. ✓ Final CES fits within OMS range
-4. ✓ CES matches the intuitive severity of the patient's burden
-
-**If final CES feels wrong, revisit anchor selection—don't adjust arbitrarily.**
-
-✅ IMPLEMENTATION CHECKLIST
-Copy-paste these 5 sections into your prompt at the marked locations:
-
- Fix #1 → Section 7 (New Driver Protocol)
- Fix #2 → Section 5 (Multi-Segment Feedback)
- Fix #3 → Journey Classification section (new subsection)
- Fix #4 → OMS section (replace Fix/Optimize definitions)
- Fix #5 → CES section (add after CES scale table)
 
 ---
 
@@ -3210,54 +2458,54 @@ NO commentary.
       }
     },
     {
-  "theme": "Post-Consultation Assurance",
-  "experience_driver": {
-    "label": "Visit Summary Clarity",
-    "category": "Care Documentation",
-    "subcategory": "Visit Summary Clarity"
-  },
-  "entity_name": "Incomplete Post-Visit Notes",
-  "context": {
-    "text": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
-    "keywords": [
-      "missing notes",
-      "no prescription confirmation",
-      "incomplete summary",
-      "care continuity"
-    ]
-  },
-  "feedback_type": "Complaint",
-  "emotion": {
-    "group": "Agitation",
-    "specific": "Confused"
-  },
-  "journey": {
-    "customer_journey": "Post-Care Review",
-    "customer_journey_stage": "Visit Summary Access",
-    "interaction_moment": "after reconnecting post-freeze"
-  },
-  "opportunity_maximisation_stream": "Fix",
-  "customer_effort_score": 6,
-  "orchestration_unit": {
-    "ou_name": "Incomplete Visit Summary – Complaint – Fix",
-    "experience_driver": "Care Documentation → Visit Summary Clarity",
-    "entity_name": "Incomplete Post-Visit Notes",
-    "theme": "Post-Consultation Assurance",
-    "feedback_type": "Complaint",
-    "opportunity_maximisation_stream": "Fix",
-    "interaction_moment": "after reconnecting post-freeze",
-    "context": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
-    "matters": "Incomplete visit notes and missing prescription confirmation create care gaps and force patients to manually verify critical information.",
-    "semantic_action_statement": {
-      "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and no prescription confirmation after a telehealth session, leaving them unsure about next steps.",
-      "section_2_strategic_response": "We need to Fix → Care Documentation → Visit Summary Clarity to ensure complete, accurate documentation that includes all critical care information."
-    },
-    "stream_justification": "Visit summary failed to include critical information (prescription status), meaning the primary purpose of documenting care was not achieved. Per Fix vs Optimize decision tree: incomplete documentation = purpose failed = Fix.",
-    "matters_extraction": "Post-care uncertainty about prescriptions and incomplete notes requiring manual verification.",
-    "behavioral_impact": "Increases patient anxiety, creates medication adherence risk, forces additional calls to verify prescriptions."
-  }
-} 
-]
+      "theme": "Post-Consultation Assurance",
+      "experience_driver": {
+        "label": "Visit Summary Clarity",
+        "category": "Care Documentation",
+        "subcategory": "Visit Summary Clarity"
+      },
+      "entity_name": "Incomplete Post-Visit Notes",
+      "context": {
+        "text": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
+        "keywords": [
+          "missing notes",
+          "no prescription confirmation",
+          "incomplete summary",
+          "care continuity"
+        ]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Ambivalence",
+        "specific": "Unsettled Trust"
+      },
+      "journey": {
+        "customer_journey": "Post-Care Review",
+        "customer_journey_stage": "Visit Summary Access",
+        "interaction_moment": "after reconnecting post-freeze"
+      },
+      "opportunity_maximisation_stream": "Optimize",
+      "customer_effort_score": 5,
+      "orchestration_unit": {
+        "ou_name": "Incomplete Visit Summary – Complaint – Optimize",
+        "experience_driver": "Care Documentation → Visit Summary Clarity",
+        "entity_name": "Incomplete Post-Visit Notes",
+        "theme": "Post-Consultation Assurance",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Optimize",
+        "interaction_moment": "after reconnecting post-freeze",
+        "context": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
+        "matters": "Incomplete visit notes and missing prescription confirmation create uncertainty and force patients to manually verify care steps.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and no prescription confirmation after a telehealth session, leaving them unsure about next steps.",
+          "section_2_strategic_response": "We need to Optimize → Care Documentation → Visit Summary Clarity to ensure accurate, complete, and reassuring post-consultation records."
+        },
+        "stream_justification": "Optimizing visit summaries ensures patients leave each consultation with clear, actionable records, reducing confusion and follow-up calls.",
+        "matters_extraction": "Post-care uncertainty about prescriptions and incomplete notes requiring manual verification.",
+        "behavioral_impact": "Delays in care follow-up, increased administrative burden on patients, and lower satisfaction with telehealth services."
+      }
+    }
+  ]
 }
 
 ---
