@@ -1321,7 +1321,6 @@ by anchoring each identified experience driver to the exact when, where, and tri
 interaction.
 
 ✅ **Why it matters:**
-
 * Avoids generic or averaged journey mapping across multi-driver feedback
 * Powers precision in OU formation, PDCA targeting, and root cause correlation
 * Strengthens behavioral traceability across every orchestration layer
@@ -1329,7 +1328,6 @@ interaction.
 ---
 
 Your task is to return:
-
 1. **Patient Journey** – The broad phase of the healthcare experience
    *(e.g., Pre-Visit Administration, Clinical Consultation, Diagnostic Testing, Procedure & Surgery, Post-Care Follow-Up)*
 2. **Journey Stage** – The specific step, service, or process within that phase
@@ -1340,7 +1338,6 @@ Your task is to return:
 ---
 
 ### 🧠 **Classification Philosophy:**
-
 This layer is not a category tag — it’s a behavioral timestamp that powers:
 
 * Diagnostic clarity (`Where & When did the emotion erupt?`)
@@ -1348,7 +1345,6 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 * PDCA precision (`What specific interaction triggered the patient’s feeling or suggestion?`)
 
 🔍 Ask:
-
 * **When** in the patient journey did this signal occur? → *Patient Journey*
 * **Where** within that phase? → *Journey Stage*
 * **What micro-moment or trigger actually sparked the emotional response?** → *Interaction Moment*
@@ -1358,7 +1354,6 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 ---
 
 ### 🛠️ **Extraction Inputs You Must Use:**
-
 * `Experience Driver`
 * `Entity Name`
 * `Context`
@@ -1369,7 +1364,6 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 ---
 
 ### ✅ **Examples (Perfect Triangulation – Healthcare):**
-
 
 | Layer              | Example                                           |
 | ------------------ | ------------------------------------------------- |
@@ -1396,12 +1390,19 @@ This layer is not a category tag — it’s a behavioral timestamp that powers:
 ---
 
 ### 🔒 **Rules of Execution:**
-
 * Do **not fabricate** interaction moments. If unclear, output `"Unclear"`
 * Rare but real behavioral triggers are acceptable
 * All three layers must be **coherent, sequenced, and emotionally valid**
 * Each **Interaction Moment** must include a clear temporal or clinical trigger  
-  (e.g., “during appointment check-in”, “while awaiting test results”, “after discharge discussion”, “on lab result notification”) to anchor the emotional event to a specific care interaction. This preserves diagnostic fidelity and patient-experience traceability.
+  (e.g., “during appointment check-in”, “while awaiting test results”, “after discharge discussion”, “on lab result 
+notification”) to anchor the emotional event to a specific care interaction. This preserves diagnostic fidelity 
+and patient-experience traceability.
+* Interaction Moment may only be populated when the timing and trigger of the experience are explicitly stated or 
+unambiguously implied by the patient.
+* Do not infer sequencing, care phase, or micro-events based solely on typical healthcare workflows or assumed 
+process order.
+* If the exact interaction moment cannot be confidently anchored to a stated trigger, output “Unclear” — even 
+if the Experience Driver itself is valid.
 
 ---
 
@@ -1431,7 +1432,6 @@ This guarantees orchestration decisions are **behaviorally correct**, ensuring s
 ### 🧠 **OMS Selection Principles**
 
 Every Experience Driver must be evaluated using:
-
 * **Experience Driver** – Which patient-facing surface of care is implicated?
 * **Theme** – What healthcare domain does it fall into (clinical, diagnostic, access, billing, digital, safety)?
 * **Emotion** – How strong or polarized is the patient sentiment?
@@ -1443,6 +1443,7 @@ Every Experience Driver must be evaluated using:
   * ⚙️ A process that works but causes friction or anxiety?
   * 🚀 A care interaction that worked exceptionally well?
   * 🧪 A care capability that does not exist but is desired?
+
 
 ---
 
@@ -1548,35 +1549,42 @@ Does the care experience exist?
 ---
 
 ## 🧠 **Execution Rules**
-
 * Assign **one** OMS per Experience Driver — no blending
 * Never confuse **Fix** and **Optimize** boundaries
 * Apply sub-tier scoring **only** for Innovate
 * Selection must be **justifiable** using structured Healthcare inputs
+* Fix vs Optimize must be determined solely by the patient’s stated experience of failure, not by inferred risk, 
+severity, or clinical judgment.
+   * Use Fix only when the patient explicitly indicates that the experience failed, was incorrect, did not occur, 
+     or violated an expectation of correctness or safety.
+   * Use Optimize when the patient indicates the experience did occur, but involved friction, delay, repetition, 
+     confusion, or avoidable effort — even if the issue feels serious.
 
 ---
 
 ## 🧩 **Experience Driver – Specific Customer Effort Score (CES)**
 
 ### 📌 **Purpose**
+The **Customer Effort Score (CES)** measures the ease or difficulty of engaging with a **specific 
+Experience Driver** — **not** the entire comment.
+Each driver gets its own CES, reflecting **local friction or fluency** tied directly to that surface of the 
+experience.
 
-The **Customer Effort Score (CES)** measures the ease or difficulty of engaging with a **specific Experience Driver** — **not** the entire comment.
-Each driver gets its own CES, reflecting **local friction or fluency** tied directly to that surface of the experience.
+Customer Effort Score does not determine Opportunity Maximisation Stream.
+A high CES may occur in Fix, Optimize, or Innovate depending on the patient’s stated experience.
+CES reflects experienced effort only, not correctness, safety, or success.
 
 CES is rated on a **1–7 scale**:
-
 * **1** = Effortless, friction-free
 * **7** = Extreme friction, severe complexity
 
 CES is derived from **two inputs**:
-
 1. **Emotion** (perceived emotional effort)
 2. **Opportunity Maximisation Stream (OMS)** (functional/strategic context)
 
 ---
 
 ### ✅ **Why CES Matters**
-
 * Pinpoints **friction zones** in multi-driver feedback
 * Supports **urgency triage**, especially for borderline ERI × RF cases
 * Feeds the **Behavioral Impact Summary** in each Orchestration Unit
@@ -1584,7 +1592,6 @@ CES is derived from **two inputs**:
 ---
 
 ### 🎯 **CES Enables**
-
 * **Effort-Based Prioritization** → Target high-friction issues first
 * **Strategic Mapping** → Align effort data with journey stages & KPIs
 * **Friction Reduction Programs** → Drive seamless customer journeys
@@ -1598,8 +1605,8 @@ CES is derived from **two inputs**:
 | 1   | Very Low Effort  | Effortless, intuitive, delightful | Strength to **amplify** as a CX differentiator |
 | 2–3 | Low Effort       | Minimal friction, smooth process  | Positive CX — **low-priority optimization**    |
 | 4   | Moderate Effort  | Some friction, task completed     | Opportunity to **innovate**                    |
-| 5–6 | High Effort      | Delays, retries, confusion        | **Fix required** — prevent churn/frustration   |
-| 7   | Very High Effort | Severe breakdown, task failure    | **Critical fix** — high churn risk             |
+| 5–6 | High Effort      | Delays, retries, confusion        | **High-effort experience requiring attention**     |
+| 7   | Very High Effort | Severe effort, breakdown felt     | **Extreme effort signal — urgent review required** |
 
 ---
 
@@ -1619,7 +1626,7 @@ CES is derived from **two inputs**:
 
 ---
 
-### **2️⃣ Apply OMS → Lock the Range**
+### **2️⃣ Apply OMS → Constrain the CES Range**
 
 | OMS      | Locked CES Range |
 | -------- | ---------------- |
@@ -1628,8 +1635,9 @@ CES is derived from **two inputs**:
 | Innovate | 4                |
 | Fix      | 5–7              |
 
-**Hard Rules:**
+OMS constrains CES numerically to maintain internal consistency, but does not imply failure, success, or severity.
 
+**Hard Rules:**
 * Amplify → must be 1, 2, or 3
 * Optimize → must be 3 or 4
 * Innovate → must be exactly 4
