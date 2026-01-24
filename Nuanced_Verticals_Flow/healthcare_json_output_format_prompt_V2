@@ -3210,54 +3210,54 @@ NO commentary.
       }
     },
     {
-      "theme": "Post-Consultation Assurance",
-      "experience_driver": {
-        "label": "Visit Summary Clarity",
-        "category": "Care Documentation",
-        "subcategory": "Visit Summary Clarity"
-      },
-      "entity_name": "Incomplete Post-Visit Notes",
-      "context": {
-        "text": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
-        "keywords": [
-          "missing notes",
-          "no prescription confirmation",
-          "incomplete summary",
-          "care continuity"
-        ]
-      },
-      "feedback_type": "Complaint",
-      "emotion": {
-        "group": "Ambivalence",
-        "specific": "Unsettled Trust"
-      },
-      "journey": {
-        "customer_journey": "Post-Care Review",
-        "customer_journey_stage": "Visit Summary Access",
-        "interaction_moment": "after reconnecting post-freeze"
-      },
-      "opportunity_maximisation_stream": "Optimize",
-      "customer_effort_score": 5,
-      "orchestration_unit": {
-        "ou_name": "Incomplete Visit Summary – Complaint – Optimize",
-        "experience_driver": "Care Documentation → Visit Summary Clarity",
-        "entity_name": "Incomplete Post-Visit Notes",
-        "theme": "Post-Consultation Assurance",
-        "feedback_type": "Complaint",
-        "opportunity_maximisation_stream": "Optimize",
-        "interaction_moment": "after reconnecting post-freeze",
-        "context": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
-        "matters": "Incomplete visit notes and missing prescription confirmation create uncertainty and force patients to manually verify care steps.",
-        "semantic_action_statement": {
-          "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and no prescription confirmation after a telehealth session, leaving them unsure about next steps.",
-          "section_2_strategic_response": "We need to Optimize → Care Documentation → Visit Summary Clarity to ensure accurate, complete, and reassuring post-consultation records."
-        },
-        "stream_justification": "Optimizing visit summaries ensures patients leave each consultation with clear, actionable records, reducing confusion and follow-up calls.",
-        "matters_extraction": "Post-care uncertainty about prescriptions and incomplete notes requiring manual verification.",
-        "behavioral_impact": "Delays in care follow-up, increased administrative burden on patients, and lower satisfaction with telehealth services."
-      }
-    }
-  ]
+  "theme": "Post-Consultation Assurance",
+  "experience_driver": {
+    "label": "Visit Summary Clarity",
+    "category": "Care Documentation",
+    "subcategory": "Visit Summary Clarity"
+  },
+  "entity_name": "Incomplete Post-Visit Notes",
+  "context": {
+    "text": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
+    "keywords": [
+      "missing notes",
+      "no prescription confirmation",
+      "incomplete summary",
+      "care continuity"
+    ]
+  },
+  "feedback_type": "Complaint",
+  "emotion": {
+    "group": "Agitation",
+    "specific": "Confused"
+  },
+  "journey": {
+    "customer_journey": "Post-Care Review",
+    "customer_journey_stage": "Visit Summary Access",
+    "interaction_moment": "after reconnecting post-freeze"
+  },
+  "opportunity_maximisation_stream": "Fix",
+  "customer_effort_score": 6,
+  "orchestration_unit": {
+    "ou_name": "Incomplete Visit Summary – Complaint – Fix",
+    "experience_driver": "Care Documentation → Visit Summary Clarity",
+    "entity_name": "Incomplete Post-Visit Notes",
+    "theme": "Post-Consultation Assurance",
+    "feedback_type": "Complaint",
+    "opportunity_maximisation_stream": "Fix",
+    "interaction_moment": "after reconnecting post-freeze",
+    "context": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
+    "matters": "Incomplete visit notes and missing prescription confirmation create care gaps and force patients to manually verify critical information.",
+    "semantic_action_statement": {
+      "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and no prescription confirmation after a telehealth session, leaving them unsure about next steps.",
+      "section_2_strategic_response": "We need to Fix → Care Documentation → Visit Summary Clarity to ensure complete, accurate documentation that includes all critical care information."
+    },
+    "stream_justification": "Visit summary failed to include critical information (prescription status), meaning the primary purpose of documenting care was not achieved. Per Fix vs Optimize decision tree: incomplete documentation = purpose failed = Fix.",
+    "matters_extraction": "Post-care uncertainty about prescriptions and incomplete notes requiring manual verification.",
+    "behavioral_impact": "Increases patient anxiety, creates medication adherence risk, forces additional calls to verify prescriptions."
+  }
+} 
+]
 }
 
 ---
