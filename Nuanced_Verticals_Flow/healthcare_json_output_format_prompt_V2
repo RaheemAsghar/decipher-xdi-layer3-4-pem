@@ -2340,54 +2340,53 @@ NO commentary.
   "customer_review": "I had my blood test done, and when I checked the results in the patient portal, two different cholesterol readings were listed for the same date. One was later corrected, but the discrepancy made me question the reliability of my entire report and whether my treatment plan might be affected.",
   "experience_drivers": [
     {
-      "theme": "Clinical Data Integrity",
+      "theme": "Clinical Services & Care Delivery",
       "experience_driver": {
-        "label": "Result Accuracy Management",
-        "category": "Diagnostic Processing",
-        "subcategory": "Result Accuracy Management"
+        "label": "Diagnostic Services → Result Accuracy",
+        "category": "Diagnostic Services",
+        "subcategory": "Result Accuracy"
       },
       "entity_name": "Laboratory Reporting System",
       "context": {
-        "text": "Patient reviewed their lab results in the portal and noticed duplicate/conflicting cholesterol readings for the same test date. One was later corrected, but the inconsistency caused anxiety about accuracy and potential care impact.",
+        "text": "The patient reviewed lab results in the portal and observed conflicting cholesterol values for the same test date. Although one value was later corrected, the discrepancy caused distress and reduced trust in the accuracy of the report.",
         "keywords": [
-          "duplicate result",
-          "conflicting data",
-          "lab error",
+          "conflicting results",
+          "duplicate readings",
+          "lab report",
           "portal",
           "correction",
-          "trust",
-          "treatment impact"
+          "trust"
         ]
       },
       "feedback_type": "Complaint",
       "emotion": {
         "group": "Anger",
-        "specific": "Betrayed by System Malfunction"
+        "specific": "Loss of Trust Due to Data Error"
       },
       "journey": {
         "customer_journey": "Diagnostic Experience",
         "customer_journey_stage": "Result Review",
-        "interaction_moment": "while reviewing test results in the portal"
+        "interaction_moment": "while reviewing lab results in the patient portal"
       },
       "opportunity_maximisation_stream": "Fix",
-      "customer_effort_score": 7,
+      "customer_effort_score": "6",
       "orchestration_unit": {
-        "ou_name": "Duplicate Test Result Discrepancy – Complaint – Fix",
-        "experience_driver": "Diagnostic Processing → Result Accuracy Management",
+        "ou_name": "Conflicting Diagnostic Results – Complaint – Fix",
+        "experience_driver": "Diagnostic Services → Result Accuracy",
         "entity_name": "Laboratory Reporting System",
-        "theme": "Clinical Data Integrity",
+        "theme": "Clinical Services & Care Delivery",
         "feedback_type": "Complaint",
         "opportunity_maximisation_stream": "Fix",
-        "interaction_moment": "while reviewing test results in the portal",
-        "context": "Patient saw two conflicting cholesterol results for the same test date, one later corrected, which created serious doubt about report reliability and potential treatment changes.",
-        "matters": "Conflicting lab results undermine confidence, create emotional distress, and risk inappropriate clinical decisions.",
+        "interaction_moment": "while reviewing lab results in the patient portal",
+        "context": "The patient encountered two conflicting cholesterol values for the same test date, one of which was later corrected, leading to anxiety and loss of confidence in result reliability.",
+        "matters": "Conflicting diagnostic results undermine patient trust, create emotional distress, and risk hesitation or doubt in follow-up care decisions.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The patient submitted a Complaint about seeing conflicting cholesterol readings for the same test date in the portal. Although one was corrected later, they feared the error could impact their treatment plan.",
-          "section_2_strategic_response": "We need to Fix → Diagnostic Processing → Result Accuracy Management to eliminate conflicting lab data that erodes trust, disrupts decision-making, and creates unnecessary patient anxiety."
+          "section_1_customer_reality": "The patient submitted a Complaint after seeing conflicting cholesterol results for the same test date while reviewing lab results in the portal. Although one value was later corrected, the discrepancy caused significant doubt about report accuracy.",
+          "section_2_strategic_response": "We need to Fix → Diagnostic Services → Result Accuracy to prevent conflicting diagnostic data that erodes patient trust and creates avoidable anxiety during result review."
         },
-        "stream_justification": "Clinical data integrity is a zero-tolerance domain; even small anomalies can shake confidence and drive avoidance behaviors.",
-        "matters_extraction": "Raw Voice, Keywords, Journey Context",
-        "behavioral_impact": "Improve validation checks before publishing results, add proactive patient notifications when corrections are made, and embed real-time trust cues in result delivery."
+        "stream_justification": "Diagnostic result accuracy is a correctness-critical surface; patient trust is compromised when inconsistencies appear, even if later corrected.",
+        "matters_extraction": "Raw Voice, Keywords, Interaction Moment",
+        "behavioral_impact": "Strengthen validation controls before result publication and introduce clear patient-facing explanations when corrections occur to preserve trust."
       }
     }
   ]
@@ -2396,108 +2395,106 @@ NO commentary.
 
 ---
 
-#### **Example 2 – FIX + OPTIMIZE STREAM COMBINATION (Dual Drivers)**
-
 {
   "schema_version": "healthcare_ed_v1",
   "processed_at": "2025-12-07T14:23:45Z",
   "customer_review": "The telehealth app froze right as I was explaining my symptoms to the doctor — I had to restart twice. Then when I rejoined, my visit notes were incomplete, and I couldn't tell if the prescription was even sent to my pharmacy.",
   "experience_drivers": [
     {
-      "theme": "Technical Resilience",
+      "theme": "Clinical Services & Care Delivery",
       "experience_driver": {
-        "label": "Session Stability",
-        "category": "Telehealth Platform",
-        "subcategory": "Session Stability"
+        "label": "Telehealth Services → Platform Usability",
+        "category": "Telehealth Services",
+        "subcategory": "Platform Usability"
       },
-      "entity_name": "App Freeze During Consultation",
+      "entity_name": "Telehealth Mobile App",
       "context": {
-        "text": "Patient experienced repeated app freezes during a live telehealth consultation, forcing restarts and breaking continuity of care.",
+        "text": "The patient experienced repeated application freezes during a live telehealth consultation, forcing multiple restarts and interrupting symptom explanation.",
         "keywords": [
-          "app freeze",
-          "consultation failure",
+          "app froze",
           "restart",
-          "loss of continuity",
-          "symptom explanation interrupted"
+          "telehealth",
+          "interrupted consultation",
+          "symptoms explanation"
         ]
       },
       "feedback_type": "Complaint",
       "emotion": {
         "group": "Agitation",
-        "specific": "Panic"
+        "specific": "Loss of Control During Care"
       },
       "journey": {
-        "customer_journey": "Care Delivery",
+        "customer_journey": "Clinical Consultation",
         "customer_journey_stage": "Telehealth Session",
-        "interaction_moment": "while explaining symptoms to the doctor"
+        "interaction_moment": "right as the patient was explaining symptoms to the doctor"
       },
       "opportunity_maximisation_stream": "Fix",
-      "customer_effort_score": 6,
+      "customer_effort_score": "6",
       "orchestration_unit": {
-        "ou_name": "Telehealth App Freeze – Complaint – Fix",
-        "experience_driver": "Telehealth Platform → Session Stability",
-        "entity_name": "App Freeze During Consultation",
-        "theme": "Technical Resilience",
+        "ou_name": "Telehealth Session Freezing – Complaint – Fix",
+        "experience_driver": "Telehealth Services → Platform Usability",
+        "entity_name": "Telehealth Mobile App",
+        "theme": "Clinical Services & Care Delivery",
         "feedback_type": "Complaint",
         "opportunity_maximisation_stream": "Fix",
-        "interaction_moment": "while explaining symptoms to the doctor",
-        "context": "Patient experienced repeated app freezes during a live telehealth consultation, forcing restarts and breaking continuity of care.",
-        "matters": "Telehealth freezes mid-consultation break care continuity, force repetition of symptoms, and risk incomplete diagnosis.",
+        "interaction_moment": "right as the patient was explaining symptoms to the doctor",
+        "context": "The telehealth app froze multiple times during active consultation, forcing restarts and disrupting symptom communication.",
+        "matters": "Mid-consultation platform failures disrupt care continuity, force repetition, and undermine patient confidence in virtual diagnosis.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The patient submitted a Complaint about the telehealth app freezing twice during their consultation, forcing restarts and interrupting their symptom explanation.",
-          "section_2_strategic_response": "We need to Fix → Telehealth Platform → Session Stability to prevent mid-consultation freezes that disrupt diagnosis and cause patient frustration."
+          "section_1_customer_reality": "The patient submitted a Complaint after the telehealth app froze twice during their consultation, interrupting symptom explanation and forcing restarts.",
+          "section_2_strategic_response": "We need to Fix → Telehealth Services → Platform Usability to prevent consultation-breaking freezes that disrupt care delivery and patient trust."
         },
-        "stream_justification": "Session stability failures during live consultations create direct clinical risk, harm diagnostic accuracy, and erode patient trust — requiring immediate remediation.",
-        "matters_extraction": "Patient frustration from disrupted symptom explanation and uncertainty in diagnosis due to session instability.",
-        "behavioral_impact": "Affects patient confidence in virtual care, increases repeat visits, and may drive patients back to in-person care."
+        "stream_justification": "Live consultation stability is a correctness-critical requirement; failures directly interfere with care delivery.",
+        "matters_extraction": "Raw Voice, Interaction Moment, Keywords",
+        "behavioral_impact": "Increases abandonment of virtual care, repeat visits, and preference for in-person consultations."
       }
     },
     {
-      "theme": "Post-Consultation Assurance",
+      "theme": "Clinical Services & Care Delivery",
       "experience_driver": {
-        "label": "Visit Summary Clarity",
-        "category": "Care Documentation",
-        "subcategory": "Visit Summary Clarity"
+        "label": "Treatment Services → Care Plan Clarity",
+        "category": "Treatment Services",
+        "subcategory": "Care Plan Clarity"
       },
-      "entity_name": "Incomplete Post-Visit Notes",
+      "entity_name": "Telehealth Visit Summary",
       "context": {
-        "text": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
+        "text": "After reconnecting to the consultation, the patient found visit notes incomplete and lacked confirmation that the prescription was sent.",
         "keywords": [
-          "missing notes",
-          "no prescription confirmation",
-          "incomplete summary",
-          "care continuity"
+          "incomplete notes",
+          "prescription uncertainty",
+          "visit summary",
+          "post consultation"
         ]
       },
       "feedback_type": "Complaint",
       "emotion": {
         "group": "Ambivalence",
-        "specific": "Unsettled Trust"
+        "specific": "Uncertainty About Next Steps"
       },
       "journey": {
-        "customer_journey": "Post-Care Review",
-        "customer_journey_stage": "Visit Summary Access",
-        "interaction_moment": "after reconnecting post-freeze"
+        "customer_journey": "Post-Care Follow-Up",
+        "customer_journey_stage": "Visit Summary Review",
+        "interaction_moment": "after rejoining the telehealth session following the app freeze"
       },
       "opportunity_maximisation_stream": "Optimize",
-      "customer_effort_score": 5,
+      "customer_effort_score": "4",
       "orchestration_unit": {
-        "ou_name": "Incomplete Visit Summary – Complaint – Optimize",
-        "experience_driver": "Care Documentation → Visit Summary Clarity",
-        "entity_name": "Incomplete Post-Visit Notes",
-        "theme": "Post-Consultation Assurance",
+        "ou_name": "Incomplete Telehealth Visit Summary – Complaint – Optimize",
+        "experience_driver": "Treatment Services → Care Plan Clarity",
+        "entity_name": "Telehealth Visit Summary",
+        "theme": "Clinical Services & Care Delivery",
         "feedback_type": "Complaint",
         "opportunity_maximisation_stream": "Optimize",
-        "interaction_moment": "after reconnecting post-freeze",
-        "context": "After reconnecting, the patient found their visit notes incomplete and lacked confirmation that a prescription had been sent to the pharmacy.",
-        "matters": "Incomplete visit notes and missing prescription confirmation create uncertainty and force patients to manually verify care steps.",
+        "interaction_moment": "after rejoining the telehealth session following the app freeze",
+        "context": "Post-consultation records were incomplete and did not clearly confirm whether the prescription was issued.",
+        "matters": "Unclear care plans and missing confirmation force patients to seek reassurance and manually verify next steps.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and no prescription confirmation after a telehealth session, leaving them unsure about next steps.",
-          "section_2_strategic_response": "We need to Optimize → Care Documentation → Visit Summary Clarity to ensure accurate, complete, and reassuring post-consultation records."
+          "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and lack of prescription confirmation after reconnecting to a telehealth session.",
+          "section_2_strategic_response": "We need to Optimize → Treatment Services → Care Plan Clarity to ensure patients leave virtual consultations with complete, reassuring next-step information."
         },
-        "stream_justification": "Optimizing visit summaries ensures patients leave each consultation with clear, actionable records, reducing confusion and follow-up calls.",
-        "matters_extraction": "Post-care uncertainty about prescriptions and incomplete notes requiring manual verification.",
-        "behavioral_impact": "Delays in care follow-up, increased administrative burden on patients, and lower satisfaction with telehealth services."
+        "stream_justification": "The care occurred, but post-visit clarity was insufficient, creating avoidable effort and uncertainty.",
+        "matters_extraction": "Raw Voice, Interaction Moment",
+        "behavioral_impact": "Drives follow-up calls, pharmacy delays, and reduced confidence in telehealth care."
       }
     }
   ]
@@ -2513,100 +2510,103 @@ NO commentary.
   "customer_review": "The nurse didn't just take my vitals — she noticed I looked pale, asked about my diet, and suggested a quick iron test, which turned out to be helpful. Also, I wish I could schedule lab tests directly through the patient portal instead of having to call.",
   "experience_drivers": [
     {
-      "theme": "Preventive Intervention",
+      "theme": "Clinical Services & Care Delivery",
       "experience_driver": {
-        "label": "Proactive Observation",
-        "category": "Clinical Care",
-        "subcategory": "Proactive Observation"
+        "label": "Consultation Experience → Provider Communication",
+        "category": "Consultation Experience",
+        "subcategory": "Provider Communication"
       },
-      "entity_name": "Nurse-Initiated Iron Test",
+      "entity_name": "Nursing Staff",
       "context": {
-        "text": "Nurse observed pallor during vitals check, inquired about diet, and recommended an iron test that revealed a deficiency.",
+        "text": "During routine vitals assessment, the nurse noticed pallor, asked about diet, and proactively suggested an iron test that proved helpful.",
         "keywords": [
-          "proactive care",
-          "nurse observation",
+          "nurse noticed",
+          "asked about diet",
           "iron test",
-          "preventive action"
+          "attentive care",
+          "preventive insight"
         ]
       },
       "feedback_type": "Compliment",
       "emotion": {
         "group": "Adoration",
-        "specific": "Reassured"
+        "specific": "Felt Genuinely Cared For"
       },
       "journey": {
-        "customer_journey": "In-Person Care",
+        "customer_journey": "Clinical Consultation",
         "customer_journey_stage": "Vitals Assessment",
         "interaction_moment": "during routine vitals check"
       },
       "opportunity_maximisation_stream": "Amplify",
-      "customer_effort_score": 2,
+      "customer_effort_score": "2",
       "orchestration_unit": {
-        "ou_name": "Nurse-Initiated Iron Test – Compliment – Amplify",
-        "experience_driver": "Clinical Care → Proactive Observation",
-        "entity_name": "Nurse-Initiated Iron Test",
-        "theme": "Preventive Intervention",
+        "ou_name": "Attentive Nursing Observation – Compliment – Amplify",
+        "experience_driver": "Consultation Experience → Provider Communication",
+        "entity_name": "Nursing Staff",
+        "theme": "Clinical Services & Care Delivery",
         "feedback_type": "Compliment",
         "opportunity_maximisation_stream": "Amplify",
         "interaction_moment": "during routine vitals check",
-        "context": "Nurse observed pallor during vitals check, inquired about diet, and recommended an iron test that revealed a deficiency.",
-        "matters": "Proactive clinical observation leads to early detection and patient reassurance, strengthening trust in care quality.",
+        "context": "The nurse demonstrated attentive communication by noticing pallor, asking about diet, and suggesting a helpful iron test.",
+        "matters": "Attentive provider communication during routine care moments enables early detection, reassurance, and stronger patient trust.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The patient gave a Compliment about a nurse who noticed pallor during vitals, asked about diet, and suggested an iron test that revealed a deficiency.",
-          "section_2_strategic_response": "We need to Amplify → Clinical Care → Proactive Observation to scale anticipatory patient assessment that improves early detection and builds trust."
+          "section_1_customer_reality": "The patient gave a Compliment about a nurse who noticed pallor during vitals, asked about diet, and proactively suggested an iron test.",
+          "section_2_strategic_response": "We need to Amplify → Consultation Experience → Provider Communication to protect and scale attentive clinical interactions that strengthen trust and preventive care."
         },
-        "stream_justification": "Proactive detection during standard care moments boosts patient safety, increases trust, and supports preventive healthcare strategies.",
-        "matters_extraction": "Early diagnosis of deficiency due to attentive clinical observation.",
-        "behavioral_impact": "Encourages patient openness, increases preventive screenings, and strengthens loyalty to provider."
+        "stream_justification": "Exceptional provider attentiveness during standard care moments builds confidence, loyalty, and perceived care quality.",
+        "matters_extraction": "Raw Voice, Interaction Moment",
+        "behavioral_impact": "Increases patient trust, engagement in preventive care, and confidence in clinical staff."
       }
     },
     {
-      "theme": "Patient Autonomy",
+      "theme": "Patient Appointments & Scheduling",
       "experience_driver": {
-        "label": "Self-Service Test Scheduling",
-        "category": "Diagnostics Access",
-        "subcategory": "Self-Service Test Scheduling"
+        "label": "Scheduling Methods → Online Self-Booking",
+        "category": "Scheduling Methods",
+        "subcategory": "Online Self-Booking"
       },
-      "entity_name": "In-Portal Lab Test Booking",
+      "entity_name": "Patient Portal",
       "context": {
-        "text": "Patient wished to schedule lab tests directly through the portal instead of calling, indicating a need for streamlined, self-service diagnostics access.",
+        "text": "The patient expressed a desire to schedule lab tests directly through the patient portal instead of calling.",
         "keywords": [
-          "self-service",
-          "test booking",
+          "schedule lab test",
           "patient portal",
-          "lab scheduling"
+          "self service",
+          "avoid calling"
         ]
       },
       "feedback_type": "Suggestion",
       "emotion": {
         "group": "Appreciation",
-        "specific": "Interested"
+        "specific": "Interested in Convenience"
       },
       "journey": {
-        "customer_journey": "Diagnostics Access",
-        "customer_journey_stage": "Test Scheduling",
-        "interaction_moment": "when trying to arrange a lab test"
+        "customer_journey": "Pre-Visit Administration",
+        "customer_journey_stage": "Lab Test Scheduling",
+        "interaction_moment": "when attempting to arrange a lab test"
       },
       "opportunity_maximisation_stream": "Innovate",
-      "customer_effort_score": 4,
+      "customer_effort_score": "4",
       "orchestration_unit": {
         "ou_name": "In-Portal Lab Test Booking – Suggestion – Innovate",
-        "experience_driver": "Diagnostics Access → Self-Service Test Scheduling",
-        "entity_name": "In-Portal Lab Test Booking",
-        "theme": "Patient Autonomy",
+        "experience_driver": "Scheduling Methods → Online Self-Booking",
+        "entity_name": "Patient Portal",
+        "theme": "Patient Appointments & Scheduling",
         "feedback_type": "Suggestion",
         "opportunity_maximisation_stream": "Innovate",
-        "interaction_moment": "when trying to arrange a lab test",
-        "context": "Patient wished to schedule lab tests directly through the portal instead of calling, indicating a need for streamlined, self-service diagnostics access.",
-        "matters": "Lack of self-service lab scheduling adds friction, delays diagnostics, and reduces patient autonomy.",
+        "interaction_moment": "when attempting to arrange a lab test",
+        "context": "The patient wants the ability to schedule lab tests directly through the portal rather than calling.",
+        "matters": "Lack of self-service lab scheduling creates avoidable friction, delays diagnostics, and reduces patient autonomy.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The patient made a Suggestion about wanting to schedule lab tests directly in the portal rather than calling.",
-          "section_2_strategic_response": "We need to Innovate → Diagnostics Access → Self-Service Test Scheduling to enable frictionless, autonomous lab test booking that speeds care and enhances convenience."
+          "section_1_customer_reality": "The patient made a Suggestion requesting the ability to schedule lab tests directly through the patient portal instead of calling.",
+          "section_2_strategic_response": "We need to Innovate → Scheduling Methods → Online Self-Booking to enable self-service lab scheduling that reduces friction and accelerates diagnostics."
         },
-        "stream_justification": "Empowering patients to self-schedule diagnostics reduces admin friction, accelerates care, and enhances patient autonomy.",
-        "matters_extraction": "Desire for direct in-portal booking to eliminate unnecessary phone scheduling steps.",
-        "behavioral_impact": "Shortens time to diagnosis, increases portal usage, and improves patient satisfaction."
+        "stream_justification": "The requested capability does not exist today and represents a net-new self-service scheduling feature.",
+        "matters_extraction": "Raw Voice",
+        "behavioral_impact": "Reduces administrative burden, speeds time-to-test, and increases portal adoption."
       }
     }
   ]
 }
+
+"""
