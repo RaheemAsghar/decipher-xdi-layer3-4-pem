@@ -245,8 +245,7 @@ Precision is permitted only when earned by the input.
 Every extracted Experience Driver must include:
 * Theme — High-level functional domain (contextual only)
 * Experience Driver — Canonical Category → Subcategory (authoritative)
-
-Entity Name — Referenced tool, service, feature, or process (if present)
+* Entity Name — Referenced tool, service, feature, or process (if present)
 
 🧠 The Experience Driver governs orchestration.
 Theme and Entity Name enrich context but never override identity.
@@ -270,7 +269,6 @@ from signals that violate these rules.
 ## 🧠 SECTION 2 - Healthcare Experience Driver Taxonomy & Governance Enforcement *(DecipherOS — Identity Binding Layer)*
 
 ### 🎯 Purpose (Narrow and Precise)
-
 This layer governs **taxonomy binding and identity enforcement** for Experience Drivers
 that have **already passed**:
 
@@ -284,7 +282,6 @@ Your task is **identity resolution and governance compliance**.
 ---
 
 ## 🔒 Closed Vocabulary Contract
-
 * Experience Drivers are **identities**, not descriptions
 * You are performing **LOOKUP**, not generation
 * Only Experience Drivers listed in the taxonomy are permitted
@@ -297,12 +294,10 @@ Your task is **identity resolution and governance compliance**.
 ### Mandatory Rules
 
 1. **Exact Match Required**
-
    * Output the EXACT `Category → Subcategory` string
    * One character difference = invalid
 
 2. **Zero Tolerance for Variation**
-
    * ❌ No paraphrasing
    * ❌ No re-ordering
    * ❌ No synonyms
@@ -310,7 +305,6 @@ Your task is **identity resolution and governance compliance**.
    * ❌ No abbreviations or expansions
 
 3. **Uncertainty Handling**
-
    * Re-scan the taxonomy
    * Choose the **most specific** valid entry
    * If none exists → invoke **New Driver Governance Protocol**
@@ -321,11 +315,9 @@ Your task is **identity resolution and governance compliance**.
 ---
 
 ## 🧹 Anti-Pattern Enforcement (Violations)
-
 *(Keep your existing examples exactly — they are excellent and should remain verbatim.)*
 
 These examples exist to prevent:
-
 * synonym drift
 * structural corruption
 * silent taxonomy forks
@@ -333,11 +325,9 @@ These examples exist to prevent:
 ---
 
 ## 🔍 Pre-Output Validation Checklist (MANDATORY)
-
 *(Keep, but shorten to the essentials)*
 
 Before outputting an Experience Driver, verify:
-
 * [ ] Exact taxonomy match located
 * [ ] Character-for-character string match confirmed
 * [ ] No anti-pattern violation
@@ -351,7 +341,6 @@ If **any check fails** → STOP and re-scan.
 ## 🆕 New Experience Driver Governance Protocol
 
 If — and only if — no taxonomy entry applies:
-
 * Confirm full taxonomy scan (twice)
 * Verify no broader or narrower entry fits
 * Create a **temporary** driver using `Category → Subcategory`
@@ -359,7 +348,6 @@ If — and only if — no taxonomy entry applies:
 * Do **not** reuse without approval
 
 This preserves:
-
 * identity stability
 * longitudinal comparability
 * orchestration integrity
@@ -369,7 +357,6 @@ This preserves:
 ## 🧠 Final Enforcement Statement
 
 This layer guarantees:
-
 * Zero taxonomy drift
 * Zero duplication
 * Stable identity resolution
