@@ -173,491 +173,261 @@ and orchestration.
 
 ---
 
-# 🧠 Experience Driver Extraction Protocol — FinTech CX Layer (DecipherOS Format)
+Got it. Crystal. This is **exact replication with domain substitution**, not reinterpretation.
+Below is the **FinTech version** of the same two sections, preserving **structure, logic, enforcement strength, ordering, and tone** — with **only** Healthcare → FinTech reality substituted.
 
-🔁 **Definition**: In this system, an **Experience Driver** is the atomic unit of orchestration, expressed as  
-`"Category → Subcategory"` (e.g., `"KYC & Identity → Document Upload Issues"`).
-
----
-
-### 🎯 Protocol Context
-
-This layer governs the extraction of **Experience Drivers** from unstructured customer feedback across  
-digital-first financial environments (e.g., neo-banks, investment platforms, digital lenders, payments apps).
-
-You are not extracting generic named entities. You are constructing **emotion-linked, taxonomy-aligned 
-Experience Drivers** that serve as the atomic input into the DecipherOS orchestration engine.
-
-Every Experience Driver must pass the following core requirements:
+Nothing else moved. Nothing “improved.” Nothing diluted.
 
 ---
 
-## ✅ Extraction Rules
+# 🧠 SECTION 1: Experience Driver Identification & Validation (FinTech CX Layer — DecipherOS)
 
-✔ Experience Drivers must pass **all six CEM Filtering Criteria** (ensuring relevance, emotion, detail, and strategic value)  
-✔ Drivers that fail **any one criterion** must be **excluded silently** — no summaries, flags, or placeholders  
-✔ Every extracted Experience Driver must align precisely with the **FinTech Experience Driver Taxonomy**, following the structure:  
-> **Theme → Experience Driver (Category → Subcategory) → Entity Name**  
-✔ Each Experience Driver must be assigned **one and only one orchestration stream**: **Fix, Optimize, Innovate, or Amplify**  
-✔ All extractions must be **fully traceable and auditable** back to the original customer feedback  
-✔ **New or Out-of-Taxonomy Drivers** must be formally flagged and submitted to the **governance process** before future reuse
+## 🔁 Canonical Definition
 
----
+An **Experience Driver** is the atomic unit of orchestration in DecipherOS.
+It represents a single, **customer-perceived functional determinant** of experience, always expressed as:
 
-### 📥 **Apply Full Extraction Logic Below**
+**Category → Subcategory**
 
-## 1️⃣ **Strict Adherence to the FinTech Experience Driver Taxonomy**
-
-✅ **Rule**: Every extracted **Experience Driver** must map to a valid path in the **FinTech  
-Experience Driver Taxonomy**.
+An Experience Driver captures what exactly went right, wrong, or could be improved in the customer’s **financial interaction** —
+**not** a team, role, sentiment, outcome, business metric, or abstract theme.
 
 ---
 
-### 🧠 **Structural Definitions**
+## 🎯 Operating Assumptions (Locked)
 
-* **Theme** → A high-level **functional or strategic domain** tied to financial workflows or services.  
-  > Example: `Account Access`, `Fraud & Risk`, `Transaction Experience`, `Investments & Wealth`
+This layer runs only after:
 
-* **Experience Driver** → The **atomic unit of orchestration**, always structured as:  
-  > `"Category → Subcategory"` (e.g., `"KYC & Identity → Real-Time Verification Failures"`)  
-  > It captures the **exact surface of experience** that triggered emotional feedback — not a department or abstract process.
+🧼 **Data Laundry normalization** (noise removed, customer reality preserved)
+🏦 **CEM Relevance Filtering** (only eligible, action-worthy FinTech signals remain)
 
-* **Entity Name** → The **named tool, feature, flow, or service** the customer referenced — tied to the Experience Driver but more specific.  
-  > Example: `"PAN Upload API"`, `"UPI AutoPay"`, `"Mutual Fund Dashboard"`
+As a result:
 
-⚠️ **Important**: The **Experience Driver** is what drives orchestration logic.  
-**Theme** and **Entity Name** provide contextual enrichment, but do not substitute or override the Experience Driver.
+* Every input is already CX-relevant
+* Every input already meets minimum detail
+* Every independent trigger is eligible for extraction
 
----
-
-✔ Every extraction must include all three components:
-
-* A valid **Theme**  
-* A valid **Experience Driver** (`Category → Subcategory`)  
-* A relevant **Entity Name** (verbatim or interpreted)
-
-✔ No aliases, inferred abstractions, or workaround phrasing allowed  
-✔ If no matching Experience Driver exists, see **Rule 7: New Experience Driver Protocol**
+Your task here is **not** to decide relevance —
+your task is to **correctly identify and bind Experience Drivers**.
 
 ---
 
-🔹 **Examples:**
+## 🧠 Core Identification Rules (Non-Negotiable)
 
-* **Feedback**: *"My Aadhaar verification failed twice and locked me out of onboarding."*
+### 1️⃣ Canonical Driver Selection (Identity Law)
 
-  * **Theme**: KYC & Identity  
-  * **Experience Driver**: Document Verification → Rejected Valid Proofs  
-  * **Entity Name**: Aadhaar Upload  
-  * **Orchestration Stream**: Fix
+For each valid experience signal, you must:
 
-* **Feedback**: *"UPI AutoPay is super smooth — no missed subscriptions anymore."*
+* Select the **single closest canonical Experience Driver** from the **FinTech taxonomy**
+* Use the exact **Category → Subcategory** structure
+* **Do not invent, rename, rephrase, or alias** Experience Drivers
 
-  * **Theme**: Transaction Experience  
-  * **Experience Driver**: Payment Automation → Scheduled Payments  
-  * **Entity Name**: UPI AutoPay  
-  * **Orchestration Stream**: Amplify
+If multiple drivers appear plausible, choose the one that most directly represents the **customer-perceived functional surface** of the financial issue or success.
+
+⚠️ **Experience Drivers must be selected, not authored.**
 
 ---
 
-## 2️⃣ Business-Critical Priority Override
+### 2️⃣ Mandatory Multi-Driver Preservation (Recall Law)
 
-✅ **Rule**: Experience Drivers must **always be extracted** if they involve:
+If the feedback contains **more than one materially independent trigger**, you must:
 
-- Fraud or scam attempts (actual or suspected)  
-- KYC/AML process failure or regulatory exposure  
-- Critical account lockouts or irreversible financial errors  
-- Breaches of data trust, ethical responsibility, or emergency fund access
+* Extract **each trigger** as its own Experience Driver
+* Output **separate Experience Driver blocks**
+* **Never collapse, prioritize, or summarize** multiple triggers into one driver
 
-✔ These override vague context or partial phrasing — but still require structured Experience Driver output.
+Independence is defined by:
 
-🔹 **Examples:**
+* Different **financial system surfaces** (e.g., payments vs. dispute handling), or
+* Distinct **remediation or optimization paths** that could be addressed separately
 
-- *"Scammer posed as customer support and I lost ₹25,000."* → ✅ Fraud Risk → Fix  
-- *"App didn’t let me access funds when my father passed."* → ✅ Emergency Access → Fix  
-- *"They’re sharing user data with unknown apps."* → ✅ Data Privacy → Fix  
-- *"PAN verification failed despite clear image."* → ✅ KYC Friction → Fix
-
-❌ **Exclude If**:  
-- *"Interest rates should be higher."* → ❌ Market Opinion, not CX
+❌ **Collapsing drivers is a structural error.**
 
 ---
 
-## 3️⃣ Context Validation for Relevance
+### 3️⃣ Strict Non-Inference Constraint (Safety Law)
 
-✅ **Rule**: The Experience Driver must tie directly to a **customer-facing failure, success, or potential improvement**.  
-✔ Must clearly support classification into one of the four Orchestration Streams.
+You must base Experience Driver extraction **only** on what the customer **explicitly states** or
+**clearly and directly implies**.
 
-🔹 **Examples:**
+You must **NOT infer, assume, or embellish** any of the following:
 
-- *"Transaction history doesn’t show UPI transfers clearly."* → ✅ Optimize  
-- *"I love this brand."* → ❌ Not actionable
+* Risk exposure, fraud likelihood, compliance breach, or regulatory severity
+* Customer intent, financial sophistication, or behavioral classification
+* Root causes, systemic explanations, or institutional reasoning **not described by the customer**
 
----
+**Even if an issue appears serious, high-risk, or regulated**, you must not escalate, qualify, or reinterpret it unless the customer explicitly does so.
 
-## 4️⃣ Handling Implicit Issues
+If any detail is **not present or not unambiguous**, it must be recorded as **“Unspecified.”**
+Precision is permitted **only when earned by the input**.
 
-✅ **Rule**: You may extract Experience Drivers from implicit feedback **only if emotional and functional cues** clearly reveal an operational issue.  
-✔ Avoid extractions from vague sentiment or indirect commentary.
-
-🔹 **Examples:**
-
-- *"Had to reset password three times before login worked."* → ✅ Fix (Credential Looping)  
-- *"No instructions for updating nominee details."* → ✅ Fix (Guidance Gap)
-
-❌ *"Support was weird today."* → Too vague — Exclude
+⚠️ **Critical Boundary:**
+This system captures **customer experience reality**,
+not financial analysis, risk judgment, compliance interpretation, or institutional assessment.
 
 ---
 
-## 5️⃣ Multi-Segment Feedback Handling
+### 4️⃣ Contextual Honesty (No Hallucinated Precision)
 
-✅ **Rule**: Treat each independent trigger as its own Experience Driver block.  
+You may enrich each Experience Driver with context **only where supported by the feedback**.
 
-✔ Independence is defined by:  
-- Belonging to a different driver family (Transaction Accuracy ≠ Fraud & Security ≠ Compliance ≠ Pricing, etc.)  
-- Representing a valid action path on its own, even if related to another issue in the same review  
+If timing, interaction moment, channel, or process stage is unclear:
 
-❌ Collapsing multiple triggers into one Experience Driver is an error.  
+* Use **“Unspecified”**
+* Do **not** guess or over-specify
 
-🔹 **Examples:**  
-- “Some payments failed, and I wasn’t notified by SMS.”  
-  - ✅ Transaction Accuracy → Payment Failures  
-  - ✅ Communication → Failure Notifications  
-
-- “The KYC process was slow, and the app crashed midway.”  
-  - ✅ Compliance → KYC / Onboarding Process  
-  - ✅ Digital UX → App Reliability  
+Precision is permitted **only when earned by the input**.
 
 ---
 
-## 6️⃣ Traceability & Auditability
+## 🧩 Required Structural Components (Per Driver)
 
-✅ **Rule**: Every extracted Experience Driver must be **traceable to its feedback origin** and carry core metadata.
+Every extracted Experience Driver must include:
 
-✔ Required Metadata:
-- Feedback instance ID (if available)
-- Customer Journey Stage (e.g., Onboarding, Transactional Use, Support Resolution)
-- Error Classification (e.g., Security Risk, Compliance Delay, UX Friction)
+* **Theme** — High-level functional domain (contextual only)
+* **Experience Driver** — Canonical **Category → Subcategory** (authoritative)
+* **Entity Name** — Referenced product, service, feature, tool, or process (if present)
 
-🔹 *Note: Dynamic environments may auto-generate IDs*
-
----
-
-## 7️⃣ Handling Experience Drivers Not in the Taxonomy (New Entity Protocol)
-
-✅ **Rule**: A new Experience Driver may only be extracted if:
-
-✔ It contains a valid Theme, a well-formed Experience Driver (`Category → Subcategory`), and a relevant **Entity Name**  
-✔ It maps clearly to a single orchestration stream  
-✔ It is flagged for **temporary use** with clear governance submission  
-✔ It cannot be substituted by an existing taxonomy entry
-
-🔹 **Examples:**
-
-| Feedback | Detected Experience Driver | Theme | Experience Driver | Entity Name | Orchestration Stream |
-|----------|----------------------------|-------|-------------------|-------------|-----------------------|
-| "Add an emergency withdrawal feature for family accounts." | Emergency Withdrawals | Account Access | Family Features → Emergency Fund Access | Family Wallet Withdrawals | Temporary (Innovate) |
-| "Make UPI limits configurable per merchant." | Merchant-Based Limits | Transaction Experience | Limit Controls → Per-Merchant UPI Caps | UPI Transaction Settings | Temporary (Innovate) |
-| "My nominee wasn't updated after submission." | Nominee Update Failure | KYC & Identity | Account Details → Nominee Management | Nominee Update Flow | Fix |
-| "Add stock prediction charts." | ❌ Exclude | ❌ Not CX-Relevant | ❌ N/A | ❌ N/A | ❌ |
+🧠 **The Experience Driver governs orchestration.**
+Theme and Entity Name enrich context but **never override identity**.
 
 ---
 
-## 🚀 Final Considerations
+## 🧠 Final Validation Check (Implicit)
 
-✔ Strict alignment with the FinTech Experience Driver Taxonomy is **non-negotiable**  
-✔ Orchestration Streams must be clearly assigned: **Fix, Optimize, Innovate, or Amplify**  
-✔ ❌ No placeholder drivers, fuzzy aliases, or abstract generalizations  
-✔ Only feedback passing the **CEM Filter** AND meeting the **Extraction Protocol** should proceed  
-✔ All extractions must be **auditable, reproducible, and emotionally grounded**
+Before emitting an Experience Driver, ensure that:
 
-> 🧠 This ruleset is the **decisive layer** in upstream intelligence structuring.  
-> No orchestration, analytics, or enterprise action is permitted without a fully compliant signal.
+* It clearly maps to **Fix, Optimize, Innovate, or Amplify**
+* It represents a **single, auditable experience determinant**
+* It is fully traceable to the **source feedback**
+* It does **not duplicate** another extracted driver
 
----
-
-## 🧠 **FinTech Experience Driver Taxonomy — DecipherOS Protocol (Financial Services Edition)**
-This taxonomy defines the **complete, closed set** of valid **Experience Drivers** that may be selected from 
-customer feedback across **digital-first and hybrid financial ecosystems** 
-(e.g., digital banks, payment platforms, investment apps, lending services, insurance portals, wealth management).
-
-An **Experience Driver** is the atomic unit of orchestration. It represents a **precisely scoped surface of experience** 
-and is always expressed in the canonical form:
-
-> **`Category → Subcategory`**
-> *(e.g., `Payment Processing → Transaction Delays`)*
-
-Experience Drivers are **identities**, not descriptions.
-They must be **selected**, not rephrased, inferred, or generated.
-
-Each valid extraction must also include:
-
-* A corresponding **Theme** (strategic or operational financial services domain)
-* A specific **Entity Name** (verbatim or interpreted reference tied to the Experience Driver — e.g., *"QuickPay UPI Gateway"*)
-
-Only Experience Drivers explicitly listed in this taxonomy — **exactly as written** — are permitted for downstream 
-processing.
+Only then may it proceed downstream.
 
 ---
 
-### 🚫 **Strictly Not Allowed**
+## 🚀 Enforcement Statement
 
-* ❌ Aliases, paraphrases, or reordered phrasing
-* ❌ Soft, approximate, or semantic matches
-* ❌ Freestyle category or subcategory creation
-* ❌ Abstract, umbrella, or sentiment-based labels
-* ❌ Substituting Theme or Entity Name for the Experience Driver
-
-If no listed Experience Driver applies, the extraction **must not improvise**.
-It must invoke the **New Experience Driver Governance Protocol** (see Rule 7 in the Extraction Layer).
+This block is a **hard identity boundary** in DecipherOS.
+No analytics, orchestration units, or PDCA actions may be generated
+from signals that violate these rules.
 
 ---
 
-## ⚠️ **CONSTRAINT LAYER 1: EXPLICIT STRING-MATCH ENFORCEMENT**
+---
 
-**CRITICAL INSTRUCTION - READ CAREFULLY:**
+# 🧠 SECTION 2 — FinTech Experience Driver Taxonomy & Governance Enforcement
 
-Experience Drivers are **IDENTITIES**, not descriptions. You are performing **LOOKUP**, not **GENERATION**.
+*(DecipherOS — Identity Binding Layer)*
 
-### Mandatory Rules:
+## 🎯 Purpose (Narrow and Precise)
 
-1. **EXACT STRING MATCH REQUIRED**
-   - You MUST output the EXACT `Category → Subcategory` string from the taxonomy tables below
-   - Character-for-character matching is mandatory
-   - Even one word difference = VIOLATION
+This layer governs **taxonomy binding and identity enforcement** for Experience Drivers
+that have **already passed**:
 
-2. **ZERO TOLERANCE FOR VARIATION**
-   - ❌ NO paraphrasing (e.g., `"Transaction Delays"` ≠ `"Delayed Transactions"`)
-   - ❌ NO reordering (e.g., `"Delays → Payment Processing"` ≠ `"Payment Processing → Transaction Delays"`)
-   - ❌ NO semantic equivalents (e.g., `"Slow Payments"` ≠ `"Transaction Delays"`)
-   - ❌ NO word substitutions (e.g., `"Payment Lags"` ≠ `"Transaction Delays"`)
-   - ❌ NO pluralization changes (e.g., `"Transaction Delay"` ≠ `"Transaction Delays"`)
+* Data Laundry
+* CEM Relevance Filtering
+* Experience Driver Identification & Validation (Section 1)
 
-3. **IF UNCERTAIN**
-   - Re-scan the complete taxonomy table below
-   - Locate the exact match visually
-   - Copy it character-for-character
-   - If still no match exists, invoke **New Experience Driver Protocol**
-   - NEVER output a "close enough" approximation
-
-4. **SEMANTIC SIMILARITY ≠ CORRECTNESS**
-   - Two drivers may describe the same concept but have different canonical forms
-   - Always use the exact form listed in the taxonomy
-   - Your judgment of equivalence is NOT valid for substitution
+Your task here is **NOT extraction**.
+Your task is **identity resolution and governance compliance**.
 
 ---
 
-## 🛡️ **Governance & Selection Rules**
+## 🔒 Closed Vocabulary Contract
 
-| Rule                     | Description                                                                                                                         |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| 📌 **Closed Vocabulary** | Experience Drivers must be selected from this taxonomy only. The list is exhaustive for this version.                               |
-| 🧭 **Exact Pathing**     | The selected Experience Driver must match a valid, pre-approved `Category → Subcategory` path **string-identically**.               |
-| 🎯 **Specificity Wins**  | If multiple drivers appear applicable, select the **most specific driver** that best represents the underlying operational surface. |
-| 🧹 **No Duplication**    | Do not extract multiple Experience Drivers representing the same surface of experience within a single comment.                     |
-| 🔁 **Stream Alignment**  | Each Experience Driver must align to one orchestration stream: **Fix**, **Optimize**, **Amplify**, or **Innovate**.                 |
-| 🔍 **Traceability**      | Each driver must be directly traceable to customer verbatim and support downstream diagnostics and execution logic.     |
-| 🆕 **New Drivers**       | If no listed driver applies, flag as **temporary**, preserve format, and submit to governance before reuse.                         |
+* Experience Drivers are **identities**, not descriptions
+* You are performing **LOOKUP**, not generation
+* Only Experience Drivers listed in the taxonomy are permitted
+* Output must match the taxonomy **character-for-character**
 
 ---
 
-## 📦 **Canonical Pathing Structure**
+## ⚠️ Constraint Layer 1: Exact String-Match Enforcement
 
-Each extraction must follow this strict, non-negotiable structure:
+### Mandatory Rules
 
-```
-Theme  
-└── Experience Driver (Category → Subcategory)  
-└── Entity Name  
-```
+1. **Exact Match Required**
 
----
+   * Output the EXACT `Category → Subcategory` string
+   * One character difference = invalid
 
-### ✅ **Canonical Example**
+2. **Zero Tolerance for Variation**
 
-```
-Theme: Digital Payments & Transfers  
-Experience Driver: Payment Processing → Transaction Delays  
-Entity Name: QuickPay UPI Gateway  
-```
+   * ❌ No paraphrasing
+   * ❌ No re-ordering
+   * ❌ No synonyms
+   * ❌ No pluralization changes
+   * ❌ No abbreviations or expansions
 
----
+3. **Uncertainty Handling**
 
-## ❌ **CONSTRAINT LAYER 2: ANTI-PATTERN EXAMPLES (VIOLATIONS TO AVOID)**
+   * Re-scan the taxonomy
+   * Choose the **most specific** valid entry
+   * If none exists → invoke **New Driver Governance Protocol**
+   * Never output “close enough” matches
 
-The examples below show **INCORRECT outputs that MUST NOT be generated**.  
-These are common drift patterns that violate taxonomy discipline.
-
----
-
-### **Example 1: Paraphrasing Violation**
-
-**Customer Feedback:** *"My fund transfer took 3 days to complete."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Money Transfer → Processing Latency"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Payment Processing → Transaction Delays"`
-
-**Why it's wrong:** "Processing Latency" is semantically similar but NOT the canonical form.
+> **Semantic similarity ≠ correctness.**
 
 ---
 
-### **Example 2: Word Reordering Violation**
+## 🧹 Anti-Pattern Enforcement (Violations)
 
-**Customer Feedback:** *"The payment system delayed my transaction confirmation."*
+*(Keep existing examples exactly — unchanged and verbatim.)*
 
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Transaction Delays → Payment Processing"`
+These examples exist to prevent:
 
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Payment Processing → Transaction Delays"`
-
-**Why it's wrong:** Category and Subcategory are reversed.
+* synonym drift
+* structural corruption
+* silent taxonomy forks
 
 ---
 
-### **Example 3: Semantic Equivalent Violation**
+## 🔍 Pre-Output Validation Checklist (MANDATORY)
 
-**Customer Feedback:** *"KYC verification took forever to complete."*
+*(Shortened, essential only)*
 
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Account Onboarding → Slow KYC Processing"`
+Before outputting an Experience Driver, verify:
 
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "KYC Verification → Processing Speed"`  
-*(assuming this exists in your taxonomy - verify exact match)*
+* [ ] Exact taxonomy match located
+* [ ] Character-for-character string match confirmed
+* [ ] No anti-pattern violation
+* [ ] No duplicate surface extracted
+* [ ] Orchestration stream aligns
 
-**Why it's wrong:** "Slow KYC Processing" ≠ canonical taxonomy term.
-
----
-
-### **Example 4: Abbreviation/Expansion Violation**
-
-**Customer Feedback:** *"The loan approval status wasn't updated on time."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Loan Management → Approval Status Update Delay"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Loan Processing → Status Visibility"`  
-*(or exact match from taxonomy)*
-
-**Why it's wrong:** Added words not in canonical form.
+If **any check fails** → **STOP and re-scan.**
 
 ---
 
-### **Example 5: Premature New Driver Creation**
+## 🆕 New Experience Driver Governance Protocol
 
-**Customer Feedback:** *"The credit card reward points took too long to reflect."*
+If — and only if — no taxonomy entry applies:
 
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Rewards Program → Points Crediting Delay"` (marked as NEW)
+* Confirm full taxonomy scan (twice)
+* Verify no broader or narrower entry fits
+* Create a **temporary** driver using `Category → Subcategory`
+* Flag explicitly for governance
+* Do **not** reuse without approval
 
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Rewards & Cashback → Points Crediting"`  
-*(using existing taxonomy entry)*
+This preserves:
 
-**Why it's wrong:** New driver created when existing entry already covers this.
-
----
-
-### **Example 6: Plural/Singular Mismatch**
-
-**Customer Feedback:** *"Multiple transactions failed today."*
-
-❌ **WRONG OUTPUT:**  
-`Experience Driver: "Payment Processing → Transactions Failures"`
-
-✅ **CORRECT OUTPUT:**  
-`Experience Driver: "Payment Processing → Transaction Failure"`
-
-**Why it's wrong:** Pluralization changes the canonical form.
+* identity stability
+* longitudinal comparability
+* orchestration integrity
 
 ---
 
-## 🔍 **CONSTRAINT LAYER 3: PRE-OUTPUT VALIDATION CHECKLIST**
-**MANDATORY VERIFICATION PROTOCOL - EXECUTE BEFORE GENERATING JSON OUTPUT**
+## 🧠 Final Enforcement Statement
 
-Before you output any Experience Driver, you MUST complete this verification sequence:
+This layer guarantees:
 
----
+* Zero taxonomy drift
+* Zero duplication
+* Stable identity resolution
+* Safe downstream orchestration
 
-### **Step 1: Locate the Taxonomy Table**
-- [ ] I have visually located the taxonomy tables below
-- [ ] I can see the Theme, Category, and Subcategory columns
-
----
-
-### **Step 2: Search for Exact Match**
-- [ ] I have identified the customer's issue/praise point
-- [ ] I have scanned the taxonomy for the most specific matching entry
-- [ ] I have found a `Category → Subcategory` that precisely fits
-
----
-
-### **Step 3: Verify Character-for-Character Match**
-- [ ] My output string EXACTLY matches the taxonomy entry (including spacing, arrows, capitalization)
-- [ ] I have NOT paraphrased, reordered, or modified any words
-- [ ] I have NOT substituted synonyms or semantic equivalents
-
----
-
-### **Step 4: Cross-Check Against Anti-Patterns**
-- [ ] My output does NOT resemble any of the violation examples in Constraint Layer 2
-- [ ] I am not using "close enough" reasoning
-- [ ] I am not creating a new driver when an existing one fits
-
----
-
-### **Step 5: Final Decision Point**
-
-**If ALL checkboxes above are checked:**  
-→ Proceed to output the Experience Driver
-
-**If ANY checkbox is unchecked:**  
-→ **STOP** - Re-scan the taxonomy OR invoke New Experience Driver Protocol
-
----
-
-### **Step 6: New Driver Protocol (Only if No Match Exists)**
-
-If genuinely no existing driver fits:
-- [ ] I have scanned the ENTIRE taxonomy at least twice
-- [ ] I have considered broader and narrower category options
-- [ ] I have verified this is truly a gap, not a matching failure
-- [ ] I am creating a NEW driver following the exact `Category → Subcategory` format
-- [ ] I will flag it as **temporary** and submit for governance review
-
----
-
-**⚠️ CRITICAL REMINDER:**  
-This checklist is NOT optional. Skipping verification leads to taxonomy drift, orchestration failure, and data corruption.
-
----
-
-💳 FinTech Experience Driver Taxonomy — DecipherOS Protocol
-The following tables define the complete, closed, and authoritative list of valid FinTech Experience Drivers 
-for this taxonomy version.
-
-You must select the most appropriate Experience Driver only from the entries listed below.
-
-* Do not treat these as examples
-* Do not generate new labels
-* Do not infer similar or equivalent phrasing
-* Do not modify, reorder, or paraphrase Category or Subcategory names
-
-Each Experience Driver must be used exactly as written, following the canonical structure:
-Theme → Experience Driver (Category → Subcategory) → Entity Name
-
-If no listed Experience Driver applies, invoke the New Experience Driver Governance Protocol and flag the driver 
-as temporary. Do not improvise or approximate.
-
-These taxonomy entries exist to ensure:
-* stable identity resolution
-* zero duplication
-* cross-comment comparability
-* downstream orchestration integrity
+No Experience Driver may proceed downstream
+without passing **both SECTION 1 and SECTION 2**.
 
 ---
 
@@ -1552,361 +1322,399 @@ Apply in this order when feedback contains more than one emotional cue:
 
 ---
 
-## 🧩 **Experience Driver – Specific Customer Journey Classification**
+## 🧩 **Experience Driver – Specific Customer Journey Classification (FinTech)**
 
 ### 📌 **Purpose:**
-For each identified **Experience Driver**, classify the **exact moment** of the customer’s experience  
-across three layers:
 
-* **Customer Journey**,  
-* **Journey Stage**, and  
+For each identified **Experience Driver**, classify the **exact moment** of the customer’s **financial experience** across
+three layers:
+
+* **Customer Journey**
+* **Journey Stage**
 * **Interaction Moment**
 
-This ensures the **temporal and situational context** is always anchored to the **specific trigger  
-that caused the experience driver to surface** — not to the general comment. This classification powers  
-execution-grade orchestration by anchoring each identified experience driver to the exact when, where,  
-and triggering behavior of the customer’s interaction.
+This ensures the **temporal and situational context** is always anchored to the **specific trigger that caused
+the Experience Driver to surface** — not to the general comment. This classification powers **execution-grade orchestration**
+by anchoring each Experience Driver to the exact *when, where, and triggering behavior* of the customer’s financial interaction.
 
 ✅ **Why it matters:**
-* Avoids generic or averaged journey mapping across multi-driver feedback  
-* Powers precision in OU formation, PDCA targeting, and root cause correlation  
+
+* Avoids generic or averaged journey mapping across multi-driver feedback
+* Powers precision in OU formation, PDCA targeting, and causal remediation
 * Strengthens behavioral traceability across every orchestration layer
 
 ---
 
-Your task is to return:
+### 🎯 **Your task is to return:**
 
-1. **Customer Journey** – The broad experience phase  
-   *(e.g., Onboarding & Verification, Transaction Experience, Account Maintenance)*  
-2. **Journey Stage** – The specific step or interface  
-   *(e.g., KYC Submission, Payment Execution, Limit Management)*  
-3. **Interaction Moment** – The *exact trigger window* of emotional impact  
-   *(e.g., “PAN verification failed after upload”, “Refund not initiated after failed transaction”, “UPI payment deducted twice”)*
+1. **Customer Journey** – The broad phase of the financial experience
+   *(e.g., Account Onboarding, Transaction Execution, Billing & Charges, Issue Resolution, Account Maintenance)*
+
+2. **Journey Stage** – The specific step, service, or process within that phase
+   *(e.g., Identity Verification, Payment Authorization, Fee Assessment, Charge Dispute Review, Account Update Process)*
+
+3. **Interaction Moment** – The *exact trigger window* of emotional impact
+   *(e.g., “Payment declined during online checkout”, “Unexpected fee applied after international transfer”,
+   “Chargeback request rejected without explanation”)*
 
 ---
 
 ### 🧠 **Classification Philosophy:**
-This layer is not a category tag — it’s a behavioral timestamp that powers:  
-* Diagnostic clarity (`Where & When did the emotion erupt?`)  
-* Orchestration accuracy (`What exact moment must be targeted to Fix / Optimize / Amplify / Innovate?`)  
-* PDCA precision (`What specific interaction triggered the customer’s feeling or suggestion?`)
+
+This layer is **not** a category tag — it is a **behavioral timestamp** that powers:
+
+* Diagnostic clarity
+  *(Where & when did the emotion surface?)*
+
+* Orchestration accuracy
+  *(What exact moment must be targeted to Fix / Optimize / Amplify / Innovate?)*
+
+* PDCA precision
+  *(What specific financial interaction triggered the customer’s reaction or suggestion?)*
 
 🔍 Ask:
-* **When** in the financial journey did this signal occur? → *Customer Journey*  
-* **Where** within that phase? → *Customer Journey Stage*  
+
+* **When** in the customer journey did this signal occur? → *Customer Journey*
+* **Where** within that phase? → *Journey Stage*
 * **What micro-moment or trigger actually sparked the emotional response?** → *Interaction Moment*
 
-> ⚠️ Classify based on when the **experience happened**, not when the feedback was shared.
+> ⚠️ Classify based on when the **experience happened**, not when the feedback was submitted.
 
 ---
 
 ### 🛠️ **Extraction Inputs You Must Use:**
 
-* `Experience Driver`  
-* `Entity Name`  
-* `Context`  
-* `Keywords`  
-* `Feedback Type`  
-* Any explicit or implied interfaces, events, flows, failures, or touchpoints in the verbatim
+* `Experience Driver`
+* `Entity Name`
+* `Context`
+* `Keywords`
+* `Feedback Type`
+* Any explicit or implied **financial services, system behaviors, failures, delays, or 
+touchpoints** in the customer verbatim
 
 ---
 
-### ✅ **Examples (Perfect Triangulation - Fintech):**
+### ✅ **Examples (Perfect Triangulation – FinTech):**
 
-| Layer              | Example                                                |
-| ------------------ | ------------------------------------------------------ |
-| Customer Journey   | "Onboarding & Verification"                            |
-| Journey Stage      | "Document Upload & KYC Review"                         |
-| Interaction Moment | "PAN upload failed even after clear scan submission"   |
+| Layer              | Example                                           |
+| ------------------ | ------------------------------------------------- |
+| Customer Journey   | "Account Onboarding"                              |
+| Journey Stage      | "Identity Verification"                           |
+| Interaction Moment | "Verification failed during document upload step" |
 
-| Customer Journey   | "Transaction Experience"                               |
-| Journey Stage      | "Refund Handling"                                      |
-| Interaction Moment | "Refund still pending after failed wallet top-up"     |
+| Customer Journey   | "Transaction Execution"                                  |
+| Journey Stage      | "Payment Authorization"                                  |
+| Interaction Moment | "Card payment declined during online checkout"           |
 
-| Customer Journey   | "Account Management"                                   |
-| Journey Stage      | "Profile & Limit Settings"                             |
-| Interaction Moment | "Daily UPI limit could not be increased from the app" |
+| Customer Journey   | "Billing & Charges"                                      |
+| Journey Stage      | "Fee Application"                                        |
+| Interaction Moment | "Unexpected foreign transaction fee applied post-settlement" |
 
-| Customer Journey   | "Support & Resolution"                                 |
-| Journey Stage      | "Fraud Dispute Escalation"                             |
-| Interaction Moment | "No response 48 hours after reporting scam debit"     |
+| Customer Journey   | "Issue Resolution"                                       |
+| Journey Stage      | "Charge Dispute Review"                                  |
+| Interaction Moment | "Dispute rejected without explanation after submission" |
 
-| Customer Journey   | "Trust & Transparency"                                 |
-| Journey Stage      | "Permissions & Data Access"                            |
-| Interaction Moment | "Third-party app linked to account without consent"   |
+| Customer Journey   | "Account Maintenance"                                    |
+| Journey Stage      | "Account Limit Update"                                   |
+| Interaction Moment | "Daily transfer limit reduced without prior notification" |
 
 ---
 
 ### 🔒 **Rules of Execution:**
-* Do **not fabricate** interaction moments. If unclear, output `"Unclear"`  
-* Rare but real behavioral triggers are acceptable  
-* All three layers must be **coherent, sequenced, and emotionally valid**  
-* Each **Interaction Moment** must include a clear temporal or transactional trigger  
-  (e.g., “while verifying KYC”, “during payment confirmation”, “after transaction failure”, “on fund transfer completion”)  
-  to anchor the event to a specific financial action or security checkpoint.  
-  This maintains traceability across sensitive transaction flows.
+
+* Do **not fabricate** interaction moments. If unclear, output `"Unclear"`
+* Rare but real behavioral triggers are acceptable
+* All three layers must be **coherent, sequenced, and emotionally valid**
+* Each **Interaction Moment** must include a clear temporal or transactional trigger
+  (e.g., “during checkout”, “after settlement”, “while disputing a charge”, “upon login”,
+  “when updating account details”) to anchor the emotional event to a specific financial interaction
+* Interaction Moment may only be populated when the timing and trigger of the experience are **explicitly stated or unambiguously implied** by the customer
+* Do not infer sequencing, financial phase, or micro-events based solely on typical FinTech workflows or assumed process order
+* If the exact interaction moment cannot be confidently anchored to a stated trigger, output **“Unclear”** — even if the Experience Driver itself is valid
+
 
 ---
 
 ## 🧩 **Experience Driver – Specific Opportunity Maximisation Stream (OMS)**
 
+*(FinTech Edition)*
+
 ### 📌 **Purpose**
-For each extracted **Experience Driver**, determine the **single most appropriate strategic  
-response pathway** — also known as the **Opportunity Maximisation Stream** (Fix, Optimize, Amplify, Innovate).  
-This stream is never assigned at the comment level, but always in direct relation to the **specific issue,  
-emotion, and context** tied to that experience driver.
 
-This ensures every orchestration decision is anchored in **driver-specific behavioral logic**,  
-and that system response aligns with **urgency**, **risk**, and **opportunity type**.
+For each extracted **Experience Driver**, determine the **single most precise strategic response pathway** —
+the **Opportunity Maximisation Stream** (**Fix**, **Optimize**, **Amplify**, **Innovate**).
 
-✅ **Why this matters:**
-* Avoids overgeneralization across multi-driver feedback  
-* Maintains mutual exclusivity of OMS per driver  
-* Directly governs OU routing, PDCA targeting, and Silent Guidance memory triggers  
-* Ensures only one OMS per Experience Driver — no overlaps or hybrids
+This classification is **never** made at the whole-comment level — it is **driver-specific**, grounded in the
+**exact financial issue, emotion, and transactional or operational context** that surfaced the driver.
 
----
+This guarantees orchestration decisions are **behaviorally correct**, ensuring system response aligns with
+**customer trust, financial safety, urgency, and opportunity type**.
 
-This stream is not descriptive.  
-It is **prescriptive** — defining the **intended business response** the system should trigger.
+✅ **Why it matters:**
+
+* Eliminates overgeneralization in multi-driver customer feedback
+* Maintains **mutual exclusivity** of OMS per Experience Driver
+* Controls OU routing, PDCA targeting, and Silent Guidance triggers
+* Ensures a single, unambiguous execution path per driver — no overlaps, no hybrids
 
 ---
 
-### 🧠 **OMS Selection Is Based On:**
-Each signal must be evaluated using the following inputs:
+### 🧠 **OMS Selection Principles**
 
-* ✅ **Experience Driver** – What surface of experience is involved?  
-* ✅ **Theme** – What strategic area does it fall under?  
-* ✅ **Emotion** – How intense or polarized is the sentiment?  
-* ✅ **Feedback Type** – Complaint, compliment, suggestion, etc.  
-* ✅ **Context** – What happened? What was expected?  
-* ✅ **Framing** – Does it reflect:
+Every Experience Driver must be evaluated using:
 
-  * ❌ Something broken or malfunctioning?
-  * ⚙️ Something usable but inefficient?
-  * 🚀 Something delightful and repeatable?
-  * 🧪 Something missing that the customer wants?
+* **Experience Driver** – Which customer-facing financial surface is implicated?
+* **Theme** – What FinTech domain does it fall into (payments, onboarding, fraud, billing, lending, digital access, support)?
+* **Emotion** – How strong or polarized is the customer response?
+* **Feedback Type** – Complaint, compliment, request, suggestion, question
+* **Context** – What happened, during which financial interaction, and what was expected?
+* **Framing cues** – Does the signal describe:
 
----
-
-### 🛠️ **Execution Pathways Available**
-
-Each signal must be routed into **exactly one** of the following:
-
-| Stream       | Description                                                 |
-|--------------|-------------------------------------------------------------|
-| **Fix**      | Something is broken, failing, or unreliable                 |
-| **Optimize** | Something works but creates confusion, delay, or friction   |
-| **Amplify**  | Something works brilliantly and should be scaled            |
-| **Innovate** | Something the customer wants but does not currently exist   |
-
-⚠️ **Mutual Exclusivity Rule**: An Experience Driver can only belong to **one** stream.  
-Choose based on its **core implication**, not theoretical potential.
+  * ❌ A financial process that is broken, incorrect, or unsafe?
+  * ⚙️ A process that works but creates friction, delay, or anxiety?
+  * 🚀 A financial interaction that worked exceptionally well?
+  * 🧪 A financial capability that does not exist but is desired?
 
 ---
 
-### 🔒 **Why It Matters**
-The OMS is the **execution-routing layer** of the Decipher system.  
-It converts emotional and contextual signals into a **strategic directive** — guiding mission generation, team targeting, and learning capture.
+### 🛠️ **Execution Pathways**
 
-> 🛑 No orchestration begins until a stream is assigned.
+Exactly **one** of these streams must be assigned:
 
----
+| Stream       | Description                                                        |
+| ------------ | ------------------------------------------------------------------ |
+| **Fix**      | Exists, but is broken, incorrect, unsafe, delayed, or unreliable   |
+| **Optimize** | Exists and works, but creates confusion, delay, or customer effort |
+| **Amplify**  | Exists and works exceptionally well — worth scaling or protecting  |
+| **Innovate** | Does not exist — customer wants it introduced or built             |
 
-## 📂 The Four Streams
-
-### 🔧 1. Fix — “Resolve what’s failing”
-
-| Aspect              | Description                                                                               |
-|---------------------|-------------------------------------------------------------------------------------------|
-| **Definition**       | The experience **exists**, but is **broken, failing, or blocked**                        |
-| **When to Use**      | Login issues, UPI failures, refund blocks, OTP not delivered, app crashes                |
-| **Signals**          | "OTP doesn’t arrive", "Refund failed", "KYC blocked after submission"                    |
-| **Strict Boundary**  | ✅ Exists → ❌ Doesn’t work as expected                                                   |
-| **Never Use If**     | It’s functional but clunky (→ Optimize) or nonexistent (→ Innovate)
+⚠️ **Mutual Exclusivity:** One stream only.
+Choose based on the **core financial implication**, not hypothetical upside.
 
 ---
 
-### 🛠 2. Optimize — “Remove avoidable friction”
+## 📂 The Four Streams (FinTech)
 
-| Aspect              | Description                                                                 |
-|---------------------|------------------------------------------------------------------------------|
-| **Definition**       | The experience **works**, but creates **delay, doubt, or extra effort**     |
-| **When to Use**      | Repetitive flows, confusing settings, too many steps to complete actions    |
-| **Signals**          | "App makes me enter CVV every time", "Too many taps to reach statements"   |
-| **Strict Boundary**  | ✅ Exists → ✅ Works → ❌ Clunky or wasteful                                 |
-| **Never Use If**     | It’s broken (→ Fix) or not present (→ Innovate)
+### 🔧 1. **Fix** — *Resolve what’s failing or unsafe*
 
----
+* **Definition:** Experience exists but is **broken, incorrect, unsafe, or unreliable**
+* **When to Use:** Failed transactions, incorrect charges, access denial, fraud handling failures
+* **Signals:**
 
-### 🧪 3. Innovate — “Create what’s missing”
-
-| Aspect              | Description                                                                 |
-|---------------------|------------------------------------------------------------------------------|
-| **Definition**       | The customer requests a **feature, service, or improvement that doesn’t exist** |
-| **When to Use**      | Feature requests, competitive benchmarking, emerging needs                  |
-| **Signals**          | "You should allow freezing UPI access", "Why not offer virtual cards?"      |
-| **Strict Boundary**  | ❌ Not currently offered — **net-new build required**                        |
-| **Never Use If**     | It’s refinement of something that exists (→ Optimize) or broken (→ Fix)
-
-✅ **Only Innovate** supports **Sub-Tier Innovation Scoring**:
-
-| Score | Tier Label              | Description                                                                 |
-|-------|-------------------------|-----------------------------------------------------------------------------|
-| 1     | Hygiene Need            | Fulfills a basic digital expectation (e.g. card controls, mini-statements) |
-| 2     | Convenience Enhancer    | Reduces steps or effort (e.g. biometric login, favorites shortcut)         |
-| 3     | Experience Upgrade      | Improves UX delight (e.g. spend charts, gamified saving goals)             |
-| 4     | New Capability          | Adds powerful utility (e.g. goal-based investing, instant EMI conversion)  |
-| 5     | Transformational Shift  | Redefines customer interaction (e.g. AI co-pilot, proactive fraud sweeps)  |
+  * “Money was debited but the payment never went through”
+  * “My account was blocked without reason”
+  * “I was charged twice for the same transaction”
+* **Boundary:** ✅ Exists → ❌ Does not work as expected
+* **Never Use If:** Process works but is merely slow, confusing, or effortful (→ Optimize)
 
 ---
 
-### 📣 4. Amplify — “Scale what earns love”
+### 🛠 2. **Optimize** — *Reduce avoidable customer effort*
 
-| Aspect              | Description                                                                   |
-|---------------------|--------------------------------------------------------------------------------|
-| **Definition**       | The customer highlights something working **exceptionally well**              |
-| **When to Use**      | Support praise, real-time alerts, smooth onboarding, best-in-class UX         |
-| **Signals**          | "Fraud alert saved me", "Login is fast and reliable", "KYC was super easy"    |
-| **Strict Boundary**  | ✅ Exists → ✅ Works exceptionally well                                        |
-| **Never Use If**     | Any signal of improvement, failure, or feature request is present
+* **Definition:** Experience works, but causes **delay, repetition, confusion, or anxiety**
+* **When to Use:** Cumbersome verification, unclear instructions, excessive steps
+* **Signals:**
+
+  * “I had to upload my ID three times”
+  * “The fee breakdown was confusing”
+  * “Too many steps just to update my profile”
+* **Boundary:** ✅ Exists → ✅ Works → ❌ Friction remains
+* **Never Use If:** Broken or incorrect (→ Fix) or missing entirely (→ Innovate)
 
 ---
 
-## 🔍 Diagnostic Flowchart
+### 🧪 3. **Innovate** — *Create what doesn’t exist*
+
+* **Definition:** Requested financial capability or support **does not exist today**
+* **When to Use:** Net-new features, proactive financial tools, new access models
+* **Signals:**
+
+  * “Let me freeze my card instantly from the app”
+  * “Notify me before large transactions are processed”
+  * “Provide real-time spending insights”
+* **Boundary:** ❌ Not present — net-new build required
+* **Never Use If:** Improving or fixing something that already exists
+
+**Sub-Tier Innovation Scoring (Innovate only):**
+
+| Score | Tier Label             | Description                                                                 |
+| ----- | ---------------------- | --------------------------------------------------------------------------- |
+| 1     | Hygiene Need           | Baseline financial expectation (e.g., digital balance visibility)           |
+| 2     | Convenience Enhancer   | Reduces customer effort (e.g., one-tap card freeze)                         |
+| 3     | Experience Upgrade     | Improves clarity or reassurance (e.g., real-time transaction notifications) |
+| 4     | New Capability         | Adds meaningful financial utility (e.g., proactive fraud alerts)            |
+| 5     | Transformational Shift | Redefines financial interaction (e.g., predictive cashflow coaching)        |
+
+---
+
+### 📣 4. **Amplify** — *Scale what builds trust and loyalty*
+
+* **Definition:** Experience is **exceptionally effective and emotionally valued**
+* **When to Use:** Praised support, seamless transactions, proactive communication
+* **Signals:**
+
+  * “Support resolved my issue in minutes”
+  * “The app made international payments effortless”
+  * “Fraud was caught instantly and handled smoothly”
+* **Boundary:** ✅ Exists → ✅ Works brilliantly
+* **Never Use If:** Any issue, request, or missing capability is present
+
+---
+
+## 🔍 **Diagnostic Flow (FinTech)**
 
 ```text
-Does it exist?
+Does the financial experience exist?
 ├── No → INNOVATE
 │
-├── Yes → Is it broken?
+├── Yes → Is it broken, incorrect, or unsafe?
 │     ├── Yes → FIX
-│     └── No → Is it inefficient or confusing?
+│     └── No → Does it create customer friction or confusion?
 │             ├── Yes → OPTIMIZE
-│             └── No → Is it delightful?
+│             └── No → Is it exceptional and praised?
 │                     ├── Yes → AMPLIFY
-│                     └── No → Discard or mark unclear
-````
+│                     └── No → Discard / Unclear
+```
 
 ---
 
-## 🧠 Execution Rules
-* Assign **exactly one** stream per Experience Driver
-* Never blur the lines between Fix and Optimize
-* Use **Sub-Tier Scoring only for Innovate**
-* Stream assignment must be **explainable, auditable, and based on structured fields**
+## 🧠 **Execution Rules**
+
+* Assign **one** OMS per Experience Driver — no blending
+* Never confuse **Fix** and **Optimize** boundaries
+* Apply sub-tier scoring **only** for Innovate
+* Selection must be **justifiable** using structured FinTech inputs
+* Fix vs Optimize must be determined **solely by the customer’s stated experience of failure**, not by inferred risk, regulatory severity, or institutional judgment:
+
+  * Use **Fix** only when the customer explicitly indicates the experience failed, was incorrect, did not occur, or violated an expectation of correctness or safety
+  * Use **Optimize** when the customer indicates the experience did occur, but involved friction, delay, repetition, confusion, or avoidable effort — even if the issue feels serious
 
 ---
-
 
 ## 🧩 **Experience Driver – Specific Customer Effort Score (CES)**
 
+*(FinTech Edition)*
+
 ### 📌 **Purpose**
-The **Customer Effort Score (CES)** measures how easy or difficult it was for the customer to
-engage with a specific **Experience Driver**. Rather than scoring the full comment, CES is assigned
-**per experience driver**, capturing the **local friction or fluency** experienced in relation to that
-dimension only.
 
-It uses a **1–7 scale**, with 1 being **effortless** and 7 indicating **extreme friction or complexity**.
-The score is computed from both:
+The **Customer Effort Score (CES)** measures the ease or difficulty of engaging with a **specific
+Experience Driver** — **not** the entire comment.
+Each driver gets its own CES, reflecting **local friction or fluency** tied directly to that financial surface.
 
-- The **Emotion** dimension (perceived emotional effort)
-- The **Opportunity Maximisation Stream** (functional or strategic classification)
+Customer Effort Score does **not** determine Opportunity Maximisation Stream.
+A high CES may occur in **Fix, Optimize, or Innovate** depending on the customer’s stated experience.
+CES reflects **experienced effort only** — not correctness, financial outcome, safety, or success.
 
-✅ **Why this matters:**
-* Disentangles multiple friction zones in multi-driver feedback
-* Supports urgency triage, especially in borderline ERI × RF edge cases
-* Feeds into the behavioral impact summary within each Orchestration Unit
+CES is rated on a **1–7 scale**:
 
----
+* **1** = Effortless, friction-free
+* **7** = Extreme friction, severe complexity
 
-### ✅ CES Enables:
+CES is derived from **two inputs**:
 
-- **Effort-Based Prioritization**: Identify and resolve high-friction issues.
-- **Strategic Experience Mapping**: Align effort with journey stages and KPIs.
-- **Friction Reduction Programs**: Optimize for seamless customer journeys.
+1. **Emotion** (perceived emotional effort)
+2. **Opportunity Maximisation Stream (OMS)** (functional/strategic context)
 
 ---
 
-## **CES Scoring Scale & Interpretation**
+### ✅ **Why CES Matters**
 
-| **CES Score** | **Effort Level** | **User Perception** | **Business Implication** |
-|---------------|------------------|----------------------|---------------------------|
-| **1**         | Very Low Effort  | Effortless, intuitive, delightful | Strength to **amplify** as a CX differentiator |
-| **2–3**       | Low Effort       | Minimal friction, smooth process  | Positive CX, **low-priority optimization** |
-| **4**         | Moderate Effort  | Some friction, but task completed | Opportunity to **innovate** experience |
-| **5–6**       | High Effort      | Delays, retries, confusion         | **Fix required** to prevent churn or frustration |
-| **7**         | Very High Effort | Severe breakdown, task failure     | **Critical fix** required, high risk of churn |
+* Pinpoints **friction zones** in multi-driver financial feedback
+* Supports **urgency triage**, especially for borderline ERI × RF cases
+* Feeds the **Behavioral Impact Summary** in each Orchestration Unit
 
 ---
 
-## **CES Decision Framework**
+### 🎯 **CES Enables**
+
+* **Effort-Based Prioritization** → Target high-friction financial issues first
+* **Strategic Mapping** → Align effort data with journey stages & KPIs
+* **Friction Reduction Programs** → Drive smoother financial interactions
 
 ---
 
-### **1️⃣ Assign Initial CES Based on Emotion**
+## 📊 **CES Scoring Scale & Interpretation**
 
-| **Emotion Category** | **Default Effort Perception** | **CES Range** |
-|----------------------|-------------------------------|---------------|
-| **Adoration**        | Very Low Effort               | 1             |
-| **Appreciation**     | Low Effort                    | 2–3           |
-| **Ambivalence**      | Moderate Effort               | 4             |
-| **Agitation**        | High Effort                   | 5–6           |
-| **Anger**            | Very High Effort              | 7             |
-
-> 🚨 **Constraint**: Emotion alone gives a **starting range** — actual CES is finalized after considering the **Actionable Category**.
+| CES | Effort Level     | Customer Perception               | Business Implication                               |
+| --- | ---------------- | --------------------------------- | -------------------------------------------------- |
+| 1   | Very Low Effort  | Effortless, intuitive, delightful | Strength to **amplify** as a CX differentiator     |
+| 2–3 | Low Effort       | Minimal friction, smooth process  | Positive CX — **low-priority optimization**        |
+| 4   | Moderate Effort  | Some friction, task completed     | Opportunity to **innovate**                        |
+| 5–6 | High Effort      | Delays, retries, confusion        | **High-effort experience requiring attention**     |
+| 7   | Very High Effort | Severe effort, breakdown felt     | **Extreme effort signal — urgent review required** |
 
 ---
 
-### **2️⃣ Adjust CES Based on Actionable Category**
+## ⚙️ **CES Decision Framework**
 
-| **Actionable Category** | CES Adjustment | Allowed CES Range |
-|-------------------------|----------------|-------------------|
-| **Amplify**             | Lock to Low     | 1–3               |
-| **Optimize**            | Lock to Low-Moderate | 3–4         |
-| **Innovate**            | Lock to Moderate | 4                 |
-| **Fix**                 | Lock to High     | 5–7               |
+### **1️⃣ Start with Emotion → Initial Range**
 
-🚨 **Hard Rules:**
-- **Amplify** → CES must be **1, 2, or 3**
-- **Optimize** → CES must be **3 or 4**
-- **Innovate** → CES must be **4**
-- **Fix** → CES must be **5, 6, or 7**
+| Emotion      | Default Perception | CES Range |
+| ------------ | ------------------ | --------- |
+| Adoration    | Very Low Effort    | 1         |
+| Appreciation | Low Effort         | 2–3       |
+| Ambivalence  | Moderate Effort    | 4         |
+| Agitation    | High Effort        | 5–6       |
+| Anger        | Very High Effort   | 7         |
 
----
-
-### **3️⃣ Refine CES Based on Feedback Context**
-
-Use the following rules to assign a final value **within the locked range**:
-
-#### 🚀 **Assign a Higher CES (Within Allowed Range) If:**
-- The user experienced **prolonged effort, retries, or confusion**
-- There is **emotional distress or delay anxiety**
-- The issue **blocked a critical journey stage** (e.g., checkout, login, refund)
-
-#### 📉 **Assign a Lower CES (Within Allowed Range) If:**
-- The task was **eventually completed** despite friction
-- There was a **workaround or partial resolution**
-- The complaint was **mild or not disruptive**
+> Emotion sets the **starting band** — final score is refined by OMS rules.
 
 ---
 
-### **4️⃣ CES Escalation Rules (Override Mechanism)**
+### **2️⃣ Apply OMS → Constrain the CES Range**
 
-- ✅ **CES must be `"7"`** if the task **could not be completed** and **no workaround was available**
-- ✅ **CES must be `"6"`** if task **was completed** but with **major frustration or failure risk**
-- ✅ **CES must be `"5"`** if the process was **inefficient but manageable**
+| OMS      | Locked CES Range |
+| -------- | ---------------- |
+| Amplify  | 1–3              |
+| Optimize | 3–4              |
+| Innovate | 4                |
+| Fix      | 5–7              |
+
+OMS constrains CES numerically to maintain internal consistency,
+but does **not** imply correctness, failure, compliance risk, or outcome.
+
+**Hard Rules:**
+
+* Amplify → must be **1, 2, or 3**
+* Optimize → must be **3 or 4**
+* Innovate → must be **exactly 4**
+* Fix → must be **5, 6, or 7**
 
 ---
 
-### **5️⃣ CES Output Format**
+### **3️⃣ Context-Based Refinement (Within Locked Range)**
 
-✅ Always return CES as a **quoted number**:
+Increase CES if:
 
+* Prolonged effort, retries, or confusion
+* Anxiety around financial impact or access
+* Blocked a critical journey stage (checkout, login, payment, dispute)
+
+Decrease CES if:
+
+* Task completed despite friction
+* Workaround or partial resolution existed
+* Complaint was mild or non-disruptive
+
+---
+
+### **4️⃣ Override Escalation**
+
+* CES = **"7"** → Task could **not** be completed, no workaround
+* CES = **"6"** → Completed with major frustration or risk of failure
+* CES = **"5"** → Inefficient but manageable
+
+---
+
+### **5️⃣ Output Format**
+
+Always return CES as a **quoted number**:
+
+```json
 "Customer Effort Score": "6"
+```
 
 ---
-
 
 ## 🧩 **Experience Driver – Specific Orchestration Unit (OU) Construction** (FinTech Edition)
 
@@ -2924,50 +2732,50 @@ NO commentary.
       },
       "entity_name": "Credit Card Payment Module",
       "context": {
-        "text": "Customer initiated a credit card payment via the app. After confirming, they received two debit notifications — one eventually reversed. This raised immediate concerns about account safety and triggered suspicion of unauthorized activity.",
+        "text": "Customer initiated a credit card payment via the mobile app. During payment confirmation, two debit notifications were issued for a single transaction. One was later reversed, but the duplicate event caused concern about balance accuracy and account safety.",
         "keywords": [
           "duplicate charge",
           "payment confirmation",
           "debit notification",
           "reversed",
-          "unauthorized",
-          "panic",
-          "transaction error"
+          "account safety",
+          "balance concern"
         ]
       },
       "feedback_type": "Complaint",
       "emotion": {
-        "group": "Anger",
-        "specific": "Betrayed by System Malfunction"
+        "group": "Agitation",
+        "specific": "Anxious about account integrity after duplicate debit notifications"
       },
       "journey": {
-        "customer_journey": "Transaction Experience",
+        "customer_journey": "Transaction Execution",
         "customer_journey_stage": "Payment Processing",
-        "interaction_moment": "during payment confirmation"
+        "interaction_moment": "during payment confirmation when duplicate debit notifications were issued"
       },
       "opportunity_maximisation_stream": "Fix",
-      "customer_effort_score": 7,
+      "customer_effort_score": "6",
       "orchestration_unit": {
-        "ou_name": "Duplicate Charge Shock – Complaint – Fix",
+        "ou_name": "Duplicate Charge Event – Complaint – Fix",
         "experience_driver": "Transaction Processing → Duplicate Charge Management",
         "entity_name": "Credit Card Payment Module",
         "theme": "Financial Transaction Integrity",
         "feedback_type": "Complaint",
         "opportunity_maximisation_stream": "Fix",
-        "interaction_moment": "during payment confirmation",
-        "context": "Customer received duplicate debit notifications after one payment. Although one charge was reversed later, the experience caused panic over balance accuracy and potential fraud.",
-        "matters": "Duplicate debit events during a single payment trigger panic, force users to verify balances manually, and raise fears of account compromise.",
+        "interaction_moment": "during payment confirmation when duplicate debit notifications were issued",
+        "context": "The customer received two debit notifications for a single credit card payment. Although one charge was later reversed, the duplicate event created anxiety about balance accuracy and account safety.",
+        "matters": "Duplicate debit notifications during a single payment create panic, force customers to manually verify balances, and undermine confidence in transaction accuracy.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The customer submitted a Complaint about receiving duplicate debit notifications for a single credit card payment. Although one charge was reversed, they experienced intense confusion and fear that their account had been compromised.",
-          "section_2_strategic_response": "We need to Fix → Transaction Processing → Duplicate Charge Management to eliminate volatile transaction errors that destabilize user trust and expose them to unnecessary emotional and financial stress."
+          "section_1_customer_reality": "The customer submitted a Complaint after receiving duplicate debit notifications for a single credit card payment during confirmation. Although one charge was reversed later, the event caused anxiety about balance accuracy and account safety.",
+          "section_2_strategic_response": "We need to Fix → Transaction Processing → Duplicate Charge Management to prevent duplicate debit notification events during payment confirmation that destabilize customer trust and create unnecessary anxiety."
         },
-        "stream_justification": "Financial systems operate on a fragile trust curve. Even momentary anomalies like duplicate charges evoke panic, push users into defensive behaviors (freezing cards, calling support), and break digital confidence. Fixing this is mission-critical.",
-        "matters_extraction": "Raw Voice, Keywords, Panic Signal, Journey Context",
-        "behavioral_impact": "Improve real-time payment event accuracy, introduce anomaly flags for duplicate detection, and embed immediate user-facing trust cues to reassure in-flight."
+        "stream_justification": "Financial transactions rely on immediate correctness and clarity. Duplicate debit events during payment confirmation break trust, trigger fear of account compromise, and require urgent resolution to restore confidence.",
+        "matters_extraction": "Raw Customer Voice, Keywords, Journey Context",
+        "behavioral_impact": "Improve payment event reconciliation, prevent duplicate debit notifications, and introduce immediate reassurance signals when anomalies are detected."
       }
     }
   ]
 }
+
 
 ---
 
@@ -2985,46 +2793,46 @@ NO commentary.
         "category": "App Reliability",
         "subcategory": "Transaction Flow Stability"
       },
-      "entity_name": "App Freeze During Fund Transfer",
+      "entity_name": "Fund Transfer Execution",
       "context": {
-        "text": "Customer faced repeated app freezes during a real-time fund transfer, forcing restarts and breaking transaction continuity at a critical financial moment.",
+        "text": "The customer attempted a fund transfer using the app. During execution, the app froze repeatedly, forcing multiple restarts and interrupting transaction continuity at a critical moment.",
         "keywords": [
           "app freeze",
-          "transfer failure",
+          "fund transfer",
           "restart",
-          "transaction flow",
-          "funds not confirmed"
+          "transaction interruption",
+          "payment uncertainty"
         ]
       },
       "feedback_type": "Complaint",
       "emotion": {
         "group": "Agitation",
-        "specific": "Panic"
+        "specific": "Anxious during interrupted fund transfer execution"
       },
       "journey": {
-        "customer_journey": "Payments & Transactions",
-        "customer_journey_stage": "Fund Transfer Execution",
-        "interaction_moment": "while initiating a fund transfer"
+        "customer_journey": "Transaction Execution",
+        "customer_journey_stage": "Fund Transfer Processing",
+        "interaction_moment": "while initiating a fund transfer when the app froze repeatedly"
       },
       "opportunity_maximisation_stream": "Fix",
-      "customer_effort_score": 6,
+      "customer_effort_score": "6",
       "orchestration_unit": {
-        "ou_name": "App Freeze During Fund Transfer – Complaint – Fix",
+        "ou_name": "Fund Transfer Freeze – Complaint – Fix",
         "experience_driver": "App Reliability → Transaction Flow Stability",
-        "entity_name": "App Freeze During Fund Transfer",
+        "entity_name": "Fund Transfer Execution",
         "theme": "Technical Resilience",
         "feedback_type": "Complaint",
         "opportunity_maximisation_stream": "Fix",
-        "interaction_moment": "while initiating a fund transfer",
-        "context": "Customer faced repeated app freezes during a real-time fund transfer, forcing restarts and breaking transaction continuity at a critical financial moment.",
-        "matters": "App freezes mid-transfer break execution flow, force manual restarts, and leave users without confirmation, injecting real-time panic and transactional uncertainty at critical financial moments.",
+        "interaction_moment": "while initiating a fund transfer when the app froze repeatedly",
+        "context": "The app froze multiple times during fund transfer execution, forcing the customer to restart and leaving them unsure whether the transfer succeeded.",
+        "matters": "App freezes during fund transfer execution interrupt critical financial actions, force restarts, and create real-time anxiety about transaction success.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The customer submitted a Complaint about the app freezing while they initiated a fund transfer. They had to restart the app twice and were left uncertain if their money had been sent — creating real-time fear and a loss of confidence.",
-          "section_2_strategic_response": "We need to Fix → App Reliability → Transaction Flow Stability to prevent critical execution freezes that trigger panic, force user restarts, and fracture confidence in digital banking pathways."
+          "section_1_customer_reality": "The customer submitted a Complaint after the app froze repeatedly while they were initiating a fund transfer, forcing multiple restarts and creating anxiety about whether the transaction was completed.",
+          "section_2_strategic_response": "We need to Fix → App Reliability → Transaction Flow Stability to prevent execution freezes during fund transfers that disrupt transaction continuity and trigger customer anxiety."
         },
-        "stream_justification": "This is a live-execution failure during a no-error-margin financial task. At the precise moment trust should peak, the system collapses. Such disruptions force panic behaviors, including multiple restarts and irrational fund-checking. Immediate stability is essential.",
+        "stream_justification": "Fund transfers are no-tolerance execution moments. Freezes during initiation break trust, induce panic behaviors, and require immediate stabilization to restore confidence.",
         "matters_extraction": "Raw Customer Voice, Context, Interaction Moment",
-        "behavioral_impact": "Stabilize transaction execution layers, introduce live freeze detection, and ensure atomicity in transfers to prevent user abandonment or escalation to support."
+        "behavioral_impact": "Stabilize transfer execution flows, prevent mid-action freezes, and ensure atomic transaction handling to preserve confidence during critical financial actions."
       }
     },
     {
@@ -3034,46 +2842,46 @@ NO commentary.
         "category": "Account Transparency",
         "subcategory": "Transaction History Clarity"
       },
-      "entity_name": "Jumbled Transaction List",
+      "entity_name": "Recent Transactions List",
       "context": {
-        "text": "After the app restarted, the customer checked the recent transaction list but found it disorganized, unclear, and missing confirmation signals for the payment they just tried.",
+        "text": "After restarting the app, the customer reviewed the recent transactions list but found it disorganized and unclear, preventing confirmation of whether the fund transfer was successful.",
         "keywords": [
           "transaction history",
-          "missing payment",
+          "recent activity",
           "unclear",
           "jumbled",
-          "recent activity"
+          "confirmation missing"
         ]
       },
       "feedback_type": "Complaint",
       "emotion": {
         "group": "Ambivalence",
-        "specific": "Unsettled Trust"
+        "specific": "Uncertain about transaction outcome due to unclear records"
       },
       "journey": {
         "customer_journey": "Account Review & Assurance",
-        "customer_journey_stage": "Recent Transaction Check",
-        "interaction_moment": "after attempting a fund transfer"
+        "customer_journey_stage": "Recent Transaction Review",
+        "interaction_moment": "after restarting the app to verify the fund transfer"
       },
       "opportunity_maximisation_stream": "Optimize",
-      "customer_effort_score": 5,
+      "customer_effort_score": "4",
       "orchestration_unit": {
-        "ou_name": "Jumbled Transaction List – Complaint – Optimize",
+        "ou_name": "Unclear Transaction History – Complaint – Optimize",
         "experience_driver": "Account Transparency → Transaction History Clarity",
-        "entity_name": "Jumbled Transaction List",
+        "entity_name": "Recent Transactions List",
         "theme": "Post-Transaction Visibility",
         "feedback_type": "Complaint",
         "opportunity_maximisation_stream": "Optimize",
-        "interaction_moment": "after attempting a fund transfer",
-        "context": "After the app restarted, the customer checked the recent transaction list but found it disorganized, unclear, and missing confirmation signals for the payment they just tried.",
-        "matters": "Jumbled or incomplete post-payment transaction lists create verification loops, delay reassurance, and cause users to question whether their actions succeeded — even when the transfer is complete.",
+        "interaction_moment": "after restarting the app to verify the fund transfer",
+        "context": "Following the app restart, the customer could not clearly confirm the transfer outcome because the recent transaction list appeared disorganized and incomplete.",
+        "matters": "Unclear transaction histories after critical actions force customers into repeated verification loops and delay reassurance, even when transactions may have succeeded.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The customer submitted a Complaint about their transaction list appearing jumbled and unclear after a fund transfer, leaving them unsure whether the payment went through and forcing unnecessary double-checking.",
-          "section_2_strategic_response": "We need to Optimize → Account Transparency → Transaction History Clarity to resolve post-transaction confusion that undermines confidence in digital recordkeeping and forces avoidable verification fatigue."
+          "section_1_customer_reality": "The customer submitted a Complaint about the recent transaction list appearing unclear after a fund transfer attempt, leaving them uncertain whether the payment was successful.",
+          "section_2_strategic_response": "We need to Optimize → Account Transparency → Transaction History Clarity to reduce post-transaction verification effort and restore immediate confidence after financial actions."
         },
-        "stream_justification": "This is a UX-level ambiguity at a moment when users seek confirmation, not confusion. It generates effort debt, disrupts reassurance, and triggers emotional fatigue — undermining trust in silent success.",
+        "stream_justification": "This is a reassurance failure, not a system break. The transaction record exists but does not provide clear confirmation, creating avoidable effort and lingering uncertainty.",
         "matters_extraction": "Raw Customer Voice, Context, Interaction Moment",
-        "behavioral_impact": "Enhance visual hierarchy in transaction records, clarify success indicators, and reduce redundant confirmation steps to preserve post-action confidence."
+        "behavioral_impact": "Improve transaction record clarity, strengthen success indicators, and reduce post-action ambiguity to preserve customer reassurance."
       }
     }
   ]
@@ -3097,97 +2905,97 @@ NO commentary.
       },
       "entity_name": "Rep-Initiated WhatsApp Follow-Up",
       "context": {
-        "text": "A customer received proactive, empathetic follow-up from a support rep after resolving a delay issue. The rep provided reassurance about credit score protection and offered an unprompted next-day check-in.",
+        "text": "After a delay was resolved during a support call, the representative proactively followed up via WhatsApp the next day to confirm resolution and reassure the customer that their credit score would not be impacted.",
         "keywords": [
           "follow-up",
           "WhatsApp",
           "reassurance",
           "credit score",
-          "empathy",
-          "human touch"
+          "proactive",
+          "support"
         ]
       },
       "feedback_type": "Compliment",
       "emotion": {
         "group": "Adoration",
-        "specific": "Reassured"
+        "specific": "Reassured by proactive post-resolution support"
       },
       "journey": {
         "customer_journey": "Issue Resolution & Recovery",
-        "customer_journey_stage": "Customer Support Engagement",
-        "interaction_moment": "after the delay was resolved by phone"
+        "customer_journey_stage": "Post-Resolution Communication",
+        "interaction_moment": "after issue resolution when the support rep followed up via WhatsApp"
       },
       "opportunity_maximisation_stream": "Amplify",
-      "customer_effort_score": 2,
+      "customer_effort_score": "2",
       "orchestration_unit": {
-        "ou_name": "Rep-Initiated WhatsApp Follow-Up – Compliment – Amplify",
+        "ou_name": "Proactive Post-Resolution Follow-Up – Compliment – Amplify",
         "experience_driver": "Customer Support → Post-Resolution Follow-Up",
         "entity_name": "Rep-Initiated WhatsApp Follow-Up",
         "theme": "Trust Reinforcement",
         "feedback_type": "Compliment",
         "opportunity_maximisation_stream": "Amplify",
-        "interaction_moment": "after the delay was resolved by phone",
-        "context": "A customer received proactive, empathetic follow-up from a support rep after resolving a delay issue. The rep provided reassurance about credit score protection and offered an unprompted next-day check-in.",
-        "matters": "Proactive post-resolution outreach — especially through personal channels like WhatsApp — makes customers feel seen beyond the transaction, reinforcing trust and creating emotional continuity.",
+        "interaction_moment": "after issue resolution when the support rep followed up via WhatsApp",
+        "context": "Following issue resolution on a support call, the representative proactively followed up the next day via WhatsApp to confirm resolution and reassure the customer about credit score impact.",
+        "matters": "Proactive post-resolution follow-up through personal channels reinforces trust, reassures customers beyond the immediate fix, and creates emotional continuity after support interactions.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The customer gave a Compliment about a rep who not only resolved their issue but followed up proactively via WhatsApp the next day to reassure them about their credit score.",
-          "section_2_strategic_response": "We need to Amplify → Customer Support → Post-Resolution Follow-Up to scale emotionally resonant behaviors that create lasting trust and human warmth."
+          "section_1_customer_reality": "The customer gave a Compliment about a support representative who resolved their issue, explained the delay, reassured them about credit score impact, and followed up proactively via WhatsApp the next day.",
+          "section_2_strategic_response": "We need to Amplify → Customer Support → Post-Resolution Follow-Up to scale proactive, trust-building behaviors that extend reassurance beyond initial issue resolution."
         },
-        "stream_justification": "This moment exemplifies trust reinforcement — unprompted, emotionally anchored, and relational in nature. It is the kind of experience that should be spotlighted and replicated.",
+        "stream_justification": "Unprompted follow-up after resolution transforms support from transactional problem-solving into trust reinforcement. This behavior strengthens emotional loyalty and should be systematically encouraged.",
         "matters_extraction": "Raw Customer Voice, Context, Interaction Moment",
-        "behavioral_impact": "Increases post-resolution confidence, deepens emotional connection to the brand, and shifts support engagements from transactional to relationship-building."
+        "behavioral_impact": "Increase post-resolution reassurance, strengthen emotional trust, and elevate support interactions from transactional to relationship-driven."
       }
     },
     {
-      "theme": "Self-Service UX",
+      "theme": "Self-Service Experience",
       "experience_driver": {
-        "label": "In-App Resolution Options",
+        "label": "In-App Dispute Initiation",
         "category": "Dispute Management",
-        "subcategory": "In-App Resolution Options"
+        "subcategory": "In-App Dispute Initiation"
       },
-      "entity_name": "Transaction Dispute Shortcut",
+      "entity_name": "In-App Transaction Dispute",
       "context": {
-        "text": "Customer wished for a seamless in-app experience to dispute a transaction instead of relying on phone support, indicating a desire for frictionless, autonomous issue management.",
+        "text": "The customer expressed a desire to initiate transaction disputes directly within the app instead of having to call customer support.",
         "keywords": [
           "dispute",
-          "app feature",
-          "shortcut",
-          "self-serve",
-          "manual process",
-          "delay"
+          "in-app",
+          "self-service",
+          "call support",
+          "manual process"
         ]
       },
       "feedback_type": "Suggestion",
       "emotion": {
         "group": "Appreciation",
-        "specific": "Interested"
+        "specific": "Interested in self-service dispute resolution"
       },
       "journey": {
         "customer_journey": "Issue Resolution & Recovery",
-        "customer_journey_stage": "Transaction Dispute Path",
-        "interaction_moment": "when trying to initiate a dispute via the app"
+        "customer_journey_stage": "Dispute Initiation",
+        "interaction_moment": "when attempting to dispute a transaction via the app"
       },
       "opportunity_maximisation_stream": "Innovate",
-      "customer_effort_score": 4,
+      "customer_effort_score": "4",
       "orchestration_unit": {
-        "ou_name": "Transaction Dispute Shortcut – Suggestion – Innovate",
-        "experience_driver": "Dispute Management → In-App Resolution Options",
-        "entity_name": "Transaction Dispute Shortcut",
-        "theme": "Self-Service UX",
+        "ou_name": "In-App Dispute Initiation – Suggestion – Innovate",
+        "experience_driver": "Dispute Management → In-App Dispute Initiation",
+        "entity_name": "In-App Transaction Dispute",
+        "theme": "Self-Service Experience",
         "feedback_type": "Suggestion",
         "opportunity_maximisation_stream": "Innovate",
-        "interaction_moment": "when trying to initiate a dispute via the app",
-        "context": "Customer wished for a seamless in-app experience to dispute a transaction instead of relying on phone support, indicating a desire for frictionless, autonomous issue management.",
-        "matters": "Forcing users to call support for disputes interrupts flow, introduces friction, and undermines the expectation that digital platforms should support autonomous issue resolution.",
+        "interaction_moment": "when attempting to dispute a transaction via the app",
+        "context": "The customer wanted the ability to initiate transaction disputes directly in the app instead of being required to call support.",
+        "matters": "Requiring customers to call support to dispute transactions introduces unnecessary friction and breaks expectations of autonomous digital issue resolution.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The customer made a Suggestion about wanting to dispute transactions directly inside the app instead of being forced to call support.",
-          "section_2_strategic_response": "We need to Innovate → Dispute Management → In-App Resolution Options to enable frictionless, self-guided dispute initiation aligned with modern digital expectations."
+          "section_1_customer_reality": "The customer made a Suggestion to enable transaction dispute initiation directly within the app rather than through phone-based support.",
+          "section_2_strategic_response": "We need to Innovate → Dispute Management → In-App Dispute Initiation to enable frictionless, self-guided dispute handling aligned with modern digital expectations."
         },
-        "stream_justification": "This is a forward-looking request rooted in digital autonomy and operational ease. The dispute workflow exists, but customers cannot access it in a frictionless manner.",
+        "stream_justification": "This is a net-new capability request driven by expectations of digital autonomy. Enabling in-app dispute initiation reduces effort, lowers support dependency, and improves perceived platform completeness.",
         "matters_extraction": "Raw Customer Voice, Context, Keywords",
-        "behavioral_impact": "Reduce support dependency, increase user control, and strengthen perception of the app as a complete self-service command center."
+        "behavioral_impact": "Reduce reliance on phone support, increase customer control, and strengthen confidence in the app as a complete self-service platform."
       }
     }
   ]
 }
 
+"""
