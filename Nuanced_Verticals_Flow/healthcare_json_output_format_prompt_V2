@@ -15,6 +15,33 @@ anti-fabrication rules (“Unclear” if unknown).
 Net effect: the LLM is constrained to produce schema-valid, computation-ready mentions — while SEU birth, OU birth, 
 and OU prioritisation remain purely Python-deterministic layers downstream.
 
+The Three Axes (Universal)
+Every domain, regardless of calibration, must answer:
+Axis 1: INTENT (What is the human doing with language?)
+
+Healthcare: Compliment, Complaint, Suggestion, Question...
+Fraud: Event Disclosure, Control Failure Signal, Access Breakdown...
+Insurance: Claim Initiation, Dispute, Status Query...
+
+Universal primitive: "Speech-act classification"
+Domain calibration: Different label sets
+Axis 2: AFFECT (How much energy/pressure is carried?)
+
+Healthcare: Adoration (+3) → Anger (-3)
+Fraud: Panic (-3) → Relief (+1)
+Insurance: Desperation (-3) → Satisfaction (+1)
+
+Universal primitive: "Emotional weighting signal"
+Domain calibration: Different polarity distributions
+Axis 3: ACTION (What kind of response does this imply?)
+
+Healthcare: Fix, Optimize, Amplify, Innovate
+Fraud: Contain, Investigate, Remediate
+Insurance: Validate, Process, Reject, Escalate
+
+Universal primitive: "Strategic response classification"
+Domain calibration: Different action taxonomies
+
 ---------------------------------------------------------------------------------------------------------------------
 
 Agentic_AI_Prompt_Healthcare = """
