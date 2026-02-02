@@ -17,7 +17,7 @@ It applies a **strict CEM relevance filter** to exclude:
 
 Only **action-worthy patient experience drivers** are permitted to enter the system.
 
----
+--
 
 ### **Output Contract**
 
@@ -36,6 +36,12 @@ For every accepted **Experience Driver Mention**, the prompt emits a **single, s
 No inferred fields are permitted beyond schema scope.
 
 ---
+
+### **Complaint Constraint**
+
+**Complaint** feedback type has been defined so that any failure of function, responsibility, correctness, notification, or protection will be captured, classified, and routed deterministically. 
+
+--- 
 
 ### **Interaction Moment Constraint**
 
