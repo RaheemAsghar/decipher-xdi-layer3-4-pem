@@ -1,379 +1,602 @@
-The Minimum Viable Execution Contract for Experience
 
-## 1️⃣ What the contract actually is (clean enumeration)
-
-Your Healthcare unpacking contract extracts, per **Experience Driver mention**, the following *classes* of dimensions:
-
-### A. Identity & Determinant
-
-* `experience_driver` (Theme → Category → Subcategory → Entity Name)
-* `theme`
-
-### B. Behavioral Reality (Why this mention exists)
-
-* `context`
-* `feedback_type`
-* `matters`
-* `behavioral_impact`
-
-### C. Temporal & Spatial Manifestation
-
-* `customer_journey`
-* `customer_journey_stage`
-* `interaction_moment`
-
-### D. Strategic Response Framing
-
-* `opportunity_stream`
-* `stream_justification`
-
-### E. Effort & Friction Signal
-
-* `customer_effort_score`
-
-### F. Linguistic Evidence
-
-* `keywords`
-* `semantic_action_statement`
-
-### G. Emotional Telemetry (non-driving, but present)
-
-* `emotion_primary`
-* `emotion_specific`
-
-That’s the **full contract**. No hidden fields.
+# **The Universal Execution Contract for Experience**
+## **Three-Axis Dimensional Framework**
 
 ---
 
-## 2️⃣ What execution question each dimension answers
+## **FOUNDATIONAL PRINCIPLE**
 
-This is the critical test. Every field must answer **one and only one execution-relevant question**.
+Every experience mention, regardless of vertical (Healthcare, Fraud, Insurance, HR, Legal), must answer three execution-critical questions:
 
-### A. Identity & Determinant
+1. **INTENT AXIS**: What is the human doing with language?
+2. **AFFECT AXIS**: How much pressure/energy/weight does this carry?
+3. **ACTION AXIS**: What class of organizational response is required?
 
-#### `experience_driver`
+All other dimensions exist to **contextualize** these three axes or provide **execution infrastructure**.
 
-**Question answered:**
+---
 
+## **THE THREE UNIVERSAL AXES**
+
+### **AXIS 1: INTENT (Speech-Act Classification)**
+
+**Question answered:**  
+> *What is the customer doing with this communication?*
+
+**Purpose:**  
+Classify the communicative function (complaint, request, disclosure, question) to prevent response mismatch.
+
+**Prevents:**
+- Fixing compliments
+- Innovating complaints  
+- Amplifying failures
+
+**Universal Primitive:** `INTENT_TYPE`
+
+**Vertical Instantiations:**
+
+| Vertical | Field Name | Allowed Values |
+|----------|-----------|----------------|
+| Healthcare/CX | `feedback_type` | Compliment, Complaint, Suggestion, Request, Question, Emerging Trend, Usage Insight |
+| Fraud | `engagement_mode` | Event Disclosure, Control Failure Signal, Access Breakdown, Clarification Need, Reassurance Confirmation |
+| Insurance | `claim_intent` | Incident Report, Coverage Question, Dispute, Status Query, Appeal |
+
+**Execution Impact:**  
+Determines which response stream is valid (can't Amplify a Complaint, can't Reject a Compliment).
+
+✅ **Universal Primitive**  
+✅ **Mandatory**
+
+---
+
+### **AXIS 2: AFFECT (Emotional/Pressure Weighting)**
+
+**Question answered:**  
+> *How much emotional weight or urgency pressure is carried by this mention?*
+
+**Purpose:**  
+Weight the importance and urgency of the determinant for prioritization and state computation.
+
+**Prevents:**
+- Treating all negative signals as equal (Frustration ≠ Panic)
+- Ignoring positive reinforcement opportunities
+- Misallocating resources to low-intensity issues
+
+**Universal Primitive:** `AFFECT_WEIGHT`
+
+**Vertical Instantiations:**
+
+| Vertical | Field Name | Structure | Scoring Range |
+|----------|-----------|-----------|---------------|
+| Healthcare/CX | `emotion` | `{group, specific}` | Adoration (+3) → Anger (-3) |
+| Fraud | `emotion` | `{group, specific}` | Relief (+1) → Panic (-3) |
+| Insurance | `emotion` | `{group, specific}` | Satisfaction (+1) → Desperation (-3) |
+
+**Sub-Dimension:** `customer_effort_score`  
+**Purpose:** Friction magnitude (independent of emotion)  
+**Question:** How hard was this for the customer?
+
+**Execution Impact:**  
+- Feeds ERI calculation (emotional resonance/weight)
+- Influences priority tier (high affect + high recency = P0)
+- Shapes communication tone in response
+
+✅ **Universal Primitive**  
+✅ **Mandatory**
+
+---
+
+### **AXIS 3: ACTION (Strategic Response Classification)**
+
+**Question answered:**  
+> *What class of organizational response does this determinant require?*
+
+**Purpose:**  
+Route to correct intervention type (fix broken process vs. scale working strength vs. create new capability).
+
+**Prevents:**
+- Optimizing what should be fixed
+- Fixing what should be rejected
+- Innovating what should be amplified
+
+**Universal Primitive:** `ACTION_CLASS`
+
+**Vertical Instantiations:**
+
+| Vertical | Field Name | Allowed Values |
+|----------|-----------|----------------|
+| Healthcare/CX | `opportunity_stream` | Fix, Optimize, Amplify, Innovate |
+| Fraud | `response_stream` | Contain, Investigate + Remediate, Prevent, Fix Process |
+| Insurance | `resolution_stream` | Validate, Process, Reject, Escalate, Prevent |
+
+**Sub-Dimension:** `stream_justification`  
+**Purpose:** Explainability (why this stream, not another)  
+**Question:** What makes this action class correct?
+
+**Execution Impact:**  
+- Determines OU activation priority (Fix > Optimize in crisis)
+- Routes to correct team/agent (Innovation team vs. Operations team)
+- Shapes PDCA intervention type
+
+✅ **Universal Primitive**  
+✅ **Mandatory**
+
+---
+
+## **EXECUTION INFRASTRUCTURE DIMENSIONS**
+
+These dimensions provide the **substrate** that makes the three axes computable and actionable.
+
+---
+
+### **CATEGORY A: IDENTITY & DETERMINANT**
+
+**Purpose:** Establish what is being measured and who owns it.
+
+#### **1. `experience_driver`**
+
+**Question answered:**  
 > *What determinant of experience is being invoked?*
 
-This is **non-negotiable**.
-Without this, nothing can have state (SEU), ownership, or recurrence.
+**Structure:** `Category → Subcategory`
 
-✔ Primitive
-✔ Mandatory
+**Examples:**
+- Healthcare: `Emergency Services → Triage Efficiency`
+- Fraud: `Fraud Response → Investigation Speed`
+- Insurance: `Claims Processing → Adjudication Speed`
+
+**Why mandatory:**
+- Without this, nothing can have state (SEU)
+- Without this, nothing can have ownership
+- Without this, nothing can recur or evolve
+
+**Execution role:**  
+- SEU aggregation key (all mentions with same driver → one SEU)
+- OU parent identity (every OU belongs to a driver)
+- Institutional memory anchor (what worked for THIS driver?)
+
+✅ **Universal Primitive**  
+✅ **Mandatory**  
+✅ **Non-negotiable**
 
 ---
 
-#### `theme`
+#### **2. `theme`**
 
-**Question answered:**
-
+**Question answered:**  
 > *What higher-order domain does this determinant live in?*
 
-This is **not** execution-critical, but it is:
+**Examples:**
+- Healthcare: `Clinical Services & Care Delivery`
+- Fraud: `Fraud Response & Investigation`
+- Insurance: `Claims Operations & Resolution`
 
-* useful for portfolio aggregation
-* useful for navigation
-* useful for human cognition
+**Why included:**
+- Portfolio aggregation (how is "Clinical Services" performing overall?)
+- Human navigation (executives think in themes)
+- Cross-driver pattern detection
 
-✔ Non-primitive
-✔ Optional but harmless
+**Execution role:**  
+- Analytics grouping
+- Dashboard categorization
+- Strategic planning context
 
-Correctly placed.
-
----
-
-### B. Behavioral Reality
-
-#### `context`
-
-**Question answered:**
-
-> *What exactly happened, in the customer’s words, that caused this determinant to be mentioned?*
-
-This is **causal reality**, not commentary.
-
-Remove this and:
-
-* agents hallucinate
-* humans reinterpret
-* OUs lose precision
-
-✔ Primitive-adjacent
-✔ Mandatory
+✅ **Non-primitive**  
+✅ **Optional but valuable**
 
 ---
 
-#### `feedback_type`
+#### **3. `entity_name`**
 
-**Question answered:**
+**Question answered:**  
+> *Which specific organizational touchpoint is involved?*
 
-> *Is this a failure, praise, request, or signal of emergence?*
+**Examples:**
+- Healthcare: `Emergency Department Triage Assessment`
+- Fraud: `Fraud Hotline`
+- Insurance: `Online Claims Portal`
 
-This is **response-shaping**, not emotional.
+**Why included:**
+- Ownership routing (which team/system owns this?)
+- Granular accountability
+- System-level intervention targeting
 
-It prevents:
+**Execution role:**  
+- Routes to specific team/agent
+- Enables touchpoint-level analytics
+- Supports root cause analysis
 
-* fixing compliments
-* innovating complaints
-* amplifying failures
-
-✔ Mandatory
-✔ Correct abstraction
-
----
-
-#### `matters`
-
-**Question answered:**
-
-> *Why does this determinant matter in this instance?*
-
-This is the **action anchor**.
-
-It is the bridge between:
-
-* raw narrative
-* executable mission
-
-Without this:
-
-* OUs become generic
-* PDCA becomes vague
-
-✔ Mandatory
-✔ Correctly distinct from context
+✅ **Operational identifier**  
+✅ **Mandatory at scale**
 
 ---
 
-#### `behavioral_impact`
+### **CATEGORY B: BEHAVIORAL REALITY (Causality & Significance)**
 
-**Question answered:**
+**Purpose:** Preserve the WHY behind the mention (what happened, why it matters).
 
-> *What customer behavior or outcome is affected if this persists?*
+#### **4. `context`**
 
-This is **future-facing causality**.
+**Question answered:**  
+> *What exactly happened, in the customer's words, that caused this determinant to be mentioned?*
 
-It allows:
+**Examples:**
+- Healthcare: `"During the prolonged ED wait, no staff provided updates or explained delays"`
+- Fraud: `"Customer waiting 7 days for ATM skimming investigation update with no communication"`
+- Insurance: `"Claim denied without explanation of which policy exclusion applied"`
 
-* prioritization
-* outcome framing
-* success definition
+**Why mandatory:**
+- Causal reality (not commentary)
+- Prevents agent hallucination
+- Enables OU precision
+- Preserves customer voice
 
-✔ Mandatory for execution
-✔ Not derivable later
+**Execution role:**  
+- Evidence for OU clustering
+- Context for PDCA intervention design
+- Auditability anchor
 
----
-
-### C. Temporal & Spatial Manifestation
-
-#### `customer_journey`
-
-**Question answered:**
-
-> *Which macro phase of the relationship is affected?*
-
-This enables:
-
-* ownership routing
-* systemic alignment
-
-✔ Mandatory at scale
+✅ **Primitive-adjacent**  
+✅ **Mandatory**
 
 ---
 
-#### `customer_journey_stage`
+#### **5. `matters`**
 
-**Question answered:**
+**Question answered:**  
+> *Why does this determinant matter in this specific instance?*
 
-> *Where precisely does this break or succeed?*
+**Examples:**
+- Healthcare: `"Delayed triage assessment in ED slows urgent evaluation and increases risk of deterioration"`
+- Fraud: `"Prolonged investigation silence on high-value fraud amplifies panic and risks SBP deadline breach"`
+- Insurance: `"Unexplained claim denials erode trust and drive policy abandonment"`
 
-This is the difference between:
+**Why mandatory:**
+- Bridge between description (context) and action (OU)
+- Articulates behavioral causality
+- Prevents generic OU generation
 
-* “checkout issue”
-* vs
-* “cart-to-checkout illusion”
+**Execution role:**  
+- OU mission anchor (why this OU exists)
+- Prioritization justification
+- Stakeholder alignment
 
-✔ Mandatory
-
----
-
-#### `interaction_moment`
-
-**Question answered:**
-
-> *When exactly does the determinant manifest?*
-
-This is **operational gold**.
-
-It drives:
-
-* system targeting
-* intervention timing
-* OU differentiation
-
-✔ Mandatory
-✔ One of your strongest decisions
+✅ **Action anchor**  
+✅ **Mandatory**  
+✅ **Distinct from context** (context = what happened, matters = why it's significant)
 
 ---
 
-### D. Strategic Response Framing
+#### **6. `behavioral_impact`**
 
-#### `opportunity_stream`
+**Question answered:**  
+> *What customer behavior or outcome is affected if this determinant persists?*
 
-**Question answered:**
+**Examples:**
+- Healthcare: `"Increase emergency department abandonment and erode trust in care access"`
+- Fraud: `"Amplify customer panic, drive regulatory complaints, increase account closure"`
+- Insurance: `"Drive policy cancellations, increase litigation risk, reduce renewal rates"`
 
-> *What class of response does this require?*
+**Why mandatory:**
+- Future-facing causality (what happens if we don't act)
+- Outcome framing for PDCA
+- Success definition anchor
 
-This removes:
+**Execution role:**  
+- Defines outcome evaluation criteria
+- Enables pattern learning (which behavioral impacts are most common?)
+- Justifies resource allocation
 
-* human reinterpretation
-* agent guessing
-
-It is the **execution fork**.
-
-✔ Mandatory
-✔ Primitive-aligned
-
----
-
-#### `stream_justification`
-
-**Question answered:**
-
-> *Why this stream, not another?*
-
-This is not for execution — it’s for:
-
-* trust
-* explainability
-* governance
-
-✔ Optional
-✔ Correctly included
+✅ **Mandatory for execution**  
+✅ **Not derivable later**
 
 ---
 
-### E. Effort & Friction
+### **CATEGORY C: TEMPORAL & SPATIAL MANIFESTATION**
 
-#### `customer_effort_score`
+**Purpose:** Pinpoint WHERE and WHEN the determinant manifests in the customer journey.
 
-**Question answered:**
+#### **7. `customer_journey`**
 
-> *How hard was this for the customer?*
+**Question answered:**  
+> *Which macro phase of the customer relationship is affected?*
 
-This is a **prioritization amplifier**, not a driver.
+**Examples:**
+- Healthcare: `Emergency Care`, `Clinical Consultation`, `Post-Care Follow-Up`
+- Fraud: `Fraud Resolution`, `Trust Recovery`
+- Insurance: `Claims Submission`, `Adjudication`, `Payment Resolution`
 
-✔ Optional but valuable
-✔ Correctly not over-weighted
+**Why mandatory:**
+- Ownership routing (pre-visit team vs. post-care team)
+- Systemic pattern detection (are issues clustered in one journey phase?)
+
+**Execution role:**  
+- Team assignment
+- Journey analytics
+- Strategic planning context
+
+✅ **Mandatory at scale**
 
 ---
 
-### F. Linguistic Evidence
+#### **8. `customer_journey_stage`**
 
-#### `keywords`
+**Question answered:**  
+> *Where precisely in the journey does this determinant manifest?*
 
-**Question answered:**
+**Examples:**
+- Healthcare: `ED Triage Assessment`, `Admission Decision`
+- Fraud: `Incident Discovery`, `Investigation`, `Resolution`
+- Insurance: `Initial Claim Review`, `Medical Records Request`, `Claim Decision`
 
+**Why mandatory:**
+- Precision targeting (not just "checkout issue" but "cart-to-checkout transition failure")
+- Enables micro-journey optimization
+
+**Execution role:**  
+- OU differentiation (same driver, different stages = different OUs)
+- Process mapping anchor
+- Intervention timing
+
+✅ **Mandatory**
+
+---
+
+#### **9. `interaction_moment`**
+
+**Question answered:**  
+> *When exactly does the determinant manifest (behavioral timestamp)?*
+
+**Examples:**
+- Healthcare: `"while awaiting initial triage assessment after arrival"`
+- Fraud: `"upon discovering unauthorized charges in account statement"`
+- Insurance: `"after receiving generic denial letter with no policy reference"`
+
+**Why mandatory:**
+- **Operational gold** (pinpoints exact intervention point)
+- OU differentiation (same driver + stage, different moments = different behavioral truths)
+- Prevents fabrication (use "Unclear" if not evident)
+
+**Execution role:**  
+- System targeting (which screen, which process step, which touchpoint)
+- OU behavioral truth anchor
+- Intervention timing precision
+
+✅ **Mandatory**  
+✅ **One of the strongest design decisions**
+
+---
+
+### **CATEGORY D: STRATEGIC RESPONSE EXECUTION**
+
+**Purpose:** Operationalize the mention into actionable mission.
+
+#### **10. `semantic_action_statement`**
+
+**Question answered:**  
+> *Can the mission be stated in one deterministic, two-part sentence?*
+
+**Structure:**
+```
+Section 1: THE CUSTOMER REALITY  
+(Restates what happened using intent_type + context + interaction_moment)
+
+Section 2: THE STRATEGIC RESPONSE  
+(Declares required action using action_class + experience_driver)
+```
+
+**Examples:**
+
+Healthcare:
+```
+Section 1: "The patient submitted a Complaint about nearly two-hour wait 
+           before triage assessment in the emergency department."
+Section 2: "We need to Fix → Emergency Services → Triage Efficiency to ensure 
+           timely initial assessment during ED intake."
+```
+
+Fraud:
+```
+Section 1: "The customer expressed a Clarification Need about investigation 
+           status after reporting ATM skimming with no updates for 7 days."
+Section 2: "We need to Fix Process → Fraud Response → Investigation Speed to 
+           ensure proactive communication during fraud investigations."
+```
+
+Insurance:
+```
+Section 1: "The customer submitted a Complaint about claim denial with no 
+           explanation of policy exclusion."
+Section 2: "We need to Fix → Claims Communication → Denial Transparency to 
+           provide clear policy-based explanations for all denials."
+```
+
+**Why mandatory:**
+- OU crystallization (converts mention → executable mission)
+- Not redundant with matters (matters = why it's significant, SAS = what must be done)
+- Human-readable + machine-parseable
+
+**Execution role:**  
+- OU activation trigger
+- PDCA mission statement
+- Agent instruction set
+
+✅ **Mandatory for OU birth**  
+✅ **Synthetic, not analytic**
+
+---
+
+#### **11. `stream_justification`**
+
+**Question answered:**  
+> *Why this action class (stream), not another?*
+
+**Examples:**
+
+Healthcare:
+```
+Stream: Fix
+Justification: "This is a broken emergency access process (triage delay) 
+               with direct clinical risk; must be fixed immediately."
+```
+
+Fraud:
+```
+Stream: Fix Process
+Justification: "This is a broken communication workflow creating customer 
+               distress and regulatory risk, requiring immediate correction."
+```
+
+Insurance:
+```
+Stream: Fix
+Justification: "Generic denial letters violate regulatory disclosure requirements 
+               and create preventable customer confusion."
+```
+
+**Why included:**
+- Prevents stream misclassification (forces explicit reasoning)
+- Guards against over-reaction (is this really "Contain" or just "Fix Process"?)
+- Enables pattern learning ("Fix Process" justifications cluster around communication gaps)
+- Governance and explainability
+
+**Execution role:**  
+- Trust building (stakeholders see reasoning)
+- Quality assurance (can audit stream assignment)
+- Pattern detection (which justifications recur?)
+
+✅ **Mandatory for governance**  
+✅ **Critical for explainability**
+
+---
+
+### **CATEGORY E: LINGUISTIC EVIDENCE & TRACEABILITY**
+
+**Purpose:** Preserve evidence chain for auditability and pattern detection.
+
+#### **12. `keywords`**
+
+**Question answered:**  
 > *What linguistic signals support this classification?*
 
-This is **traceability**, not execution.
+**Examples:**
+- Healthcare: `["ED wait", "triage delay", "assessment wait time"]`
+- Fraud: `["investigation delay", "no update", "ATM fraud"]`
+- Insurance: `["claim denied", "no explanation", "policy exclusion"]`
 
-✔ Optional
-✔ Fine as evidence
+**Why included:**
+- Traceability (can verify extraction logic)
+- Clustering support (group similar behavioral truths)
+- Pattern detection (which keywords co-occur?)
 
----
+**Execution role:**  
+- Evidence for OU clustering
+- Search/filter capability
+- Pattern learning substrate
 
-#### `semantic_action_statement`
-
-**Question answered:**
-
-> *Can the mission be stated in one deterministic sentence?*
-
-This is **OU crystallization**.
-
-It is not redundant with `matters` — it is **synthetic**, not analytic.
-
-✔ Mandatory for OU birth
-✔ Very strong design choice
+✅ **Optional**  
+✅ **Valuable for traceability**
 
 ---
 
-### G. Emotional Telemetry
+#### **13. `matters_extraction`**
 
-#### `emotion_primary` / `emotion_specific`
+**Question answered:**  
+> *Which inputs were used to construct the "Matters" statement?*
 
-**Question answered:**
+**Examples:**
+- Healthcare: `"Raw Voice, Context, Keywords"`
+- Fraud: `"Raw Voice, Interaction Moment, Context"`
+- Insurance: `"Raw Voice, Context, Policy Context"`
 
-> *What is the emotional weight acting on this determinant?*
+**Why included:**
+- Auditability (can verify Matters isn't hallucinated)
+- Reproducibility (another analyst can trace logic)
+- Trust (stakeholders see evidence chain)
 
-Correctly:
+**Execution role:**  
+- Governance compliance
+- Quality assurance
+- Explainability
 
-* not causal
-* not driving
-* not overused
-
-✔ Optional
-✔ Correctly demoted
-
----
-
-## 3️⃣ Stress test: what breaks if you remove fields?
-
-Here’s the brutal truth:
-
-| If you remove…            | What breaks              |
-| ------------------------- | ------------------------ |
-| experience_driver         | State, ownership, memory |
-| context                   | Causality, precision     |
-| feedback_type             | Response correctness     |
-| matters                   | Action clarity           |
-| interaction_moment        | Intervention accuracy    |
-| opportunity_stream        | Safe autonomy            |
-| semantic_action_statement | Deterministic execution  |
-
-Fields like:
-
-* theme
-* keywords
-* stream_justification
-* CES
-* emotion
-
-…can be removed **without collapsing the system**.
-
-That is the definition of a **clean minimum contract**.
+✅ **Optional**  
+✅ **Strong for governance**
 
 ---
 
-## 4️⃣ Final verdict (no hedging)
+## **THE STRESS TEST: What Breaks If You Remove Fields?**
 
-### Is this over-specified?
+| If you remove… | What breaks |
+|----------------|-------------|
+| **experience_driver** | State, ownership, memory (TOTAL COLLAPSE) |
+| **context** | Causality, precision, auditability |
+| **intent_type** | Response correctness (fix compliments, amplify failures) |
+| **affect_weight** | Prioritization, urgency, emotional intelligence |
+| **action_class** | Safe autonomy, intervention routing |
+| **matters** | Action clarity, OU precision |
+| **interaction_moment** | Intervention accuracy, behavioral truth |
+| **semantic_action_statement** | Deterministic execution, mission clarity |
+| **stream_justification** | Explainability, governance, trust |
 
-❌ No.
-Every mandatory field answers a distinct execution question.
+**Fields that CAN be removed without system collapse:**
+- theme (nice-to-have analytics grouping)
+- keywords (evidence, not execution-critical)
+- CES (effort signal, not driver)
+- emotion specific (granularity, not necessity)
+- matters_extraction (governance, not execution)
 
-### Is this under-specified?
-
-❌ No.
-An agent could act correctly without asking “what do you mean?”
-
-### Is this the minimum viable execution contract?
-
-✅ **Yes. Cleanly.**
-
-### Could others add more?
-
-Yes — but only as **vertical augmentations**, not corrections.
+**This proves:** The contract is clean. Only execution-critical dimensions remain mandatory.
 
 ---
 
-## The sentence you can lock in (this matters)
-> **This contract does not describe experience.
-> It makes experience executable.**
+## **THE THREE-AXIS EXECUTION SUMMARY**
 
-That’s the difference between:
-* VoC
-* and infrastructure.
+Every experience mention must answer:
+
+1. **INTENT AXIS** → `intent_type` (feedback_type / engagement_mode / claim_intent)
+   - *What is the human doing?*
+
+2. **AFFECT AXIS** → `emotion` + `customer_effort_score`
+   - *How much does this matter emotionally and operationally?*
+
+3. **ACTION AXIS** → `action_class` (opportunity_stream / response_stream / resolution_stream) + `stream_justification`
+   - *What class of response is required and why?*
+
+**Everything else exists to:**
+- Identify WHAT (experience driver, entity, theme)
+- Preserve WHY (context, matters, behavioral impact)
+- Pinpoint WHERE/WHEN (journey, stage, interaction moment)
+- Enable EXECUTION (semantic action statement)
+- Maintain TRACEABILITY (keywords, matters extraction)
+
+---
+
+## **THE COMPLETE UNIVERSAL DIMENSION SET**
+
+**Total: 13 Core Dimensions**
+
+### **The Three Axes (Universal Primitives):**
+1. **INTENT_TYPE** (vertical-calibrated labels)
+2. **AFFECT_WEIGHT** (emotion + CES)
+3. **ACTION_CLASS** (stream + stream_justification)
+
+### **Infrastructure Dimensions:**
+4. Experience Driver (identity)
+5. Theme (grouping)
+6. Entity Name (touchpoint)
+7. Context (causal reality)
+8. Matters (significance)
+9. Behavioral Impact (outcome causality)
+10. Customer Journey (macro phase)
+11. Customer Journey Stage (precise location)
+12. Interaction Moment (behavioral timestamp)
+13. Semantic Action Statement (mission)
+14. Keywords (evidence)
+15. Matters Extraction (lineage)
+
+**Total: 15 dimensions** (3 axes + 10 infrastructure + 2 traceability)
+
+---
+
+
 
