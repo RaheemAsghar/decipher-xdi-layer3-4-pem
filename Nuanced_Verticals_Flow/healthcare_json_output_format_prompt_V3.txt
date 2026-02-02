@@ -3000,7 +3000,7 @@ If you output anything outside JSON, the output is invalid.
       },
       "feedback_type": "Complaint",
       "emotion": {
-        "group": "Ambivalence",
+        "group": "Agitation",
         "specific": "Frustrated"
       },
       "journey": {
@@ -3008,8 +3008,8 @@ If you output anything outside JSON, the output is invalid.
         "customer_journey_stage": "Visit Summary Review",
         "interaction_moment": "after rejoining the telehealth session following the app freeze"
       },
-      "opportunity_maximisation_stream": "Optimize",
-      "customer_effort_score": 5,
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 6,
       "orchestration_unit": {
         "ou_name": "Incomplete Telehealth Visit Summary – Complaint – Optimize",
         "experience_driver": "Treatment Services → Care Plan Clarity",
