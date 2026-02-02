@@ -2840,7 +2840,7 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Fix",
       "customer_effort_score": 7,
       "orchestration_unit": {
-        "ou_name": "Incorrect Discharge Medication Dosage – Complaint – Fix",
+        "ou_name": "Discharge Process → Medication Reconciliation Accuracy – Complaint – Fix",
         "experience_driver": "Discharge Process → Medication Reconciliation Accuracy",
         "entity_name": "Hospital Discharge Summary",
         "theme": "Clinical Safety & Discharge",
@@ -2902,7 +2902,7 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Fix",
       "customer_effort_score": 6,
       "orchestration_unit": {
-        "ou_name": "Conflicting Diagnostic Results – Complaint – Fix",
+        "ou_name": "Diagnostic Services → Result Accuracy – Complaint – Fix",
         "experience_driver": "Diagnostic Services → Result Accuracy",
         "entity_name": "Laboratory Reporting System",
         "theme": "Clinical Services & Care Delivery",
@@ -2963,7 +2963,7 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Fix",
       "customer_effort_score": 6,
       "orchestration_unit": {
-        "ou_name": "Telehealth Session Freezing – Complaint – Fix",
+        "ou_name": "Telehealth Services → Platform Usability – Complaint – Fix",
         "experience_driver": "Telehealth Services → Platform Usability",
         "entity_name": "Telehealth Mobile App",
         "theme": "Clinical Services & Care Delivery",
@@ -3011,7 +3011,7 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Fix",
       "customer_effort_score": 6,
       "orchestration_unit": {
-        "ou_name": "Incomplete Telehealth Visit Summary – Complaint – Optimize",
+        "ou_name": "Treatment Services → Care Plan Clarity – Complaint – Fix",
         "experience_driver": "Treatment Services → Care Plan Clarity",
         "entity_name": "Telehealth Visit Summary",
         "theme": "Clinical Services & Care Delivery",
@@ -3072,7 +3072,7 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Amplify",
       "customer_effort_score": 2,
       "orchestration_unit": {
-        "ou_name": "Attentive Nursing Observation – Compliment – Amplify",
+        "ou_name": "Consultation Experience → Provider Communication – Compliment – Amplify",
         "experience_driver": "Consultation Experience → Provider Communication",
         "entity_name": "Nursing Staff",
         "theme": "Clinical Services & Care Delivery",
@@ -3120,7 +3120,7 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Innovate",
       "customer_effort_score": 4,
       "orchestration_unit": {
-        "ou_name": "In-Portal Lab Test Booking – Suggestion – Innovate",
+        "ou_name": "cheduling Methods → Online Self-Booking – Suggestion – Innovate",
         "experience_driver": "Scheduling Methods → Online Self-Booking",
         "entity_name": "Patient Portal",
         "theme": "Patient Appointments & Scheduling",
