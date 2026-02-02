@@ -2809,11 +2809,11 @@ If you output anything outside JSON, the output is invalid.
   "customer_review": "I was discharged from the hospital, but when I got home I realized the discharge summary listed the wrong medication dosage. I tried calling the ward and pharmacy multiple times but no one responded. I was terrified of taking the wrong dose.",
   "experience_drivers": [
     {
-      "theme": "Clinical Safety & Discharge",
+      "theme": "Quality & Patient Safety",
       "experience_driver": {
-        "label": "Discharge Process → Medication Reconciliation Accuracy",
-        "category": "Discharge Process",
-        "subcategory": "Medication Reconciliation Accuracy"
+        "label": "Safety Protocols → Medication Safety",
+        "category": "Safety Protocols",
+        "subcategory": "Medication Safety"
       },
       "entity_name": "Hospital Discharge Summary",
       "context": {
@@ -2840,8 +2840,8 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Fix",
       "customer_effort_score": 7,
       "orchestration_unit": {
-        "ou_name": "Discharge Process → Medication Reconciliation Accuracy – Complaint – Fix",
-        "experience_driver": "Discharge Process → Medication Reconciliation Accuracy",
+        "ou_name": "Safety Protocols → Medication Safety – Complaint – Fix",
+        "experience_driver": "Safety Protocols → Medication Safety",
         "entity_name": "Hospital Discharge Summary",
         "theme": "Clinical Safety & Discharge",
         "feedback_type": "Complaint",
@@ -2922,9 +2922,9 @@ If you output anything outside JSON, the output is invalid.
     {
       "theme": "Clinical Services & Care Delivery",
       "experience_driver": {
-        "label": "Diagnostic Services → Result Interpretation Clarity",
-        "category": "Diagnostic Services",
-        "subcategory": "Result Interpretation Clarity"
+        "label": "Consultation Experience → Provider Communication",
+        "category": "Consultation Experience",
+        "subcategory": "Provider Communication"
       },
       "entity_name": "Laboratory Reporting System",
       "context": {
@@ -2949,8 +2949,8 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Optimize",
       "customer_effort_score": 4,
       "orchestration_unit": {
-        "ou_name": "Diagnostic Services → Result Interpretation Clarity – Complaint – Optimize",
-        "experience_driver": "Diagnostic Services → Result Interpretation Clarity",
+        "ou_name": "Consultation Experience → Provider Communication – Complaint – Optimize",
+        "experience_driver": "DConsultation Experience → Provider Communication",
         "entity_name": "Laboratory Reporting System",
         "theme": "Clinical Services & Care Delivery",
         "feedback_type": "Complaint",
@@ -2969,7 +2969,6 @@ If you output anything outside JSON, the output is invalid.
     }
   ]
 }
-
 
 ---
 
@@ -3070,7 +3069,7 @@ If you output anything outside JSON, the output is invalid.
         "matters": "Unclear care plans and missing confirmation force patients to seek reassurance and manually verify next steps.",
         "semantic_action_statement": {
           "section_1_customer_reality": "The patient submitted a Complaint about incomplete visit notes and lack of prescription confirmation after reconnecting to a telehealth session.",
-          "section_2_strategic_response": "We need to Optimize → Treatment Services → Care Plan Clarity to ensure patients leave virtual consultations with complete, reassuring next-step information."
+          "section_2_strategic_response": "We need to Fix → Treatment Services → Care Plan Clarity to ensure patients leave virtual consultations with complete, accurate, and confirmed next-step information."
         },
         "stream_justification": "The care occurred, but post-visit clarity was insufficient, creating avoidable effort and uncertainty.",
         "matters_extraction": "Raw Voice, Interaction Moment",
@@ -3168,7 +3167,7 @@ If you output anything outside JSON, the output is invalid.
       "opportunity_maximisation_stream": "Innovate",
       "customer_effort_score": 4,
       "orchestration_unit": {
-        "ou_name": "cheduling Methods → Online Self-Booking – Suggestion – Innovate",
+        "ou_name": "Scheduling Methods → Online Self-Booking – Suggestion – Innovate",
         "experience_driver": "Scheduling Methods → Online Self-Booking",
         "entity_name": "Patient Portal",
         "theme": "Patient Appointments & Scheduling",
