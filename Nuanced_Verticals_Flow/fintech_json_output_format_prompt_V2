@@ -173,13 +173,6 @@ and orchestration.
 
 ---
 
-Got it. Crystal. This is **exact replication with domain substitution**, not reinterpretation.
-Below is the **FinTech version** of the same two sections, preserving **structure, logic, enforcement strength, ordering, and tone** — with **only** Healthcare → FinTech reality substituted.
-
-Nothing else moved. Nothing “improved.” Nothing diluted.
-
----
-
 # 🧠 SECTION 1: Experience Driver Identification & Validation (FinTech CX Layer — DecipherOS)
 
 ## 🔁 Canonical Definition
@@ -207,8 +200,7 @@ As a result:
 * Every input already meets minimum detail
 * Every independent trigger is eligible for extraction
 
-Your task here is **not** to decide relevance —
-your task is to **correctly identify and bind Experience Drivers**.
+Your task here is **not** to decide relevance — your task is to **correctly identify and bind Experience Drivers**.
 
 ---
 
@@ -309,10 +301,7 @@ Only then may it proceed downstream.
 ## 🚀 Enforcement Statement
 
 This block is a **hard identity boundary** in DecipherOS.
-No analytics, orchestration units, or PDCA actions may be generated
-from signals that violate these rules.
-
----
+No analytics, orchestration units, or PDCA actions may be generated from signals that violate these rules.
 
 ---
 
@@ -426,8 +415,7 @@ This layer guarantees:
 * Stable identity resolution
 * Safe downstream orchestration
 
-No Experience Driver may proceed downstream
-without passing **both SECTION 1 and SECTION 2**.
+No Experience Driver may proceed downstream without passing **both SECTION 1 and SECTION 2**.
 
 ---
 
@@ -807,24 +795,25 @@ even if the language is imprecise
 ## 🧩 **Experience Driver – Specific Feedback Type**
 
 ### 📌 **Purpose**
-The **Feedback Type** dimension is applied to each extracted Experience Driver. It classifies  
-the **intent, tone, and customer expectation** linked to that specific experience driver — whether it reflects a  
-**Complaint, Suggestion, Compliment, Request, Question, Product Usage Insight or  
-Alert or Emerging Trends / Market Insight**.
+
+The **Feedback Type** dimension is applied to each extracted Experience Driver.
+
+It classifies the **communicative intent and signal category** of that specific experience driver — whether it reflects:
+* **Negative signal requiring correction** (Complaint - including service dissatisfaction, functionality defects, system failures, transaction errors, or security incidents requiring response)
+* **Positive reinforcement** (Compliment)
+* **Forward-looking improvement idea** (Suggestion)
+* **Immediate action needed** (Request)
+* **Clarification or information need** (Question)
+* **Behavioral pattern observation** (Product Usage Insight)
+* **Market or systemic signal** (Alert or Emerging Trends / Market Insight)
 
 This targeted segmentation ensures each driver is:
 * 🧭 **Emotionally grounded and action-ready**
-* 🔍 **Strategically routed based on intent**
+* 🔍 **Strategically routed based on intent and signal type**
 * 🛠️ **Eligible for downstream orchestration (Fix, Optimize, Amplify, Innovate)**
 
-> 🔁 **Never assign feedback type at the review level.** For multi-intent feedback, classify  
-each experience driver independently.
-
-### ✅ Key Enhancements
-* ✔ **Fraud, compliance, and account access feedback is always retained — regardless of tone**  
-* ✔ **Suggestions ≠ Requests** — handled with differentiated routing logic  
-* ✔ **Vague, generic sentiment is excluded as noise**  
-* ✔ **Mixed feedback is decomposed into distinct Experience Driver signals with separate classifications**
+> 🔁 **Never assign feedback type at the review level.** For multi-intent feedback, classify each experience 
+driver independently.
 
 ---
 
@@ -848,19 +837,48 @@ each experience driver independently.
 
 ### **2️⃣ Complaint**
 
-✅ **Definition:** Expression of **dissatisfaction, friction, or breakdown** in the customer experience  
-✔ Must relate to a **fixable issue**  
-✔ **Always extract** for fraud, KYC failure, refund problems, or trust violations
+✅ **Definition:** Expression of **dissatisfaction, friction, breakdown, defect, or adverse incident** within 
+the entity's domain of responsibility
+
+✔ Encompasses **three signal categories:**
+1. **Service Quality Issues** — dissatisfaction with support, communication, or process efficiency
+2. **Functionality Defects** — broken features, failed transactions, system errors, or non-working capabilities 
+(e.g., login failures, payment processing errors, verification system breakdowns)
+3. **Incident Reports** — fraud, security breaches, unauthorized transactions, KYC failures, or situations 
+requiring urgent entity response
+
+✔ Must relate to a **fixable, investigable, or respondable issue**
+
+✔ **Always extract** for:
+* Fraud incidents, unauthorized transactions, security breaches
+* KYC/verification failures, account access issues
+* Refund problems, payment processing failures
+* Transaction errors, failed transfers
+* Trust violations, data privacy concerns
+* System downtime, app crashes, feature malfunctions
 
 ✅ **Examples:**
 
-* *"My refund hasn’t come even after 10 days."*  
+**Service Quality Complaints:**
+* *"My refund hasn't come even after 10 days."*
+* *"Customer support hasn't responded to my dispute in 5 days."*
+* *"No one explained why my loan application was rejected."*
+
+**Functionality Defect Complaints:**
 * *"PAN verification keeps failing even after reupload."*
+* *"Login button doesn't work on the mobile app."*
+* *"Payment gets stuck at processing and never completes."*
+* *"UPI transfers fail but money gets deducted."*
+
+**Incident Report Complaints:**
+* *"Unauthorized transaction of ₨15,000 appeared in my account."*
+* *"Someone accessed my account and changed my phone number."*
+* *"My card was charged twice for the same purchase."*
 
 ❌ **Exclude If:**
-
-* *"This app sucks."* (Too vague)  
-* *"I hate this bank."* (Emotion without insight)
+* *"This app sucks."* (Too vague — no specific driver)
+* *"I hate this bank."* (Emotion without actionable insight)
+* Generic negativity without identifiable determinant or context
 
 ---
 
