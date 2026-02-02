@@ -792,28 +792,46 @@ even if the language is imprecise
 
 ---
 
-## 🧩 **Experience Driver – Specific Feedback Type**
+### 🧩 **Experience Driver – Specific Feedback Type**
 
 ### 📌 **Purpose**
 
-The **Feedback Type** dimension is applied to each extracted Experience Driver.
+The **Feedback Type** dimension is applied to each extracted **Experience Driver**.
 
-It classifies the **communicative intent and signal category** of that specific experience driver — whether it reflects:
-* **Negative signal requiring correction** (Complaint - including service dissatisfaction, functionality defects, system failures, transaction errors, or security incidents requiring response)
-* **Positive reinforcement** (Compliment)
-* **Forward-looking improvement idea** (Suggestion)
-* **Immediate action needed** (Request)
-* **Clarification or information need** (Question)
-* **Behavioral pattern observation** (Product Usage Insight)
-* **Market or systemic signal** (Alert or Emerging Trends / Market Insight)
+It classifies the **communicative intent and signal category** of that specific experience driver — describing **what the customer is doing with language** and **what class of response the organization is being asked to make**.
 
-This targeted segmentation ensures each driver is:
-* 🧭 **Emotionally grounded and action-ready**
-* 🔍 **Strategically routed based on intent and signal type**
-* 🛠️ **Eligible for downstream orchestration (Fix, Optimize, Amplify, Innovate)**
+Each Experience Driver must be classified into **one and only one** of the following signal categories:
 
-> 🔁 **Never assign feedback type at the review level.** For multi-intent feedback, classify each experience 
-driver independently.
+* **Negative signal requiring correction**
+  (**Complaint** — including service dissatisfaction, functionality defects, system or process failures, transaction errors, or incidents within the organization’s domain of responsibility that require investigation or correction)
+
+* **Positive reinforcement**
+  (**Compliment** — explicit praise for a specific service, process, capability, or interaction)
+
+* **Forward-looking improvement idea**
+  (**Suggestion** — optional enhancement or convenience improvement, not required for core functionality or safety)
+
+* **Expectation of provision or enablement**
+  (**Request** — explicit ask for a capability, access, or support the customer believes should be available)
+
+* **Clarification or information need**
+  (**Question** — request for explanation, status, policy, or understanding)
+
+* **Behavioral pattern observation**
+  (**Product Usage Insight** — description of how the customer actually uses, adapts, or works around a product or service)
+
+* **Market or systemic signal**
+  (**Emerging Trends / Market Insight** — comparative expectations, peer benchmarks, or forward-looking signals beyond the individual case)
+
+This targeted segmentation ensures each Experience Driver is:
+
+* 🧭 **Correctly interpreted by intent**
+* 🔍 **Safely routed to an appropriate response class**
+* 🛠️ **Eligible for downstream orchestration under governed response streams**
+
+> 🔁 **Never assign Feedback Type at the review level.**
+> If a single review contains multiple independent experience drivers, each driver must be classified 
+separately based on its own communicative intent.
 
 ---
 
@@ -837,48 +855,61 @@ driver independently.
 
 ### **2️⃣ Complaint**
 
-✅ **Definition:** Expression of **dissatisfaction, friction, breakdown, defect, or adverse incident** within 
-the entity's domain of responsibility
+✅ **Definition:**
+Expression of **dissatisfaction, friction, breakdown, defect, or adverse incident** within the **entity’s 
+domain of responsibility**, where the organization is expected to **investigate, correct, mitigate, or respond**.
 
-✔ Encompasses **three signal categories:**
-1. **Service Quality Issues** — dissatisfaction with support, communication, or process efficiency
-2. **Functionality Defects** — broken features, failed transactions, system errors, or non-working capabilities 
-(e.g., login failures, payment processing errors, verification system breakdowns)
-3. **Incident Reports** — fraud, security breaches, unauthorized transactions, KYC failures, or situations 
-requiring urgent entity response
+✔ Encompasses **three internal signal categories**:
 
-✔ Must relate to a **fixable, investigable, or respondable issue**
+1. **Service Quality Issues**
+   Dissatisfaction with support, communication, responsiveness, or process efficiency.
 
-✔ **Always extract** for:
-* Fraud incidents, unauthorized transactions, security breaches
-* KYC/verification failures, account access issues
-* Refund problems, payment processing failures
-* Transaction errors, failed transfers
-* Trust violations, data privacy concerns
-* System downtime, app crashes, feature malfunctions
+2. **Functionality Defects**
+   Broken features, failed transactions, system errors, outages, or non-working capabilities
+   (e.g., login failures, payment processing errors, verification breakdowns).
 
-✅ **Examples:**
+3. **Incident Reports**
+   Adverse events **requiring entity investigation or response**, including fraud incidents, security breaches, 
+unauthorized transactions, access compromise, or data integrity concerns — regardless of whether the root cause 
+is internal or external.
 
-**Service Quality Complaints:**
-* *"My refund hasn't come even after 10 days."*
-* *"Customer support hasn't responded to my dispute in 5 days."*
-* *"No one explained why my loan application was rejected."*
+✔ Must relate to a **fixable, investigable, or respondable issue**.
 
-**Functionality Defect Complaints:**
-* *"PAN verification keeps failing even after reupload."*
-* *"Login button doesn't work on the mobile app."*
-* *"Payment gets stuck at processing and never completes."*
-* *"UPI transfers fail but money gets deducted."*
+✔ **Always extract** when the feedback surfaces:
 
-**Incident Report Complaints:**
-* *"Unauthorized transaction of ₨15,000 appeared in my account."*
-* *"Someone accessed my account and changed my phone number."*
-* *"My card was charged twice for the same purchase."*
+* Unauthorized transactions or suspected fraud requiring investigation
+* Security breaches, account takeovers, or access compromise
+* KYC or verification failures
+* Payment, refund, or settlement failures
+* Transaction errors or duplicate charges
+* Trust violations or data privacy concerns
+* System downtime, app crashes, or feature malfunctions
 
-❌ **Exclude If:**
-* *"This app sucks."* (Too vague — no specific driver)
-* *"I hate this bank."* (Emotion without actionable insight)
-* Generic negativity without identifiable determinant or context
+✅ **Examples**
+
+**Service Quality Complaints**
+
+* *“My refund hasn’t come even after 10 days.”*
+* *“Customer support hasn’t responded to my dispute in 5 days.”*
+* *“No one explained why my loan application was rejected.”*
+
+**Functionality Defect Complaints**
+
+* *“PAN verification keeps failing even after reupload.”*
+* *“Login button doesn’t work on the mobile app.”*
+* *“UPI transfer failed but money was deducted.”*
+
+**Incident Report Complaints**
+
+* *“An unauthorized transaction of ₨15,000 appeared in my account.”*
+* *“Someone accessed my account and changed my phone number.”*
+* *“My card was charged twice for the same purchase.”*
+
+❌ **Exclude If**
+
+* *“This app sucks.”* (No identifiable determinant)
+* *“I hate this bank.”* (Emotion without actionable signal)
+* Generic negativity without a clear experience driver or response surface
 
 ---
 
@@ -1511,19 +1542,35 @@ Choose based on the **core financial implication**, not hypothetical upside.
 
 ---
 
-## 📂 The Four Streams (FinTech)
+### 🔧 1. **Fix** — *Resolve what is failing, unsafe, or demands immediate correction*
 
-### 🔧 1. **Fix** — *Resolve what’s failing or unsafe*
+**Definition:**
+The experience exists but is **broken, incorrect, unsafe, unreliable, or failing to meet minimum trust or 
+operational guarantees**, **or** the entity has a **clear responsibility to investigate, correct, or 
+mitigate harm**, regardless of root cause.
 
-* **Definition:** Experience exists but is **broken, incorrect, unsafe, or unreliable**
-* **When to Use:** Failed transactions, incorrect charges, access denial, fraud handling failures
-* **Signals:**
+**When to Use:**
 
-  * “Money was debited but the payment never went through”
-  * “My account was blocked without reason”
-  * “I was charged twice for the same transaction”
-* **Boundary:** ✅ Exists → ❌ Does not work as expected
-* **Never Use If:** Process works but is merely slow, confusing, or effortful (→ Optimize)
+* Failed or inconsistent transactions
+* Incorrect charges, duplicate debits, missing credits
+* Account access failures or unjustified blocks
+* Fraud incidents or unauthorized activity requiring investigation
+* Security, privacy, or trust breaches
+* Regulatory or financial safety exposure
+* Any situation where *not acting* increases customer harm or risk
+
+**Signals:**
+
+* “Money was debited but the payment never went through”
+* “My account was blocked without explanation”
+* “I was charged twice for the same transaction”
+* “There’s an unauthorized transaction on my account”
+* “Support hasn’t acted on my fraud report”
+
+**Boundary:**
+
+* ✅ Experience exists
+* ❌ It does not meet **minimum correctness, safety, or trust expectations**
 
 ---
 
@@ -1602,11 +1649,16 @@ Does the financial experience exist?
 * Never confuse **Fix** and **Optimize** boundaries
 * Apply sub-tier scoring **only** for Innovate
 * Selection must be **justifiable** using structured FinTech inputs
-* Fix vs Optimize must be determined **solely by the customer’s stated experience of failure**, not by inferred risk, regulatory severity, or institutional judgment:
-
-  * Use **Fix** only when the customer explicitly indicates the experience failed, was incorrect, did not occur, or violated an expectation of correctness or safety
-  * Use **Optimize** when the customer indicates the experience did occur, but involved friction, delay, repetition, confusion, or avoidable effort — even if the issue feels serious
-
+* Fix vs Optimize must be determined solely by the customer’s stated experience 
+of failure or unmet responsibility, not by inferred risk, regulatory severity, or institutional judgment.
+    - Use Fix only when the customer explicitly indicates that:
+         * the experience failed, was incorrect, unsafe, incomplete, or did not occur OR
+         * the entity failed to act, respond, protect, investigate, or resolve when expected
+          (even if the underlying issue was caused by a third party)
+    - Use Optimize only when the customer indicates the experience:
+         * did occur correctly
+         * but involved friction, delay, repetition, confusion, or avoidable effort
+         * without breach of correctness, safety, or trust
 ---
 
 ## 🧩 **Experience Driver – Specific Customer Effort Score (CES)**
@@ -2739,12 +2791,73 @@ NO commentary.
 {
   "schema_version": "fintech_ed_v1",
   "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "I tried sending ₨25,000 via UPI. The app showed transaction failed, but the amount was deducted from my account. It's been two days and the money is still not reversed.",
+  "experience_drivers": [
+    {
+      "theme": "Financial Transaction Integrity",
+      "experience_driver": {
+        "label": "Transaction Failure Handling",
+        "category": "Payments & Transfers",
+        "subcategory": "Failed Transaction Resolution"
+      },
+      "entity_name": "UPI Fund Transfer",
+      "context": {
+        "text": "The customer attempted a UPI transfer. The system reported transaction failure, yet the transfer amount was debited and not reversed after two days.",
+        "keywords": [
+          "transaction failed",
+          "amount deducted",
+          "UPI transfer",
+          "no reversal",
+          "money stuck"
+        ]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Panic",
+        "specific": "Distressed about money being deducted without transfer completion"
+      },
+      "journey": {
+        "customer_journey": "Transaction Execution",
+        "customer_journey_stage": "Fund Transfer Processing",
+        "interaction_moment": "immediately after receiving a failed transaction message with money deducted"
+      },
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": "7",
+      "orchestration_unit": {
+        "ou_name": "Failed UPI Transfer With Debit – Complaint – Fix",
+        "experience_driver": "Payments & Transfers → Failed Transaction Resolution",
+        "entity_name": "UPI Fund Transfer",
+        "theme": "Financial Transaction Integrity",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Fix",
+        "interaction_moment": "immediately after receiving a failed transaction message with money deducted",
+        "context": "The transaction was marked as failed while the transfer amount was deducted and remained unreversed for multiple days.",
+        "matters": "Failed transactions with debited funds create acute financial distress, force customers to chase support, and directly undermine trust in payment reliability.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The customer submitted a Complaint after a UPI transfer failed while the amount was deducted and not reversed, causing immediate financial stress.",
+          "section_2_strategic_response": "We need to Fix → Payments & Transfers → Failed Transaction Resolution to ensure atomic transaction handling and automatic, time-bound reversals when transfers fail."
+        },
+        "stream_justification": "This is a correctness failure in a core financial system. Money movement must be atomic and fail-safe; any deviation requires immediate fixing, not optimization.",
+        "matters_extraction": "Raw Customer Voice, Context, Keywords, Interaction Moment",
+        "behavioral_impact": "Restore trust in digital payments, reduce financial anxiety, and prevent repeat support escalations caused by unresolved failed transactions."
+      }
+    }
+  ]
+}
+
+---
+
+#### Example 2:
+
+{
+  "schema_version": "fintech_ed_v1",
+  "processed_at": "2025-12-07T14:23:45Z",
   "customer_review": "I attempted to pay my credit card bill via the app, but after confirming the payment, I received two separate debit notifications. One of those was later reversed, yet the duplicate charge left me worried about my actual balance and potential unauthorized activity.",
   "experience_drivers": [
     {
       "theme": "Financial Transaction Integrity",
       "experience_driver": {
-        "label": "Duplicate Charge Management",
+        "label": "Transaction Processing → Duplicate Charge Management",
         "category": "Transaction Processing",
         "subcategory": "Duplicate Charge Management"
       },
@@ -2788,7 +2901,7 @@ NO commentary.
         },
         "stream_justification": "Financial transactions rely on immediate correctness and clarity. Duplicate debit events during payment confirmation break trust, trigger fear of account compromise, and require urgent resolution to restore confidence.",
         "matters_extraction": "Raw Customer Voice, Keywords, Journey Context",
-        "behavioral_impact": "Improve payment event reconciliation, prevent duplicate debit notifications, and introduce immediate reassurance signals when anomalies are detected."
+        "behavioral_impact": "Duplicate debit events increase manual verification behavior, customer anxiety, and distrust in digital payment reliability."
       }
     }
   ]
@@ -2797,7 +2910,7 @@ NO commentary.
 
 ---
 
-#### Example 2:
+#### Example 3:
 
 {
   "schema_version": "fintech_ed_v1",
@@ -2807,7 +2920,7 @@ NO commentary.
     {
       "theme": "Technical Resilience",
       "experience_driver": {
-        "label": "Transaction Flow Stability",
+        "label": "App Reliability → Transaction Flow Stability",
         "category": "App Reliability",
         "subcategory": "Transaction Flow Stability"
       },
@@ -2856,7 +2969,7 @@ NO commentary.
     {
       "theme": "Post-Transaction Visibility",
       "experience_driver": {
-        "label": "Transaction History Clarity",
+        "label": "Account Transparency → Transaction History Clarity",
         "category": "Account Transparency",
         "subcategory": "Transaction History Clarity"
       },
@@ -2907,7 +3020,7 @@ NO commentary.
 
 ---
 
-#### Example 3:
+#### Example 4:
 
 {
   "schema_version": "fintech_ed_v1",
@@ -2917,7 +3030,7 @@ NO commentary.
     {
       "theme": "Trust Reinforcement",
       "experience_driver": {
-        "label": "Post-Resolution Follow-Up",
+        "label": "Customer Support → Post-Resolution Follow-Up",
         "category": "Customer Support",
         "subcategory": "Post-Resolution Follow-Up"
       },
@@ -2967,7 +3080,7 @@ NO commentary.
     {
       "theme": "Self-Service Experience",
       "experience_driver": {
-        "label": "In-App Dispute Initiation",
+        "label": "Dispute Management → In-App Dispute Initiation",
         "category": "Dispute Management",
         "subcategory": "In-App Dispute Initiation"
       },
