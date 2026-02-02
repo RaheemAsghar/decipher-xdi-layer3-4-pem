@@ -2863,12 +2863,12 @@ If you output anything outside JSON, the output is invalid.
 
 ---
 
-#### Example 2 – FIX STREAM | Anger | Test Result Accuracy
+#### Example 2 — Dual Drivers | FIX + OPTIMIZE (Teaching Boundary Case)
 
 {
   "schema_version": "healthcare_ed_v1",
   "processed_at": "2025-12-07T14:23:45Z",
-  "customer_review": "I had my blood test done, and when I checked the results in the patient portal, two different cholesterol readings were listed for the same date. One was later corrected, but the discrepancy made me question the reliability of my entire report and whether my treatment plan might be affected.",
+  "customer_review": "I checked my blood test results in the patient portal and saw two different cholesterol readings for the same date, which really alarmed me. One value was later corrected, but the report also showed confusing annotations and update timestamps that made it hard to understand what had changed or whether I should still be concerned.",
   "experience_drivers": [
     {
       "theme": "Clinical Services & Care Delivery",
@@ -2879,14 +2879,13 @@ If you output anything outside JSON, the output is invalid.
       },
       "entity_name": "Laboratory Reporting System",
       "context": {
-        "text": "The patient reviewed lab results in the portal and observed conflicting cholesterol values for the same test date. Although one value was later corrected, the discrepancy caused distress and reduced trust in the accuracy of the report.",
+        "text": "The patient initially observed two conflicting cholesterol values for the same test date in the portal before one was corrected.",
         "keywords": [
           "conflicting results",
           "duplicate readings",
           "lab report",
           "portal",
-          "correction",
-          "trust"
+          "correction"
         ]
       },
       "feedback_type": "Complaint",
@@ -2909,19 +2908,68 @@ If you output anything outside JSON, the output is invalid.
         "feedback_type": "Complaint",
         "opportunity_maximisation_stream": "Fix",
         "interaction_moment": "while reviewing lab results in the patient portal",
-        "context": "The patient encountered two conflicting cholesterol values for the same test date, one of which was later corrected, leading to anxiety and loss of confidence in result reliability.",
-        "matters": "Conflicting diagnostic results undermine patient trust, create emotional distress, and risk hesitation or doubt in follow-up care decisions.",
+        "context": "Two different cholesterol values were displayed for the same test date before correction.",
+        "matters": "Conflicting diagnostic results represent a clinical correctness failure that undermines patient trust and creates doubt about treatment decisions.",
         "semantic_action_statement": {
-          "section_1_customer_reality": "The patient submitted a Complaint after seeing conflicting cholesterol results for the same test date while reviewing lab results in the portal. Although one value was later corrected, the discrepancy caused significant doubt about report accuracy.",
-          "section_2_strategic_response": "We need to Fix → Diagnostic Services → Result Accuracy to prevent conflicting diagnostic data that erodes patient trust and creates avoidable anxiety during result review."
+          "section_1_customer_reality": "The patient submitted a Complaint after seeing conflicting cholesterol results for the same test date while reviewing lab results in the portal.",
+          "section_2_strategic_response": "We need to Fix → Diagnostic Services → Result Accuracy to prevent incorrect or conflicting results from being presented to patients."
         },
-        "stream_justification": "Diagnostic result accuracy is a correctness-critical surface; patient trust is compromised when inconsistencies appear, even if later corrected.",
-        "matters_extraction": "Raw Voice, Keywords, Interaction Moment",
-        "behavioral_impact": "Strengthen validation controls before result publication and introduce clear patient-facing explanations when corrections occur to preserve trust."
+        "stream_justification": "Diagnostic accuracy is a non-negotiable clinical obligation; conflicting results indicate a correctness failure regardless of later correction.",
+        "matters_extraction": "Raw Voice, Context, Interaction Moment",
+        "behavioral_impact": "Restore trust in diagnostic reporting and prevent hesitation or doubt in follow-up care decisions."
+      }
+    },
+    {
+      "theme": "Clinical Services & Care Delivery",
+      "experience_driver": {
+        "label": "Diagnostic Services → Result Interpretation Clarity",
+        "category": "Diagnostic Services",
+        "subcategory": "Result Interpretation Clarity"
+      },
+      "entity_name": "Laboratory Reporting System",
+      "context": {
+        "text": "After correction, the patient found the report difficult to interpret due to unclear annotations and update timestamps.",
+        "keywords": [
+          "confusing annotations",
+          "timestamps",
+          "unclear updates",
+          "portal display"
+        ]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Ambivalence",
+        "specific": "Uncertain"
+      },
+      "journey": {
+        "customer_journey": "Diagnostic Experience",
+        "customer_journey_stage": "Result Review",
+        "interaction_moment": "after the lab result correction was applied in the portal"
+      },
+      "opportunity_maximisation_stream": "Optimize",
+      "customer_effort_score": 4,
+      "orchestration_unit": {
+        "ou_name": "Diagnostic Services → Result Interpretation Clarity – Complaint – Optimize",
+        "experience_driver": "Diagnostic Services → Result Interpretation Clarity",
+        "entity_name": "Laboratory Reporting System",
+        "theme": "Clinical Services & Care Delivery",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Optimize",
+        "interaction_moment": "after the lab result correction was applied in the portal",
+        "context": "Although the final result was correct, unclear annotations and update indicators made it difficult for the patient to understand what changed.",
+        "matters": "Unclear presentation of corrected diagnostic results forces patients to interpret clinical information without sufficient guidance.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient submitted a Complaint about confusing annotations and update indicators after the lab result correction appeared in the portal.",
+          "section_2_strategic_response": "We need to Optimize → Diagnostic Services → Result Interpretation Clarity to make result updates understandable and reduce unnecessary patient confusion."
+        },
+        "stream_justification": "The diagnostic outcome was ultimately correct, but presentation and explanation created avoidable friction.",
+        "matters_extraction": "Raw Voice, Context",
+        "behavioral_impact": "Reduce patient uncertainty, lower follow-up inquiries, and improve confidence during result review."
       }
     }
   ]
 }
+
 
 ---
 
