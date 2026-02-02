@@ -1649,16 +1649,90 @@ Does the financial experience exist?
 * Never confuse **Fix** and **Optimize** boundaries
 * Apply sub-tier scoring **only** for Innovate
 * Selection must be **justifiable** using structured FinTech inputs
-* Fix vs Optimize must be determined solely by the customer’s stated experience 
-of failure or unmet responsibility, not by inferred risk, regulatory severity, or institutional judgment.
-    - Use Fix only when the customer explicitly indicates that:
-         * the experience failed, was incorrect, unsafe, incomplete, or did not occur OR
-         * the entity failed to act, respond, protect, investigate, or resolve when expected
-          (even if the underlying issue was caused by a third party)
-    - Use Optimize only when the customer indicates the experience:
-         * did occur correctly
-         * but involved friction, delay, repetition, confusion, or avoidable effort
-         * without breach of correctness, safety, or trust
+
+## 🧠 **Fix vs Optimize — Execution Determination Rule (FinTech)**
+
+**Fix vs Optimize must be determined solely by the customer’s stated experience of failure or unmet responsibility**,
+**not** by inferred financial risk, regulatory severity, fraud sensitivity, institutional judgment, or internal assumptions.
+
+---
+
+### 🔧 Use **Fix** only when the customer explicitly indicates that:
+
+* The experience **failed**, was **incorrect**, **unsafe**, **incomplete**, or **did not occur as expected**
+  **OR**
+* The organization **failed to act, respond, protect, investigate, reverse, communicate, or resolve** when a reasonable expectation of responsibility existed
+  *(even if the underlying issue was caused by third-party merchants, payment networks, telecoms, or external fraud actors)*
+
+**Examples that must map to Fix:**
+
+* “Money was debited but the payment never went through.”
+* “I was charged twice for the same transaction.”
+* “There’s an unauthorized transaction on my account.”
+* “My account was blocked without explanation.”
+* “I reported fraud but no one has contacted me.”
+* “The app showed the transfer as successful, but the recipient never received the money.”
+* “My refund was approved but never credited.”
+
+---
+
+### 🛠 Use **Optimize** only when the customer explicitly indicates that:
+
+* The experience **did occur correctly**
+* The expected financial outcome **was ultimately delivered**
+* But the journey involved **friction, delay, repetition, confusion, or avoidable effort**
+* **Without** breach of correctness, safety, trust, or financial integrity
+
+**Examples that must map to Optimize:**
+
+* “The transfer worked, but it took too many steps.”
+* “I eventually got my refund, but I had to follow up multiple times.”
+* “The transaction succeeded, but the confirmation message was confusing.”
+* “I could complete the payment, but the app was slow.”
+* “I received the credit, but the status updates were unclear.”
+
+---
+
+### 🚫 **Explicit Guardrails**
+
+* Do **not** upgrade to **Fix** based on:
+
+  * Perceived financial magnitude
+  * Regulatory exposure inferred by the system
+  * Fraud sensitivity assumptions
+  * Institutional anxiety or risk aversion
+  * Hypothetical downstream consequences
+
+* Do **not** downgrade to **Optimize** if:
+
+  * The customer indicates **failed execution**
+  * The customer reports **non-response or lack of investigation**
+  * The customer describes **loss of trust, safety, or financial reliability**
+  * The customer reports **unauthorized activity or unresolved discrepancies**
+
+---
+
+## ✅ **Why This Rule Is Correct**
+
+This rule ensures:
+
+* **Behavioral fidelity**
+  (routing is based on lived financial experience, not institutional fear)
+* **Mutual exclusivity**
+  (Fix ≠ Optimize — no overlap, no ambiguity)
+* **Safe autonomy**
+  (agents don’t escalate or suppress based on imagined severity)
+* **Cross-domain consistency**
+  (the same execution law applies across Healthcare, FinTech, Insurance, and beyond)
+
+---
+
+### 🔒 **Lock-in Statement**
+
+> **Fix and Optimize are separated by customer-declared failure versus friction — not by perceived severity.**
+> **If the experience failed or responsibility was unmet → Fix.**
+> **If the experience worked but required excess effort → Optimize.**
+
 ---
 
 ## 🧩 **Experience Driver – Specific Customer Effort Score (CES)**
@@ -2796,7 +2870,7 @@ NO commentary.
     {
       "theme": "Financial Transaction Integrity",
       "experience_driver": {
-        "label": "Transaction Failure Handling",
+        "label": "Payments & Transfers → Transaction Failure Handling",
         "category": "Payments & Transfers",
         "subcategory": "Failed Transaction Resolution"
       },
