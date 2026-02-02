@@ -811,28 +811,45 @@ This targeted context becomes the foundational layer for:
 
 ---
 
-## 🧩 **Experience Driver – Specific Feedback Type**
+### 🧩 **Experience Driver – Specific Feedback Type**
 
 ### 📌 **Purpose**
 
-The **Feedback Type** dimension is applied to each extracted Experience Driver.
+The **Feedback Type** dimension is applied to each extracted **Experience Driver**.
 
-It classifies the **communicative intent and signal category** of that specific driver — whether it reflects:
-* **Negative signal requiring correction** (Complaint - including service dissatisfaction, functionality defects, system failures, or incidents requiring response)
-* **Positive reinforcement** (Compliment)
-* **Forward-looking improvement idea** (Suggestion)
-* **Immediate action needed** (Request)
-* **Clarification or information need** (Question)
-* **Behavioral pattern observation** (Usage Insight)
-* **Market or systemic signal** (Emerging Trends / Market Insight)
+It classifies the **communicative intent and signal category** of that specific experience driver — describing **what the customer is doing with language** and **what class of response the organization is being asked to make**.
 
-This targeted classification ensures each driver is:
-* 🧭 **Emotionally grounded and action-ready**
-* 🔍 **Strategically routed based on intent and signal type**
-* 🛠️ **Eligible for downstream orchestration (Fix, Optimize, Amplify, Innovate)**
+Each Experience Driver must be classified into **one and only one** of the following signal categories:
 
-> 🔁 **Never assign feedback type at the review level.** For multi-intent feedback, classify each experience 
-driver independently.
+* **Negative signal requiring correction**
+  (**Complaint** — including service dissatisfaction, process breakdowns, functionality defects, system failures, delays, errors, omissions, or adverse incidents **within the organization’s domain of responsibility** that require investigation, explanation, or correction)
+
+* **Positive reinforcement**
+  (**Compliment** — explicit praise for a specific service, interaction, process, or capability that worked well)
+
+* **Forward-looking improvement idea**
+  (**Suggestion** — optional enhancement or convenience improvement, not required for core functionality, safety, or correctness)
+
+* **Expectation of provision or enablement**
+  (**Request** — explicit ask for access, support, capability, or assistance the customer believes should be available)
+
+* **Clarification or information need**
+  (**Question** — request for explanation, status, policy, instructions, or understanding)
+
+* **Behavioral pattern observation**
+  (**Product Usage Insight** — description of how the customer actually uses, adapts, or works around a product, service, or process)
+
+* **Market or systemic signal**
+  (**Emerging Trends / Market Insight** — comparative expectations, peer benchmarks, or forward-looking signals beyond the individual case)
+
+This targeted segmentation ensures each Experience Driver is:
+
+* 🧭 **Correctly interpreted by intent**
+* 🔍 **Safely routed to an appropriate response class**
+* 🛠️ **Eligible for downstream orchestration under governed response streams**
+
+> 🔁 **Never assign Feedback Type at the review level.**
+> If a single review contains multiple independent experience drivers, each driver must be classified separately based on its own communicative intent.
 
 ---
 
@@ -854,44 +871,71 @@ driver independently.
 
 ---
 
-### **2️⃣ Complaint**
+### **2️⃣ Complaint (Healthcare Vertical)**
 
-✅ **Definition:** Expression of **dissatisfaction, friction, breakdown, defect, or adverse incident** within the entity's domain of responsibility
+✅ **Definition**
+Expression of **dissatisfaction, friction, breakdown, defect, or adverse incident** within the **healthcare 
+provider’s or system’s domain of responsibility**, where the organization is expected to **investigate, 
+correct, mitigate, or respond**.
 
-✔ Encompasses **three signal categories:**
-1. **Service Quality Issues** — dissatisfaction with care delivery, communication, or process efficiency
-2. **Functionality Defects** — broken systems, failed processes, or non-working features (e.g., portal crashes, equipment failures)
-3. **Incident Reports** — adverse events, safety concerns, or situations requiring urgent entity response
+✔ Encompasses **three internal signal categories**:
 
-✔ Must relate to a **fixable, investigable, or respondable issue**
+1. **Service Quality Issues**
+   Dissatisfaction with staff behavior, communication, responsiveness, wait times, coordination, or care processes.
 
-✔ **Always extract** for:
-* Medication errors, delayed care, access barriers
-* Billing disputes, insurance processing failures
-* Patient safety concerns, adverse clinical events
-* System/portal malfunctions, equipment breakdowns
-* Appointment scheduling failures, access denial
+2. **Functionality / Process Defects**
+   Broken or failed healthcare processes, system issues, scheduling failures, access breakdowns, documentation 
+errors, or non-working capabilities
+   (e.g., appointment booking failures, portal errors, referral breakdowns).
 
-✅ **Examples:**
+3. **Care or Safety Incidents**
+   Adverse events **requiring provider investigation or response**, including clinical errors, missed follow-ups, 
+medication issues, diagnostic delays, or safety concerns — regardless of whether harm occurred.
 
-**Service Quality Complaints:**
-* *"My test results took over a week when I was told two days."*
-* *"No one explained my discharge instructions or follow-up care."*
+✔ Must relate to a **fixable, investigable, or respondable issue** within the healthcare organization’s control 
+or duty of care.
 
-**Functionality Defect Complaints:**
-* *"The online appointment system kept crashing and I missed my slot."*
-* *"Patient portal login hasn't worked for 3 days, can't access my records."*
-* *"The call button in my room was broken all night."*
+✔ **Always extract** when the feedback surfaces:
 
-**Incident Report Complaints:**
-* *"I was given the wrong medication during my hospital stay."*
-* *"I waited 6 hours in the ED with chest pain before being seen."*
-* *"My insurance claim was denied without explanation."*
+* Excessive or unexplained wait times
+* Poor communication from staff or clinicians
+* Appointment scheduling or cancellation failures
+* Test results delays or missing follow-ups
+* Billing or insurance processing errors
+* Patient portal or digital access failures
+* Medication errors or care coordination breakdowns
+* Safety concerns, misdiagnosis claims, or treatment delays
+* Administrative or clinical process failures
 
-❌ **Exclude If:**
-* *"This clinic is useless."* (Too vague — no specific driver)
-* *"I hate this hospital."* (Emotion without actionable insight)
-* Generic negativity without identifiable determinant or context
+---
+
+✅ **Examples**
+
+**Service Quality Complaints**
+
+* *“No one updated me while I waited for hours in the emergency room.”*
+* *“The nurse was rude and didn’t explain what was happening.”*
+* *“I kept calling about my results but never got a response.”*
+
+**Functionality / Process Defect Complaints**
+
+* *“The online appointment booking system keeps crashing.”*
+* *“My lab test was scheduled but no one showed up to take the sample.”*
+* *“The patient portal won’t let me view my prescriptions.”*
+
+**Care or Safety Incident Complaints**
+
+* *“My medication dosage was entered incorrectly.”*
+* *“My test results were lost and I had to repeat the procedure.”*
+* *“I was discharged without being told about follow-up care.”*
+
+---
+
+❌ **Exclude If**
+
+* *“This hospital is terrible.”* (No identifiable determinant)
+* *“I hate coming here.”* (Emotion without actionable signal)
+* Generic dissatisfaction without a clear experience driver or care/process surface
 
 ---
 
@@ -1515,17 +1559,41 @@ Choose based on the **core care implication**, not hypothetical potential.
 
 ## 📂 The Four Streams (Healthcare)
 
-### 🔧 1. **Fix** — *Resolve what’s failing or unsafe*
+---
 
-* **Definition:** Experience exists but is **broken, delayed, unsafe, or unreliable**
-* **When to Use:** Missed care, incorrect records, safety risks, access failures
-* **Signals:**
+### 🔧 1. **Fix** — *Resolve what is failing, unsafe, or demands immediate correction*
 
-  * “My lab results were uploaded to the wrong patient account”
-  * “Ambulance never arrived”
-  * “Prescription was entered incorrectly”
-* **Boundary:** ✅ Exists → ❌ Does not work as expected
-* **Never Use If:** Process works but is merely slow or confusing (→ Optimize)
+*(Healthcare Vertical)*
+
+**Definition:**
+The healthcare experience exists but is **broken, incorrect, unsafe, unreliable, or failing to meet 
+minimum standards of care, safety, or trust**, **or** the healthcare provider has a **clear responsibility 
+to investigate, correct, or mitigate potential harm**, regardless of intent or root cause.
+
+**When to Use:**
+
+* Missed, delayed, or incorrect care delivery
+* Unsafe clinical situations or care breakdowns
+* Diagnostic or treatment delays impacting outcomes
+* Medication errors or incorrect instructions
+* Appointment failures, no-shows caused by the system
+* Test results lost, delayed, or not communicated
+* Patient safety concerns requiring immediate response
+* Any situation where *not acting* increases patient risk, anxiety, or harm
+
+**Signals:**
+
+* “My test results were never shared, even after multiple follow-ups.”
+* “I waited for hours but was never seen by a doctor.”
+* “I was given the wrong medication.”
+* “My appointment was canceled without notice.”
+* “No one explained why my treatment was delayed.”
+* “I was discharged without instructions or follow-up.”
+
+**Boundary:**
+
+* ✅ Experience exists
+* ❌ It does not meet **minimum standards of safety, correctness, communication, or duty of care**
 
 ---
 
@@ -1603,12 +1671,79 @@ Does the care experience exist?
 * Never confuse **Fix** and **Optimize** boundaries
 * Apply sub-tier scoring **only** for Innovate
 * Selection must be **justifiable** using structured Healthcare inputs
-* Fix vs Optimize must be determined solely by the patient’s stated experience of failure, not by inferred risk, 
-severity, or clinical judgment.
-   * Use Fix only when the patient explicitly indicates that the experience failed, was incorrect, did not occur, 
-     or violated an expectation of correctness or safety.
-   * Use Optimize when the patient indicates the experience did occur, but involved friction, delay, repetition, 
-     confusion, or avoidable effort — even if the issue feels serious.
+
+## 🧠 **Fix vs Optimize — Execution Determination Rule (Healthcare)**
+
+**Fix vs Optimize must be determined solely by the patient’s stated experience of failure or unmet responsibility**,
+**not** by inferred clinical risk, regulatory severity, institutional judgment, or internal assumptions.
+
+### 🔧 Use **Fix** only when the patient explicitly indicates that:
+
+* The experience **failed**, was **incorrect**, **unsafe**, **incomplete**, or **did not occur as expected**
+  **OR**
+* The organization **failed to act, respond, inform, protect, investigate, or resolve** when a reasonable patient expectation of responsibility existed
+  *(even if the underlying cause involved staffing constraints, third-party labs, insurers, or external providers)*
+
+**Examples that must map to Fix:**
+
+* “My test results were never shared.”
+* “No one followed up after my abnormal report.”
+* “The appointment was cancelled without informing me.”
+* “I was discharged without clear instructions.”
+* “The system showed my appointment confirmed, but the clinic said I wasn’t scheduled.”
+* “I reported worsening symptoms but no one responded.”
+
+---
+
+### 🛠 Use **Optimize** only when the patient explicitly indicates that:
+
+* The experience **did occur correctly**
+* The expected outcome **was ultimately delivered**
+* But the journey involved **friction, delay, repetition, confusion, or avoidable effort**
+* **Without** breach of correctness, safety, trust, or duty of care
+
+**Examples that must map to Optimize:**
+
+* “I got my appointment, but I had to call multiple times.”
+* “The instructions were confusing, but everything went fine.”
+* “The check-in process worked, but took too long.”
+* “I received my results, but had to keep refreshing the portal.”
+* “Too many forms asked for the same information.”
+
+---
+
+### 🚫 Explicit Guardrails
+
+* Do **not** upgrade to **Fix** based on:
+
+  * Clinical importance inferred by the system
+  * Regulatory sensitivity
+  * Institutional anxiety
+  * Hypothetical downstream risk
+
+* Do **not** downgrade to **Optimize** if:
+
+  * The patient indicates **missed responsibility**
+  * The patient reports **non-response**
+  * The patient describes **breakdown of trust or reliability**
+
+---
+
+## ✅ Why This Rule Is Correct
+
+This rule ensures:
+
+* **Behavioral fidelity** (we route based on lived experience, not institutional fear)
+* **Mutual exclusivity** (Fix ≠ Optimize)
+* **Safe autonomy** (agents don’t escalate based on imagination)
+* **Cross-domain consistency** (same rule applies in FinTech, Healthcare, Insurance)
+
+---
+
+### 🔒 Lock-in Statement 
+> **Fix and Optimize are separated by patient-declared failure versus friction — not by perceived severity.**
+> **If the experience failed or responsibility was unmet → Fix.**
+> **If the experience worked but required excess effort → Optimize.**
 
 ---
 
@@ -2382,7 +2517,69 @@ NO commentary.
 
 ---
 
-#### Example 1 – FIX STREAM | Anger | Test Result Accuracy
+#### Example 1 - FIX STREAM
+
+{
+  "schema_version": "healthcare_ed_v1",
+  "processed_at": "2025-12-07T14:23:45Z",
+  "customer_review": "I was discharged from the hospital, but when I got home I realized the discharge summary listed the wrong medication dosage. I tried calling the ward and pharmacy multiple times but no one responded. I was terrified of taking the wrong dose.",
+  "experience_drivers": [
+    {
+      "theme": "Clinical Safety & Discharge",
+      "experience_driver": {
+        "label": "Discharge Process → Medication Reconciliation Accuracy",
+        "category": "Discharge Process",
+        "subcategory": "Medication Reconciliation Accuracy"
+      },
+      "entity_name": "Hospital Discharge Summary",
+      "context": {
+        "text": "After hospital discharge, the patient discovered that the discharge summary contained an incorrect medication dosage. Attempts to contact the ward and pharmacy for clarification were unsuccessful.",
+        "keywords": [
+          "wrong dosage",
+          "discharge summary",
+          "medication error",
+          "no response",
+          "patient safety",
+          "post-discharge"
+        ]
+      },
+      "feedback_type": "Complaint",
+      "emotion": {
+        "group": "Agitation",
+        "specific": "Fearful of harm due to incorrect medication instructions and lack of response"
+      },
+      "journey": {
+        "customer_journey": "Post-Care & Recovery",
+        "customer_journey_stage": "Post-Discharge Medication Management",
+        "interaction_moment": "after discharge when reviewing medication instructions at home"
+      },
+      "opportunity_maximisation_stream": "Fix",
+      "customer_effort_score": 8,
+      "orchestration_unit": {
+        "ou_name": "Incorrect Discharge Medication Dosage – Complaint – Fix",
+        "experience_driver": "Discharge Process → Medication Reconciliation Accuracy",
+        "entity_name": "Hospital Discharge Summary",
+        "theme": "Clinical Safety & Discharge",
+        "feedback_type": "Complaint",
+        "opportunity_maximisation_stream": "Fix",
+        "interaction_moment": "after discharge when reviewing medication instructions at home",
+        "context": "The discharge summary contained an incorrect medication dosage, and the patient was unable to reach clinical staff or pharmacy for clarification.",
+        "matters": "Incorrect medication instructions at discharge create immediate patient safety risk, force patients into unsafe self-decision-making, and represent a failure of duty of care.",
+        "semantic_action_statement": {
+          "section_1_customer_reality": "The patient submitted a Complaint after discovering an incorrect medication dosage in their discharge summary and receiving no response when attempting to seek clarification post-discharge.",
+          "section_2_strategic_response": "We need to Fix → Discharge Process → Medication Reconciliation Accuracy to ensure discharge instructions are clinically correct and supported by rapid post-discharge response pathways."
+        },
+        "stream_justification": "This is a clinical correctness and safety failure with unmet responsibility after discharge. Medication accuracy and post-discharge responsiveness are non-negotiable patient safety obligations.",
+        "matters_extraction": "Raw Customer Voice, Context, Keywords, Interaction Moment",
+        "behavioral_impact": "Reduce post-discharge medication errors, prevent patient harm, restore trust in discharge safety, and eliminate unsafe gaps in post-care support."
+      }
+    }
+  ]
+}
+
+---
+
+#### Example 2 – FIX STREAM | Anger | Test Result Accuracy
 
 {
   "schema_version": "healthcare_ed_v1",
@@ -2445,7 +2642,7 @@ NO commentary.
 
 ---
 
-✅ Example 2 — Dual Drivers | Fix + Optimize
+✅ Example 3 — Dual Drivers | Fix + Optimize
 
 {
   "schema_version": "healthcare_ed_v1",
@@ -2554,7 +2751,7 @@ NO commentary.
 
 ---
 
-#### **Example 3 – AMPLIFY + INNOVATE STREAM COMBINATION**
+#### **Example 4 – AMPLIFY + INNOVATE STREAM COMBINATION**
 
 {
   "schema_version": "healthcare_ed_v1",
