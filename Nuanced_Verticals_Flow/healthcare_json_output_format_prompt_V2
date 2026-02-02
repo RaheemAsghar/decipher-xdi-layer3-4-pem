@@ -816,23 +816,23 @@ This targeted context becomes the foundational layer for:
 ### 📌 **Purpose**
 
 The **Feedback Type** dimension is applied to each extracted Experience Driver.
-It classifies the **intent, tone, and patient expectation** linked to that specific driver — whether it reflects a
-**Complaint, Suggestion, Compliment, Request, Question, Usage Insight, or Emerging Trends / Market Insight**.
 
-This targeted segmentation ensures each driver is:
+It classifies the **communicative intent and signal category** of that specific driver — whether it reflects:
+* **Negative signal requiring correction** (Complaint - including service dissatisfaction, functionality defects, system failures, or incidents requiring response)
+* **Positive reinforcement** (Compliment)
+* **Forward-looking improvement idea** (Suggestion)
+* **Immediate action needed** (Request)
+* **Clarification or information need** (Question)
+* **Behavioral pattern observation** (Usage Insight)
+* **Market or systemic signal** (Emerging Trends / Market Insight)
 
+This targeted classification ensures each driver is:
 * 🧭 **Emotionally grounded and action-ready**
-* 🔍 **Strategically routed based on intent**
+* 🔍 **Strategically routed based on intent and signal type**
 * 🛠️ **Eligible for downstream orchestration (Fix, Optimize, Amplify, Innovate)**
 
-> 🔁 **Never assign feedback type at the review level.** For multi-intent feedback, classify each experience driver independently.
-
-### ✅ Key Enhancements
-
-* ✔ **Critical care, medication safety, and appointment access feedback is always retained — regardless of tone**
-* ✔ **Suggestions ≠ Requests** — handled with differentiated routing logic
-* ✔ **Vague, generic sentiment is excluded as noise**
-* ✔ **Mixed feedback is decomposed into distinct Experience Driver signals with separate classifications**
+> 🔁 **Never assign feedback type at the review level.** For multi-intent feedback, classify each experience 
+driver independently.
 
 ---
 
@@ -856,19 +856,42 @@ This targeted segmentation ensures each driver is:
 
 ### **2️⃣ Complaint**
 
-✅ **Definition:** Expression of **dissatisfaction, friction, or breakdown** in the patient journey
-✔ Must relate to a **fixable issue**
-✔ **Always extract** for medication errors, delayed care, access barriers, billing disputes, or patient safety concerns
+✅ **Definition:** Expression of **dissatisfaction, friction, breakdown, defect, or adverse incident** within the entity's domain of responsibility
+
+✔ Encompasses **three signal categories:**
+1. **Service Quality Issues** — dissatisfaction with care delivery, communication, or process efficiency
+2. **Functionality Defects** — broken systems, failed processes, or non-working features (e.g., portal crashes, equipment failures)
+3. **Incident Reports** — adverse events, safety concerns, or situations requiring urgent entity response
+
+✔ Must relate to a **fixable, investigable, or respondable issue**
+
+✔ **Always extract** for:
+* Medication errors, delayed care, access barriers
+* Billing disputes, insurance processing failures
+* Patient safety concerns, adverse clinical events
+* System/portal malfunctions, equipment breakdowns
+* Appointment scheduling failures, access denial
 
 ✅ **Examples:**
 
+**Service Quality Complaints:**
 * *"My test results took over a week when I was told two days."*
+* *"No one explained my discharge instructions or follow-up care."*
+
+**Functionality Defect Complaints:**
 * *"The online appointment system kept crashing and I missed my slot."*
+* *"Patient portal login hasn't worked for 3 days, can't access my records."*
+* *"The call button in my room was broken all night."*
+
+**Incident Report Complaints:**
+* *"I was given the wrong medication during my hospital stay."*
+* *"I waited 6 hours in the ED with chest pain before being seen."*
+* *"My insurance claim was denied without explanation."*
 
 ❌ **Exclude If:**
-
-* *"This clinic is useless."* (Too vague)
-* *"I hate this hospital."* (Emotion without insight)
+* *"This clinic is useless."* (Too vague — no specific driver)
+* *"I hate this hospital."* (Emotion without actionable insight)
+* Generic negativity without identifiable determinant or context
 
 ---
 
