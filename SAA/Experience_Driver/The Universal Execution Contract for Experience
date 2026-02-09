@@ -379,13 +379,14 @@ This already captures the **entire retail speech-act surface**.
 
 ### AFFECT AXIS (Healthcare)
 
-| Tier | Emotion Group   | Meaning                       |
-| ---- | --------------- | ----------------------------- |
-| +3   | **Trust**       | Confidence in care & outcomes |
-| +1   | **Reassurance** | Adequate, calming care        |
-| 0    | **Uncertainty** | Awaiting clarity              |
-| −1   | **Anxiety**     | Worry, confusion              |
-| −3   | **Fear**        | Safety risk / harm            |
+| Tier | Emotion Group   | Final Meaning (Locked)                                                                                                  |
+| ---- | --------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| +3   | **Trust**       | Confidence in care, diagnosis, provider, and outcomes                                                                   |
+| +1   | **Reassurance** | Feeling cared for, informed, emotionally settled                                                                        |
+| 0    | **Uncertainty** | Awaiting clarity, results, decisions, next steps                                                                        |
+| −1   | **Anxiety**     | Worry, confusion, **including administrative & financial stress** 
+                           (billing shock, insurance confusion, access barriers) |
+| −3   | **Fear**        | Perceived or real safety risk, harm, medical danger                                                                     |
 
 Healthcare emotion is driven by **risk, safety, and trust**, not “service delight”.
 
@@ -393,13 +394,13 @@ Healthcare emotion is driven by **risk, safety, and trust**, not “service deli
 
 ### INTENT AXIS (Healthcare — 7)
 
-1. **Clinical Praise** – trust reinforcement
-2. **Safety Concern** – potential or actual harm
-3. **Care Coordination Request** – appointments, results, referrals
-4. **Process Improvement Suggestion** – operational improvement
-5. **Clinical Clarification Question** – diagnosis, treatment, next steps
-6. **Patient Behavior Pattern** – adherence, usage, avoidance
-7. **Healthcare Trend Signal** – care models, expectations
+* Clinical Praise – trust reinforcement
+* Safety & Financial Risk Concern – clinical harm, billing shock, insurance denial, access failure
+* Care Coordination Request – appointments, referrals, records, follow-ups
+* Process Improvement Suggestion – ideas to improve operations
+* Clinical Clarification Question – diagnosis, treatment, next steps
+* Patient Behavior Pattern – adherence, avoidance, usage patterns
+* Healthcare Trend Signal – care models, expectations
 
 This cleanly separates **clinical risk** from **administrative friction**.
 
@@ -432,13 +433,27 @@ Emotion here is driven by **threat velocity and exposure**.
 
 ### INTENT AXIS (Fraud — 7)
 
-1. **Security Praise** – trust reinforcement
-2. **Active Threat Report** – real-time fraud disclosure
-3. **Protection Request** – freeze, reset, reverse
-4. **Control Enhancement Suggestion** – prevention ideas
-5. **Investigation Clarification Question** – status, liability
-6. **Fraud Pattern Observation** – attack vectors, behavior
-7. **Industry Security Trend** – evolving threat landscape
+✅ Required Rule (simple, enforceable)
+
+Primary intent selection rule:
+* If the message contains immediate threat disclosure, classify as Active Threat Report
+* Protection actions are treated as secondary attributes, not intent
+
+This preserves:
+* urgency routing
+* action bounding
+* OU stability
+
+Fraud Intent Axis — Approved Version (same 7, with rule)
+* Security Praise – trust reinforcement
+* Active Threat Report – real-time or suspected fraud disclosure
+* Protection Request – proactive or post-incident safeguards
+* Control Enhancement Suggestion – prevention improvements
+* Investigation Clarification Question – status, liability, explanation
+* Fraud Pattern Observation – observed attack vectors or behavior
+* Industry Security Trend – external threat evolution
+
+✅ Approved with a primary-intent rule.
 
 ---
 
@@ -468,7 +483,7 @@ Emotion here is driven by **threat velocity and exposure**.
 ### INTENT AXIS (Insurance — 7)
 
 1. **Claims Experience Praise**
-2. **Coverage Dispute** – denial challenge
+2. **Coverage Dispute** → Coverage / Pricing Dispute
 3. **Claim Action Request** – expedite, appeal
 4. **Policy Improvement Suggestion**
 5. **Coverage Clarification Question**
