@@ -1,421 +1,527 @@
 # **The Universal Execution Contract for Experience**
--> How Human Signals Become Organizational Action, Memory, and Intelligence
 
-## **Three-Axis Dimensional Framework**
-### **+ Vertical Observation Models v1.0 (Healthcare · Fraud/Security · Insurance · Retail/E-Com · SaaS/Tech)**
+## A Three-Axis Dimensional Framework for Agentic, Memory-Driven Enterprises
 
 ---
 
-## FOUNDATIONAL PRINCIPLE
-Every experience mention — regardless of vertical — must resolve into **three execution-critical axes**:
+## EXECUTIVE STATEMENT
 
-1. **INTENT AXIS**
-   **What is the human doing with language?** *(speech-act / communicative function)*
+Modern organizations are drowning in human signals but starving for execution.
 
-2. **AFFECT AXIS**
-   **How much pressure, energy, or weight does this carry?** *(emotional force + effort + perceived stakes)*
+Feedback, complaints, reviews, tickets, transcripts, and conversations describe *what people feel* — but fail to answer what systems must **do**, **when**, and **why**.
 
-3. **ACTION AXIS**
-   **What class of organizational response is required?** *(strategic response class)*
+This document defines a **foundational execution contract** that transforms unstructured human expression into:
+
+* deterministic organizational action
+* traceable state transitions
+* compounding institutional memory
+
+This is not a CX framework.
+This is not sentiment analysis.
+This is **infrastructure**.
+
+---
+
+## CORE BREAKTHROUGH
+
+> **Experience is not insight.
+> Experience is an executable determinant of reality.**
+
+To make experience computable, an organization must answer — every time, in every vertical — three execution-critical questions:
+
+1. **What is the human doing with language?**
+2. **How much pressure does this signal carry?**
+3. **What class of response does the organization owe?**
+
+Everything else is context.
+
+This realization leads to the **Three-Axis Dimensional Framework**.
+
+---
+
+## THE THREE-AXIS DIMENSIONAL FRAMEWORK
+
+### THE UNIVERSAL EXECUTION CONTRACT
+
+Every experience mention, regardless of vertical (Healthcare, Fraud, Insurance, Retail, SaaS, Legal, HR), must resolve into:
+
+### 1. **INTENT AXIS**
+
+**What is the human doing with language?**
+(Speech-act classification)
+
+### 2. **AFFECT AXIS**
+
+**How much pressure, urgency, or emotional weight does this carry?**
+(Execution pressure, not sentiment)
+
+### 3. **ACTION AXIS**
+
+**What class of organizational response is required?**
+(Strategic response class, not workflow)
 
 All other dimensions exist only to:
 
-* **contextualize** these three axes (who/where/when/why), or
-* provide **execution infrastructure** downstream (ownership, governance, PDCA, receipts, outcomes, memory).
+* contextualize these three axes, or
+* enable execution, governance, and memory downstream.
 
 ---
 
-## THE ARCHITECTURE IS UNIVERSAL. THE PRIMITIVES ARE OPTIMIZED.
+## CRITICAL EVOLUTION: UNIVERSAL COMPUTE, VERTICAL OBSERVATION
 
-The computational substrate remains identical across all verticals:
+### What Changed (Explicitly)
 
-* **ERM enforcement**
-* **SEU state engine**
-* **OU action engine (1:M)**
-* **Temporal intelligence**
-* **Outcome measurement**
-* **Elasticity computation**
-* **Institutional Memory Engine (IME)**
-* **Silent Guidance**
+Early versions of the system used **universal labels** for:
 
-What changes per vertical is **how reality is captured** into the contract:
+* intent (Complaint, Request, etc.)
+* emotion (Anger, Agitation, etc.)
+* action (Fix, Optimize, etc.)
 
-* **AFFECT labels** are vertical-native, but always map to a **5-tier scoring lattice**: **(+3, +1, 0, −1, −3)**
-* **INTENT labels** are vertical-native, but always map to **7 universal speech-act types**
-* **ACTION labels** are vertical-native, but always map to **4 universal strategic response classes**
+This has now been **deliberately forfeited at capture time**.
 
-This design gives you **vertical truth without breaking universality**:
+### The Correct Model
 
-* ✅ Domain-native language (stakeholder adoption)
-* ✅ Semantic accuracy (domain psychology captured)
-* ✅ Cross-vertical learning (canonical mapping)
-* ✅ One memory substrate (compounding intelligence)
-* ✅ Agent portability (same queries across domains)
+* **Capture is vertical-centric**
+* **Computation is universal**
+
+> The system does not require universal language.
+> It requires universal **structure**.
 
 ---
 
-## UNIVERSAL AXES (CANONICAL PRIMITIVES)
+## AXIS BEHAVIOR — FORMALLY DEFINED
 
-These are the **only stored primitives** the system relies on for cross-vertical comparability and compounding memory.
+### INTENT AXIS (Vertical-Centric)
 
-### A) Universal INTENT TYPES (7 speech-acts)
+* Captured using **domain-native intent labels**
+* Examples:
 
-1. **Compliment**
-2. **Complaint**
-3. **Request**
-4. **Suggestion**
-5. **Question**
-6. **Product/Usage Insight**
-7. **Emerging Trend / Market Insight**
+  * Healthcare: *Safety Concern*, *Clinical Clarification*
+  * Fraud: *Active Threat Report*, *Protection Request*
+  * Retail: *Complaint*, *Suggestion*
+* Internally mapped to **7 canonical speech-act slots**
 
-> Vertical intent labels may differ, but must map to one of these seven.
+This ensures:
 
-### B) Universal ACTION CLASSES (4 strategic response classes)
-
-1. **Fix**
-2. **Optimize**
-3. **Amplify**
-4. **Innovate**
-
-> Vertical action labels may differ, but must map to one of these four.
-
-### C) Universal AFFECT WEIGHT (5-tier pressure lattice)
-
-* **+3** Adoration (strong pull / reinforcement)
-* **+1** Appreciation (affirmation)
-* **0** Ambivalence (low pressure)
-* **−1** Agitation (friction / concern)
-* **−3** Anger (crisis / threat / severe harm)
-
-> The *labels* differ per vertical; the **pressure lattice** is universal.
+* domain psychological accuracy
+* consistent OU routing
+* cross-vertical comparability when needed
 
 ---
 
-## STORAGE RULE (THE INFRASTRUCTURE RULE THAT MAKES MEMORY COMPOUND)
+### AFFECT AXIS (Vertical-Centric, Universally Scored)
 
-For every mention, store **both**:
+* Captured using **domain-native emotion groups**
+* Always mapped to a **5-tier pressure lattice**:
 
-### 1) Vertical observation (for fidelity)
+| Tier | Meaning                              |
+| ---- | ------------------------------------ |
+| +3   | Strong positive / resolution / trust |
+| +1   | Mild positive                        |
+| 0    | Neutral / uncertain                  |
+| −1   | Mild negative                        |
+| −3   | Severe negative / crisis             |
 
-* `vertical_affect_label`
-* `vertical_intent_label`
-* `vertical_action_label`
+Examples:
 
-### 2) Canonical primitives (for universality)
+* Retail −3 = **Anger**
+* Healthcare −3 = **Fear**
+* Fraud −3 = **Panic**
 
-* `intent_type` ∈ {7 universal}
-* `affect_score` ∈ {+3,+1,0,−1,−3}
-* `action_class` ∈ {Fix, Optimize, Amplify, Innovate}
+> Labels vary.
+> **Pressure does not.**
+
+This is why ERI remains stable and universal.
+
+---
+
+### ACTION AXIS (Vertical-Centric)
+
+* Captured using **vertical-appropriate response language**
+* Examples:
+
+  * Healthcare: *Restore Safety*, *Improve Care Delivery*
+  * Fraud: *Contain Threat*, *Investigate & Remediate*
+  * Retail: *Fix Experience Failure*, *Optimize Journey*
+* Internally mapped to **4 canonical response classes**
 
 This preserves:
 
-* **truth at capture time**
-* **comparability at compute time**
-* **compound learning at memory time**
+* strategic consistency
+* execution governance
+* OU lifecycle stability
 
 ---
 
-# VERTICAL OBSERVATION MODELS (THE FIVE STRATEGIC VERTICALS)
+## THE FULL DIMENSIONAL UNIVERSE (LOCKED)
 
-Below are the **vertical-perfect capture taxonomies** for each axis.
-
----
-
-## VERTICAL 1 — HEALTHCARE
-
-*(Life/safety stakes, clinical trust, harm avoidance — reimagined properly)*
-
-### AFFECT AXIS — Healthcare Emotion Groups (5-tier)
-
-| Score | Group           | What it means in healthcare                          |
-| ----: | --------------- | ---------------------------------------------------- |
-|    +3 | **Trust**       | confidence in clinical competence & outcomes         |
-|    +1 | **Reassurance** | calm, supported, “I’m in good hands”                 |
-|     0 | **Uncertainty** | waiting, ambiguity, unclear next steps               |
-|    −1 | **Anxiety**     | worry from delays, gaps, confusion, poor handoffs    |
-|    −3 | **Fear**        | perceived/real harm risk, abandonment, safety breach |
-
-**Secondary (examples)**
-
-* Trust: confident, impressed, grateful
-* Reassurance: relieved, cared-for, supported
-* Uncertainty: confused, unsure, mixed
-* Anxiety: worried, frustrated, concerned
-* Fear: panicked, traumatized, unsafe, abandoned
+Below is the **complete set of dimensions**, classified by role.
 
 ---
 
-### INTENT AXIS — Healthcare Intent Labels (map to 7)
+### 🔒 TIER 1 — EXECUTION-CRITICAL (NON-NEGOTIABLE)
 
-1. **Clinical Praise** → Compliment
-2. **Safety Concern** → Complaint *(but clinically distinct)*
-3. **Care Coordination Request** → Request
-4. **Process Improvement Suggestion** → Suggestion
-5. **Clinical Clarification Question** → Question
-6. **Patient Behavior Pattern** → Product/Usage Insight
-7. **Healthcare Trend Signal** → Emerging Trend
+If any of these are wrong, the system breaks.
 
----
+1. **Experience Driver Identity**
 
-### ACTION AXIS — Healthcare Action Labels (map to 4)
+   * Category → Subcategory
+   * Canonical SEU identity
 
-1. **Restore Safety** → Fix
-2. **Improve Care Delivery** → Optimize
-3. **Scale Clinical Excellence** → Amplify
-4. **Innovate Care Model** → Innovate
+2. **INTENT AXIS**
 
----
+   * Vertical label → canonical speech-act slot
 
-## VERTICAL 2 — FINANCIAL SERVICES (FRAUD & SECURITY)
+3. **AFFECT AXIS**
 
-*(Threat velocity, trust breach, loss exposure, real-time containment)*
+   * Vertical emotion → 5-tier pressure score
 
-### AFFECT AXIS — Fraud/Security Emotion Groups (5-tier)
+4. **ACTION AXIS**
 
-| Score | Group           | What it means in fraud/security          |
-| ----: | --------------- | ---------------------------------------- |
-|    +3 | **Relief**      | threat resolved, control restored        |
-|    +1 | **Confidence**  | “security works,” predictable protection |
-|     0 | **Uncertainty** | investigation pending, unclear liability |
-|    −1 | **Alarm**       | suspicious signals, fear of exposure     |
-|    −3 | **Panic**       | active fraud, identity theft, real loss  |
+   * Vertical response → canonical action class
 
-**Secondary (examples)**
-
-* Relief: protected, reassured, vindicated
-* Confidence: trusting, secure, satisfied
-* Uncertainty: unsure, waiting, confused
-* Alarm: suspicious, worried, uneasy
-* Panic: violated, desperate, betrayed
+These four form the **Universal Execution Contract**.
 
 ---
 
-### INTENT AXIS — Fraud/Security Intent Labels (map to 7)
+### 🧭 TIER 2 — EXECUTION-SHAPING (IMPORTANT, NOT FRAGILE)
 
-1. **Security Praise** → Compliment
-2. **Active Threat Report** → Complaint *(high-urgency disclosure)*
-3. **Protection Request** → Request
-4. **Control Enhancement Suggestion** → Suggestion
-5. **Investigation Clarification Question** → Question
-6. **Fraud Pattern Observation** → Product/Usage Insight
-7. **Industry Security Trend** → Emerging Trend
+Enhance clarity, but do not determine execution class.
 
----
+* Entity name
+* Customer journey
+* Journey stage
+* Interaction moment
+* Emotion specificity
+* Customer effort score
 
-### ACTION AXIS — Fraud/Security Action Labels (map to 4)
+These sharpen:
 
-1. **Contain Threat** → Fix
-2. **Investigate & Remediate** → Optimize *(process + resolution engine)*
-3. **Strengthen Controls** → Amplify *(scale protection / standardize best controls)*
-4. **Innovate Protection** → Innovate
+* OU narratives
+* PDCA design
+* human interpretability
 
-> Note: fraud teams often hear “Investigate & Remediate” as urgent. Urgency is carried by **AFFECT score + priority**, not by changing the universal action class.
+They are **not execution gates**.
 
 ---
 
-## VERTICAL 3 — INSURANCE (CLAIMS & COVERAGE)
+### 🧠 TIER 3 — DERIVED / GENERATED
 
-*(Financial security, fairness perception, dispute mechanics, policy clarity)*
+Never relied upon for truth.
 
-### AFFECT AXIS — Insurance Emotion Groups (5-tier)
+* Semantic action statements
+* Matters statements
+* Stream justification
+* Behavioral impact
+* OU naming
+* Narrative summaries
 
-| Score | Group            | What it means in insurance                            |
-| ----: | ---------------- | ----------------------------------------------------- |
-|    +3 | **Relief**       | coverage validated, payout restores stability         |
-|    +1 | **Satisfaction** | fair handling, clear decision, predictable process    |
-|     0 | **Ambivalence**  | pending adjudication, unclear outcome                 |
-|    −1 | **Frustration**  | delays, opacity, documentation burden                 |
-|    −3 | **Desperation**  | denial distress, financial threat, perceived betrayal |
-
-**Secondary (examples)**
-
-* Relief: grateful, secure, supported
-* Satisfaction: confident, content
-* Ambivalence: unsure, waiting
-* Frustration: annoyed, confused
-* Desperation: devastated, abandoned, panicked
+These can be regenerated endlessly without breaking state or memory.
 
 ---
 
-### INTENT AXIS — Insurance Intent Labels (map to 7)
+## ORCHESTRATION UNIT (OU) BIRTHING — FINAL FORM
 
-1. **Claims Experience Praise** → Compliment
-2. **Coverage Dispute / Appeal** → Complaint
-3. **Claim Action Request** → Request
-4. **Policy/Process Improvement Suggestion** → Suggestion
-5. **Coverage Clarification Question** → Question
-6. **Claims Pattern Insight** → Product/Usage Insight
-7. **Industry Coverage Trend** → Emerging Trend
+OU creation follows a **strict, invariant sequence**:
 
----
+```
+Experience Driver
+   ↓
+INTENT AXIS
+   ↓
+ACTION AXIS
+   ↓
+(optional) Causal Proxy / Behavioral Clustering
+```
 
-### ACTION AXIS — Insurance Action Labels (map to 4)
+Why this order matters:
 
-1. **Resolve Dispute** → Fix
-2. **Improve Claims Processing** → Optimize
-3. **Scale Best Practices** → Amplify
-4. **Innovate Coverage** → Innovate
+1. Identity is locked first (ERM Identity Law)
+2. Speech-act stabilizes meaning
+3. Action class bounds execution
+4. Causality refines, never defines
 
----
+This prevents:
 
-## VERTICAL 4 — RETAIL / E-COMMERCE
-
-*(Your origin domain — omnichannel, promise-keeping, value perception, convenience debt)*
-
-### AFFECT AXIS — Retail Emotion Groups (5-tier)
-
-| Score | Group              | What it means in retail/e-com                    |
-| ----: | ------------------ | ------------------------------------------------ |
-|    +3 | **Delight**        | promise exceeded; “I’ll tell others”             |
-|    +1 | **Satisfaction**   | baseline met; frictionless completion            |
-|     0 | **Ambivalence**    | meh / mixed / low-signal                         |
-|    −1 | **Disappointment** | expectation gap, value doubt, convenience loss   |
-|    −3 | **Anger**          | broken promise, trust violation, feeling cheated |
-
-**Secondary (examples)**
-
-* Delight: impressed, loved it, “wow”
-* Satisfaction: pleased, smooth, easy
-* Ambivalence: indifferent, mixed
-* Disappointment: let down, annoyed, regret
-* Anger: furious, betrayed, never again
-
-> Retail is the purest “promise system.” Emotional weight is dominated by **expectation vs reality**, **value fairness**, and **time/effort waste**.
+* OU explosion
+* narrative drift
+* misaligned missions
 
 ---
 
-### INTENT AXIS — Retail Intent Labels (map to 7)
+## ERI, SEU, AND MEMORY — UNAFFECTED
 
-1. **Brand / Service Praise** → Compliment
-2. **Experience Failure Report** → Complaint
-3. **Resolution Request** *(refund/replace/help)* → Request
-4. **Journey Improvement Suggestion** → Suggestion
-5. **Product/Order Question** → Question
-6. **Usage / Preference Insight** → Product/Usage Insight
-7. **Market Expectation Shift** → Emerging Trend
+Because:
 
----
+* ERI operates on **pressure tiers**
+* SEUs operate on **identity**
+* Memory operates on **state transitions**
 
-### ACTION AXIS — Retail Action Labels (map to 4)
+Vertical-specific labels do not alter:
 
-1. **Fix Experience Failure** → Fix
-2. **Optimize Journey & Operations** → Optimize
-3. **Amplify Excellence** → Amplify
-4. **Innovate Offering / Model** → Innovate
+* ERI math
+* RF computation
+* temporal intelligence
+* outcome evaluation
+* institutional memory
 
----
-
-## VERTICAL 5 — SAAS / TECHNOLOGY
-
-*(Reliability, capability, support truth, time-to-value, platform trust)*
-
-### AFFECT AXIS — SaaS/Tech Emotion Groups (5-tier)
-
-| Score | Group          | What it means in SaaS/tech                    |
-| ----: | -------------- | --------------------------------------------- |
-|    +3 | **Empowered**  | product enables success / leverage / speed    |
-|    +1 | **Satisfied**  | stable, predictable, meets expectations       |
-|     0 | **Neutral**    | low engagement, “it exists”                   |
-|    −1 | **Frustrated** | friction, confusing UX, slow support          |
-|    −3 | **Blocked**    | business stoppage, downtime, critical failure |
-
-**Secondary (examples)**
-
-* Empowered: impressed, accelerated, confident
-* Satisfied: fine, reliable
-* Neutral: indifferent
-* Frustrated: annoyed, confused, stuck
-* Blocked: furious, desperate, “we can’t operate”
-
-> SaaS affect is dominated by **time-to-value** and **operational dependency**. “Blocked” is the true −3: the tool becomes a business risk.
+> **Universality lives in computation.
+> Truth lives in vertical perception.**
 
 ---
 
-### INTENT AXIS — SaaS/Tech Intent Labels (map to 7)
+## AGENTIC IMPLICATIONS
 
-1. **Product Praise** → Compliment
-2. **Failure / Bug / Incident Report** → Complaint
-3. **Support / Access / Capability Request** → Request
-4. **Feature / UX Improvement Suggestion** → Suggestion
-5. **How-to / Capability Clarification Question** → Question
-6. **Usage Pattern Insight** *(adoption, workflows)* → Product/Usage Insight
-7. **Platform / Market Trend Signal** → Emerging Trend
+An agent operating on this substrate can always:
 
----
+1. **Perceive**
+   (INTENT + AFFECT + DRIVER)
 
-### ACTION AXIS — SaaS/Tech Action Labels (map to 4)
+2. **Decide**
+   (ACTION CLASS + PRIORITY)
 
-1. **Fix Reliability / Support Failure** → Fix
-2. **Optimize Platform & UX** → Optimize
-3. **Amplify Capabilities** → Amplify
-4. **Innovate Product Offering** → Innovate
+3. **Act**
+   (OU execution, PDCA)
 
----
+4. **Remember**
+   (State transition, outcome, elasticity)
 
-# CANONICAL MAPPING LAYER (THE BRIDGE THAT MAKES COMPUNDING LEARNING REAL)
+5. **Learn**
+   (Compounding pattern memory)
 
-## 1) Affect mapping → universal pressure scores
-
-Each vertical emotion group maps to the universal lattice:
-
-| Vertical       | +3        | +1           | 0           | −1             | −3          |
-| -------------- | --------- | ------------ | ----------- | -------------- | ----------- |
-| Healthcare     | Trust     | Reassurance  | Uncertainty | Anxiety        | Fear        |
-| Fraud/Security | Relief    | Confidence   | Uncertainty | Alarm          | Panic       |
-| Insurance      | Relief    | Satisfaction | Ambivalence | Frustration    | Desperation |
-| Retail/E-Com   | Delight   | Satisfaction | Ambivalence | Disappointment | Anger       |
-| SaaS/Tech      | Empowered | Satisfied    | Neutral     | Frustrated     | Blocked     |
-
-**Canonical query becomes possible:**
-
-* “Show me all −3 pressure experiences across the enterprise, regardless of vertical language.”
+This is what makes safe autonomy possible.
 
 ---
 
-## 2) Intent mapping → 7 universal speech acts
+## THE COMPOUNDING EFFECT
 
-Every vertical intent label must map to one of:
+Once enterprises route experience through this contract:
 
-* Compliment / Complaint / Request / Suggestion / Question / Usage Insight / Emerging Trend
+* Memory compounds with every interaction
+* Cross-organizational intelligence emerges
+* Execution accelerates through reusable behavioral payloads
 
-This makes the OU engine stable across domains:
-
-* same routing rules
-* same thresholds
-* same clustering expectations
-
----
-
-## 3) Action mapping → 4 universal strategic classes
-
-Every vertical action label maps to:
-
-* Fix / Optimize / Amplify / Innovate
-
-This enables cross-vertical operational learning:
-
-* “When pressure is −3, what action class historically yields the best ERI delta?”
+This is not analytics.
+This is **learning infrastructure**.
 
 ---
 
-# WHY THIS BECOMES “GOD-GREAT” IN PRACTICE
-
-Because you get the best of both worlds **without breaking laws**:
-
-1. **Vertical-perfect capture**
-   Humans recognize themselves in the labels. Stakeholders don’t fight the system.
-
-2. **Universal computation**
-   SEUs, OUs, temporal intelligence, outcome logic remain unchanged.
-
-3. **Compounding Effect (the point of the whole game)**
-   Once enterprises route experience through this contract:
-
-* **Memory compounds with every interaction**
-* **Cross-organizational emotional intelligence emerges**
-* **Execution accelerates through reusable behavioral payloads**
-
-This isn’t analytics. It’s institutional cognition.
+## **Part II — Vertical Implementations of the Three Axes**
 
 ---
+
+## GLOBAL INVARIANTS (LOCKED)
+
+Before we go vertical, these rules apply everywhere:
+
+* **AFFECT AXIS**
+
+  * Always 5 tiers
+  * Always polarity-aware (+ / −)
+  * Always maps to ERI without translation loss
+
+* **INTENT AXIS**
+
+  * Designed to cover the *entire speech-act surface* of the vertical
+  * No overlaps
+  * Mutually exclusive at capture time
+
+* **ACTION AXIS**
+
+  * Strategic response classes, **not workflows**
+  * Answers: *what kind of organizational posture is required?*
+  * Downstream teams decide *how*
+
+---
+
+# VERTICAL 1 — **RETAIL / E-COMMERCE**
+
+*(Origin domain, reference implementation)*
+
+### AFFECT AXIS (Retail)
+
+| Tier | Emotion Group      | Meaning                          |
+| ---- | ------------------ | -------------------------------- |
+| +3   | **Delight**        | Brand promise exceeded           |
+| +1   | **Satisfaction**   | Expectation met                  |
+| 0    | **Ambivalence**    | Indifferent / mixed              |
+| −1   | **Disappointment** | Value or convenience gap         |
+| −3   | **Anger**          | Broken promise / trust violation |
+
+Retail emotion is driven by **expectation vs reality**.
+
+---
+
+### INTENT AXIS (Retail — 7)
+
+1. **Compliment** – positive reinforcement
+2. **Complaint** – experience failure
+3. **Request** – refund, replacement, availability
+4. **Suggestion** – improvement ideas
+5. **Question** – usage, pricing, delivery
+6. **Product Usage Insight** – real-world behavior
+7. **Emerging Trend Signal** – shifting tastes / expectations
+
+This already captures the **entire retail speech-act surface**.
+
+---
+
+### ACTION AXIS (Retail — 4)
+
+1. **Fix Experience Failure**
+2. **Optimize Journey / Operations**
+3. **Amplify Excellence**
+4. **Innovate Offering / Model**
+
+---
+
+# VERTICAL 2 — **HEALTHCARE**
+
+### AFFECT AXIS (Healthcare)
+
+| Tier | Emotion Group   | Meaning                       |
+| ---- | --------------- | ----------------------------- |
+| +3   | **Trust**       | Confidence in care & outcomes |
+| +1   | **Reassurance** | Adequate, calming care        |
+| 0    | **Uncertainty** | Awaiting clarity              |
+| −1   | **Anxiety**     | Worry, confusion              |
+| −3   | **Fear**        | Safety risk / harm            |
+
+Healthcare emotion is driven by **risk, safety, and trust**, not “service delight”.
+
+---
+
+### INTENT AXIS (Healthcare — 7)
+
+1. **Clinical Praise** – trust reinforcement
+2. **Safety Concern** – potential or actual harm
+3. **Care Coordination Request** – appointments, results, referrals
+4. **Process Improvement Suggestion** – operational improvement
+5. **Clinical Clarification Question** – diagnosis, treatment, next steps
+6. **Patient Behavior Pattern** – adherence, usage, avoidance
+7. **Healthcare Trend Signal** – care models, expectations
+
+This cleanly separates **clinical risk** from **administrative friction**.
+
+---
+
+### ACTION AXIS (Healthcare — 4)
+
+1. **Restore Safety**
+2. **Improve Care Delivery**
+3. **Scale Clinical Excellence**
+4. **Innovate Care Model**
+
+---
+
+# VERTICAL 3 — **FINANCIAL SERVICES (FRAUD & SECURITY)**
+
+### AFFECT AXIS (Fraud)
+
+| Tier | Emotion Group   | Meaning                      |
+| ---- | --------------- | ---------------------------- |
+| +3   | **Relief**      | Threat resolved              |
+| +1   | **Confidence**  | Controls working             |
+| 0    | **Uncertainty** | Investigation pending        |
+| −1   | **Alarm**       | Suspicious activity          |
+| −3   | **Panic**       | Active loss / identity theft |
+
+Emotion here is driven by **threat velocity and exposure**.
+
+---
+
+### INTENT AXIS (Fraud — 7)
+
+1. **Security Praise** – trust reinforcement
+2. **Active Threat Report** – real-time fraud disclosure
+3. **Protection Request** – freeze, reset, reverse
+4. **Control Enhancement Suggestion** – prevention ideas
+5. **Investigation Clarification Question** – status, liability
+6. **Fraud Pattern Observation** – attack vectors, behavior
+7. **Industry Security Trend** – evolving threat landscape
+
+---
+
+### ACTION AXIS (Fraud — 4)
+
+1. **Contain Threat**
+2. **Investigate & Remediate**
+3. **Strengthen Controls**
+4. **Innovate Protection**
+
+---
+
+# VERTICAL 4 — **INSURANCE (CLAIMS & COVERAGE)**
+
+### AFFECT AXIS (Insurance)
+
+| Tier | Emotion Group    | Meaning                     |
+| ---- | ---------------- | --------------------------- |
+| +3   | **Relief**       | Financial security restored |
+| +1   | **Satisfaction** | Fair outcome                |
+| 0    | **Ambivalence**  | Pending decision            |
+| −1   | **Frustration**  | Delays / opacity            |
+| −3   | **Desperation**  | Denial / financial distress |
+
+---
+
+### INTENT AXIS (Insurance — 7)
+
+1. **Claims Experience Praise**
+2. **Coverage Dispute** – denial challenge
+3. **Claim Action Request** – expedite, appeal
+4. **Policy Improvement Suggestion**
+5. **Coverage Clarification Question**
+6. **Claims Pattern Insight**
+7. **Industry Coverage Trend**
+
+This maps cleanly to the **claims lifecycle**.
+
+---
+
+### ACTION AXIS (Insurance — 4)
+
+1. **Resolve Dispute**
+2. **Improve Claims Processing**
+3. **Scale Best Practices**
+4. **Innovate Coverage**
+
+---
+
+# VERTICAL 5 — **SAAS / TECHNOLOGY**
+
+### AFFECT AXIS (SaaS)
+
+| Tier | Emotion Group  | Meaning                    |
+| ---- | -------------- | -------------------------- |
+| +3   | **Empowered**  | Product enables success    |
+| +1   | **Satisfied**  | Works as expected          |
+| 0    | **Neutral**    | Passive usage              |
+| −1   | **Frustrated** | Friction, bugs             |
+| −3   | **Blocked**    | Business impact / downtime |
+
+---
+
+### INTENT AXIS (SaaS — 7)
+
+1. **Product Praise**
+2. **Functional Failure Report**
+3. **Support / Capability Request**
+4. **Product Improvement Suggestion**
+5. **Usage Clarification Question**
+6. **Usage Pattern Insight**
+7. **Platform / Market Trend**
+
+---
+
+### ACTION AXIS (SaaS — 4)
+
+1. **Fix Product / Support Failure**
+2. **Optimize Platform & UX**
+3. **Amplify Capabilities**
+4. **Innovate Product Offering**
+
+---
+
+
 
