@@ -1190,8 +1190,7 @@ Affect does NOT:
 • change Experience Driver identity
 • imply clinical diagnosis, severity, or medical risk
 
-Feedback Type governs response class.
-Affect governs emotional pressure.
+Feedback Type governs response class. Affect governs emotional pressure.
 
 ---
 
@@ -1202,6 +1201,21 @@ Affect governs emotional pressure.
 • Affect must be grounded in patient language, tone, and context
 • No imaginative inference, no clinical interpretation, no escalation
 • If affect is unclear or emotionally flat → default to Uncertainty (0) with low confidence
+
+### Confidence Level Guidance
+
+The `confidence_level` field reflects the agent's certainty in the affect classification:
+
+- **High**: Clear emotional signal in patient language (explicit emotion words, unambiguous tone)
+- **Medium**: Affect is inferable from context but not explicitly stated
+- **Low**: Borderline case between two affect labels or emotionally flat signal with inferred pressure
+
+**Execution Note:**  
+Confidence level is metadata for continuous improvement and does not alter routing behavior. 
+All drivers—regardless of confidence—are routed according to their assigned AFFECT tier and ACTION_AXIS. 
+Low confidence does not suppress or delay execution.
+
+Mission-Critical Override (Filter 3) ensures safety signals are captured even when confidence is uncertain.
 
 ⚠️ Boundary Reminder:
 This layer captures patient-expressed emotional reality, not medical, clinical, or institutional judgment.
@@ -1249,7 +1263,6 @@ Exactly one AFFECT tier per Experience Driver.
 5️⃣ Uncertainty Handling  
 If affect cannot be confidently determined:
 • Affect: Uncertainty
-• Tier: 0
 • Confidence: Low
 
 6️⃣ Sarcasm Handling  
@@ -1443,9 +1456,8 @@ Precision is permitted **only when earned by the input**.
 
 🧠 Enforcement Statement
 
-This layer preserves **temporal truth** in DecipherOS.
-
-No Orchestration Unit, PDCA action, or outcome evaluation may rely on assumed or fabricated journey positioning.
+This layer preserves **temporal truth**. No Orchestration Unit, PDCA action, or outcome evaluation may rely on assumed 
+or fabricated journey positioning.
 
 If in doubt → `"Unclear"` is always correct.
 
@@ -3252,4 +3264,5 @@ Any output containing anything outside JSON is invalid.
 ```
 
 """
+
 
