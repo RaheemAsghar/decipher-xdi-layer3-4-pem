@@ -1,0 +1,406 @@
+problem_statement_prompt_healthcare = """
+
+# 🎯 DECIPHER PDCA – PROBLEM STATEMENT GENERATION PROMPT (HEALTHCARE)
+
+## 🔬 Purpose
+Generate a **diagnostic-grade, clinically faithful Problem Statement** to kick off the Plan phase of the PDCA lifecycle for healthcare organizations.
+
+This is a **fluent paragraph** (2–5 sentences) — not a stitched list — that combines:
+- Clinical and emotional truth from the patient/caregiver voice
+- Operational precision from the OU's patient journey data
+- Strategic justification from the chosen ACTION_AXIS (organizational response class)
+- Clear articulation of patient safety, care quality, or access risk if unresolved
+
+The Problem Statement is the **go/no-go gate** for PDCA execution in healthcare.  
+If it is vague, generic, or disconnected from patient safety/care quality, the mission does not proceed.
+
+---
+
+## 🔐 You Are Given
+A fully structured Orchestration Unit (OU) with the following **canonical inputs**:
+
+* `semantic_action_statement.section_1_patient_reality` → Core patient/caregiver reality narrative
+* `matters` → The behavioral core of why this matters to the patient
+* `context` → Supporting situational detail from the patient voice
+* `experience_driver` → The WHAT / WHERE anchor (clinical/operational touchpoint)
+* `patient_journey` → High-level patient journey category
+* `journey_stage` → Stage within the patient journey
+* `interaction_moment` → The WHEN anchor
+* `action_axis_justification` → Reason why Restore Safety / Improve Care Delivery / Scale Clinical Excellence / Innovate Care Model was chosen
+* `behavioral_impact` → The SO WHAT — consequence to patient care, safety, trust, or access if unresolved
+* `action_axis` → Strategic response class (Restore Safety / Improve Care Delivery / Scale Clinical Excellence / Innovate Care Model)
+* `affect_axis` → Primary emotional signal / execution pressure (optional flavor only)
+* `intent_axis` → Speech-act classification in healthcare context (optional flavor only)
+
+---
+
+## 🧬 Construction Framework (5Ws + So What)
+
+| Dimension  | Pull From | Purpose |
+|------------|-----------|---------|
+| **WHAT**   | `semantic_action_statement.section_1_patient_reality` + `matters` (+ short clause from `context` if useful) | State the core patient reality, grounded in clinical context and emotional truth |
+| **WHEN**   | `interaction_moment` | Pinpoint when the issue occurs in the care journey |
+| **WHERE**  | `experience_driver` + `patient_journey` + `journey_stage` | Operationally locate the issue within care delivery |
+| **WHY**    | `action_axis_justification` | Explain why this ACTION_AXIS is the correct strategic/clinical path |
+| **SO WHAT**| `behavioral_impact` | Define the patient safety, care quality, or access risk if unresolved |
+
+---
+
+## 🧩 Tactics
+- Begin with **WHAT** (patient reality + matters), then layer **WHEN** and **WHERE**.
+- Follow with **WHY** (strategic/clinical justification), and close with **SO WHAT** (patient impact risk).
+- Keep tone clinically aware, emotionally faithful, and operationally precise.
+- Honor patient safety urgency — let affect pressure guide tone where appropriate.
+- Do not invent or assume — use only the provided inputs.
+- Avoid redundancy — each W appears once in the paragraph.
+
+---
+
+## 🩺 Healthcare-Specific Guidance
+
+### ACTION_AXIS Framing
+When referencing the ACTION_AXIS in the problem statement, use healthcare-appropriate language:
+
+- **Restore Safety** → Frame as urgent, mission-critical, patient safety/trust/access imperative
+- **Improve Care Delivery** → Frame as operational friction that degrades care quality or patient experience
+- **Scale Clinical Excellence** → Frame as proven best practice worthy of systematic replication
+- **Innovate Care Model** → Frame as forward-looking capability that meets emerging patient/market expectations
+
+### Patient Safety Override
+If `action_axis` is "Restore Safety", the problem statement MUST emphasize:
+- Patient harm risk or actual harm
+- Duty of care breach
+- Clinical error or diagnostic failure
+- Access failure with health consequences
+- Privacy/consent violation
+
+Use urgent, direct language. This is non-negotiable.
+
+---
+
+## ✅ Output Format
+
+Return JSON:
+{
+  "problem_statement": "<2–5 sentence fluent paragraph>",
+  "breakdown": {
+    "what": "<string>",
+    "when": "<string>",
+    "where": {
+      "experience_driver": "<string>",
+      "patient_journey": "<string>",
+      "journey_stage": "<string>"
+    },
+    "why": "<string>",
+    "so_what": "<string>"
+  },
+  "meta": {
+    "action_axis": "<Restore Safety|Improve Care Delivery|Scale Clinical Excellence|Innovate Care Model>",
+    "affect_axis": "<Trust|Reassurance|Uncertainty|Anxiety|Fear>",
+    "intent_axis": "<Clinical Praise|Safety Concern|Care Coordination Request|Process Improvement Suggestion|Clinical Clarification Question|Patient Behavior Pattern|Healthcare Trend Signal>"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "<field>", "supporting": "<field>", "extracted": "<string>" },
+    "when_source": { "field": "<field>", "extracted": "<string>" },
+    "where_source": { "experience_driver": "<string>", "patient_journey": "<string>", "journey_stage": "<string>" },
+    "why_source": { "field": "<field>", "extracted": "<string>" },
+    "so_what_source": { "field": "<field>", "extracted": "<string>" }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "<GO|NO-GO>",
+    "validation_checklist": {
+      "clinically_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "patient_rooted": true,
+      "safety_impact_clear": true
+    }
+  }
+}
+
+---
+
+## ❌ What NOT to Do
+* Don't stitch raw fields verbatim.
+* Don't regurgitate `semantic_action_statement` sections separately.
+* Don't ignore emotional tone or patient safety urgency.
+* Don't fabricate ACTION_AXIS logic — it's already provided.
+* Don't write generic consequences — use the provided `behavioral_impact`.
+* Don't minimize patient safety or access risks.
+
+---
+
+## 🔁 Final Note
+> This is the **first sentence of the PDCA loop** in healthcare.  
+> It must be clinically clean, emotionally faithful, and strategically actionable.
+> Patient safety concerns demand urgent, direct language.
+
+---
+
+### ✅ Examples
+
+#### Example 1 – Restore Safety (ACTION_AXIS)
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_patient_reality:**
+  The patient raised a Safety Concern that during their post-operative follow-up appointment, the surgeon referenced surgical notes that belonged to a different patient, revealing a medical record mix-up that could have led to dangerous clinical decisions.
+* **matters:** Medical record mix-up during post-op follow-up that could cause dangerous clinical decisions.
+* **context:** Surgeon accessed wrong patient's surgical notes during follow-up consultation.
+* **experience_driver:** Medical Records & Documentation → Patient Record Accuracy
+* **patient_journey:** Post-Procedure Care
+* **journey_stage:** Follow-Up Consultation
+* **interaction_moment:** During post-operative follow-up appointment
+* **action_axis_justification:** Medical record integrity is a foundational patient safety requirement. Any breach in record accuracy creates immediate risk of clinical error, inappropriate treatment, diagnostic confusion, and erosion of trust in the entire care system. This must be fixed immediately.
+* **behavioral_impact:** Prevents dangerous clinical decisions based on incorrect patient data, eliminates diagnostic errors, protects patient safety, and restores trust in medical record systems.
+* **action_axis:** Restore Safety
+* **affect_axis:** Fear
+* **intent_axis:** Safety Concern
+
+**🧠 Output:**
+{
+  "problem_statement": "The patient raised a Safety Concern that during their post-operative follow-up appointment, the surgeon referenced surgical notes that belonged to a different patient, revealing a medical record mix-up that could have led to dangerous clinical decisions. This occurred during post-operative follow-up appointment within the Follow-Up Consultation stage of the Post-Procedure Care journey, focused on the Medical Records & Documentation → Patient Record Accuracy driver. The orchestration ACTION_AXIS is Restore Safety — a mission-critical patient safety imperative that demands immediate resolution. It was routed here because medical record integrity is foundational to patient safety; any breach creates immediate risk of clinical error, inappropriate treatment, and erosion of trust in the entire care system. If unresolved, this risk will continue to expose patients to dangerous clinical decisions, diagnostic errors, and catastrophic loss of trust in the healthcare system.",
+  "breakdown": {
+    "what": "Medical record mix-up during post-op follow-up that could cause dangerous clinical decisions.",
+    "when": "During post-operative follow-up appointment",
+    "where": {
+      "experience_driver": "Medical Records & Documentation → Patient Record Accuracy",
+      "patient_journey": "Post-Procedure Care",
+      "journey_stage": "Follow-Up Consultation"
+    },
+    "why": "Medical record integrity is foundational to patient safety; any breach creates immediate risk of clinical error, inappropriate treatment, and erosion of trust in the entire care system.",
+    "so_what": "If unresolved, patients remain exposed to dangerous clinical decisions, diagnostic errors, and catastrophic loss of trust in the healthcare system."
+  },
+  "meta": {
+    "action_axis": "Restore Safety",
+    "affect_axis": "Fear",
+    "intent_axis": "Safety Concern"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "semantic_action_statement.section_1_patient_reality", "supporting": "matters", "extracted": "Medical record mix-up during post-op follow-up that could cause dangerous clinical decisions." },
+    "when_source": { "field": "interaction_moment", "extracted": "During post-operative follow-up appointment" },
+    "where_source": { "experience_driver": "Medical Records & Documentation → Patient Record Accuracy", "patient_journey": "Post-Procedure Care", "journey_stage": "Follow-Up Consultation" },
+    "why_source": { "field": "action_axis_justification", "extracted": "Medical record integrity is foundational to patient safety; any breach creates immediate risk of clinical error, inappropriate treatment, and erosion of trust in the entire care system." },
+    "so_what_source": { "field": "behavioral_impact", "extracted": "If unresolved, patients remain exposed to dangerous clinical decisions, diagnostic errors, and catastrophic loss of trust in the healthcare system." }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "GO",
+    "validation_checklist": {
+      "clinically_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "patient_rooted": true,
+      "safety_impact_clear": true
+    }
+  }
+}
+
+---
+
+#### Example 2 – Improve Care Delivery (ACTION_AXIS)
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_patient_reality:**
+  The patient submitted a Care Coordination Request that when refilling their chronic pain medication prescription, they had to call three separate departments (pharmacy, pain management, primary care) because no one knew who was responsible for authorization.
+* **matters:** Patient had to contact multiple departments to refill chronic pain medication due to unclear authorization ownership.
+* **context:** Three-department runaround for prescription refill authorization with unclear process ownership.
+* **experience_driver:** Prescription Management → Refill Authorization Process
+* **patient_journey:** Ongoing Care Management
+* **journey_stage:** Medication Management
+* **interaction_moment:** During chronic medication refill attempts
+* **action_axis_justification:** The core service exists but is operationally fragmented; multiple touchpoints create unnecessary patient burden and delay medication access. This requires process optimization to streamline coordination and clarify responsibility.
+* **behavioral_impact:** Reduces patient effort, eliminates medication gaps, improves adherence for chronic conditions, and prevents care discontinuity.
+* **action_axis:** Improve Care Delivery
+* **affect_axis:** Anxiety
+* **intent_axis:** Care Coordination Request
+
+**🧠 Output:**
+
+{
+  "problem_statement": "The patient submitted a Care Coordination Request that when refilling their chronic pain medication prescription, they had to call three separate departments (pharmacy, pain management, primary care) because no one knew who was responsible for authorization. This occurred during chronic medication refill attempts within the Medication Management stage of the Ongoing Care Management journey, focused on the Prescription Management → Refill Authorization Process driver. The orchestration ACTION_AXIS is Improve Care Delivery — aimed at eliminating operational friction in an otherwise functioning process. It was routed here because the core service exists but is operationally fragmented; multiple touchpoints create unnecessary patient burden and delay medication access, requiring process optimization to streamline coordination and clarify responsibility. If not addressed, it risks continued medication gaps, reduced adherence for chronic conditions, patient frustration, and preventable care discontinuity.",
+  "breakdown": {
+    "what": "Patient had to contact multiple departments to refill chronic pain medication due to unclear authorization ownership.",
+    "when": "During chronic medication refill attempts",
+    "where": {
+      "experience_driver": "Prescription Management → Refill Authorization Process",
+      "patient_journey": "Ongoing Care Management",
+      "journey_stage": "Medication Management"
+    },
+    "why": "The core service exists but is operationally fragmented; multiple touchpoints create unnecessary patient burden and delay medication access, requiring process optimization to streamline coordination and clarify responsibility.",
+    "so_what": "If not addressed, it risks continued medication gaps, reduced adherence for chronic conditions, patient frustration, and preventable care discontinuity."
+  },
+  "meta": {
+    "action_axis": "Improve Care Delivery",
+    "affect_axis": "Anxiety",
+    "intent_axis": "Care Coordination Request"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "semantic_action_statement.section_1_patient_reality", "supporting": "matters", "extracted": "Patient had to contact multiple departments to refill chronic pain medication due to unclear authorization ownership." },
+    "when_source": { "field": "interaction_moment", "extracted": "During chronic medication refill attempts" },
+    "where_source": { "experience_driver": "Prescription Management → Refill Authorization Process", "patient_journey": "Ongoing Care Management", "journey_stage": "Medication Management" },
+    "why_source": { "field": "action_axis_justification", "extracted": "The core service exists but is operationally fragmented; multiple touchpoints create unnecessary patient burden and delay medication access, requiring process optimization to streamline coordination and clarify responsibility." },
+    "so_what_source": { "field": "behavioral_impact", "extracted": "If not addressed, it risks continued medication gaps, reduced adherence for chronic conditions, and preventable care discontinuity." }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "GO",
+    "validation_checklist": {
+      "clinically_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "patient_rooted": true,
+      "safety_impact_clear": true
+    }
+  }
+}
+
+---
+
+#### Example 3 – Scale Clinical Excellence (ACTION_AXIS)
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_patient_reality:**
+  The patient provided Clinical Praise that their oncology nurse called them the same day with test results and walked them through each finding with compassionate clarity, which eliminated hours of anxious waiting and helped them feel informed and supported.
+* **matters:** Same-day results communication with compassionate explanation that reduced patient anxiety.
+* **context:** Oncology nurse delivered test results same-day with clear, compassionate explanation.
+* **experience_driver:** Test Results & Diagnostics → Results Communication Timeliness
+* **patient_journey:** Diagnostic & Testing
+* **journey_stage:** Results Delivery
+* **interaction_moment:** After receiving oncology test results
+* **action_axis_justification:** This represents a demonstrated best practice in results communication that combines speed, clarity, and emotional support. It should be codified and replicated across other specialties to reduce patient anxiety and improve care transparency.
+* **behavioral_impact:** Reduces patient anxiety, improves understanding of test results, increases trust in care team, and sets a replicable standard for diagnostic communication excellence.
+* **action_axis:** Scale Clinical Excellence
+* **affect_axis:** Trust
+* **intent_axis:** Clinical Praise
+
+**🧠 Output:**
+
+{
+  "problem_statement": "The patient provided Clinical Praise that their oncology nurse called them the same day with test results and walked them through each finding with compassionate clarity, which eliminated hours of anxious waiting and helped them feel informed and supported. This occurred after receiving oncology test results within the Results Delivery stage of the Diagnostic & Testing journey, focused on the Test Results & Diagnostics → Results Communication Timeliness driver. The orchestration ACTION_AXIS is Scale Clinical Excellence — designed to codify and replicate demonstrated best practices. It was routed here because this represents a proven standard in results communication that combines speed, clarity, and emotional support, worthy of systematic replication across other specialties to reduce patient anxiety and improve care transparency. If not pursued, the organization misses opportunities to reduce patient anxiety, improve understanding of test results, increase trust in care teams, and establish a replicable standard for diagnostic communication excellence.",
+  "breakdown": {
+    "what": "Same-day results communication with compassionate explanation that reduced patient anxiety.",
+    "when": "After receiving oncology test results",
+    "where": {
+      "experience_driver": "Test Results & Diagnostics → Results Communication Timeliness",
+      "patient_journey": "Diagnostic & Testing",
+      "journey_stage": "Results Delivery"
+    },
+    "why": "This represents a demonstrated best practice in results communication that combines speed, clarity, and emotional support, worthy of systematic replication across other specialties to reduce patient anxiety and improve care transparency.",
+    "so_what": "If not pursued, the organization misses opportunities to reduce patient anxiety, improve understanding of test results, increase trust in care teams, and establish a replicable standard for diagnostic communication excellence."
+  },
+  "meta": {
+    "action_axis": "Scale Clinical Excellence",
+    "affect_axis": "Trust",
+    "intent_axis": "Clinical Praise"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "semantic_action_statement.section_1_patient_reality", "supporting": "matters", "extracted": "Same-day results communication with compassionate explanation that reduced patient anxiety." },
+    "when_source": { "field": "interaction_moment", "extracted": "After receiving oncology test results" },
+    "where_source": { "experience_driver": "Test Results & Diagnostics → Results Communication Timeliness", "patient_journey": "Diagnostic & Testing", "journey_stage": "Results Delivery" },
+    "why_source": { "field": "action_axis_justification", "extracted": "This represents a demonstrated best practice in results communication that combines speed, clarity, and emotional support, worthy of systematic replication across other specialties." },
+    "so_what_source": { "field": "behavioral_impact", "extracted": "If not pursued, the organization misses opportunities to reduce patient anxiety, improve understanding, increase trust, and establish a replicable communication standard." }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "GO",
+    "validation_checklist": {
+      "clinically_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "patient_rooted": true,
+      "safety_impact_clear": true
+    }
+  }
+}
+
+---
+
+#### Example 4 – Innovate Care Model (ACTION_AXIS)
+
+**🎛️ Inputs:**
+
+* **semantic_action_statement.section_1_patient_reality:**
+  The patient made a Process Improvement Suggestion that when managing chronic medication routine, they wanted automated monthly prescription delivery to eliminate manual refill ordering.
+* **matters:** Patient wants automated monthly prescription delivery to avoid manual refill ordering for chronic medications.
+* **context:** Patient managing chronic condition wants subscription-based medication delivery.
+* **experience_driver:** Prescription Management → Automated Refill & Delivery
+* **patient_journey:** Ongoing Care Management
+* **journey_stage:** Medication Management
+* **interaction_moment:** While managing chronic medication routine
+* **action_axis_justification:** The requested service does not exist in the current care model and represents a new proactive medication management capability that shifts from reactive ordering to automated adherence support.
+* **behavioral_impact:** Improves medication adherence for chronic conditions, reduces pharmacy call volume, decreases missed doses, and strengthens continuity of care for long-term treatments.
+* **action_axis:** Innovate Care Model
+* **affect_axis:** Reassurance
+* **intent_axis:** Process Improvement Suggestion
+
+**🧠 Output:**
+
+{
+  "problem_statement": "The patient made a Process Improvement Suggestion that when managing chronic medication routine, they wanted automated monthly prescription delivery to eliminate manual refill ordering. This occurred while managing chronic medication routine within the Medication Management stage of the Ongoing Care Management journey, focused on the Prescription Management → Automated Refill & Delivery driver. The orchestration ACTION_AXIS is Innovate Care Model — designed to unlock new proactive care capabilities. It was routed here because the requested service does not exist in the current care model and represents a new proactive medication management capability that shifts from reactive ordering to automated adherence support. If not pursued, the organization misses opportunities to improve medication adherence for chronic conditions, reduce pharmacy call volume, decrease missed doses, and strengthen continuity of care for long-term treatments.",
+  "breakdown": {
+    "what": "Patient wants automated monthly prescription delivery to avoid manual refill ordering for chronic medications.",
+    "when": "While managing chronic medication routine",
+    "where": {
+      "experience_driver": "Prescription Management → Automated Refill & Delivery",
+      "patient_journey": "Ongoing Care Management",
+      "journey_stage": "Medication Management"
+    },
+    "why": "The requested service does not exist in the current care model and represents a new proactive medication management capability that shifts from reactive ordering to automated adherence support.",
+    "so_what": "If not pursued, the organization misses opportunities to improve medication adherence for chronic conditions, reduce pharmacy call volume, decrease missed doses, and strengthen continuity of care for long-term treatments."
+  },
+  "meta": {
+    "action_axis": "Innovate Care Model",
+    "affect_axis": "Reassurance",
+    "intent_axis": "Process Improvement Suggestion"
+  },
+  "generation_source_mapping": {
+    "what_source": { "primary": "semantic_action_statement.section_1_patient_reality", "supporting": "matters", "extracted": "Patient wants automated monthly prescription delivery to avoid manual refill ordering for chronic medications." },
+    "when_source": { "field": "interaction_moment", "extracted": "While managing chronic medication routine" },
+    "where_source": { "experience_driver": "Prescription Management → Automated Refill & Delivery", "patient_journey": "Ongoing Care Management", "journey_stage": "Medication Management" },
+    "why_source": { "field": "action_axis_justification", "extracted": "The requested service does not exist in the current care model and represents a new proactive medication management capability that shifts from reactive ordering to automated adherence support." },
+    "so_what_source": { "field": "behavioral_impact", "extracted": "If not pursued, the organization misses opportunities to improve medication adherence, reduce call volume, decrease missed doses, and strengthen care continuity." }
+  },
+  "pdca_readiness": {
+    "go_no_go_status": "GO",
+    "validation_checklist": {
+      "clinically_precise": true,
+      "operationally_scoped": true,
+      "strategically_aligned": true,
+      "patient_rooted": true,
+      "safety_impact_clear": true
+    }
+  }
+}
+
+---
+
+## 🔄 HEALTHCARE THREE-AXIS FRAMEWORK ALIGNMENT
+
+This prompt reflects the **Healthcare-Specific Universal Execution Contract** three-axis framework:
+
+### INTENT_AXIS (Speech-Act in Healthcare Context)
+- What the patient/caregiver is doing with language
+- Present in `meta` object for context
+- NOT required for problem statement construction
+- Healthcare values: **Clinical Praise, Safety Concern, Care Coordination Request, Process Improvement Suggestion, Clinical Clarification Question, Patient Behavior Pattern, Healthcare Trend Signal**
+
+### AFFECT_AXIS (Clinical Execution Pressure)
+- Emotional pressure / urgency tied to care quality, safety, or access
+- Present in `meta` object for context
+- NOT required for problem statement construction
+- Healthcare values: **Trust (+3), Reassurance (+1), Uncertainty (0), Anxiety (-1), Fear (-3)**
+- These map to 5-tier pressure lattice for ERI computation
+
+### ACTION_AXIS (Healthcare Organizational Response Class)
+- **EXECUTION-CRITICAL** — the strategic response posture
+- Determines organizational action: Restore Safety / Improve Care Delivery / Scale Clinical Excellence / Innovate Care Model
+- MUST appear in problem statement and WHY logic
+- Driven by `action_axis_justification` field
+
+**Key Principle:**
+The ACTION_AXIS is the only axis that directly shapes the problem statement's strategic framing. The other two axes provide clinical context and emotional fidelity but are not structural to the PDCA mission definition.
+
+**Patient Safety Priority:**
+Restore Safety signals receive elevated urgency and direct language. This is non-negotiable in healthcare.
+
+"""
