@@ -544,86 +544,115 @@ No Experience Driver may proceed downstream without passing **both Section 1 and
 
 ## Patient Appointments & Scheduling
 
-| Theme                             | Experience Driver                                  | Sample Entity Names                                    |
-| --------------------------------- | -------------------------------------------------- | ------------------------------------------------------ |
-| Patient Appointments & Scheduling | Appointment Booking → Real-Time Confirmation       | Telehealth Portal, Hospital Scheduling System          |
-| Patient Appointments & Scheduling | Appointment Booking → Delayed Confirmation         | Email/SMS Alerts, Manual Scheduling                    |
-| Patient Appointments & Scheduling | Appointment Booking → Cross-Specialty Coordination | Multi-Department Clinics, Integrated Care              |
-| Patient Appointments & Scheduling | Appointment Booking → Peak Load Performance        | Flu Season Booking, Mass Vaccination Days              |
-| Patient Appointments & Scheduling | Appointment Booking → Emergency Slot Availability  | Same-Day Urgent Care, Walk-In Availability             |
-| Patient Appointments & Scheduling | Scheduling Methods → Online Self-Booking           | Patient Portal, Mobile App                             |
-| Patient Appointments & Scheduling | Scheduling Methods → Call Center Booking           | Central Booking Line, Nurse Triage                     |
-| Patient Appointments & Scheduling | Scheduling Methods → Walk-In Queue Management      | On-Site Check-In Kiosks                                |
-| Patient Appointments & Scheduling | Scheduling Methods → Voice Assistant Booking       | Alexa Health Skills, Google Assistant                  |
-| Patient Appointments & Scheduling | Scheduling Methods → Chatbot Booking               | AI Scheduling Bot, WhatsApp Booking                    |
-| Patient Appointments & Scheduling | Appointment Fees → Transparent Pricing             | Consultation Fee Display, Insurance Copay Info         |
-| Patient Appointments & Scheduling | Appointment Fees → Dynamic Pricing                 | Off-Peak Discounts, Premium Time Slots                 |
-| Patient Appointments & Scheduling | Appointment Limits → Daily Limits                  | Specialist Caps, Same-Day Quotas                       |
-| Patient Appointments & Scheduling | Appointment Limits → Monthly Limits                | Therapy Session Caps, Diagnostic Visit Caps            |
-| Patient Appointments & Scheduling | Appointment Limits → Provider Availability         | Vacation Coverage, Holiday Scheduling                   |
-| Patient Appointments & Scheduling | Appointment History → Visit Summaries              | Past Appointments, Physician Notes                     |
-| Patient Appointments & Scheduling | Appointment History → Search & Filter              | Date Range, Provider Name                              |
-| Patient Appointments & Scheduling | Appointment History → Export Options               | PDF Summaries, Insurance Submission Forms              |
-| Patient Appointments & Scheduling | Appointment History → Real-Time Updates            | Cancellations, Reschedules                             |
-| Patient Appointments & Scheduling | Appointment Reminders → Multi-Channel Alerts       | SMS, Email, Push Notifications                         |
-| Patient Appointments & Scheduling | Appointment Reminders → Customizable Timing        | 24hr, 1hr, 15min Warnings                             |
-| Patient Appointments & Scheduling | Appointment Reminders → Preparation Instructions   | Fasting Requirements, Document Checklist               |
-| Patient Appointments & Scheduling | Waitlist Management → Position Tracking            | Queue Number, Estimated Wait Time                      |
-| Patient Appointments & Scheduling | Waitlist Management → Automatic Rebooking          | Cancellation Notifications, Priority Placement         |
+| Theme                             | Experience Driver                                   | Sample Entity Names                            |
+| --------------------------------- | --------------------------------------------------- | ---------------------------------------------- |
+| Patient Appointments & Scheduling | Appointment Booking → Real-Time Confirmation        | Telehealth Portal, Hospital Scheduling System  |
+| Patient Appointments & Scheduling | Appointment Booking → Delayed Confirmation          | Email/SMS Alerts, Manual Scheduling            |
+| Patient Appointments & Scheduling | Appointment Booking → Cross-Specialty Coordination  | Multi-Department Clinics, Integrated Care      |
+| Patient Appointments & Scheduling | Appointment Booking → Peak Load Performance         | Flu Season Booking, Mass Vaccination Days      |
+| Patient Appointments & Scheduling | Appointment Booking → Emergency Slot Availability   | Same-Day Urgent Care, Walk-In Availability     |
+| Patient Appointments & Scheduling | Appointment Booking → Cancellation Handling         | Provider Cancellations, Patient Cancellations  |
+| Patient Appointments & Scheduling | Appointment Booking → Rescheduling Flow             | Date Change Flow, Slot Reassignment            |
+| Patient Appointments & Scheduling | Appointment Booking → Provider Selection & Matching | Doctor Selection, Specialty Filters            |
+| Patient Appointments & Scheduling | Appointment Booking → Facility / Location Selection | Multi-Location Clinics, Branch Selection       |
+| Patient Appointments & Scheduling | Appointment Booking → Referral Requirement Handling | PCP Referral Checks, Specialist Access         |
+| Patient Appointments & Scheduling | Appointment Booking → Booking Error Recovery        | Failed Booking Retry, Error Messaging          |
+| Patient Appointments & Scheduling | Scheduling Methods → Online Self-Booking            | Patient Portal, Mobile App                     |
+| Patient Appointments & Scheduling | Scheduling Methods → Call Center Booking            | Central Booking Line, Nurse Triage             |
+| Patient Appointments & Scheduling | Scheduling Methods → Walk-In Queue Management       | On-Site Check-In Kiosks                        |
+| Patient Appointments & Scheduling | Scheduling Methods → Voice Assistant Booking        | Alexa Health Skills, Google Assistant          |
+| Patient Appointments & Scheduling | Scheduling Methods → Chatbot Booking                | AI Scheduling Bot, WhatsApp Booking            |
+| Patient Appointments & Scheduling | Scheduling Methods → Callback Scheduling            | Request-a-Callback, Callback Windows           |
+| Patient Appointments & Scheduling | Appointment Fees → Transparent Pricing              | Consultation Fee Display, Insurance Copay Info |
+| Patient Appointments & Scheduling | Appointment Fees → Dynamic Pricing                  | Off-Peak Discounts, Premium Time Slots         |
+| Patient Appointments & Scheduling | Appointment Limits → Daily Limits                   | Specialist Caps, Same-Day Quotas               |
+| Patient Appointments & Scheduling | Appointment Limits → Monthly Limits                 | Therapy Session Caps, Diagnostic Visit Caps    |
+| Patient Appointments & Scheduling | Appointment Limits → Provider Availability          | Vacation Coverage, Holiday Scheduling          |
+| Patient Appointments & Scheduling | Appointment History → Visit Summaries               | Past Appointments, Physician Notes             |
+| Patient Appointments & Scheduling | Appointment History → Search & Filter               | Date Range, Provider Name                      |
+| Patient Appointments & Scheduling | Appointment History → Export Options                | PDF Summaries, Insurance Submission Forms      |
+| Patient Appointments & Scheduling | Appointment History → Real-Time Updates             | Cancellations, Reschedules                     |
+| Patient Appointments & Scheduling | Appointment Reminders → Multi-Channel Alerts        | SMS, Email, Push Notifications                 |
+| Patient Appointments & Scheduling | Appointment Reminders → Customizable Timing         | 24hr, 1hr, 15min Warnings                      |
+| Patient Appointments & Scheduling | Appointment Reminders → Preparation Instructions    | Fasting Requirements, Document Checklist       |
+| Patient Appointments & Scheduling | Appointment Reminders → Actionable Reminders        | Cancel / Reschedule Links                      |
+| Patient Appointments & Scheduling | Appointment Reminders → Reminder Accuracy           | Wrong Time, Wrong Location                     |
+| Patient Appointments & Scheduling | Waitlist Management → Position Tracking             | Queue Number, Estimated Wait Time              |
+| Patient Appointments & Scheduling | Waitlist Management → Automatic Rebooking           | Cancellation Notifications, Priority Placement |
+| Patient Appointments & Scheduling | Waitlist Management → Fairness & Priority Rules     | Urgency-Based Queueing, Priority Access        |
+| Patient Appointments & Scheduling | Waitlist Management → Slot Offer Expiry Handling    | Missed Slot Offers, Auto-Release               |
+
 
 ## Patient Records & Profile Management
 
-| Theme                                | Experience Driver                             | Sample Entity Names                              |
-| ------------------------------------ | --------------------------------------------- | ------------------------------------------------ |
-| Patient Records & Profile Management | Account Setup → Patient Onboarding Flow       | EMR Registration, Intake Forms                   |
-| Patient Records & Profile Management | Account Setup → Document Upload               | Insurance Card, ID Proof                         |
-| Patient Records & Profile Management | Account Setup → Approval Speed                | Instant Registration, Manual Review              |
-| Patient Records & Profile Management | Account Setup → Family Account Linking        | Pediatric Accounts, Elderly Care Management      |
-| Patient Records & Profile Management | Profile Management → Personal Information     | Demographics, Contact Details                    |
-| Patient Records & Profile Management | Profile Management → Medical History Updates  | Allergy Records, Immunization Status             |
-| Patient Records & Profile Management | Profile Management → Notification Preferences | Appointment Reminders, Lab Result Alerts         |
-| Patient Records & Profile Management | Profile Management → Privacy Settings         | Data Sharing Preferences, HIPAA Consents         |
-| Patient Records & Profile Management | Profile Management → Emergency Contacts       | ICE Information, Healthcare Proxies              |
-| Patient Records & Profile Management | Profile Management → Care Team Directory      | Primary Care, Specialists, Care Coordinators     |
-| Patient Records & Profile Management | Account Access → Multi-Factor Authentication  | Patient Portal 2FA, Biometric Login              |
-| Patient Records & Profile Management | Account Access → Single Sign-On               | MyChart Login, Insurance Portal SSO              |
-| Patient Records & Profile Management | Account Access → Session Management           | Auto-Logout, Device Recognition                  |
-| Patient Records & Profile Management | Account Access → Password Management          | Reset Flow, Security Questions                   |
-| Patient Records & Profile Management | Account Access → Device Authorization         | Trusted Devices, Remote Access Control           |
-| Patient Records & Profile Management | Account Linking → Insurance Plan Linking      | PPO/HMO Integration                              |
-| Patient Records & Profile Management | Account Linking → Pharmacy Accounts           | Prescription Refill Sync                         |
-| Patient Records & Profile Management | Account Linking → Wearable Device Integration | Fitbit, Apple Health, Continuous Glucose Monitor |
-| Patient Records & Profile Management | Account Linking → Health App Synchronization  | MyFitnessPal, Meditation Apps, Sleep Trackers    |
-| Patient Records & Profile Management | Account Closure → Record Transfer Process     | To New Provider, Archival                        |
-| Patient Records & Profile Management | Account Closure → Data Retention              | HIPAA Compliance, Record Purging                 |
+| Theme                                | Experience Driver                               | Sample Entity Names                              |
+| ------------------------------------ | ----------------------------------------------- | ------------------------------------------------ |
+| Patient Records & Profile Management | Account Setup → Patient Onboarding Flow         | EMR Registration, Intake Forms                   |
+| Patient Records & Profile Management | Account Setup → Document Upload                 | Insurance Card, ID Proof                         |
+| Patient Records & Profile Management | Account Setup → Approval Speed                  | Instant Registration, Manual Review              |
+| Patient Records & Profile Management | Account Setup → Family Account Linking          | Pediatric Accounts, Elderly Care Management      |
+| Patient Records & Profile Management | Profile Management → Personal Information       | Demographics, Contact Details                    |
+| Patient Records & Profile Management | Profile Management → Medical History Updates    | Allergy Records, Immunization Status             |
+| Patient Records & Profile Management | Medical History Updates → Verification & Review | Provider Review Workflow                         |
+| Patient Records & Profile Management | Record Accuracy → Demographic / Identity Errors | Name Mismatch, DOB Errors                        |
+| Patient Records & Profile Management | Profile Management → Notification Preferences   | Appointment Reminders, Lab Result Alerts         |
+| Patient Records & Profile Management | Profile Management → Privacy Settings           | Data Sharing Preferences, HIPAA Consents         |
+| Patient Records & Profile Management | Profile Management → Emergency Contacts         | ICE Information, Healthcare Proxies              |
+| Patient Records & Profile Management | Profile Management → Care Team Directory        | Primary Care, Specialists, Care Coordinators     |
+| Patient Records & Profile Management | Record Access → Proxy / Caregiver Access        | Parent Access, Elder Care                        |
+| Patient Records & Profile Management | Record Sharing → Provider-to-Provider Sharing   | External Provider Transfer                       |
+| Patient Records & Profile Management | Account Access → Multi-Factor Authentication    | Patient Portal 2FA, Biometric Login              |
+| Patient Records & Profile Management | Account Access → Single Sign-On                 | MyChart Login, Insurance Portal SSO              |
+| Patient Records & Profile Management | Account Access → Session Management             | Auto-Logout, Device Recognition                  |
+| Patient Records & Profile Management | Session Management → Multi-Device Sync          | Session Desync, Forced Logout                    |
+| Patient Records & Profile Management | Account Access → Password Management            | Reset Flow, Security Questions                   |
+| Patient Records & Profile Management | Account Access → Device Authorization           | Trusted Devices, Remote Access Control           |
+| Patient Records & Profile Management | Account Access → Account Lockout Recovery       | Locked Account Resolution                        |
+| Patient Records & Profile Management | Account Linking → Insurance Plan Linking        | PPO/HMO Integration                              |
+| Patient Records & Profile Management | Account Linking → Pharmacy Accounts             | Prescription Refill Sync                         |
+| Patient Records & Profile Management | Account Linking → Wearable Device Integration   | Fitbit, Apple Health, Continuous Glucose Monitor |
+| Patient Records & Profile Management | Account Linking → Health App Synchronization    | MyFitnessPal, Meditation Apps, Sleep Trackers    |
+| Patient Records & Profile Management | Account Closure → Record Transfer Process       | To New Provider, Archival                        |
+| Patient Records & Profile Management | Account Closure → Data Retention                | HIPAA Compliance, Record Purging                 |
+
 
 ## Clinical Services & Care Delivery
 
-| Theme                             | Experience Driver                                | Sample Entity Names                           |
-| --------------------------------- | ------------------------------------------------ | --------------------------------------------- |
-| Clinical Services & Care Delivery | Consultation Experience → Wait Time              | In-Clinic Wait, Virtual Waiting Room          |
-| Clinical Services & Care Delivery | Consultation Experience → Provider Communication | Bedside Manner, Clarity                       |
-| Clinical Services & Care Delivery | Consultation Experience → Language Support       | Interpreter Services, Multilingual Portal     |
-| Clinical Services & Care Delivery | Consultation Experience → Care Continuity        | Provider Consistency, Handoff Communication   |
-| Clinical Services & Care Delivery | Consultation Experience → Room Comfort           | Temperature, Lighting, Privacy                |
-| Clinical Services & Care Delivery | Diagnostic Services → Lab Test Turnaround        | Blood Tests, Imaging Results                  |
-| Clinical Services & Care Delivery | Diagnostic Services → Result Accuracy            | Radiology Reports, Pathology Verification     |
-| Clinical Services & Care Delivery | Diagnostic Services → Test Preparation           | Fasting Instructions, Contrast Procedures     |
-| Clinical Services & Care Delivery | Diagnostic Services → Home Collection            | Mobile Phlebotomy, At-Home Specimen Kits      |
-| Clinical Services & Care Delivery | Treatment Services → Care Plan Clarity           | Discharge Instructions, Follow-Up Plan        |
-| Clinical Services & Care Delivery | Treatment Services → Medication Availability     | In-Hospital Pharmacy, Specialty Medications   |
-| Clinical Services & Care Delivery | Treatment Services → Pain Management             | Comfort Measures, Alternative Therapies       |
-| Clinical Services & Care Delivery | Treatment Services → Procedure Scheduling        | Pre-Op Coordination, Recovery Planning        |
-| Clinical Services & Care Delivery | Follow-Up Care → Appointment Scheduling          | Post-Surgery Check-In, Chronic Care Visits    |
-| Clinical Services & Care Delivery | Follow-Up Care → Remote Monitoring               | Wearables, Home Health Devices                |
-| Clinical Services & Care Delivery | Follow-Up Care → Care Transitions                | Hospital to Home, Specialist Referrals        |
-| Clinical Services & Care Delivery | Telehealth Services → Video Quality              | Connection Stability, Audio Clarity           |
-| Clinical Services & Care Delivery | Telehealth Services → Platform Usability         | Screen Sharing, Digital Prescribing           |
-| Clinical Services & Care Delivery | Telehealth Services → Technical Support          | Connection Issues, Device Compatibility       |
-| Clinical Services & Care Delivery | Emergency Services → Triage Efficiency           | Priority Assessment, Queue Management         |
-| Clinical Services & Care Delivery | Emergency Services → Response Time               | Ambulance Dispatch, Code Team Response        |
-| Clinical Services & Care Delivery | Preventive Care → Screening Reminders            | Mammograms, Colonoscopies, Annual Physicals   |
-| Clinical Services & Care Delivery | Preventive Care → Health Education               | Lifestyle Counseling, Disease Prevention      |
+| Theme                             | Experience Driver                                     | Sample Entity Names                         |
+| --------------------------------- | ----------------------------------------------------- | ------------------------------------------- |
+| Clinical Services & Care Delivery | Consultation Experience → Wait Time                   | In-Clinic Wait, Virtual Waiting Room        |
+| Clinical Services & Care Delivery | Consultation Experience → Wait Time Transparency      | Delay Notifications                         |
+| Clinical Services & Care Delivery | Consultation Experience → Provider Communication      | Bedside Manner, Clarity                     |
+| Clinical Services & Care Delivery | Provider Communication → Follow-Up Responsiveness     | Post-Visit Messaging                        |
+| Clinical Services & Care Delivery | Consultation Experience → Language Support            | Interpreter Services, Multilingual Portal   |
+| Clinical Services & Care Delivery | Consultation Experience → Care Continuity             | Provider Consistency, Handoff Communication |
+| Clinical Services & Care Delivery | Care Continuity → Care Team Alignment                 | Conflicting Advice                          |
+| Clinical Services & Care Delivery | Consultation Experience → Room Comfort                | Temperature, Lighting, Privacy              |
+| Clinical Services & Care Delivery | Diagnostic Services → Lab Test Turnaround             | Blood Tests, Imaging Results                |
+| Clinical Services & Care Delivery | Diagnostic Services → Result Accuracy                 | Radiology Reports, Pathology Verification   |
+| Clinical Services & Care Delivery | Diagnostic Services → Duplicate / Conflicting Results | Updated Reports                             |
+| Clinical Services & Care Delivery | Diagnostic Services → Result Notification Speed       | Result Published vs Notified                |
+| Clinical Services & Care Delivery | Diagnostic Services → Test Preparation                | Fasting Instructions, Contrast Procedures   |
+| Clinical Services & Care Delivery | Diagnostic Services → Home Collection                 | Mobile Phlebotomy, At-Home Specimen Kits    |
+| Clinical Services & Care Delivery | Treatment Services → Care Plan Clarity                | Discharge Instructions, Follow-Up Plan      |
+| Clinical Services & Care Delivery | Treatment Services → Next Steps Ownership             | Responsibility Clarity                      |
+| Clinical Services & Care Delivery | Treatment Services → Medication Availability          | In-Hospital Pharmacy, Specialty Medications |
+| Clinical Services & Care Delivery | Treatment Services → Pain Management                  | Comfort Measures, Alternative Therapies     |
+| Clinical Services & Care Delivery | Treatment Services → Procedure Scheduling             | Pre-Op Coordination, Recovery Planning      |
+| Clinical Services & Care Delivery | Procedure Scheduling → Pre-Authorization Coordination | Surgery Approvals                           |
+| Clinical Services & Care Delivery | Follow-Up Care → Appointment Scheduling               | Post-Surgery Check-In, Chronic Care Visits  |
+| Clinical Services & Care Delivery | Follow-Up Care → Remote Monitoring                    | Wearables, Home Health Devices              |
+| Clinical Services & Care Delivery | Follow-Up Care → Care Transitions                     | Hospital to Home, Specialist Referrals      |
+| Clinical Services & Care Delivery | Telehealth Services → Video Quality                   | Connection Stability, Audio Clarity         |
+| Clinical Services & Care Delivery | Telehealth Services → Platform Usability              | Screen Sharing, Digital Prescribing         |
+| Clinical Services & Care Delivery | Telehealth Services → Technical Support               | Connection Issues, Device Compatibility     |
+| Clinical Services & Care Delivery | Telehealth Services → Appointment Start Reliability   | Provider No-Show                            |
+| Clinical Services & Care Delivery | Telehealth Services → Virtual Waiting Room UX         | Queue Visibility                            |
+| Clinical Services & Care Delivery | Emergency Services → Triage Efficiency                | Priority Assessment, Queue Management       |
+| Clinical Services & Care Delivery | Emergency Services → Response Time                    | Ambulance Dispatch, Code Team Response      |
+| Clinical Services & Care Delivery | Preventive Care → Screening Reminders                 | Mammograms, Colonoscopies, Annual Physicals |
+| Clinical Services & Care Delivery | Preventive Care → Health Education                    | Lifestyle Counseling, Disease Prevention    |
+
 
 ## Security, Privacy & Compliance
 
@@ -3467,6 +3496,7 @@ Any output containing anything outside JSON is invalid.
 ```
 
 """
+
 
 
 
