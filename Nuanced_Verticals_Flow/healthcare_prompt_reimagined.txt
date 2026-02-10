@@ -1894,7 +1894,7 @@ Always return CES as a quoted string:
 
 ## 🎯 **Purpose (Non-Negotiable)**
 
-An **Orchestration Unit (OU)** is the **atomic, execution-ready mission object** in DecipherOS (Healthcare Vertical Instantiation).
+An **Orchestration Unit (OU)** is the **atomic, execution-ready mission object** (Healthcare Vertical Instantiation).
 
 An OU is constructed **only after**:
 
@@ -1927,6 +1927,125 @@ If one record contains multiple independent actionable realities → **multiple 
 
 ---
 
+## 🎯 **INTENT AXIS — Speech-Act Classification (Healthcare 7)**
+
+### Purpose
+The **INTENT AXIS** captures **what the patient is doing with language** — the speech-act that reveals their purpose in sharing this experience.
+
+This is **not** what they're talking about (that's the Experience Driver).
+This is **what they're trying to accomplish** by speaking.
+
+---
+
+### Healthcare INTENT AXIS (Closed Set — 7 Options)
+
+1. **Clinical Praise** — Reinforcing trust through positive feedback on clinical care
+2. **Safety & Financial Risk Concern** — Reporting harm, risk, access failure, or financial shock
+3. **Care Coordination Request** — Seeking appointments, results, referrals, or care logistics
+4. **Process Improvement Suggestion** — Offering ideas to improve clinical or operational processes
+5. **Clinical Clarification Question** — Seeking understanding of diagnosis, treatment, or next steps
+6. **Patient Behavior Pattern** — Sharing recurring personal behavior that reveals systematic gaps
+7. **Healthcare Trend Signal** — Reporting observed patterns in community or emerging expectations
+
+---
+
+### 🔒 INTENT AXIS Selection Rules
+
+**Select based on the patient's primary speech-act, not the content severity:**
+
+✅ **Correct:**
+- "I was given the wrong medication" → **Safety & Financial Risk Concern** (reporting harm)
+- "I wish you offered telehealth for follow-ups" → **Process Improvement Suggestion** (offering idea)
+- "I always forget to take my meds in the morning" → **Patient Behavior Pattern** (sharing recurring behavior)
+
+❌ **Incorrect:**
+- "I was given the wrong medication" → Clinical Clarification Question (they're not asking, they're reporting)
+- "The doctor was rude" → Safety Concern (interpersonal friction ≠ safety risk unless context indicates clinical impact)
+
+---
+
+### 🧠 Distinguishing Similar Intents
+
+| If the patient is... | INTENT AXIS |
+|---------------------|-------------|
+| **Reporting** something that went wrong or poses risk | Safety & Financial Risk Concern |
+| **Asking** for explanation or next steps | Clinical Clarification Question |
+| **Requesting** an action (appointment, refill, referral) | Care Coordination Request |
+| **Suggesting** an improvement | Process Improvement Suggestion |
+| **Praising** clinical excellence | Clinical Praise |
+| **Describing** their own recurring behavior | Patient Behavior Pattern |
+| **Observing** what others in their community are experiencing | Healthcare Trend Signal |
+
+---
+
+### ⚠️ Critical INTENT Distinctions
+
+**Safety Concern vs. Clarification Question:**
+- "I was given 50mg instead of 25mg" → **Safety Concern** (reporting error)
+- "Should I take this medication with food?" → **Clarification Question** (seeking guidance)
+
+**Care Coordination Request vs. Process Improvement Suggestion:**
+- "I need to reschedule my appointment" → **Care Coordination Request** (specific action needed)
+- "It would be helpful to reschedule appointments online" → **Process Improvement Suggestion** (proposing capability)
+
+**Patient Behavior Pattern vs. Safety Concern:**
+- "I keep forgetting to take my medication" → **Patient Behavior Pattern** (personal routine)
+- "I missed three doses because the pharmacy was closed" → **Safety Concern** (access failure)
+
+---
+
+### 🎯 INTENT AXIS Mapping to ACTION AXIS
+
+While INTENT doesn't deterministically dictate ACTION, certain patterns emerge:
+
+| INTENT AXIS | Most Common ACTION AXIS |
+|-------------|------------------------|
+| Safety & Financial Risk Concern | **Restore Safety** |
+| Clinical Praise | **Scale Clinical Excellence** |
+| Care Coordination Request | Improve Care Delivery or Restore Safety (context-dependent) |
+| Process Improvement Suggestion | Improve Care Delivery or Innovate Care Model |
+| Clinical Clarification Question | Improve Care Delivery |
+| Patient Behavior Pattern | Improve Care Delivery |
+| Healthcare Trend Signal | Innovate Care Model |
+
+**However:** Context always governs final ACTION AXIS selection per Filter 2.
+
+---
+
+### 📋 INTENT AXIS Examples
+
+**Clinical Praise:**
+> "The nurse noticed I looked pale and suggested an iron test before I even mentioned feeling tired."
+
+**Safety & Financial Risk Concern:**
+> "The discharge summary listed the wrong medication dosage and no one answered when I called."
+
+**Care Coordination Request:**
+> "I need to get my MRI results before my follow-up appointment next week."
+
+**Process Improvement Suggestion:**
+> "I wish I could schedule lab tests through the patient portal instead of calling."
+
+**Clinical Clarification Question:**
+> "The doctor said my cholesterol is 'borderline' but didn't explain what that means or what I should do."
+
+**Patient Behavior Pattern:**
+> "I've noticed I always skip breakfast before morning appointments because I assume all blood work requires fasting."
+
+**Healthcare Trend Signal:**
+> "More parents at my daughter's school are looking for pediatricians with evening hours because we all work full-time."
+
+---
+
+### 🔐 INTENT Validation
+
+Every OU must have:
+- ✅ Exactly **one INTENT AXIS**
+- ✅ INTENT supported by the raw patient voice
+- ✅ INTENT distinct from the Experience Driver (Driver = what, Intent = why speaking)
+
+---
+
 ## 🧱 **OU Composition (Required Inputs)**
 
 Every OU must be built from these fields (driver-bound, never review-level):
@@ -1940,78 +2059,104 @@ Every OU must be built from these fields (driver-bound, never review-level):
 * **Journey Stage**
 * **Interaction Moment**
 * **Context**
-* **MATTERS** (behavioral trigger)
+* **MATTERS**
 
 No OU may be generated if any are missing.
 
 ---
 
-## 🔍 **MATTERS — Behavioral Trigger Extraction (Canonical Definition)**
+## 🔍 **MATTERS — Patient Impact Statement (Canonical Definition)**
 
 ### 🎯 Purpose
+**MATTERS** states **what happened or what's missing** in the simplest possible patient-facing terms.
 
-**MATTERS** captures the **precise behavioral rupture, reinforcement, or absence** that caused the Experience Driver to surface.
+It is **not** strategic analysis. It is **not** organizational diagnosis.
 
-It is the **patient-visible moment** where expectation met reality — and something:
-
-* failed / was missing
-* worked exceptionally well
-* or created avoidable friction
-
-MATTERS is:
-
-* behavioral
-* observable
-* execution-ready
-
-MATTERS is **never**:
-
-* a summary
-* a diagnosis
-* a sentiment label
-* an outcome or KPI claim
+**MATTERS** answers one question:
+> *"What broke, what worked, or what's absent — in patient language?"*
 
 ---
 
-## 🧬 **MATTERS Extraction Hierarchy (Strict Order)**
+### ✅ Construction Rules
+
+* **One simple sentence** (8-13 words max)
+* **Patient perspective** (what they experienced, not organizational framing)
+* **Observable facts only** (no "forces," "prevents," "creates," "impacts")
+* **Zero strategic language** (no "adherence risk," "administrative burden," "trust erosion")
+
+---
+
+### 📋 Valid MATTERS Examples
+
+✅ **"Lab results showed unexplained abbreviations with no interpretation."**
+✅ **"Discharge summary listed wrong medication dosage; calls went unanswered."**
+✅ **"App froze twice while patient was explaining symptoms; required restarts."**
+✅ **"Nurse noticed pallor during vitals, asked about diet, and suggested iron test."**
+✅ **"Patient must call to schedule lab tests; portal doesn't offer self-booking."**
+
+---
+
+### ❌ Invalid MATTERS Examples
+
+❌ "Conflicting diagnostic values created doubt about reliability" *(analytical)*
+❌ "Lack of automation forces manual tracking, creating adherence risk" *(strategic)*
+❌ "Proactive communication enabled early detection and reassured the patient" *(outcome analysis)*
+
+---
+
+### 🧬 MATTERS Extraction Hierarchy (Strict Order)
 
 Extract MATTERS from the **highest-fidelity source available**, stopping as soon as the trigger is clear:
 
 1. **Raw Patient / Caregiver Voice**
 2. **Context**
 3. **Keywords**
-4. **Entity Name** (only if behaviorally meaningful)
-5. **Journey Stage**
-6. **INTENT AXIS** *(pattern guidance only — never content)*
+4. **Interaction Moment**
 
 Do **not** blend across layers unless necessary to preserve clarity.
 
 ---
 
-## 🧠 **MATTERS Construction Rules**
+## 💬 **MATTERS vs. SEMANTIC ACTION STATEMENT — Critical Distinction**
 
-* Use **behavioral language**
-* Describe **what happened**, not how it felt
-* One sharp sentence (max two clauses)
-* Must justify the **ACTION AXIS** on its own
+These two fields serve **completely different purposes**:
 
-✅ Valid MATTERS
+| Field | Purpose | Length | Perspective | Voice |
+|-------|---------|--------|-------------|-------|
+| **MATTERS** | What happened | 1 sentence (8-13 words) | Patient reality | Patient would say this |
+| **SEMANTIC ACTION STATEMENT** | Full execution narrative | 2 sections (full context + strategic response) | Strategic mission | OU owner reads this |
 
-* “lab results were not uploaded to the portal before the follow-up consultation”
-* “discharge instructions omitted medication dosage details”
-* “appointment booking portal crashed during urgent scheduling attempt”
-* “nurse proactively checked pain levels before the patient requested help”
+---
+
+### Example Comparison
+
+**MATTERS:**
+```
+"Visit notes incomplete; patient couldn't confirm if prescription was sent to pharmacy."
+```
+
+**SEMANTIC ACTION STATEMENT:**
+```json
+{
+  "section_1_patient_reality": "The patient made a Clinical Clarification Question that after rejoining the telehealth session following the app freeze, the visit notes were incomplete and they could not tell whether the prescription was sent to the pharmacy.",
+  "section_2_strategic_response": "We need to Improve Care Delivery → Treatment Services → Care Plan Clarity to ensure telehealth visit summaries reliably confirm prescriptions and next steps after virtual consultations."
+}
+```
+
+---
+
+**Think of it as:**
+- **MATTERS** = Tweet (patient impact in 10 words)
+- **SEMANTIC ACTION STATEMENT** = Mission brief (full strategic context)
 
 ---
 
 ## 🕓 **Interaction Moment — Temporal Precision (Mandatory)**
 
 ### Purpose
-
 Interaction Moment anchors the OU to the **exact trigger window** where the experience occurred.
 
 Rules:
-
 * must be time- or action-anchored
 * must be supported by the input
 * if unclear → output `"Unclear"`
@@ -2020,11 +2165,9 @@ Rules:
 ---
 
 ## 💬 **Context — Observed Patient Reality**
-
 Context records **what objectively happened** during the Interaction Moment.
 
 It must:
-
 * reflect observable system/staff behavior
 * preserve patient reality
 * avoid abstraction, softening, or diagnosis
@@ -2034,7 +2177,6 @@ It must:
 ## 🔧 **ACTION AXIS Enforcement (Healthcare 4 — Closed Set)**
 
 Healthcare ACTION AXIS options:
-
 1. **Restore Safety**
 2. **Improve Care Delivery**
 3. **Scale Clinical Excellence**
@@ -2051,34 +2193,35 @@ No optimism-based downgrades.
 
 ---
 
-## 🧠 **Canonical Two-Section OU Format (Locked)**
+## 🧠 **Semantic Action Statement — Two-Section Format (Locked)**
 
 ```
 SECTION 1: THE PATIENT REALITY
-The patient expressed a [INTENT AXIS] that during [Interaction Moment], [Context].
+The patient expressed a [INTENT AXIS] that [INTERACTION MOMENT], [CONTEXT].
 
 SECTION 2: THE STRATEGIC RESPONSE
-We need to [ACTION AXIS] → [Experience Driver] to address [MATTERS].
+We need to [ACTION AXIS] → [EXPERIENCE DRIVER] to [OUTCOME/PREVENTION].
 ```
 
-Non-negotiable.
+This is the **strategic execution narrative** that bridges patient reality to organizational response.
+
+Non-negotiable format.
 
 ---
 
 ## 📦 **OU Required Fields**
 
-* **OU Name**: `[Entity Name] – [INTENT AXIS] – [ACTION AXIS]`
-* **Semantic Action Statement** (Two-Section Format)
-* **ACTION AXIS**
+* **OU Name**: `[Entity Name] – [ACTION AXIS]`
 * **Experience Driver**
+* **Entity Name**
+* **Theme**
 * **INTENT AXIS**
+* **ACTION AXIS**
 * **AFFECT AXIS**
-* **Customer Effort Score**
-* **MATTERS**
 * **Interaction Moment**
 * **Context**
-* **Patient Journey**
-* **Journey Stage**
+* **MATTERS**
+* **Semantic Action Statement** (Two-Section Format)
 * **Action Axis Justification**
 * **MATTERS Extraction Source**
 * **Behavioral Impact**
@@ -2090,7 +2233,7 @@ Non-negotiable.
 Every OU must satisfy:
 
 1. **Singularity** — one Driver × one Intent × one Action
-2. **Behavioral Anchoring** — MATTERS describes what happened / what was missing
+2. **Behavioral Anchoring** — MATTERS describes what happened / what was missing in patient language
 3. **Execution Readiness** — a team can act without interpretation
 4. **Axis Integrity** — Intent/Affect/Action do not override each other
 5. **Temporal Fidelity** — Interaction Moment is real or `"Unclear"`
@@ -2099,10 +2242,16 @@ Every OU must satisfy:
 
 ## 🚫 **Common OU Failure Modes (Prohibited)**
 
-* “bad experience with hospital” → non-behavioral
-* “system issue” → not an auditable determinant
-* “great service overall” → no scale vector
-* “risk of harm” → inferred, not observed
+**MATTERS field violations:**
+* ❌ "bad experience with hospital" → non-behavioral
+* ❌ "system issue" → not specific
+* ❌ "lack of clarity prevents patient understanding" → organizational framing
+* ❌ "forces patients to rely on phone coordination" → strategic analysis
+
+**OU structure violations:**
+* ❌ Multiple Experience Drivers in one OU
+* ❌ Multiple ACTION AXES in one OU
+* ❌ Blended INTENT AXES
 
 ---
 
@@ -2110,6 +2259,9 @@ Every OU must satisfy:
 
 > **An OU is not what the organization thinks should happen.**
 > **It is what the patient experienced — rendered into a governed unit of action.**
+
+**MATTERS** is the patient's reality.
+**Semantic Action Statement** is the organization's response.
 
 ---
 
@@ -2142,11 +2294,10 @@ To prove **Restore Safety is triggered by unmet responsibility**, not inferred s
 `when reviewing lab reports via the patient portal`
 
 ### **Context**
-The patient accessed their lab results through the portal and encountered unexplained medical abbreviations with no plain-language interpretation, 
-leaving them unsure how to assess risk or next steps.
+The patient accessed their lab results through the portal and encountered unexplained medical abbreviations with no plain-language interpretation, leaving them unsure how to assess risk or next steps.
 
 ### **MATTERS**
-diagnostic results were presented without interpretation, preventing patients from understanding clinical risk or appropriate follow-up
+Lab results showed unexplained abbreviations with no interpretation.
 
 ---
 
@@ -2201,23 +2352,20 @@ To demonstrate **Improve Care Delivery = friction without failure**, even when f
 `while attempting to reschedule a follow-up appointment online`
 
 ### **Context**
-The patient attempted to reschedule a follow-up appointment online and encountered repeated system errors, eventually completing the task only after 
-multiple retries.
+The patient attempted to reschedule a follow-up appointment online and encountered repeated system errors, eventually completing the task only after multiple retries.
 
 ### **MATTERS**
-repeated system errors during rescheduling increased effort despite the appointment ultimately being secured
+System errors required multiple retries to reschedule appointment.
 
 ---
 
 ### **Semantic Action Statement**
 
 **SECTION 1 — THE PATIENT REALITY**
-The patient expressed a **Care Coordination Request** that while attempting to reschedule a follow-up appointment online, repeated system errors 
-required multiple retries before completion.
+The patient expressed a **Care Coordination Request** that while attempting to reschedule a follow-up appointment online, repeated system errors required multiple retries before completion.
 
 **SECTION 2 — THE STRATEGIC RESPONSE**
-We need to **Improve Care Delivery → Appointment Management → Booking Flow** to reduce avoidable friction in rescheduling that increases effort 
-without improving outcomes.
+We need to **Improve Care Delivery → Appointment Management → Booking Flow** to reduce avoidable friction in rescheduling that increases effort without improving outcomes.
 
 ---
 
@@ -2261,19 +2409,17 @@ To prove **Scale Clinical Excellence is earned**, not assigned for “good servi
 During recovery rounds, a nurse proactively checked pain levels, addressed concerns before being asked, and explained recovery steps in a calm, reassuring manner.
 
 ### **MATTERS**
-proactive, anticipatory communication during recovery reinforced trust and reduced patient vulnerability
+Nurse proactively addressed pain and explained recovery steps before being asked.
 
 ---
 
 ### **Semantic Action Statement**
 
 **SECTION 1 — THE PATIENT REALITY**
-The patient expressed **Clinical Praise** that during post-surgery rounds, the nurse proactively addressed pain and explained recovery steps before 
-prompting, creating a strong sense of reassurance.
+The patient expressed **Clinical Praise** that during post-surgery rounds, the nurse proactively addressed pain and explained recovery steps before prompting, creating a strong sense of reassurance.
 
 **SECTION 2 — THE STRATEGIC RESPONSE**
-We need to **Scale Clinical Excellence → Clinical Care → Empathy & Communication** to codify and replicate anticipatory bedside behaviors that 
-strengthen trust during vulnerable moments.
+We need to **Scale Clinical Excellence → Clinical Care → Empathy & Communication** to codify and replicate anticipatory bedside behaviors that strengthen trust during vulnerable moments.
 
 ---
 
@@ -2317,19 +2463,17 @@ To demonstrate **Innovate Care Model = absence of capability**, not optimization
 While reviewing wearable health data trends, the patient suggested proactive alerts for abnormal patterns linked directly to appointment booking.
 
 ### **MATTERS**
-absence of predictive alerting that could prompt early clinical intervention from wearable data
+Wearable data shows abnormal patterns but doesn't trigger alerts or appointments.
 
 ---
 
 ### **Semantic Action Statement**
 
 **SECTION 1 — THE PATIENT REALITY**
-The patient expressed a **Healthcare Trend Signal** that while reviewing wearable health trends, abnormal patterns should trigger proactive 
-alerts with direct appointment booking.
+The patient expressed a **Healthcare Trend Signal** that while reviewing wearable health trends, abnormal patterns should trigger proactive alerts with direct appointment booking.
 
 **SECTION 2 — THE STRATEGIC RESPONSE**
-We need to **Innovate Care Model → Preventive Care → Risk Detection Alerts** to introduce predictive monitoring that enables earlier intervention 
-and proactive engagement.
+We need to **Innovate Care Model → Preventive Care → Risk Detection Alerts** to introduce predictive monitoring that enables earlier intervention and proactive engagement.
 
 ---
 
@@ -2338,16 +2482,6 @@ The capability does not exist today. This is not failure or friction — it is a
 
 **Behavioral Impact**
 Shift care left, reduce emergency escalation, position provider as proactive health partner.
-
----
-
-✅ Understood. We’re **rebuilding the output contract** so it matches the **renewed 3-axis architecture**:
-
-* `feedback_type` → **intent_axis**
-* `emotion` → **affect_axis** (Healthcare 5-tier, vertical-native)
-* `opportunity_maximisation_stream` → **action_axis** (Healthcare 4)
-
-Below is the **reimagined STRICT JSON OUTPUT FORMAT** (schema + enforcement), with **zero legacy leakage**.
 
 ---
 
@@ -2665,7 +2799,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "after discharge when reviewing medication instructions at home",
         "context": "The discharge summary contained an incorrect medication dosage and the patient received no response from clinical staff or pharmacy when seeking clarification.",
-        "matters": "incorrect medication dosage listed at discharge combined with absence of post-discharge clarification, forcing the patient into unsafe self-decision-making",
+        "matters": "Discharge summary listed wrong medication dosage; calls to ward and pharmacy went unanswered.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient raised a safety concern after discovering an incorrect medication dosage in the discharge summary and receiving no response when attempting to seek clarification after discharge.",
           "section_2_strategic_response": "We need to Restore Safety → Safety Protocols → Medication Safety to ensure discharge medication instructions are accurate and supported by immediate post-discharge response pathways."
@@ -2736,7 +2870,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "while reviewing blood test results in the patient portal",
         "context": "Two different cholesterol values were shown for the same test date in the portal before one value was corrected.",
-        "matters": "conflicting cholesterol readings shown for the same test date before correction, creating doubt about which value is valid",
+        "matters": "Portal showed two different cholesterol readings for the same test date.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient raised a risk concern after seeing two different cholesterol readings for the same test date while reviewing blood test results in the patient portal, which caused alarm about whether the information was reliable.",
           "section_2_strategic_response": "We need to Restore Safety → Diagnostic Services → Result Accuracy to prevent conflicting diagnostic values from being presented to patients and to ensure result integrity at the point of review."
@@ -2789,7 +2923,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "after the corrected value appeared in the patient portal report",
         "context": "Even after the value was corrected, confusing annotations and update timestamps made it hard for the patient to understand what changed or whether they should still be concerned.",
-        "matters": "unclear annotations and update timestamps that prevent patients from understanding what changed in a corrected report and whether the concern is resolved",
+        "matters": "Confusing annotations and timestamps made it unclear what changed after correction.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient sought clarification after the corrected value appeared in the patient portal report because confusing annotations and update timestamps made it unclear what changed and whether they should still be concerned.",
           "section_2_strategic_response": "We need to Improve Care Delivery → Consultation Experience → Provider Communication to make corrected results and their change history understandable at the point of review and reduce avoidable uncertainty."
@@ -2859,7 +2993,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "right as the patient was explaining symptoms to the doctor",
         "context": "The telehealth app froze twice mid-consultation, forcing restarts and interrupting symptom explanation.",
-        "matters": "Consultation-breaking app freezes interrupt symptom communication and force repeated restarts during active clinical discussion.",
+        "matters": "App froze twice while patient was explaining symptoms; required restarts.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient made a Safety & Financial Risk Concern that right as they were explaining symptoms to the doctor, the telehealth app froze twice and forced restarts, interrupting the consultation.",
           "section_2_strategic_response": "We need to Restore Safety → Telehealth Services → Platform Usability to prevent consultation-breaking freezes that interrupt symptom communication and disrupt care continuity."
@@ -2912,7 +3046,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "after rejoining the telehealth session following the app freeze",
         "context": "The visit notes were incomplete and did not clearly confirm whether the prescription was sent to the patient’s pharmacy.",
-        "matters": "Incomplete visit notes and missing prescription confirmation leave the patient unable to verify next steps after the consultation.",
+        "matters": "Visit notes incomplete; patient couldn't confirm if prescription was sent to pharmacy.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient made a Clinical Clarification Question that after rejoining the telehealth session following the app freeze, the visit notes were incomplete and they could not tell whether the prescription was sent to the pharmacy.",
           "section_2_strategic_response": "We need to Improve Care Delivery → Treatment Services → Care Plan Clarity to ensure telehealth visit summaries reliably confirm prescriptions and next steps after virtual consultations."
@@ -2982,7 +3116,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "during routine vitals check",
         "context": "The nurse noticed pallor during vitals, asked about diet, and proactively suggested an iron test that was helpful.",
-        "matters": "Proactive clinical observation and communication during routine vitals enabled early detection and reassured the patient.",
+        "matters": "Nurse noticed pallor during vitals, asked about diet, and suggested iron test.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient expressed Clinical Praise that during a routine vitals check, the nurse noticed pallor, asked about diet, and proactively suggested an iron test that proved helpful.",
           "section_2_strategic_response": "We need to Scale Clinical Excellence → Consultation Experience → Provider Communication to reinforce and replicate proactive, observant nursing behaviors that strengthen trust and preventive care."
@@ -3034,7 +3168,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "when attempting to arrange a lab test",
         "context": "The patient wanted the ability to book lab tests directly through the portal instead of calling administrative staff.",
-        "matters": "Lack of self-service lab scheduling forces patients to rely on phone-based coordination for routine diagnostic access.",
+        "matters": "Patient must call to schedule lab tests; portal doesn't offer self-booking.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient made a Process Improvement Suggestion that when attempting to arrange a lab test, they wished scheduling could be done directly through the patient portal instead of calling.",
           "section_2_strategic_response": "We need to Innovate Care Model → Scheduling Methods → Online Self-Booking to introduce self-service lab scheduling that reduces administrative dependence and accelerates diagnostic access."
@@ -3056,7 +3190,6 @@ Any output containing anything outside JSON is invalid.
 
 ### **Expected Extraction:**
 
-```json
 {
   "schema_version": "healthcare_ed_v2_axes",
   "processed_at": "2025-12-08T09:15:22Z",
@@ -3105,7 +3238,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "when managing chronic medication routine",
         "context": "The patient wants automated monthly prescription delivery to eliminate refill ordering and improve adherence for chronic conditions.",
-        "matters": "Lack of automated prescription delivery forces patients to manually track and order refills, creating adherence risk and administrative burden.",
+        "matters": "Patient must remember to order prescription refills each month; no automated delivery available.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient made a Process Improvement Suggestion that when managing chronic medication routine, they wanted automated monthly prescription delivery to eliminate manual refill ordering.",
           "section_2_strategic_response": "We need to Innovate Care Model → Prescription Management → Automated Refill & Delivery to introduce subscription-based medication delivery that reduces adherence barriers and patient cognitive load."
@@ -3117,7 +3250,6 @@ Any output containing anything outside JSON is invalid.
     }
   ]
 }
-```
 
 ---
 
@@ -3128,7 +3260,6 @@ Any output containing anything outside JSON is invalid.
 
 ### **Expected Extraction:**
 
-```json
 {
   "schema_version": "healthcare_ed_v2_axes",
   "processed_at": "2025-12-08T09:32:14Z",
@@ -3177,7 +3308,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "before morning appointments",
         "context": "The patient consistently skips breakfast due to assumed fasting requirements despite being told otherwise, revealing a gap in pre-visit instruction clarity.",
-        "matters": "Patients default to overly cautious behavior due to unclear or generic pre-appointment instructions, impacting comfort and potentially clinical accuracy.",
+        "matters": "Patient skips breakfast before appointments despite being told fasting is unnecessary.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient shared a Patient Behavior Pattern that before morning appointments, they consistently skip breakfast due to uncertainty about fasting requirements, even when explicitly told it's unnecessary.",
           "section_2_strategic_response": "We need to Improve Care Delivery → Patient Education & Communication → Pre-Procedure Instructions to provide appointment-specific fasting guidance that prevents unnecessary patient discomfort and instruction misinterpretation."
@@ -3189,7 +3320,6 @@ Any output containing anything outside JSON is invalid.
     }
   ]
 }
-```
 
 ---
 
@@ -3249,7 +3379,7 @@ Any output containing anything outside JSON is invalid.
         },
         "interaction_moment": "when coordinating pediatric care with work schedules",
         "context": "The patient observed an increasing demand among dual-income families for pediatric care outside traditional business hours to reduce work disruptions.",
-        "matters": "Shifting workforce patterns and dual-income family prevalence are creating unmet demand for non-traditional pediatric appointment hours, potentially impacting access equity.",
+        "matters": "Working parents cannot find pediatric appointments outside traditional business hours.",
         "semantic_action_statement": {
           "section_1_patient_reality": "The patient signaled a Healthcare Trend that when coordinating pediatric care with work schedules, more working parents are seeking weekend or evening appointment availability to avoid work conflicts.",
           "section_2_strategic_response": "We need to Innovate Care Model → Availability & Access → Extended Hours Coverage to explore extended pediatric scheduling models that accommodate dual-income family needs and reduce access barriers."
@@ -3264,5 +3394,6 @@ Any output containing anything outside JSON is invalid.
 ```
 
 """
+
 
 
