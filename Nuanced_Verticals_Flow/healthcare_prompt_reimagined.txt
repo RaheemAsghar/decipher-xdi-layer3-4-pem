@@ -2915,7 +2915,7 @@ Any output containing anything outside JSON is invalid.
 
 ---
 
-✅ Example 4 — Dual Drivers | Scale Clinical Excellence + Innovate Care Model (Healthcare)
+✅ Example 4 — Dual Drivers | Scale Clinical Excellence + Innovate Care Model
 
 **Raw Patient Voice:**
 *"The nurse didn't just take my vitals — she noticed I looked pale, asked about my diet, and suggested a quick iron test, which turned out to be helpful. Also, I wish I could schedule lab tests directly through the patient portal instead of having to call."*
@@ -3037,7 +3037,7 @@ Any output containing anything outside JSON is invalid.
 
 ---
 
-## **Example 5 — Innovate Care Model (Standalone)**
+✅ Example 5 — Innovate Care Model
 
 **Raw Patient Voice:**
 *"I wish there was a way to get my prescriptions delivered to my home automatically each month instead of having to remember to order refills. My neighbor uses a service like this from a different provider and it's been a game-changer for her diabetes management."*
@@ -3109,7 +3109,7 @@ Any output containing anything outside JSON is invalid.
 
 ---
 
-## **Example 6 — Patient Behavior Pattern Intent**
+✅ Example 6 — Patient Behavior Pattern Intent
 
 **Raw Patient Voice:**
 *"I've noticed that every time I have a morning appointment, I end up skipping my breakfast because I'm worried about fasting requirements, even when the doctor said I didn't need to fast. I think I just assume all blood work requires fasting."*
@@ -3181,7 +3181,7 @@ Any output containing anything outside JSON is invalid.
 
 ---
 
-## **Example 7 — Healthcare Trend Signal Intent**
+✅ Example 7 — Healthcare Trend Signal Intent
 
 **Raw Patient Voice:**
 *"I've been talking to other parents in my daughter's school, and it seems like more and more of us are looking for pediatricians who offer weekend or evening hours. A lot of us both work full-time and it's getting harder to do weekday appointments without missing work."*
@@ -3252,3 +3252,4 @@ Any output containing anything outside JSON is invalid.
 ```
 
 """
+
