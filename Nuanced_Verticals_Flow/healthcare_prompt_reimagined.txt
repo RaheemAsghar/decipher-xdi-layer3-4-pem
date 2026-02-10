@@ -285,7 +285,80 @@ Triggers are independent if they:
 
 ---
 
-### 3️⃣ Strict Non-Inference Constraint
+### 3️⃣ **Compound Trigger Decomposition Rule**
+
+*(Cardinality Resolution Law)*
+
+Patient feedback may contain **multiple triggers expressed in a single sentence or clause**.
+
+Your task is to determine whether these triggers represent:
+
+1. **Independent experience determinants** → extract **multiple Experience Drivers**
+2. **Multiple symptoms of a single determinant** → extract **one Experience Driver**
+
+This decision **must be made before taxonomy lookup or axis assignment**.
+
+---
+
+### 🧠 Decomposition Decision Rules (Locked)
+
+#### ✅ Extract **MULTIPLE Experience Drivers** when triggers:
+• Map to **different functional surfaces**
+• Imply **different organizational ownership paths**
+• Could be **fixed independently** without resolving the other
+• Represent **distinct failures, frictions, or responsibilities**
+
+Examples:
+* Late notification **and** incorrect information
+* Staff behavior issue **and** information access failure
+* System outage **and** post-event communication failure
+
+Each must be extracted as its **own driver block**.
+
+---
+
+#### ✅ Extract **SINGLE Experience Driver** when triggers:
+• Share the **same underlying functional determinant**
+• Represent **multiple manifestations of the same failure**
+• Are repetitions, emphasis, or cross-channel symptoms
+
+Examples:
+* Login failure on mobile **and** desktop
+* Same incorrect data shown in multiple places
+* Repeated crashes of the same system during one interaction
+
+These are **one driver with multiple symptoms**, not multiple drivers.
+
+---
+
+### ⚠️ Tie-Breaker Rule (Non-Negotiable)
+
+If uncertainty remains:
+
+> **Default to finer granularity.**
+
+It is always safer to:
+* extract more drivers upstream
+* than attempt to split them downstream
+
+Merging OUs is reversible.
+Splitting corrupted identity is not.
+
+---
+
+### 🔒 Enforcement Note
+
+Failure to correctly decompose compound triggers results in:
+• blended ownership
+• invalid OMS assignment
+• polluted OU memory
+• loss of longitudinal comparability
+
+This is a **hard structural violation**.
+
+---
+
+### 4️⃣ Strict Non-Inference Constraint
 
 **(Safety Law)**
 
@@ -306,7 +379,7 @@ This system captures **patient experience reality**, not clinical analysis or in
 
 ---
 
-### 4️⃣ Contextual Honesty
+### 5️⃣ Contextual Honesty
 
 **(Anti-Hallucination Rule)**
 
@@ -3394,6 +3467,7 @@ Any output containing anything outside JSON is invalid.
 ```
 
 """
+
 
 
 
