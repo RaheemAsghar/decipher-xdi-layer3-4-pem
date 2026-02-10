@@ -2599,6 +2599,11 @@ Any output containing anything outside JSON is invalid.
 
 ✅ Example 1 — Restore Safety | Healthcare
 
+**Raw Patient Voice:**
+*"I was discharged from the hospital, but when I got home I realized the discharge summary listed the wrong medication dosage. I tried calling the ward and pharmacy multiple times but no one responded. I was terrified of taking the wrong dose."*
+
+### **Expected Extraction:**
+
 {
   "schema_version": "healthcare_ed_v2_axes",
   "processed_at": "2025-12-07T14:23:45Z",
@@ -2665,6 +2670,10 @@ Any output containing anything outside JSON is invalid.
 
 ✅ Example 2 — Restore Safety | Improve Care Delivery | Healthcare
 
+**Raw Patient Voice:**
+*"I checked my blood test results in the patient portal and saw two different cholesterol readings for the same date, which really alarmed me. One value was later corrected, but the report also showed confusing annotations and update timestamps that made it hard to understand what had changed or whether I should still be concerned."*
+
+### **Expected Extraction:**
 
 {
   "schema_version": "healthcare_ed_v2_axes",
@@ -2785,6 +2794,11 @@ Any output containing anything outside JSON is invalid.
 
 ✅ Example 3 — Dual Drivers | Restore Safety | Healthcare
 
+**Raw Patient Voice:**
+*"The telehealth app froze right as I was explaining my symptoms to the doctor — I had to restart twice. Then when I rejoined, my visit notes were incomplete, and I couldn't tell if the prescription was even sent to my pharmacy."*
+
+### **Expected Extraction:**
+
 {
   "schema_version": "healthcare_ed_v2_axes",
   "processed_at": "2025-12-07T14:23:45Z",
@@ -2903,6 +2917,11 @@ Any output containing anything outside JSON is invalid.
 
 ✅ Example 4 — Dual Drivers | Scale Clinical Excellence + Innovate Care Model (Healthcare)
 
+**Raw Patient Voice:**
+*"The nurse didn't just take my vitals — she noticed I looked pale, asked about my diet, and suggested a quick iron test, which turned out to be helpful. Also, I wish I could schedule lab tests directly through the patient portal instead of having to call."*
+
+### **Expected Extraction:**
+
 {
   "schema_version": "healthcare_ed_v2_axes",
   "processed_at": "2025-12-07T14:23:45Z",
@@ -3015,5 +3034,221 @@ Any output containing anything outside JSON is invalid.
     }
   ]
 }
+
+---
+
+## **Example 5 — Innovate Care Model (Standalone)**
+
+**Raw Patient Voice:**
+*"I wish there was a way to get my prescriptions delivered to my home automatically each month instead of having to remember to order refills. My neighbor uses a service like this from a different provider and it's been a game-changer for her diabetes management."*
+
+### **Expected Extraction:**
+
+```json
+{
+  "schema_version": "healthcare_ed_v2_axes",
+  "processed_at": "2025-12-08T09:15:22Z",
+  "customer_review": "I wish there was a way to get my prescriptions delivered to my home automatically each month instead of having to remember to order refills. My neighbor uses a service like this from a different provider and it's been a game-changer for her diabetes management.",
+  "experience_drivers": [
+    {
+      "theme": "Pharmacy & Medications",
+      "experience_driver": {
+        "label": "Prescription Management → Automated Refill & Delivery",
+        "category": "Prescription Management",
+        "subcategory": "Automated Refill & Delivery"
+      },
+      "entity_name": "Prescription Delivery Service",
+      "context": {
+        "text": "The patient requested an automated monthly prescription delivery service to eliminate manual refill ordering and improve medication adherence.",
+        "keywords": [
+          "automatic delivery",
+          "monthly prescriptions",
+          "refill automation",
+          "home delivery",
+          "adherence support"
+        ]
+      },
+      "intent_axis": "Process Improvement Suggestion",
+      "affect_axis": {
+        "affect_label": "Reassurance",
+        "confidence_level": "High"
+      },
+      "journey": {
+        "patient_journey": "Medication Management",
+        "journey_stage": "Refill Coordination",
+        "interaction_moment": "when managing chronic medication routine"
+      },
+      "action_axis": "Innovate Care Model",
+      "customer_effort_score": 5,
+      "orchestration_unit": {
+        "ou_name": "Prescription Delivery Service – Innovate Care Model",
+        "experience_driver": "Prescription Management → Automated Refill & Delivery",
+        "entity_name": "Prescription Delivery Service",
+        "theme": "Pharmacy & Medications",
+        "intent_axis": "Process Improvement Suggestion",
+        "action_axis": "Innovate Care Model",
+        "affect_axis": {
+          "affect_label": "Reassurance",
+          "confidence_level": "High"
+        },
+        "interaction_moment": "when managing chronic medication routine",
+        "context": "The patient wants automated monthly prescription delivery to eliminate refill ordering and improve adherence for chronic conditions.",
+        "matters": "Lack of automated prescription delivery forces patients to manually track and order refills, creating adherence risk and administrative burden.",
+        "semantic_action_statement": {
+          "section_1_patient_reality": "The patient made a Process Improvement Suggestion that when managing chronic medication routine, they wanted automated monthly prescription delivery to eliminate manual refill ordering.",
+          "section_2_strategic_response": "We need to Innovate Care Model → Prescription Management → Automated Refill & Delivery to introduce subscription-based medication delivery that reduces adherence barriers and patient cognitive load."
+        },
+        "action_axis_justification": "The requested service does not exist in the current care model and represents a new proactive medication management capability that shifts from reactive ordering to automated adherence support.",
+        "matters_extraction_source": "Raw Patient Voice → Context",
+        "behavioral_impact": "Improves medication adherence for chronic conditions, reduces pharmacy call volume, decreases missed doses, and strengthens continuity of care for long-term treatments."
+      }
+    }
+  ]
+}
+```
+
+---
+
+## **Example 6 — Patient Behavior Pattern Intent**
+
+**Raw Patient Voice:**
+*"I've noticed that every time I have a morning appointment, I end up skipping my breakfast because I'm worried about fasting requirements, even when the doctor said I didn't need to fast. I think I just assume all blood work requires fasting."*
+
+### **Expected Extraction:**
+
+```json
+{
+  "schema_version": "healthcare_ed_v2_axes",
+  "processed_at": "2025-12-08T09:32:14Z",
+  "customer_review": "I've noticed that every time I have a morning appointment, I end up skipping my breakfast because I'm worried about fasting requirements, even when the doctor said I didn't need to fast. I think I just assume all blood work requires fasting.",
+  "experience_drivers": [
+    {
+      "theme": "Clinical Services & Care Delivery",
+      "experience_driver": {
+        "label": "Patient Education & Communication → Pre-Procedure Instructions",
+        "category": "Patient Education & Communication",
+        "subcategory": "Pre-Procedure Instructions"
+      },
+      "entity_name": "Pre-Appointment Communication",
+      "context": {
+        "text": "The patient consistently skips breakfast before morning appointments due to uncertainty about fasting requirements, even when explicitly told fasting is unnecessary.",
+        "keywords": [
+          "unnecessary fasting",
+          "pre-appointment confusion",
+          "breakfast skipping",
+          "blood work assumptions",
+          "instruction clarity"
+        ]
+      },
+      "intent_axis": "Patient Behavior Pattern",
+      "affect_axis": {
+        "affect_label": "Uncertainty",
+        "confidence_level": "High"
+      },
+      "journey": {
+        "patient_journey": "Pre-Visit Preparation",
+        "journey_stage": "Appointment Preparation",
+        "interaction_moment": "before morning appointments"
+      },
+      "action_axis": "Improve Care Delivery",
+      "customer_effort_score": 4,
+      "orchestration_unit": {
+        "ou_name": "Pre-Appointment Communication – Improve Care Delivery",
+        "experience_driver": "Patient Education & Communication → Pre-Procedure Instructions",
+        "entity_name": "Pre-Appointment Communication",
+        "theme": "Clinical Services & Care Delivery",
+        "intent_axis": "Patient Behavior Pattern",
+        "action_axis": "Improve Care Delivery",
+        "affect_axis": {
+          "affect_label": "Uncertainty",
+          "confidence_level": "High"
+        },
+        "interaction_moment": "before morning appointments",
+        "context": "The patient consistently skips breakfast due to assumed fasting requirements despite being told otherwise, revealing a gap in pre-visit instruction clarity.",
+        "matters": "Patients default to overly cautious behavior due to unclear or generic pre-appointment instructions, impacting comfort and potentially clinical accuracy.",
+        "semantic_action_statement": {
+          "section_1_patient_reality": "The patient shared a Patient Behavior Pattern that before morning appointments, they consistently skip breakfast due to uncertainty about fasting requirements, even when explicitly told it's unnecessary.",
+          "section_2_strategic_response": "We need to Improve Care Delivery → Patient Education & Communication → Pre-Procedure Instructions to provide appointment-specific fasting guidance that prevents unnecessary patient discomfort and instruction misinterpretation."
+        },
+        "action_axis_justification": "This reveals a behavioral pattern driven by insufficient clarity in existing instructions; improving delivery here means making pre-visit guidance more specific and contextual to eliminate preventable patient anxiety.",
+        "matters_extraction_source": "Raw Patient Voice → Context → Behavioral Pattern",
+        "behavioral_impact": "Causes unnecessary patient discomfort, potential hypoglycemia risk for diabetic patients, reduces trust in provider instructions, and reveals systematic communication gap in pre-visit protocols."
+      }
+    }
+  ]
+}
+```
+
+---
+
+## **Example 7 — Healthcare Trend Signal Intent**
+
+**Raw Patient Voice:**
+*"I've been talking to other parents in my daughter's school, and it seems like more and more of us are looking for pediatricians who offer weekend or evening hours. A lot of us both work full-time and it's getting harder to do weekday appointments without missing work."*
+
+### **Expected Extraction:**
+
+```json
+{
+  "schema_version": "healthcare_ed_v2_axes",
+  "processed_at": "2025-12-08T09:48:37Z",
+  "customer_review": "I've been talking to other parents in my daughter's school, and it seems like more and more of us are looking for pediatricians who offer weekend or evening hours. A lot of us both work full-time and it's getting harder to do weekday appointments without missing work.",
+  "experience_drivers": [
+    {
+      "theme": "Patient Appointments & Scheduling",
+      "experience_driver": {
+        "label": "Availability & Access → Extended Hours Coverage",
+        "category": "Availability & Access",
+        "subcategory": "Extended Hours Coverage"
+      },
+      "entity_name": "Pediatric Appointment Scheduling",
+      "context": {
+        "text": "The patient reported an emerging trend among working parents seeking pediatric providers with weekend or evening availability to avoid work conflicts.",
+        "keywords": [
+          "weekend hours",
+          "evening appointments",
+          "working parents",
+          "access barriers",
+          "scheduling trend"
+        ]
+      },
+      "intent_axis": "Healthcare Trend Signal",
+      "affect_axis": {
+        "affect_label": "Reassurance",
+        "confidence_level": "Medium"
+      },
+      "journey": {
+        "patient_journey": "Pre-Visit Administration",
+        "journey_stage": "Appointment Availability Search",
+        "interaction_moment": "when coordinating pediatric care with work schedules"
+      },
+      "action_axis": "Innovate Care Model",
+      "customer_effort_score": 5,
+      "orchestration_unit": {
+        "ou_name": "Pediatric Appointment Scheduling – Innovate Care Model",
+        "experience_driver": "Availability & Access → Extended Hours Coverage",
+        "entity_name": "Pediatric Appointment Scheduling",
+        "theme": "Patient Appointments & Scheduling",
+        "intent_axis": "Healthcare Trend Signal",
+        "action_axis": "Innovate Care Model",
+        "affect_axis": {
+          "affect_label": "Reassurance",
+          "confidence_level": "Medium"
+        },
+        "interaction_moment": "when coordinating pediatric care with work schedules",
+        "context": "The patient observed an increasing demand among dual-income families for pediatric care outside traditional business hours to reduce work disruptions.",
+        "matters": "Shifting workforce patterns and dual-income family prevalence are creating unmet demand for non-traditional pediatric appointment hours, potentially impacting access equity.",
+        "semantic_action_statement": {
+          "section_1_patient_reality": "The patient signaled a Healthcare Trend that when coordinating pediatric care with work schedules, more working parents are seeking weekend or evening appointment availability to avoid work conflicts.",
+          "section_2_strategic_response": "We need to Innovate Care Model → Availability & Access → Extended Hours Coverage to explore extended pediatric scheduling models that accommodate dual-income family needs and reduce access barriers."
+        },
+        "action_axis_justification": "This represents an emerging population-level expectation shift that requires new care delivery hours rather than optimizing existing scheduling; it signals market demand for a non-traditional access model.",
+        "matters_extraction_source": "Raw Patient Voice → Trend Observation",
+        "behavioral_impact": "May drive patient attrition to competitors offering extended hours, increases no-show rates due to work conflicts, limits preventive care access for working families, and signals broader care delivery model misalignment with modern workforce patterns."
+      }
+    }
+  ]
+}
+```
 
 """
