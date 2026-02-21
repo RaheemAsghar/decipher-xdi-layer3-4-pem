@@ -1,0 +1,392 @@
+
+# DECIPHER
+
+## Making Experience Drivers Computable
+
+### An Architectural Specification
+
+---
+
+## 1. The Structural Gap in Experience Systems
+
+Organisations today collect experience signals at unprecedented scale.
+
+They operate Voice-of-Customer programmes, patient feedback systems, support transcripts, NPS pipelines, 
+review monitoring, and survey engines. They generate dashboards, sentiment summaries, thematic reports, 
+and quarterly insights.
+
+Yet a persistent structural gap remains:
+
+> When a specific experience surface was previously under stress, what action was taken — and did that action 
+change the condition of that surface?
+
+In most organisations, this question cannot be answered deterministically.
+
+The limitation is not effort, nor analytical sophistication. It is structural.
+
+Current systems are built to:
+
+* Observe signals
+* Categorise themes
+* Quantify sentiment
+* Summarise narratives
+
+They are not built to:
+
+* Assign permanent computational identity to experience surfaces
+* Persist state across time
+* Link actions to measurable state transitions
+* Accumulate institutional learning at the level of causal determinants
+
+Experience is observed episodically. It is not governed structurally.
+
+Decipher addresses this structural gap.
+
+---
+
+## 2. Architectural Scope
+
+Decipher is not a CX platform, dashboard, or analytics product.
+
+It is a computational model and execution substrate designed to:
+
+* Represent experience determinants as stateful objects
+* Compute deterministic health signals over time
+* Generate atomic, traceable action units
+* Close the loop with measurable outcomes
+* Accumulate institutional memory
+
+It does not generate commentary.
+It does not summarise narratives.
+It does not replace decision-makers.
+
+It structures the reality on which decisions operate.
+
+---
+
+## 3. The Primitive: Experience Driver
+
+All durable computational systems begin with a carefully selected primitive — the smallest meaningful unit upon 
+which higher-order logic is built.
+
+In Decipher, the primitive is the **Experience Driver**.
+
+An Experience Driver is:
+> A named functional determinant of what a human encounters within an organisational system.
+
+Canonical form:
+Category → Subcategory
+
+Examples:
+* Emergency Services → Triage Efficiency
+* Billing → Invoice Clarity
+* Diagnostic Services → Lab Turnaround Time
+* Claims → Resolution Transparency
+
+The Experience Driver is chosen because it satisfies three criteria:
+
+1. **Organisational Accountability**
+   Drivers correspond to operational surfaces that teams own and influence.
+
+2. **Computational Stability**
+   Defined as Category → Subcategory, drivers can be governed as a closed vocabulary.
+
+3. **Actionability**
+   Drivers represent surfaces against which intervention is possible.
+
+This differs from commonly used primitives:
+
+* Sentiment (an attribute, not a surface)
+* Themes (analyst-defined clusters)
+* Keywords (lexical artifacts)
+* Scores (aggregated abstractions)
+
+Decipher formalises the Experience Driver as a computational object with persistent identity.
+
+---
+
+## 4. Dual Structure of the Experience Driver
+Each Experience Driver operates across two distinct but linked layers:
+
+### 4.1 Mentions — The Evidence Layer
+A mention is a fully structured extraction from a raw human signal.
+
+One raw narrative may produce multiple mentions when multiple drivers are implicated.
+
+Each mention contains:
+* Intent Axis (Complaint, Compliment, Suggestion, Request, etc.)
+* Affect Axis (vertical-specific emotional vocabulary with controlled polarity values)
+* Action Axis (Fix, Optimize, Amplify, Innovate)
+* Journey Stage
+* Interaction Moment
+* Contextual metadata
+* Matters statement (the behavioural truth expressed)
+* Semantic action statement
+
+Mentions are atomic and indivisible. They are the only admissible basis for generating action units.
+
+Aggregate state alone does not trigger intervention.
+
+---
+
+### 4.2 SEU — The State Layer
+
+For each Experience Driver and analysis window, there exists exactly one:
+
+**Structured Experience Unit (SEU)**
+
+The SEU computes deterministic metrics derived from its mention set:
+
+* ERI (Emotional Resonance Index) — weighted polarity mean
+* EVI (Emotional Volatility Index) — dispersion measure
+* RF (Recency × Frequency) — urgency composite
+* Emotional State Band classification
+* Priority Tier
+* Temporal trajectory metrics
+
+The SEU answers a single question:
+
+> What is the current condition of this driver within the defined window?
+
+The SEU does not generate interventions. It reports state.
+
+---
+
+## 5. Structural Governance Laws
+
+To prevent drift, duplication, or causal ambiguity, Decipher enforces three invariants.
+
+### Identity Law
+Each Experience Driver has exactly one SEU per analysis window. 
+
+Prevents parallel interpretations of state.
+
+---
+
+### Lineage Law
+Every action activation must reference the SEU state that triggered it.
+
+Ensures causal traceability.
+
+---
+
+### Memory Law
+State transitions and outcomes retain referential integrity across time.
+
+Prevents institutional amnesia.
+
+---
+
+These invariants enable:
+* Deterministic queryability
+* Auditability
+* Reproducibility
+* Model independence
+
+---
+
+## 6. Layered Architecture
+
+### Layer 1 — Signal Refinement
+Input: Raw human signals
+Output: Structured mentions
+
+Includes:
+* Relevance filtering
+* Closed taxonomy enforcement
+* Multi-driver extraction
+* Axis assignment
+* Context normalisation
+
+Taxonomy is governed. Drivers are selected, not invented.
+
+This preserves longitudinal integrity.
+
+---
+
+### Layer 2 — State Computation
+
+Input: Mention set per driver
+Output: SEU
+
+Deterministic aggregation.
+Same inputs always produce identical state.
+
+Includes temporal segmentation and trend computation.
+
+---
+
+### Layer 2.5 — Orchestration Unit (OU) Generation
+OUs are born from mention subsets — not from aggregate state.
+
+Process:
+1. Slice by Experience Driver
+2. Slice by Intent Axis
+3. Slice by Action Axis
+4. Cluster behavioural signatures
+5. Produce atomic Orchestration Units
+
+Each OU:
+* Represents a single behavioural pattern
+* Is non-overlapping
+* Is traceable to evidence
+* Is bounded by action class
+
+Cardinality:
+1 Driver → Many Mentions → Many OUs
+
+---
+
+### Layer 3 — Definition Boundary
+Each OU is converted into a structured problem statement.
+
+This produces a Reality Object:
+OU + Problem Statement
+
+After this stage, reinterpretation is disallowed. Downstream systems consume the object as-is.
+
+---
+
+## 7. Organisational Reality Augmentation (ORA)
+Analytical truth does not guarantee operational feasibility.
+
+ORA is the boundary layer that encodes:
+* Ownership
+* Budgetary constraints
+* Deployment cadence
+* Regulatory boundaries
+* Vendor limitations
+
+Decipher defines the schema. Enterprises populate constraints.
+
+The OU cannot progress to execution without ORA augmentation.
+
+This separates:
+* What should be addressed from
+* What can be executed
+
+---
+
+## 8. Execution Contract and Measurement
+Decipher does not execute interventions.
+
+It requires structured Action Receipt Logging.
+
+Each receipt contains:
+* OU ID
+* Action description
+* Action class
+* Scope
+* Timestamp
+* Effort metadata
+
+After a defined measurement window:
+* SEU state is recomputed
+* Before/after comparison performed
+* Elasticity calculated
+
+Elasticity = proportional state shift relative to effort
+
+Impact is derived computationally, not self-reported.
+
+---
+
+## 9. Institutional Memory Engine (IME)
+All activations and outcomes are persisted.
+
+IME stores:
+* State transitions
+* Elasticity scores
+* Intervention patterns
+* Recurrence signals
+
+IME enables:
+* Pattern recall
+* Constraint-informed future OU handling
+* Learning accumulation
+
+The system does not reset each reporting cycle.
+
+---
+
+## 10. Agent Compatibility
+Decipher is agent-compatible but not inherently agentic.
+
+It provides:
+* Stable ontology
+* Deterministic state
+* Atomic mission units
+* Bounded feasibility context
+* Accumulated institutional memory
+
+External agents may consume:
+* SEUs as perception layer
+* OUs as execution units
+* ORA as constraint boundary
+* IME as learning substrate
+
+Autonomous execution requires additional control layers not defined here.
+
+---
+
+## 11. Applicability Across Domains
+The architecture generalises across domains where:
+
+* Humans encounter systems
+* Signals reflect lived experience
+* Surfaces are operationally accountable
+
+Vertical-specific vocabularies differ. Computational structure remains constant.
+
+Examples:
+* Healthcare
+* Financial Services
+* Retail
+* Employee Experience
+* Operations
+
+---
+
+## 12. Current Implementation Status
+
+Implemented:
+* Vertical-specific ingestion specification
+* Deterministic SEU engine
+* OU clustering engine
+* Closed-loop elasticity computation
+* Institutional memory schema
+* End-to-end simulation
+
+Not yet implemented:
+* Production API layer
+* Enterprise-grade SDK
+* Multi-tenant deployment
+* Cross-organisational IME federation
+* UI tooling
+
+The architecture is validated conceptually and computationally.
+Productionisation remains a separate phase.
+
+---
+
+## 13. Governing Principle
+
+If an organisation ingests human experience signals, it should structurally guarantee:
+1. Comprehension of the affected surface
+2. Actionable mission generation
+3. Measurable state transition
+4. Persistent memory of consequence
+
+Decipher encodes these obligations as computational requirements.
+
+---
+
+## Closing Position
+Decipher is a structured governance substrate for experience-driver state and closed-loop intervention.
+
+It does not replace existing analytics systems. It formalises what those systems cannot persist.
+
+It does not create autonomy. It provides the structural preconditions under which autonomy can be bounded and measurable.
+
+Its value depends on disciplined implementation and institutional adoption. It is an architectural model, 
+not a claim of inevitability.
