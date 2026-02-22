@@ -1,0 +1,427 @@
+# 📘 Decipher Predictive Intelligence Architecture
+
+## A Structural Extension of the Experience Execution Substrate (V2 – Aligned to SEU_L2_V9)
+
+---
+
+# 1️⃣ Premise
+
+Decipher is not a predictive system.
+
+It is an execution substrate built on:
+
+* Canonical Experience Driver identity
+* Deterministic state containers (SEUs)
+* Structured execution capsules (OUs)
+* Measured outcome deltas (Elasticity)
+* Append-only institutional memory
+
+Because SEUs are:
+
+* Time-window anchored
+* Deterministically computed
+* Structurally tiered
+* Temporally decomposed
+* State-transition aware
+
+Prediction becomes a structural extension — not a bolt-on feature.
+
+This document defines the Predictive Intelligence Layer that can sit above SEU_L2_V9 without violating Decipher’s ontology or invariants.
+
+---
+
+# 2️⃣ Architectural Preconditions
+
+Predictive modeling is defensible only if the following conditions hold:
+
+* Every SEU snapshot is versioned by time window (Today_Anchor + Window_Days).
+* SEU identity is deterministic (seu_id hash).
+* ERI, EVI, ES Band, RF, and Priority are computed immutably.
+* Emotion Recency Profile is preserved per window.
+* Temporal Intelligence is stored as structured output.
+* OU activations are logged with full lineage.
+* Elasticity outcomes are measured and appended.
+* No retroactive state mutation occurs.
+
+If these invariants hold, predictive modeling operates on canonical state — not reconstructed interpretation.
+
+---
+
+# 3️⃣ The Three Predictive Surfaces
+
+Decipher supports three structurally distinct predictive domains.
+
+They must remain logically separated.
+
+---
+
+# 🔷 Surface 1
+
+# SEU Temporal State Evolution & Structural Migration Prediction
+
+## Objective
+
+Forecast forward evolution of a canonical Experience Driver’s emotional-operational state using the full Temporal Intelligence layer embedded in SEU_L2_V9.
+
+This is not sentiment prediction.
+
+This is state-machine transition forecasting.
+
+---
+
+## What Is Being Predicted
+
+Surface 1 models forward probability of:
+
+1. Emotional State Band migration (ES1–ES5 transitions)
+2. Crisis pattern emergence
+3. Volatility escalation or consolidation
+4. Polarity reversal or entrenchment
+5. Urgency band escalation
+6. ERI directional continuation
+7. EVI fragmentation acceleration
+8. Structural relationship collapse or stabilization
+
+---
+
+## Available Features (Derived Directly from SEU_L2_V9)
+
+### Core State
+
+* ERI
+* ERI_Tier
+* EVI
+* EVI_Tier
+* Emotional_State_Band
+* RF
+* RF_Tier_Short
+* Priority_Tier
+* Priority_Purpose
+
+### Temporal Intelligence (Tier-Based Early vs Recent Analysis)
+
+#### ERI_Flow
+
+* start
+* end
+* delta
+* delta_pct
+* full_scale_move_pct
+* tier_shift
+* trend classification
+
+#### EVI_Flow
+
+* start
+* end
+* delta
+* delta_pct
+* tier_shift
+* volatility trend
+
+#### ES_Flow
+
+* start band
+* end band
+* migration trajectory
+* changed flag
+
+#### Emotion_Flow
+
+* early_distribution
+* recent_distribution
+* combined_distribution
+* per-emotion delta
+* dominant_shift
+* polarity_shift (positive/negative/neutral deltas)
+* polarity_flow_direction
+* dominant_emotion_transition
+* ambivalence_type
+
+#### Pattern_Flow
+
+* pattern_label
+* ERI/EVI trend alignment
+* ES trajectory
+* dominant emotion shift
+
+#### PEM_Guidance
+
+* mode (CRISIS / RECOVERY / STABLE / etc.)
+* urgency_band
+* recommended_stream_bias
+* emotional_driver
+* eri_delta
+* evi_delta
+
+These are not inferred signals.
+They are explicitly computed.
+
+---
+
+## Target Definitions (Surface 1)
+
+Surface 1 prediction targets include:
+
+### Binary Targets
+
+* ES band downgrade within X days
+* ES band upgrade within X days
+* Crisis pattern trigger within X days
+* Urgency escalation to Immediate within X days
+* EVI enters High/Extreme tier within X days
+
+### Multiclass Targets
+
+* Next ES Band state (ES1–ES5)
+* Next Pattern classification
+* Next Urgency band
+
+### Regression Targets
+
+* ERI delta next window
+* EVI delta next window
+
+### Time-to-Event Targets
+
+* Days until ES4 (Active Crisis)
+* Days until ES5 (Critical Failure)
+* Days until P0 priority
+
+Time horizons must be explicit (e.g., 14 / 30 / 60 / 90 days).
+
+---
+
+## Model Characteristics
+
+Surface 1 models operate as:
+
+* State-transition classifiers
+* Hazard models for escalation
+* Tier-crossing probability estimators
+* Structured temporal regression models
+
+They predict forward structural migration, not raw emotional averages.
+
+---
+
+## Purpose
+
+Surface 1 enables:
+
+* Early warning before crisis classification
+* Preemptive intervention routing
+* Stabilization forecasting
+* Structural risk identification
+* Prioritization before degradation becomes visible
+
+---
+
+# 🔷 Surface 2
+
+# OU Intervention Effectiveness Prediction
+
+## Objective
+
+Predict probability that a selected Orchestration Unit produces measurable positive Elasticity under current SEU state.
+
+---
+
+## Feature Sources
+
+From OU:
+
+* Cluster size
+* Cohesion
+* BCS share
+* Intent distribution
+* Affect distribution
+* Journey stage
+* Action axis
+
+From SEU at activation:
+
+* Emotional_State_Band
+* ERI / EVI
+* ERI_Flow / EVI_Flow
+* Polarity shift
+* Pattern label
+* Urgency band
+* Priority tier
+
+From historical execution:
+
+* Prior OU performance under similar states
+* Elasticity magnitude
+* Recurrence patterns
+
+---
+
+## Targets
+
+Binary:
+
+* Positive Elasticity (Yes/No)
+
+Ordinal:
+
+* Strong Positive / Moderate / Neutral / Negative
+
+Regression:
+
+* Elasticity magnitude
+
+---
+
+## Purpose
+
+Surface 2 enables:
+
+* Resource optimization
+* Intervention prioritization
+* Avoidance of low-probability missions
+* Compounding execution intelligence
+
+---
+
+# 🔷 Surface 3
+
+# Driver Escalation & Risk Forecasting
+
+## Objective
+
+Predict which Experience Drivers will cross into high-risk states within defined windows.
+
+---
+
+## Focus States
+
+* ES4_Active_Crisis
+* ES5_Critical_Failure
+* P0 / P1 priority
+* Immediate urgency band
+* Crisis pattern classifications
+
+---
+
+## Feature Basis
+
+* ERI tier shifts
+* EVI fragmentation trends
+* Polarity flow direction
+* Dominant emotion transitions
+* ES band migration velocity
+* RF dynamics
+* Sustained negative consolidation
+
+---
+
+## Model Type
+
+* Hazard models
+* Escalation risk scoring
+* Time-to-event survival modeling
+
+---
+
+## Purpose
+
+Surface 3 enables:
+
+* Early triage
+* Risk routing
+* Crisis prevention
+* Institutional protection
+
+---
+
+# 4️⃣ Architectural Integrity Principles
+
+Predictive modeling must:
+
+* Never mutate SEU state.
+* Never redefine Experience Driver identity.
+* Never override governance matrices.
+* Never rewrite Priority logic.
+* Operate strictly above deterministic state.
+
+Prediction advises.
+State remains canonical.
+
+---
+
+# 5️⃣ Governance Requirements
+
+To remain defensible:
+
+* Targets must be explicitly defined.
+* Time horizons must be declared.
+* Backtesting must be possible via historical SEU snapshots.
+* Calibration must be measurable.
+* Drift monitoring must be active.
+* Human override must exist.
+
+---
+
+# 6️⃣ Why This Is Structurally Different From Typical CX Prediction
+
+Typical CX prediction:
+
+* Operates on accounts or survey scores.
+* Uses unstable, shifting entities.
+* Lacks deterministic state containers.
+* Lacks structured state transitions.
+* Cannot measure intervention lineage cleanly.
+
+Decipher prediction:
+
+* Operates on canonical Experience Drivers.
+* Uses deterministic SEU state.
+* Encodes structural migration logic.
+* Preserves time-window identity.
+* Links intervention → elasticity → memory.
+
+This enables state-machine transition modeling rather than vague churn scoring.
+
+---
+
+# 7️⃣ Strategic Implication
+
+With the Predictive Layer activated:
+
+Decipher becomes:
+
+* A structural emotional state transition forecaster.
+* A crisis emergence probability engine.
+* A mission success probability engine.
+* A resource allocation optimizer.
+* A compounding institutional learning system.
+
+Not because it “adds AI.”
+
+But because:
+
+* Identity is stable.
+* State is deterministic.
+* Temporal movement is structured.
+* Outcome is measurable.
+* Memory compounds.
+
+Prediction emerges from structure.
+
+---
+
+# 8️⃣ Final Architectural Statement
+
+Decipher does not become predictive by adding models.
+
+It becomes predictive because:
+
+SEU_L2_V9 already encodes structured temporal intelligence.
+
+Prediction is simply the formalization of forward state transition probability on top of that structure.
+
+That is the architectural truth.
+
+---
+
