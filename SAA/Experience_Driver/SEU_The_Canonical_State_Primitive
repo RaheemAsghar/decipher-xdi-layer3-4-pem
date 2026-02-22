@@ -1,0 +1,450 @@
+# 🧠 THE STRUCTURED EXPERIENCE UNIT (SEU)
+
+## The Canonical State Primitive of DecipherOS
+
+*(Definitive Consolidated Architecture — V10 Aligned)*
+
+---
+
+# 1️⃣ The Ontology: One Experience Driver, Three Surfaces
+
+In Decipher, an **Experience Driver** is a single unit of lived operational reality.
+
+It manifests across three architectural surfaces:
+
+### Surface 1 — Mention Stream (Evidence Layer)
+
+Append-only lineage of unpacked events referencing the driver.
+
+### Surface 2 — SEU (State Primitive)
+
+The authoritative, computable state object for that driver.
+
+### Surface 3 — OU Set (Execution Layer)
+
+All missions and interventions birthed from that same driver.
+
+These are not three separate objects.
+
+They are three surfaces of one identity, connected by:
+
+```
+experience_driver
+```
+
+The SEU is the **canonical hub** because it resolves deterministically to:
+
+* All Evidence (SEU → Mentions)
+* All Missions (SEU → OUs)
+* All Outcomes (OU → PDCA → Outcome Evaluation → IME)
+
+The SEU is not a metric row.
+
+It is the **stable address of reality** for an Experience Driver.
+
+---
+
+# 2️⃣ What the SEU Is (Primitive Definition)
+
+The SEU is:
+
+> A deterministic, window-anchored, identity-stable, governance-safe state object representing the current and evolving emotional condition of one Experience Driver.
+
+It is not:
+
+* A dashboard score
+* A sentiment average
+* A trend chart
+* A KPI summary
+
+It is a **state machine output**.
+
+---
+
+# 3️⃣ The Four Primitive Laws (Validated Against V10)
+
+## ✅ 1. Atomic
+
+The SEU is indivisible without semantic collapse.
+
+Remove any of:
+
+* ERI
+* EVI
+* RF
+* ES Band
+* Tier structure
+
+And you break:
+
+* Severity interpretation
+* Volatility interpretation
+* Urgency enforcement
+* Temporal migration logic
+
+You cannot subdivide the SEU further without destroying meaning.
+
+---
+
+## ✅ 2. Composable
+
+The SEU composes directly into:
+
+* OU prioritization
+* PDCA baseline framing
+* Portfolio sorting
+* Institutional Memory comparison
+* Predictive guidance (PEM)
+* Cross-driver ranking
+
+No reinterpretation required.
+
+It is join-safe and execution-ready.
+
+---
+
+## ✅ 3. Semantically Stable
+
+The SEU means the same thing across:
+
+* Retail
+* FinTech
+* Healthcare
+* Airlines
+* Any vertical
+
+Why?
+
+Because:
+
+* ERI uses fixed emotional weights
+* EVI uses deterministic dispersion logic
+* Tier boundaries are constant
+* Priority grid is monotonic and severity-floored
+* Window anchoring enforces comparability
+
+Same input → same state → same interpretation.
+
+---
+
+## ✅ 4. Operationally Complete
+
+From the SEU alone, the system can answer:
+
+* What is happening?
+* How urgent is it?
+* What priority does it deserve?
+* Is it getting better or worse?
+* What kind of action bias is appropriate?
+
+No human must re-read comments.
+
+It is action-sufficient.
+
+---
+
+# 4️⃣ The SEU Execution Contract (V10 Definitive)
+
+The SEU contract now consists of **five structural layers**.
+
+---
+
+## A. Identity & Provenance (Non-Negotiable)
+
+* `seu_id`
+* `experience_driver`
+* `schema_version`
+* `pipeline_version`
+* `run_id`
+* `computed_at_utc`
+
+These make the SEU:
+
+* Auditable
+* Referentially stable
+* Versioned
+* Snapshot-comparable
+
+Without these, it is not infrastructure-grade.
+
+---
+
+## B. Window Anchoring (Comparability Boundary)
+
+* `Today_Anchor`
+* `Window_Days`
+
+Defines what “state” means.
+
+Without anchoring, state cannot be compared across runs.
+
+---
+
+## C. Sufficiency Guardrails (Autonomy Safety)
+
+* `Observed_Days`
+* `Temporal_Intelligence_Available`
+* `Sufficiency_Reason`
+
+Ensures:
+
+* No fake trajectory inference
+* No forward projection from thin data
+* Agents do not over-trust sparse drivers
+
+This is what makes SEU agent-safe.
+
+---
+
+## D. Core State (Emotional Reality)
+
+### 1. Polarity Axis
+
+* `ERI`
+* `ERI_Tier`
+
+### 2. Volatility Axis
+
+* `EVI`
+* `EVI_Tier`
+
+### 3. Composite State
+
+* `Emotional_State_Band` (ES1–ES5)
+
+This is the canonical state compression.
+
+It defines relationship condition.
+
+---
+
+## E. Pressure & Urgency (Presence Dynamics)
+
+* `R`
+* `F`
+* `RF`
+* `RF_Weight_R`
+* `RF_Weight_F`
+* `RF_Urgency_Category`
+* `RF_Tier_Short`
+
+This encodes:
+
+* How loud
+* How recent
+* How urgent
+
+RF is pressure physics.
+
+---
+
+## F. Decision Hooks (Governance Output)
+
+* `Priority_Tier` (P0–P5)
+* `Priority_Purpose`
+* `ERI_RF_Quadrant`
+* `Quadrant_Purpose`
+
+This is where state becomes selection logic.
+
+This makes SEU routable.
+
+---
+
+## G. Evidence Integrity (Operational Context)
+
+Minimum required:
+
+* `No_of_Mentions`
+* `Most_Recent_Date`
+* `Age_Days`
+
+Optional but powerful:
+
+* `First_Seen_Date`
+* `Mention_Share_%`
+* `Associated_Entity_Names`
+
+Prevents acting on ghosts.
+
+---
+
+# 5️⃣ Temporal Intelligence Layer (V10 Expansion)
+
+This is where SEU evolves beyond static state.
+
+The engine decomposes time into:
+
+* Tier_1 (Most recent)
+* Tier_2
+* Tier_3
+* Tier_4
+* Tier_5
+* Beyond Window
+
+From this it derives:
+
+---
+
+## ERI_Flow
+
+Polarity trajectory:
+
+* start
+* end
+* delta
+* % change
+
+---
+
+## EVI_Flow
+
+Volatility migration:
+
+* stabilization
+* fragmentation
+* oscillation
+
+---
+
+## ES_Flow
+
+Relationship band migration:
+
+* ES2 → ES4
+* ES3 → ES2
+  etc.
+
+---
+
+## Emotion_Flow
+
+* Dominant emotion shifts
+* Polarity group transitions
+* Composition rebalancing
+
+---
+
+## Pattern_Flow
+
+Structured macro labels:
+
+* Escalating
+* Recovering
+* Stabilizing
+* Fragmenting
+* Crisis Emerging
+* Dormant Decay
+
+Not charts. Not lines.
+
+State migration patterns.
+
+---
+
+# 6️⃣ Predictive Emotional Modeling (PEM)
+
+PEM does not invent math.
+
+It repackages trajectory intelligence into:
+
+* `mode` (CRISIS / RECOVERY / STABLE / VOLATILE)
+* `urgency_band`
+* `recommended_stream_bias`
+* `emotional_driver`
+* `es_start`, `es_end`
+* `eri_delta`, `evi_delta`
+
+This is forward advisory.
+
+It does not override state.
+It does not mutate priority.
+
+It extends state forward.
+
+---
+
+# 7️⃣ The SEU as Infrastructure Primitive
+
+The SEU now fulfills three simultaneous roles:
+
+### 1. Canonical Hub
+
+Join key across evidence, missions, outcomes.
+
+### 2. State Machine Output
+
+Deterministic emotional physics.
+
+### 3. Execution Substrate
+
+Agent-ready decision hooks.
+
+It is:
+
+* Append-compatible
+* Versioned
+* Recomputable
+* Monotonic
+* Governance-aligned
+* Execution-sufficient
+
+---
+
+# 8️⃣ Minimum SEU-Core (Irreducible Primitive)
+
+If reduced to its essential form, SEU-Core must include:
+
+### Identity
+
+`seu_id`, `experience_driver`, versions, timestamps
+
+### Window
+
+`Today_Anchor`, `Window_Days`
+
+### Sufficiency
+
+`Observed_Days`, `Temporal_Intelligence_Available`
+
+### State
+
+`ERI`, `EVI`, `Emotional_State_Band`
+
+### Pressure
+
+`RF`, `RF_Tier_Short`
+
+### Decision
+
+`Priority_Tier`, `Priority_Purpose`
+
+### Evidence
+
+`No_of_Mentions`, `Most_Recent_Date`
+
+Everything else enriches.
+
+Nothing above can be removed without breaking primitive status.
+
+---
+
+# 9️⃣ Final Definition
+
+The SEU is:
+
+> The smallest semantically complete, identity-stable, execution-sufficient unit of emotional reality for 
+an Experience Driver.
+
+It connects:
+Evidence → State → Execution → Memory
+
+It is not a report.
+It is not analytics.
+It is not a metric.
+
+It is infrastructure.
+
+---
+
+
