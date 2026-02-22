@@ -57,163 +57,244 @@ They must remain logically separated.
 
 # 🔷 Surface 1
 
-# SEU Temporal State Evolution & Structural Migration Prediction
-
-## Objective
-
-Forecast forward evolution of a canonical Experience Driver’s emotional-operational state using the full Temporal Intelligence layer embedded in SEU_L2_V9.
-
-This is not sentiment prediction.
-
-This is state-machine transition forecasting.
+# SEU Temporal State Evolution & Structural Migration Intelligence
 
 ---
 
-## What Is Being Predicted
+## 1️⃣ Ontological Position
+Surface 1 is the first predictive surface of Decipher.
 
-Surface 1 models forward probability of:
+- It operates strictly above the Structured Experience Unit (SEU) and extends its Temporal Intelligence layer forward.
+- It does not predict sentiment.
+- It does not predict survey averages.
+- It does not predict customer-level behavior.
+- It forecasts **structural state migration** of a canonical Experience Driver.
 
-1. Emotional State Band migration (ES1–ES5 transitions)
-2. Crisis pattern emergence
-3. Volatility escalation or consolidation
-4. Polarity reversal or entrenchment
-5. Urgency band escalation
-6. ERI directional continuation
-7. EVI fragmentation acceleration
-8. Structural relationship collapse or stabilization
+Surface 1 answers:
+> Given the current SEU state and its temporal evolution, what structural movement is likely next?
 
----
-
-## Available Features (Derived Directly from SEU_L2_V9)
-
-### Core State
-
-* ERI
-* ERI_Tier
-* EVI
-* EVI_Tier
-* Emotional_State_Band
-* RF
-* RF_Tier_Short
-* Priority_Tier
-* Priority_Purpose
-
-### Temporal Intelligence (Tier-Based Early vs Recent Analysis)
-
-#### ERI_Flow
-
-* start
-* end
-* delta
-* delta_pct
-* full_scale_move_pct
-* tier_shift
-* trend classification
-
-#### EVI_Flow
-
-* start
-* end
-* delta
-* delta_pct
-* tier_shift
-* volatility trend
-
-#### ES_Flow
-
-* start band
-* end band
-* migration trajectory
-* changed flag
-
-#### Emotion_Flow
-
-* early_distribution
-* recent_distribution
-* combined_distribution
-* per-emotion delta
-* dominant_shift
-* polarity_shift (positive/negative/neutral deltas)
-* polarity_flow_direction
-* dominant_emotion_transition
-* ambivalence_type
-
-#### Pattern_Flow
-
-* pattern_label
-* ERI/EVI trend alignment
-* ES trajectory
-* dominant emotion shift
-
-#### PEM_Guidance
-
-* mode (CRISIS / RECOVERY / STABLE / etc.)
-* urgency_band
-* recommended_stream_bias
-* emotional_driver
-* eri_delta
-* evi_delta
-
-These are not inferred signals.
-They are explicitly computed.
+This is state-machine transition intelligence.
 
 ---
 
-## Target Definitions (Surface 1)
+## 2️⃣ Preconditions (Non-Negotiable)
 
-Surface 1 prediction targets include:
+Surface 1 may operate only if:
+* SEU snapshot is versioned (Today_Anchor + Window_Days).
+* `seu_id` is deterministic and identity-stable.
+* ERI, EVI, ES Band, RF, and Priority are immutable.
+* Tier decomposition (Tier_1–Tier_5) exists.
+* Temporal Intelligence is available (`Temporal_Intelligence_Available = True`).
+* Observed_Days meets minimum sufficiency threshold.
+* No retroactive mutation of prior SEU snapshots occurs.
 
-### Binary Targets
+If these invariants are violated, Surface 1 must not execute. Prediction is valid only when state is canonical.
 
-* ES band downgrade within X days
-* ES band upgrade within X days
-* Crisis pattern trigger within X days
-* Urgency escalation to Immediate within X days
-* EVI enters High/Extreme tier within X days
+---
 
-### Multiclass Targets
+## 3️⃣ What Surface 1 Predicts
+Surface 1 forecasts forward migration of:
 
-* Next ES Band state (ES1–ES5)
+### Structural State
+* Emotional State Band transitions (ES1–ES5)
+* Relationship collapse risk (ES4/ES5 escalation)
+* Stabilization probability
+* Recovery trajectory likelihood
+
+### Volatility Dynamics
+* EVI tier escalation
+* Fragmentation acceleration
+* Consolidation/stabilization signals
+
+### Polarity Continuation
+* ERI directional persistence
+* Polarity entrenchment
+* Reversal likelihood
+
+### Urgency Escalation
+* RF tier migration
+* Priority escalation (P-tier movement)
+* Crisis-level activation risk
+
+### Pattern Continuation
+* Escalating → Crisis
+* Recovering → Stabilized
+* Fragmenting → Unstable
+* Dormant → Silent decay
+
+Surface 1 predicts forward structural behavior — not raw emotional averages.
+
+---
+
+## 4️⃣ Surface 1 Instantiation Layers
+Surface 1 exists in two architecturally distinct modes.
+
+They must remain logically separated.
+
+---
+
+# 🔹 Mode A — Deterministic Projection (Live in SEU V10)
+
+This mode is already implemented.
+
+It derives forward advisory directly from:
+* ERI_Flow (start, end, delta, % movement)
+* EVI_Flow (volatility shift)
+* ES_Flow (band migration)
+* Emotion_Flow (dominant shifts + polarity shifts)
+* Pattern_Flow (macro classification)
+* RF tier pressure dynamics
+* PEM_Guidance
+
+This layer produces:
+* Trajectory classification (CRISIS / RECOVERY / STABLE / VOLATILE)
+* Structural instability signals
+* Escalation likelihood classification
+* Intervention window sensitivity
+* Stream bias recommendation (Fix / Stabilize / Amplify orientation)
+* Risk band advisory
+
+Characteristics:
+* Fully explainable
+* Deterministic
+* Governance-safe
+* No probabilistic calibration
+* No statistical inference
+* No state mutation
+
+This mode extends the SEU forward without altering it.
+
+It is structural extrapolation, not ML prediction.
+
+---
+
+# 🔹 Mode B — Statistical Calibration (Optional Extension)
+This mode overlays probabilistic modeling on canonical SEU snapshots. It operates strictly on versioned, 
+append-only SEU history.
+
+### Possible Targets
+
+#### Binary
+* ES downgrade within X days
+* ES upgrade within X days
+* Crisis trigger within X days
+* Urgency escalation within X days
+* EVI high-tier entry within X days
+
+#### Multiclass
+* Next ES Band (ES1–ES5)
 * Next Pattern classification
-* Next Urgency band
+* Next RF urgency tier
 
-### Regression Targets
-
+#### Regression
 * ERI delta next window
 * EVI delta next window
 
-### Time-to-Event Targets
+#### Time-to-Event
+* Days until ES4
+* Days until ES5
+* Days until P0
 
-* Days until ES4 (Active Crisis)
-* Days until ES5 (Critical Failure)
-* Days until P0 priority
+### Mandatory Methodological Discipline
 
-Time horizons must be explicit (e.g., 14 / 30 / 60 / 90 days).
+Statistical Surface 1 must:
+* Use time-ordered splits (no random leakage)
+* Align horizon labels consistently
+* Separate competing crisis risks (ES4 vs ES5)
+* Enforce minimum positive event thresholds
+* Respect snapshot cadence variability
+* Fail loudly if duration fields are missing
+* Never mutate SEU state
 
----
-
-## Model Characteristics
-
-Surface 1 models operate as:
-
-* State-transition classifiers
-* Hazard models for escalation
-* Tier-crossing probability estimators
-* Structured temporal regression models
-
-They predict forward structural migration, not raw emotional averages.
+Statistical calibration enhances precision.
+It does not redefine ontology.
 
 ---
 
-## Purpose
+## 5️⃣ Governance Constraints (Critical)
 
-Surface 1 enables:
+Surface 1 cannot:
+* Override Emotional_State_Band
+* Downgrade severity floors
+* Mutate RF urgency
+* Rewrite Priority_Tier
+* Alter deterministic SEU state
+* Modify historical snapshots
 
-* Early warning before crisis classification
-* Preemptive intervention routing
-* Stabilization forecasting
-* Structural risk identification
-* Prioritization before degradation becomes visible
+Surface 1 may:
+* Signal elevated risk of migration
+* Escalate monitoring
+* Bias OU prioritization
+* Recommend preemptive stabilization
+
+Prediction is advisory, not authoritative.
+
+Deterministic state remains the source of truth.
+
+---
+
+## 6️⃣ Relationship to Execution Substrate
+Surface 1 exists to enhance execution timing.
+
+It enables:
+* Early OU activation before ES band collapse
+* Preemptive Fix routing before P-tier escalation
+* Stabilization missions before fragmentation worsens
+* Watchlist creation for drivers trending toward crisis
+* Amplification protection for drivers at risk of volatility
+
+Surface 1 does not replace prioritization.
+
+It reshapes sequencing.
+
+Execution remains governed by:
+SEU → OU → PDCA → Elasticity → Institutional Memory.
+
+---
+
+## 7️⃣ Why Surface 1 Is Structurally Possible
+
+Surface 1 is possible only because SEU V10 includes:
+* Tier-based temporal decomposition
+* ERI/EVI flow computation
+* ES band migration tracking
+* Pattern classification
+* Deterministic urgency enforcement
+* Identity-stable snapshot persistence
+* Sufficiency gating
+
+Prediction emerges from structure. Without canonical state, forecasting would be speculative.
+With canonical state, forecasting becomes a structural extension.
+
+---
+
+## 8️⃣ What Surface 1 Is Not
+
+It is not:
+* Sentiment AI
+* Churn modeling
+* Revenue forecasting
+* LLM speculation
+* Dashboard projection
+
+It is:
+State transition intelligence.
+
+---
+
+## 9️⃣ Definitive Statement
+
+Surface 1 transforms the SEU from:
+A snapshot of emotional-operational state
+
+into
+A forward-aware structural migration engine.
+
+It detects degradation before crisis classification.
+It detects stabilization before loyalty confirmation.
+It elevates execution timing from reactive to anticipatory.
+
+And it does so without violating the ontology of Decipher.
 
 ---
 
