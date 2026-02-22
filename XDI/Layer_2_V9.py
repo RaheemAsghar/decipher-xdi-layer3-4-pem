@@ -136,7 +136,7 @@ class Layer2Computer:
         Full 5x5 matrix (25 combinations), all explicitly resolved:
 
         ┌────────────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
-        │ ERI \ EVI      │ Stable   │ Low      │ Moderate │ High     │ Extreme  │
+        │ │ ERI \\ EVI   │ Stable   │ Low      │ Moderate │ High     │ Extreme  │
         ├────────────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
         │ Very Positive  │ ES1      │ ES1      │ ES2      │ ES2      │ ES2      │
         │ Positive       │ ES1      │ ES1      │ ES2      │ ES2      │ ES2      │
@@ -187,7 +187,7 @@ class Layer2Computer:
     # Full 5x5 matrix (25 combinations), all explicitly resolved:
     #
     # ┌──────────────────────┬─────────┬─────────┬──────────┬──────────┬───────────┐
-    # │ ES Band \ RF         │ Dormant │ Low     │ Moderate │ High     │ Very High │
+    # │ ES Band \\ RF        │ Dormant │ Low     │ Moderate │ High     │ Very High │
     # ├──────────────────────┼─────────┼─────────┼──────────┼──────────┼───────────┤
     # │ ES1_Secure_Loyalty   │ P5      │ P5      │ P4       │ P4       │ P3        │
     # │ ES2_Growth_Opp.      │ P4      │ P4      │ P3       │ P3       │ P2        │
@@ -1031,7 +1031,7 @@ class Layer2Computer:
         }
 
                 # Context_Flow: short, structured narrative
-        context_summary = self._build_temporal_context_summary(
+            context_summary = self._build_temporal_context_summary(
             eri_traj=eri_trajectory,
             evi_traj=evi_trajectory,
             es_mig=es_migration,
