@@ -1,3 +1,9 @@
+"""
+Each Experience Driver is represented by a Structured Experience Unit (SEU) — a deterministic state object 
+encoding emotional polarity, volatility, urgency, and temporal migration. Predictive capability emerges not 
+from speculative modeling, but from the structural integrity and temporal decomposition of this canonical state.
+"""
+
 import os, numpy as np, pandas as pd
 import uuid, hashlib
 from collections import Counter
