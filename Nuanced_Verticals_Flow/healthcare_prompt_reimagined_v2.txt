@@ -2587,6 +2587,172 @@ Shift care left, reduce emergency escalation, position provider as proactive hea
 
 ---
 
+# 🧠 SECTION X: Functional Job (JTBD) Synthesis — Healthcare
+
+---
+
+## 📌 Purpose
+
+This section synthesizes a **Job-To-Be-Done (JTBD) statement** for each Experience Driver.
+
+The JTBD expresses the **functional progress the patient was attempting to make** in that specific interaction.
+
+It does **not**:
+
+* restate emotion
+* describe failure
+* describe organizational response
+* introduce new motives
+* infer long-term life goals
+
+It strictly articulates the **progress embedded in the interaction moment and context.**
+
+---
+
+## 🔒 Source Constraint (Mandatory)
+
+The JTBD must be derived **only** from the following already-extracted fields:
+
+* `interaction_moment`
+* `context.text`
+* `experience_driver.label`
+* `matters`
+
+Do NOT use:
+
+* `intent_axis`
+* `affect_axis`
+* `action_axis`
+* `behavioral_impact`
+* external assumptions
+* generic healthcare motivations
+* invented patient goals
+
+If the functional progress cannot be clearly derived from the allowed fields, return `"jtbd_statement": null`.
+
+No guessing.
+
+---
+
+## 🧭 Construction Logic
+
+The JTBD must follow this exact structure:
+
+> **When [situation], I want to [functional progress], so I can [desired outcome].**
+
+### Slot 1 — “When”
+
+Use:
+
+* `interaction_moment` (primary)
+* If thin, distill situation from `context.text`
+
+Describe the situational trigger precisely.
+Do not broaden beyond the interaction described.
+
+---
+
+### Slot 2 — “I want to”
+
+Distill the **functional progress attempt** from:
+
+* `context.text`
+* constrained by `experience_driver.label`
+
+This must describe:
+
+* What the patient was trying to accomplish on that surface
+* In neutral functional language
+* Without describing failure
+
+Do not describe:
+
+* what went wrong
+* how they felt
+* what the organization should do
+
+This is the progress attempt only.
+
+---
+
+### Slot 3 — “So I can”
+
+Invert the wedge described in `matters` into its positive intended outcome.
+
+This must describe:
+
+* The safe, stable, correct, or complete state the patient sought
+* In patient-progress language
+* Not organizational language
+
+Do not reference:
+
+* Restore Safety
+* Improve Care Delivery
+* compliance
+* trust metrics
+
+Express only the patient’s intended forward progress.
+
+---
+
+## 🧱 Output Structure (Per Experience Driver)
+
+Add the following block inside `orchestration_unit`:
+
+```json
+"jtbd_statement": {
+  "when": "",
+  "i_want_to": "",
+  "so_i_can": "",
+  "full_statement": ""
+}
+```
+
+Where:
+
+* `when` = situation clause
+* `i_want_to` = functional progress attempt
+* `so_i_can` = desired outcome
+* `full_statement` = combined canonical sentence
+
+---
+
+## 🧪 Validation Rules
+
+Before finalizing:
+
+* Does the job reflect only the described interaction?
+* Can every part be traced to allowed fields?
+* Is the job written in patient progress language?
+* Does it avoid organizational framing?
+* Would removing the failure still leave a coherent progress statement?
+
+If any answer is no → return null.
+
+---
+
+## 🧠 Example (Medication Safety Case)
+
+Derived from:
+
+* interaction_moment: after discharge when reviewing medication instructions at home
+* context: incorrect dosage and no response
+* matters: wrong medication dosage; no clarification
+
+JTBD:
+
+```json
+"jtbd_statement": {
+  "when": "after discharge when reviewing medication instructions at home",
+  "i_want_to": "clearly understand and confirm the correct medication dosage",
+  "so_i_can": "take my medication safely without risking harm",
+  "full_statement": "When I am discharged and reviewing medication instructions at home, I want to clearly understand and confirm the correct medication dosage, so I can take my medication safely without risking harm."
+}
+```
+
+---
+
 ## ⚙️ STRICT JSON OUTPUT FORMAT (MANDATORY) — Healthcare (3-Axis Contract)
 
 ### ✅ Output Rules (Non-Negotiable)
@@ -2603,10 +2769,9 @@ Shift care left, reduce emergency escalation, position provider as proactive hea
 
 Output a single JSON object with **exactly** this schema:
 
-```
 ```json
 {
-  "schema_version": "healthcare_ed_v2_axes",
+  "schema_version": "healthcare_ed_v2_axes_jtbd",
   "processed_at": "YYYY-MM-DDTHH:MM:SSZ",
   "customer_review": "string",
   "experience_drivers": [
@@ -2651,6 +2816,12 @@ Output a single JSON object with **exactly** this schema:
         "semantic_action_statement": {
           "section_1_patient_reality": "string",
           "section_2_strategic_response": "string"
+        },
+        "jtbd_statement": {
+          "when": "string",
+          "i_want_to": "string",
+          "so_i_can": "string",
+          "full_statement": "string"
         },
         "action_axis_justification": "string",
         "matters_extraction_source": "string",
