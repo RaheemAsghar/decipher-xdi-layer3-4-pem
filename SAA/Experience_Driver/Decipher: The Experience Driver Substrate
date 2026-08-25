@@ -1,0 +1,78 @@
+# A worked example: one complaint, six months later
+
+This is the story that motivates everything else in this repository. It's a real (anonymised) pattern from healthcare CX, but the shape of it is domain-agnostic — swap "triage" for "delivery," "invoice," or "onboarding" and it holds.
+
+## The raw signal
+
+A customer writes in:
+
+> "I brought my mother to the emergency department last night after a fall. We waited almost two hours before anyone came to assess her, and during that time, no one explained what was happening. When she was finally seen, the doctor seemed rushed and didn't involve us in the decision about whether to admit her. The ward we were sent to had no working call bell, so she felt unsafe through the night. I honestly don't feel like the hospital respects elderly patients, and I'm worried what would happen if she needed urgent care again."
+
+## What happens to this today, most places
+
+It gets read once. Someone tags it "negative," maybe "communication issue," logs a sentiment score, and it goes into this quarter's report as one line in a chart that's trending slightly down. Three other people write in about the same triage delay that month. Nobody connects the four complaints to each other. Next quarter, the dashboard resets, a new analyst runs a new thematic pass, and if the underlying triage problem is still happening, it gets rediscovered from scratch — with no memory that it was ever flagged before, what was tried, or whether it worked.
+
+## What happens to it here
+
+**1. It's unpacked into mentions, not summarised into a score.** One comment becomes several structured mentions, each bound to a specific driver with its own context:
+
+- **Driver:** Emergency Services → Triage Efficiency — *"nearly two-hour wait before any assessment"* — Complaint, Anger/Frustrated
+- **Driver:** Support Quality → Communication Style — *"no one explained what was happening"* — Complaint, Fear/Anxious
+- **Driver:** Consultation Experience → Provider Communication — *"doctor seemed rushed, didn't involve us in the decision"* — Complaint
+- **Driver:** Facility Safety → Ward Equipment — *"no working call bell"* — Complaint, Fear/Anxious
+
+Each mention keeps its own context, emotion, and journey stage. Nothing gets flattened into a single "negative" label.
+
+**2. The driver already has a state, because it isn't the first complaint.** By the time this comment arrives, *Emergency Services → Triage Efficiency* already has 487 mentions behind it. Its current state (the SEU):
+
+```
+Experience Driver: Emergency Services → Triage Efficiency
+ERI (Experience Risk Index):     -45
+EVI (Experience Volatility):      72
+Recency Factor:                   87
+Priority:                         P0
+Trend:                            Strongly declining
+```
+
+This one comment doesn't start a new analysis — it lands on top of an existing, queryable condition.
+
+**3. The mentions become an atomic, evidence-bound mission — not a vague recommendation.** Instead of "improve triage efficiency," the 143 mentions that share this specific behavioural pattern cluster into one Orchestration Unit:
+
+```
+OU: "Elderly Fall Triage Delays – Complaint – Fix"
+Evidence: 143 mentions [m_1847, m_2910, m_3384, ...]
+
+The customer reality: elderly patients presenting after a fall wait
+2+ hours for initial assessment.
+
+The strategic response: fix triage prioritisation for elderly fall
+presentations — this is a clinical-risk issue, not a satisfaction issue.
+```
+
+**4. Someone acts, and the action is logged against the driver's state at that moment.**
+
+```
+Intervention: Added a dedicated triage nurse for elderly patients
+Activated: 2024-12-01
+Linked to: SEU state at activation — ERI -45, EVI 72, RF 87, Priority P0
+```
+
+**5. A month later, the same driver is re-measured — not re-analysed, re-measured.**
+
+```
+SEU state, 2024-12-31:
+ERI:  -27   (was -45)
+EVI:   58   (was 72, consolidating)
+RF:    65   (was 87, less urgent)
+
+Outcome: Successful
+Note: elderly fall triage time reduced from avg 120min to 45min
+```
+
+**6. That outcome doesn't get discarded at quarter-end.** It's written into institutional memory, permanently linked to this driver: what was tried, when, and what happened. Six months from now, if elderly triage delays start climbing again, whoever looks at this driver doesn't start from zero — they start from "we tried a dedicated triage nurse in December, it worked, here's the before/after."
+
+## The actual claim
+
+Not "AI read some feedback and found a theme." The claim is narrower and more falsifiable: a specific, real-world determinant of experience (triage efficiency, for this hospital) can be given a stable identity, a state that updates deterministically as new evidence arrives, a mission generated directly from its evidence rather than from a vague aggregate, and a permanent record of what was done about it and whether it worked — so that six months later, the organisation is smarter about that specific thing than it was the first time a complaint mentioned it.
+
+That's the bar this architecture is trying to clear. Whether the current implementation clears it end-to-end in production is a separate, honest question — see the Current Status section in the README.
